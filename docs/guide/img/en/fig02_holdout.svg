@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" width="1000" height="380" role="img" aria-label="The holdout the researcher never sees (TECH 6)">
+<title>The holdout the researcher never sees (TECH 6)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="380.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">The holdout the researcher never sees (TECH 6)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Synthetic cohort, seed 7. No real patients.</text>
+<rect x="28.0" y="96.0" width="944.0" height="36.0" rx="8" fill="#0F1B2D"/>
+<text x="500.0" y="120.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">1,000 synthetic rows</text>
+<line x1="250.0" y1="134.0" x2="250.0" y2="158.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="750.0" y1="134.0" x2="750.0" y2="158.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="28.0" y="162.0" width="460.0" height="86.0" rx="10" fill="#DCE7F5" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="42.0" y="186.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">500 rows to the researcher</text>
+<text x="42.0" y="209.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Used to train the model.</text>
+<rect x="512.0" y="162.0" width="460.0" height="86.0" rx="10" fill="#FBE9DC" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="526.0" y="186.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">500 rows kept by the TRE</text>
+<text x="526.0" y="209.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Never shared. Used to score the model and to run attacks.</text>
+<text x="28.0" y="284.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Columns</text>
+<text x="28.0" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• 6 clinical: age, diabetes, asthma, weight (4 levels), blood pressure (5 levels), smoker</text>
+<text x="28.0" y="330.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• 10 noise columns with no label signal: something for a deep tree to memorise</text>
+<text x="28.0" y="352.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• Label: high_risk, drawn from a known logistic function of the clinical columns</text>
+</svg>

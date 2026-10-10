@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 410" width="1000" height="410" role="img" aria-label="The quiet failure: AUC near chance, tail not (Appendix F)">
+<title>The quiet failure: AUC near chance, tail not (Appendix F)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="410.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">The quiet failure: AUC near chance, tail not (Appendix F)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Safe-wrapper tree, two membership attacks. The export rule uses the worst-case attack.</text>
+<line x1="40.0" y1="310.0" x2="640.0" y2="310.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="58.0" y="134.0" width="79.0" height="176.0" rx="3" fill="#2F6DB5"/>
+<rect x="73.5" y="113.0" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="97.5" y="126.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.528</text>
+<rect x="143.0" y="139.3" width="79.0" height="170.7" rx="3" fill="#B4521A"/>
+<rect x="158.5" y="118.3" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="182.5" y="131.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.512</text>
+<text x="140.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">AUC</text>
+<rect x="258.0" y="271.3" width="79.0" height="38.7" rx="3" fill="#2F6DB5"/>
+<rect x="273.5" y="250.3" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="297.5" y="263.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.116</text>
+<rect x="343.0" y="226.0" width="79.0" height="84.0" rx="3" fill="#B4521A"/>
+<rect x="358.5" y="205.0" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="382.5" y="218.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.252</text>
+<text x="340.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">TPR at 10% FPR</text>
+<rect x="458.0" y="303.3" width="79.0" height="6.7" rx="3" fill="#2F6DB5"/>
+<rect x="431.5" y="282.3" width="132.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="497.5" y="295.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.020 (p 0.445)</text>
+<rect x="543.0" y="216.7" width="79.0" height="93.3" rx="3" fill="#B4521A"/>
+<rect x="516.5" y="195.7" width="132.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="582.5" y="208.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.280 (p 0.003)</text>
+<text x="540.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">FDIF</text>
+<rect x="670.0" y="110.0" width="302.0" height="140.0" rx="10" fill="#0F1B2D"/>
+<text x="684.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start">FDIF</text>
+<text x="684.0" y="157.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">Salem FDIF 0.280 with p = 0.003:</text>
+<text x="684.0" y="174.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">members pile up in the extreme scores.</text>
+<text x="684.0" y="191.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">A data controller could refuse on that.</text>
+<circle cx="46.0" cy="384.0" r="5" fill="#2F6DB5"/>
+<text x="56.0" y="389.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Worst case (TRE tables)</text>
+<circle cx="290.0" cy="384.0" r="5" fill="#B4521A"/>
+<text x="300.0" y="389.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Salem-synth (similar data)</text>
+</svg>

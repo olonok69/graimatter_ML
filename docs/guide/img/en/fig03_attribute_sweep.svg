@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="Twenty queries recover two hidden fields (Appendix E)">
+<title>Twenty queries recover two hidden fields (Appendix E)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="420.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Twenty queries recover two hidden fields (Appendix E)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Known: age 62, diabetic, asthmatic, smoker. Unknown: weight and blood pressure. Cell = model confidence.</text>
+<text x="249.0" y="106.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">low</text>
+<text x="367.0" y="106.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">slightly high</text>
+<text x="485.0" y="106.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">high</text>
+<text x="603.0" y="106.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">very high</text>
+<text x="721.0" y="106.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">extremely high</text>
+<text x="178.0" y="164.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">underweight</text>
+<rect x="193.0" y="131.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="249.0" y="165.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="311.0" y="131.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="367.0" y="165.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="429.0" y="131.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="485.0" y="165.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="547.0" y="131.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="603.0" y="165.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="665.0" y="131.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="721.0" y="165.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<text x="178.0" y="226.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">normal</text>
+<rect x="193.0" y="193.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="249.0" y="227.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="311.0" y="193.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="367.0" y="227.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="429.0" y="193.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="485.0" y="227.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="547.0" y="193.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="603.0" y="227.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="665.0" y="193.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="721.0" y="227.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<text x="178.0" y="288.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">overweight</text>
+<rect x="193.0" y="255.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="249.0" y="289.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="311.0" y="255.0" width="112.0" height="56.0" rx="6" fill="#B4521A"/>
+<text x="367.0" y="289.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">1.000</text>
+<rect x="429.0" y="255.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="485.0" y="289.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="547.0" y="255.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="603.0" y="289.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="665.0" y="255.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="721.0" y="289.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<text x="178.0" y="350.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">obese</text>
+<rect x="193.0" y="317.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="249.0" y="351.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="311.0" y="317.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="367.0" y="351.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="429.0" y="317.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="485.0" y="351.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="547.0" y="317.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="603.0" y="351.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<rect x="665.0" y="317.0" width="112.0" height="56.0" rx="6" fill="#E9E6DE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="721.0" y="351.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#3A4556" text-anchor="middle">0.500</text>
+<text x="178.0" y="114.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5F6979" text-anchor="end">weight ↓  blood pressure →</text>
+<rect x="790.0" y="128.0" width="182.0" height="244.0" rx="10" fill="#0F1B2D"/>
+<text x="804.0" y="152.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start">Only one cell</text>
+<text x="804.0" y="171.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start">stands out: the</text>
+<text x="804.0" y="191.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start">planted truth.</text>
+<text x="804.0" y="214.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">The other 19</text>
+<text x="804.0" y="231.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">combinations tie at</text>
+<text x="804.0" y="248.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">0.500, so the attack</text>
+<text x="804.0" y="265.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">has a unique answer:</text>
+<text x="804.0" y="282.1" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">overweight and</text>
+<text x="804.0" y="299.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">slightly high blood</text>
+<text x="804.0" y="315.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">pressure. 20 rows of</text>
+<text x="804.0" y="332.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">queries were enough.</text>
+<text x="32.0" y="402.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">Computed live from graimatter_demo/case_study.py (unconstrained tree, planted record).</text>
+</svg>

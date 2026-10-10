@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-label="Same cohort, two toolkits: what differs">
+<title>Same cohort, two toolkits: what differs</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="430.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Same cohort, two toolkits: what differs</text>
+<rect x="240.0" y="70.0" width="358.0" height="40.0" rx="8" fill="#2F6DB5"/>
+<text x="254.0" y="96.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="start">Hand-written demo (run_demo.py)</text>
+<rect x="610.0" y="70.0" width="362.0" height="40.0" rx="8" fill="#0F1B2D"/>
+<text x="624.0" y="96.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">sacroml 2.0.1 (run_sacroml_demo.py)</text>
+<rect x="28.0" y="120.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="144.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Leaf rule</text>
+<text x="254.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">min_samples_leaf 20 and max_depth 4 (stricter than</text>
+<text x="254.0" y="158.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Appendix D)</text>
+<text x="624.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">min_samples_leaf 5, the package rules file</text>
+<rect x="28.0" y="180.0" width="944.0" height="54.0" rx="6" fill="#F1EFE8" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="204.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Wrapped tree accuracy</text>
+<text x="254.0" y="202.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">train 0.692, set-aside 0.584</text>
+<text x="624.0" y="202.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">train 0.868, set-aside 0.566</text>
+<rect x="28.0" y="240.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="264.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Membership attack</text>
+<text x="254.0" y="262.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Probabilities plus the true label → AUC 0.528</text>
+<text x="624.0" y="262.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Probabilities only → mean AUC 0.494</text>
+<rect x="28.0" y="300.0" width="944.0" height="54.0" rx="6" fill="#F1EFE8" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="324.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Leaf check</text>
+<text x="254.0" y="322.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Smallest leaf 20 rows</text>
+<text x="624.0" y="322.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">Smallest leaf 5 &lt; 10 → k_anonymity_risk true</text>
+<rect x="28.0" y="360.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="384.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Outcome</text>
+<text x="254.0" y="382.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Release under the demo policy</text>
+<text x="624.0" y="382.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">&quot;Proceed to next step of checking&quot;; structural</text>
+<text x="624.0" y="398.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">risk still true</text>
+</svg>

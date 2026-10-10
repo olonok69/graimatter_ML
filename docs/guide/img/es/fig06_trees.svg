@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-label="Árbol sin restricciones frente a safe wrapper, demo 1">
+<title>Árbol sin restricciones frente a safe wrapper, demo 1</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="430.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Árbol sin restricciones frente a safe wrapper, demo 1</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Ataque de peor caso sobre la misma partición 500/500. Línea discontinua = límite de la política de la demo (no del paper).</text>
+<line x1="40.0" y1="340.0" x2="760.0" y2="340.0" stroke="#5F6979" stroke-width="1.5"/>
+<line x1="48.0" y1="161.8" x2="176.0" y2="161.8" stroke="#B23A3A" stroke-width="1.8" stroke-dasharray="5 4"/>
+<rect x="58.0" y="136.5" width="51.0" height="203.5" rx="3" fill="#B4521A"/>
+<rect x="59.5" y="115.5" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="83.5" y="128.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,708</text>
+<rect x="115.0" y="188.2" width="51.0" height="151.8" rx="3" fill="#2F6DB5"/>
+<rect x="116.5" y="167.2" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="140.5" y="180.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,528</text>
+<text x="112.0" y="358.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">AUC de membresía</text>
+<line x1="192.0" y1="282.5" x2="320.0" y2="282.5" stroke="#B23A3A" stroke-width="1.8" stroke-dasharray="5 4"/>
+<rect x="202.0" y="221.6" width="51.0" height="118.4" rx="3" fill="#B4521A"/>
+<rect x="203.5" y="200.6" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="227.5" y="213.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,412</text>
+<rect x="259.0" y="338.9" width="51.0" height="1.2" rx="3" fill="#2F6DB5"/>
+<rect x="260.5" y="317.9" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="284.5" y="330.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,004</text>
+<text x="256.0" y="358.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">Ventaja</text>
+<line x1="336.0" y1="296.9" x2="464.0" y2="296.9" stroke="#B23A3A" stroke-width="1.8" stroke-dasharray="5 4"/>
+<rect x="346.0" y="222.1" width="51.0" height="117.9" rx="3" fill="#B4521A"/>
+<rect x="347.5" y="201.1" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="371.5" y="214.1" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,410</text>
+<rect x="403.0" y="308.9" width="51.0" height="31.0" rx="3" fill="#2F6DB5"/>
+<rect x="404.5" y="287.9" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="428.5" y="300.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,108</text>
+<text x="400.0" y="358.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">Entreno − holdout</text>
+<line x1="480.0" y1="239.4" x2="608.0" y2="239.4" stroke="#B23A3A" stroke-width="1.8" stroke-dasharray="5 4"/>
+<rect x="490.0" y="295.1" width="51.0" height="44.8" rx="3" fill="#B4521A"/>
+<rect x="491.5" y="274.1" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="515.5" y="287.1" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,156</text>
+<rect x="547.0" y="306.6" width="51.0" height="33.3" rx="3" fill="#2F6DB5"/>
+<rect x="548.5" y="285.6" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="572.5" y="298.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,116</text>
+<text x="544.0" y="358.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">TPR al 10% de FPR</text>
+<line x1="624.0" y1="282.5" x2="752.0" y2="282.5" stroke="#B23A3A" stroke-width="1.8" stroke-dasharray="5 4"/>
+<rect x="634.0" y="161.8" width="51.0" height="178.2" rx="3" fill="#B4521A"/>
+<rect x="635.5" y="140.8" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="659.5" y="153.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,620</text>
+<rect x="691.0" y="334.2" width="51.0" height="5.7" rx="3" fill="#2F6DB5"/>
+<rect x="692.5" y="313.2" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="716.5" y="326.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0,020</text>
+<text x="688.0" y="358.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">FDIF</text>
+<rect x="790.0" y="110.0" width="182.0" height="112.0" rx="10" fill="#F6DEDE" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="804.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#B23A3A" text-anchor="start">Árbol sin</text>
+<text x="804.0" y="153.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#B23A3A" text-anchor="start">restricciones</text>
+<text x="804.0" y="177.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Rechazo. Reglas que</text>
+<text x="804.0" y="193.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">saltan: brecha de</text>
+<text x="804.0" y="210.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">precisión, AUC,</text>
+<text x="804.0" y="227.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">ventaja, FDIF.</text>
+<rect x="790.0" y="234.0" width="182.0" height="106.0" rx="10" fill="#DDEFE3" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="804.0" y="258.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#2E7D4F" text-anchor="start">Safe wrapper</text>
+<text x="804.0" y="281.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Se libera según la</text>
+<text x="804.0" y="298.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">política de la demo</text>
+<circle cx="46.0" cy="400.0" r="5" fill="#B4521A"/>
+<text x="56.0" y="405.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Árbol sin restricciones</text>
+<circle cx="260.0" cy="400.0" r="5" fill="#2F6DB5"/>
+<text x="270.0" y="405.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Safe wrapper</text>
+<line x1="430.0" y1="400.0" x2="460.0" y2="400.0" stroke="#B23A3A" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="468.0" y="405.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">límite</text>
+</svg>

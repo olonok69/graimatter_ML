@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="1000" height="400" role="img" aria-label="Tres formas en que un modelo puede llevar personas dentro">
+<title>Tres formas en que un modelo puede llevar personas dentro</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="400.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Tres formas en que un modelo puede llevar personas dentro</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Un modelo puede ocupar menos que su tabla de entrenamiento y aun así revelar filas individuales.</text>
+<rect x="28.0" y="96.0" width="310.0" height="254.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="44.0" y="124.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0F1B2D" text-anchor="start">Vecinos más cercanos</text>
+<text x="44.0" y="148.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Guarda todas las filas de entrenamiento;</text>
+<text x="44.0" y="164.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">predecir es buscarlas. Demo: 500 de 500</text>
+<text x="44.0" y="181.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">filas, fichero 1,01x la tabla.</text>
+<rect x="345.0" y="96.0" width="310.0" height="254.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="361.0" y="124.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0F1B2D" text-anchor="start">Clasificador de vectores soporte</text>
+<text x="361.0" y="148.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Conserva las filas cercanas a la frontera.</text>
+<text x="361.0" y="164.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Demo: 423 de 500 filas guardadas como</text>
+<text x="361.0" y="181.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">vectores soporte.</text>
+<rect x="662.0" y="96.0" width="310.0" height="254.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="678.0" y="124.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0F1B2D" text-anchor="start">Árbol de decisión profundo</text>
+<text x="678.0" y="148.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Divide hasta que una hoja contiene a una</text>
+<text x="678.0" y="164.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">persona. Demo: hoja mínima de 1 fila, en 18</text>
+<text x="678.0" y="181.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">KB frente a una tabla de 68 KB.</text>
+<circle cx="60.0" cy="250.0" r="6" fill="#0F1B2D"/>
+<circle cx="80.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="100.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="120.0" cy="250.0" r="6" fill="#0F1B2D"/>
+<circle cx="140.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="160.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="180.0" cy="250.0" r="6" fill="#0F1B2D"/>
+<circle cx="200.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="220.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="240.0" cy="250.0" r="6" fill="#0F1B2D"/>
+<circle cx="260.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="280.0" cy="250.0" r="6" fill="#B4521A"/>
+<circle cx="60.0" cy="272.0" r="6" fill="#0F1B2D"/>
+<circle cx="80.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="100.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="120.0" cy="272.0" r="6" fill="#0F1B2D"/>
+<circle cx="140.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="160.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="180.0" cy="272.0" r="6" fill="#0F1B2D"/>
+<circle cx="200.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="220.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="240.0" cy="272.0" r="6" fill="#0F1B2D"/>
+<circle cx="260.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="280.0" cy="272.0" r="6" fill="#B4521A"/>
+<circle cx="60.0" cy="294.0" r="6" fill="#0F1B2D"/>
+<circle cx="80.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="100.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="120.0" cy="294.0" r="6" fill="#0F1B2D"/>
+<circle cx="140.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="160.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="180.0" cy="294.0" r="6" fill="#0F1B2D"/>
+<circle cx="200.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="220.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="240.0" cy="294.0" r="6" fill="#0F1B2D"/>
+<circle cx="260.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="280.0" cy="294.0" r="6" fill="#B4521A"/>
+<circle cx="400.6" cy="259.3" r="5.5" fill="#B4521A"/>
+<circle cx="572.3" cy="290.4" r="4" fill="#C9CED6"/>
+<circle cx="402.6" cy="277.0" r="4" fill="#C9CED6"/>
+<circle cx="495.0" cy="252.4" r="4" fill="#C9CED6"/>
+<circle cx="556.3" cy="248.2" r="4" fill="#C9CED6"/>
+<circle cx="473.9" cy="284.5" r="5.5" fill="#B4521A"/>
+<circle cx="483.4" cy="290.8" r="5.5" fill="#B4521A"/>
+<circle cx="557.1" cy="324.1" r="4" fill="#C9CED6"/>
+<circle cx="448.2" cy="296.4" r="4" fill="#C9CED6"/>
+<circle cx="547.1" cy="264.3" r="4" fill="#C9CED6"/>
+<circle cx="380.4" cy="325.6" r="4" fill="#C9CED6"/>
+<circle cx="451.6" cy="266.3" r="5.5" fill="#B4521A"/>
+<circle cx="594.0" cy="290.7" r="4" fill="#C9CED6"/>
+<circle cx="493.1" cy="307.6" r="4" fill="#C9CED6"/>
+<circle cx="387.3" cy="301.6" r="4" fill="#C9CED6"/>
+<circle cx="469.8" cy="246.2" r="4" fill="#C9CED6"/>
+<circle cx="538.5" cy="321.8" r="4" fill="#C9CED6"/>
+<circle cx="429.7" cy="294.7" r="4" fill="#C9CED6"/>
+<circle cx="451.6" cy="304.8" r="4" fill="#C9CED6"/>
+<circle cx="553.3" cy="257.7" r="4" fill="#C9CED6"/>
+<circle cx="579.2" cy="297.2" r="5.5" fill="#B4521A"/>
+<circle cx="543.9" cy="311.8" r="5.5" fill="#B4521A"/>
+<circle cx="482.9" cy="306.3" r="4" fill="#C9CED6"/>
+<circle cx="590.8" cy="247.2" r="4" fill="#C9CED6"/>
+<circle cx="583.9" cy="273.5" r="4" fill="#C9CED6"/>
+<circle cx="495.1" cy="251.2" r="4" fill="#C9CED6"/>
+<circle cx="547.6" cy="264.3" r="4" fill="#C9CED6"/>
+<circle cx="589.1" cy="262.8" r="4" fill="#C9CED6"/>
+<circle cx="514.8" cy="274.0" r="5.5" fill="#B4521A"/>
+<circle cx="527.1" cy="255.7" r="4" fill="#C9CED6"/>
+<line x1="380.0" y1="238.0" x2="620.0" y2="327.0" stroke="#0F1B2D" stroke-width="2" stroke-dasharray="5 4"/>
+<circle cx="817.0" cy="238.0" r="8" fill="#0F1B2D"/>
+<line x1="817.0" y1="238.0" x2="757.0" y2="278.0" stroke="#5F6979" stroke-width="1.5"/>
+<circle cx="757.0" cy="278.0" r="8" fill="#0F1B2D"/>
+<line x1="817.0" y1="238.0" x2="877.0" y2="278.0" stroke="#5F6979" stroke-width="1.5"/>
+<circle cx="877.0" cy="278.0" r="8" fill="#0F1B2D"/>
+<line x1="757.0" y1="278.0" x2="727.0" y2="318.0" stroke="#5F6979" stroke-width="1.5"/>
+<line x1="757.0" y1="278.0" x2="787.0" y2="318.0" stroke="#5F6979" stroke-width="1.5"/>
+<line x1="877.0" y1="278.0" x2="847.0" y2="318.0" stroke="#5F6979" stroke-width="1.5"/>
+<line x1="877.0" y1="278.0" x2="907.0" y2="318.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="710.0" y="310.0" width="34.0" height="24.0" rx="5" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="727.0" y="327.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="middle">34</text>
+<rect x="770.0" y="310.0" width="34.0" height="24.0" rx="5" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="787.0" y="327.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="middle">51</text>
+<rect x="830.0" y="310.0" width="34.0" height="24.0" rx="5" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="847.0" y="327.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="middle">28</text>
+<rect x="890.0" y="310.0" width="34.0" height="24.0" rx="5" fill="#FBE9DC" stroke="#B4521A" stroke-width="2"/>
+<text x="907.0" y="327.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#B4521A" text-anchor="middle">1</text>
+<text x="32.0" y="380.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">Secciones 10.1 y 10.1.5 del paper; cifras de demo/output/demo_report.txt.</text>
+</svg>

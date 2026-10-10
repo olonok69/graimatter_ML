@@ -87,3 +87,14 @@ This calls `SafeDecisionTreeClassifier`, `request_release()`, the worst-case mem
 On the seeded run the package rejects `min_samples_leaf=1`, raises it to 5, and records "Proceed to next step of checking". Changing that parameter after `fit()` is caught. The structural attack flags the unconstrained tree (smallest leaf holds 1 row). The wrapped tree still has a generalisation gap of about 0.30, and a leaf of 5 is still marked risky because the package threshold is 10. Worst-case membership AUC stays near 0.5 for both trees: that attack uses predicted probabilities only, and a tree of pure leaves is extreme on training rows and set-aside rows.
 
 The package can also run a likelihood-ratio attack. The upstream example uses 100 shadow models, so this script does not start it. To run that attack, pass a `Target` into `request_release()` as described in the [SACRO-ML examples](https://github.com/AI-SDC/SACRO-ML/tree/main/examples).
+
+## Workshop material
+
+| File | What it is |
+| --- | --- |
+| `docs/GRAIMATTER.pptx` | Workshop deck in English (22 slides, definitions in the speaker notes) |
+| `docs/guide/GRAIMATTER_Technical_Guide_EN.md` | Guide to the paper and both demos, in English |
+| `docs/guide/GRAIMATTER_Guia_Tecnica_ES.md` | The same guide in Spanish |
+| `docs/guide/img/en/`, `docs/guide/img/es/` | Figures for the guides and the deck |
+
+Regenerate the figures and the deck with `pip install -r docs/requirements-docs.txt`, then `python docs/guide/make_figures.py` and `python docs/make_deck.py`, using the same environment as the demos.
