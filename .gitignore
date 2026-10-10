@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .python-version
-GRAIMATTER Green Paper.pdf
 demo/output/**/*.joblib
 demo/output/**/*.pkl
 demo/output/sacroml/**/*.npz
