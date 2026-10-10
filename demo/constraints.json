@@ -1,0 +1,18 @@
+{
+  "note": "Illustrative risk appetite for this small synthetic cohort. Appendix D of the GRAIMATTER green paper shows the file format. Its example minimum for min_samples_leaf was 5. The values below are stricter so the contrast is visible on a few hundred rows. A TRE would set these from its own experiments and agree them with the data controller.",
+  "DecisionTreeClassifier": {
+    "permitted": true,
+    "rules": [
+      {"keyword": "min_samples_leaf", "operator": "min", "value": 20},
+      {"keyword": "max_depth", "operator": "max", "value": 4}
+    ]
+  },
+  "KNeighborsClassifier": {
+    "permitted": false,
+    "reason": "Instance-based model: every training row is stored in the model and can be read back (TECH 11)."
+  },
+  "SVC": {
+    "permitted": false,
+    "reason": "A standard support-vector classifier stores a subset of training rows as support vectors. The green paper recommends a differentially private variant, aggregated data, or query controls instead (TECH 11)."
+  }
+}

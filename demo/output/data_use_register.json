@@ -1,0 +1,20 @@
+{
+  "project": "DEMO-001",
+  "dataset": "synthetic_risk_cohort",
+  "release_category": "trained_model",
+  "purpose": "Illustrate disclosure control. Not for clinical use.",
+  "model_file": "safe_tree.joblib",
+  "decision": "approved_for_demo_release",
+  "controls": [
+    "TRE set-aside",
+    "safe wrapper constraints",
+    "worst-case membership inference",
+    "attribute inference",
+    "leaf k-anonymity",
+    "model size check"
+  ],
+  "refused_files": [
+    "unsafe_tree.joblib",
+    "tampered_tree.joblib"
+  ]
+}

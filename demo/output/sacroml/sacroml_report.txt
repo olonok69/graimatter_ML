@@ -1,0 +1,68 @@
+
+==============================================================================
+SACRO-ML disclosure-control demo
+==============================================================================
+sacroml 2.0.1, from https://github.com/AI-SDC/SACRO-ML. Same synthetic cohort as the hand-written demo. No real patients.
+Researcher rows: 500. TRE set-aside rows: 500.
+
+==============================================================================
+Safe wrapper before fitting
+==============================================================================
+WARNING: model parameters may present a disclosure risk:
+- parameter min_samples_leaf = 1 identified as less than the recommended min value of 5.
+Package flags this configuration as disclosive: True.
+WARNING: model parameters may present a disclosure risk:
+- parameter min_samples_leaf = 1 identified as less than the recommended min value of 5.
+Changed parameter min_samples_leaf = 5.
+The package rules file sets the minimum leaf size to 5. That is the published GRAIMATTER example value, and it is looser than the leaf size of 20 used by the hand-written demo.
+request_release() recommendation: Proceed to next step of checking.
+That call did not run attacks. Passing a Target into request_release() also starts the package's LiRA run, which the upstream example sets to 100 shadow models.
+Changing min_samples_leaf after fit() is flagged by posthoc_check(): disclosive=True.
+Warning: basic parameters differ in 1 places:
+parameter min_samples_leaf changed from 5 to 1 after model was fitted.
+
+==============================================================================
+unconstrained tree
+==============================================================================
+Training accuracy 1.000, set-aside accuracy 0.590.
+Worst-case membership attack (sacroml.attacks.worst_case_attack):
+  membership AUC over 3 repetitions: mean 0.500, min 0.500, max 0.500
+  This attack scores rows by predicted probability only. A tree of pure leaves gives extreme probabilities to training rows and to set-aside rows, so the AUC can sit near 0.5 even when the tree has memorised.
+  repetitions with AUC above the package null band: 0 (null AUC range 0.3772 -> 0.6228)
+Structural attack (sacroml.attacks.structural_attack):
+  {"test_acc": 0.59, "train_acc": 1.0, "generalisation_gap": 0.41000000000000003, "gen_error_risk": "True", "unnecessary_risk": true, "dof_risk": false, "k_anonymity_risk": true, "class_disclosure_risk": true, "smallgroup_risk": true, "details": null}
+  A leaf is marked risky when it holds fewer than 10 training rows. The package log states that threshold.
+Attribute inference (sacroml.attacks.attribute_attack), clinical fields only:
+  diabetes: training 136/136 unique guesses correct out of 500 rows; set-aside 141/141
+  asthma: no unique guess on 500 training rows or the set-aside (2 values)
+  weight: no unique guess on 500 training rows or the set-aside (4 values)
+  blood_pressure: training 5/5 unique guesses correct out of 500 rows; set-aside 3/3
+  smoker: training 198/198 unique guesses correct out of 500 rows; set-aside 205/205
+  age: fraction of rows reconstructed within the package bound, training 0.012, set-aside 0.010
+JSON and PDF reports: D:\repos\graimatter\demo\output\sacroml\unconstrained_tree
+
+==============================================================================
+safe wrapper tree
+==============================================================================
+Training accuracy 0.868, set-aside accuracy 0.566.
+Safe-wrapper leaf k-anonymity: 5.
+Worst-case membership attack (sacroml.attacks.worst_case_attack):
+  membership AUC over 3 repetitions: mean 0.494, min 0.471, max 0.519
+  This attack scores rows by predicted probability only. A tree of pure leaves gives extreme probabilities to training rows and to set-aside rows, so the AUC can sit near 0.5 even when the tree has memorised.
+  repetitions with AUC above the package null band: 0 (null AUC range 0.3772 -> 0.6228)
+Structural attack (sacroml.attacks.structural_attack):
+  {"test_acc": 0.566, "train_acc": 0.868, "generalisation_gap": 0.30200000000000005, "gen_error_risk": "True", "unnecessary_risk": true, "dof_risk": false, "k_anonymity_risk": true, "class_disclosure_risk": true, "smallgroup_risk": true, "details": null}
+  A leaf is marked risky when it holds fewer than 10 training rows. The package log states that threshold.
+Attribute inference (sacroml.attacks.attribute_attack), clinical fields only:
+  diabetes: training 195/257 unique guesses correct out of 500 rows; set-aside 191/246
+  asthma: training 50/67 unique guesses correct out of 500 rows; set-aside 49/64
+  weight: no unique guess on 500 training rows or the set-aside (4 values)
+  blood_pressure: no unique guess on 500 training rows or the set-aside (5 values)
+  smoker: training 254/327 unique guesses correct out of 500 rows; set-aside 262/330
+  age: fraction of rows reconstructed within the package bound, training 0.034, set-aside 0.050
+JSON and PDF reports: D:\repos\graimatter\demo\output\sacroml\safe_wrapper_tree
+
+==============================================================================
+Where to read the package reports
+==============================================================================
+Each attack writes report.json and report.pdf under demo/output/sacroml/. Those files are the TRE output the package is built to produce.

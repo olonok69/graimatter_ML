@@ -1,0 +1,135 @@
+
+==============================================================================
+GRAIMATTER disclosure-control demo
+==============================================================================
+The green paper recommends how a trusted research environment (TRE) can let researchers train a model on sensitive data and still decide whether that model is safe to export. This script runs that check on a fictional cohort.
+Nothing here is a real patient, and the release cut-offs are a demo policy, not official GRAIMATTER thresholds. The maintained toolkit from the project is https://github.com/AI-SDC/AI-SDC . This demo is a separate, smaller illustration.
+
+==============================================================================
+1. Cohort, and the rows the researcher never sees (TECH 6)
+==============================================================================
+Synthetic rows: 1000. Researcher receives 500. TRE keeps 500 aside and does not put them in the training set.
+Label is a fictional high-risk flag generated from age, smoking, diabetes, asthma, weight and blood pressure. Ten noise columns carry no label signal; they exist so a deep tree has something to memorise.
+Data dictionary written to data_dictionary.json (TECH 8 / Appendix C).
+
+==============================================================================
+2. Attribute inference on one planted record (Appendix E)
+==============================================================================
+Known fields for the fictional record: age 62, diabetic, asthmatic, smoker. Unknown fields: weight and blood pressure. There are 4 x 5 = 20 combinations.
+Highest-confidence queries:
+  overweight   slightly high    confidence 1.000  <-- planted truth
+  underweight  low              confidence 0.500
+  underweight  slightly high    confidence 0.500
+  underweight  high             confidence 0.500
+  underweight  very high        confidence 0.500
+The unique highest confidence is the planted pair (overweight, slightly high). That is the Appendix E attack.
+
+==============================================================================
+3. What epsilon means, on a mean rather than a model (section 10.1.3)
+==============================================================================
+An attacker knows every age except whether one person was included, and sees only the released mean. Accuracy is how often they guess inclusion correctly (0.50 is a coin toss).
+  epsilon none (deterministic)   attacker accuracy 1.000  Laplace scale 0.0000
+  epsilon 0.2                    attacker accuracy 0.487  Laplace scale 0.6000
+  epsilon 1.0                    attacker accuracy 0.522  Laplace scale 0.1200
+  epsilon 8.0                    attacker accuracy 0.703  Laplace scale 0.0150
+TECH 12: at epsilon 0.2, one noisy mean misses the true mean by 0.3053. Keeping the closest of 50 draws misses by only 0.0084. Choosing the draw that looks most like the non-private answer cancels the protection, so TRE staff would choose the random seed without looking at accuracy.
+
+==============================================================================
+4. Unconstrained tree, native training
+==============================================================================
+Researcher would claim accuracy 1.000 (that is the training score). On the TRE set-aside it is 0.590.
+Smallest leaf: 1 training row. Model file 18150 bytes vs training table 68000 bytes (ratio 0.267).
+Worst-case membership inference (Appendix G):
+  AUC 0.708   advantage 0.412   TPR 1.000   FPR 0.588
+  TPR at 10% FPR 0.156   FDIF 0.620 (p=0.003)
+  If the attacker flags a row as a member, the chance it really is one: 0.630 when half of candidates are members, 0.017 when 1 in 100 are.
+  Mean confidence in the true label: training rows 1.000, set-aside rows 0.590 (AUC 0.705).
+Salem-synth membership inference (attacker has similar data, not the TRE tables):
+  AUC 0.703   advantage 0.410   TPR 1.000   FPR 0.590
+  TPR at 10% FPR 0.514   FDIF 1.000 (p=0.003)
+  If the attacker flags a row as a member, the chance it really is one: 0.629 when half of candidates are members, 0.017 when 1 in 100 are.
+Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
+The attack abstained: no weight value was a unique best guess. This tree isolated rows with the noise columns, and changing weight did not leave the leaf. Section 2 is the case study from the paper, where the hidden fields are ones the model actually split on. A ratio above 1 would mean training rows were easier to complete than set-aside rows.
+TRE decision: do not release.
+  - Training accuracy exceeds set-aside accuracy by 0.410 (limit 0.15), which indicates overfitting.
+  - Worst-case membership AUC is 0.708 (limit 0.62).
+  - Membership advantage is 0.412 (limit 0.2).
+  - FDIF is 0.620 with p=0.003 (members are concentrated in the extreme scores).
+
+==============================================================================
+5. The same data through a safe wrapper (TECH 9-10)
+==============================================================================
+Wrapper: min_samples_leaf changed from 1 to 20 to satisfy min 20.
+Wrapper: max_depth changed from None to 4 to satisfy max 4.
+request_release() recommendation: Run file through the next step of the checking procedure. Leaf k-anonymity 20.
+Training accuracy 0.692, set-aside accuracy 0.584.
+Worst-case membership inference:
+  AUC 0.528   advantage 0.004   TPR 0.632   FPR 0.628
+  TPR at 10% FPR 0.116   FDIF 0.020 (p=0.445)
+  If the attacker flags a row as a member, the chance it really is one: 0.502 when half of candidates are members, 0.010 when 1 in 100 are.
+  Mean confidence in the true label: training rows 0.611, set-aside rows 0.561 (AUC 0.552).
+Salem-synth membership inference:
+  AUC 0.512   advantage 0.012   TPR 0.642   FPR 0.630
+  TPR at 10% FPR 0.252   FDIF 0.280 (p=0.003)
+  If the attacker flags a row as a member, the chance it really is one: 0.505 when half of candidates are members, 0.010 when 1 in 100 are.
+The export rule follows the worst-case attack in Appendix G. On this model that FDIF is 0.020 (p=0.445).
+This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.280 (p=0.003). A data controller could refuse on that tail. This demo's rule does not, because it uses the worst-case check.
+Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
+TRE decision: allow release. No demo policy rule fired.
+A real committee would still read the numbers; these cut-offs are only for the demo.
+The wrapper only gets the file as far as the TRE queue. The attack numbers are what the export decision uses. Hyperparameter ranges from a previous dataset are not enough on their own (Appendix A, experiment 2).
+
+==============================================================================
+6. Instance-based models are refused (TECH 11)
+==============================================================================
+Safe wrapper for k-nearest neighbours: Instance-based model: every training row is stored in the model and can be read back (TECH 11).
+Safe wrapper for support-vector classifier: A standard support-vector classifier stores a subset of training rows as support vectors. The green paper recommends a differentially private variant, aggregated data, or query controls instead (TECH 11).
+A raw 1-NN fitted anyway stores 500 rows (68677 bytes, ratio 1.010).
+TRE decision: do not release.
+  - k_nearest_neighbours stores 500 training rows inside the model file.
+  - Model file is 1.01 times the training table (limit 0.75).
+A raw RBF SVC stores 423 support vectors out of 500 training rows.
+TRE decision: do not release.
+  - support_vector_classifier stores 423 training rows inside the model file.
+  - Model file is 0.94 times the training table (limit 0.75).
+The paper's alternatives are aggregated data, a differentially private training algorithm, or leaving the model inside a query-limited service. This demo does not implement a private SVM.
+
+==============================================================================
+7. Editing the model after fit() (risk types RT1 and RT2)
+==============================================================================
+Wrapper: OVERRIDE accepted: min_samples_leaf=1 breaks the rule min 20. This is reported to the TRE.
+Wrapper: OVERRIDE accepted: max_depth=None breaks the rule max 4. This is reported to the TRE.
+request_release() recommendation: Do not allow release
+WARNING: parameter max_depth changed from None to 4 after the model was fitted. parameter min_samples_leaf changed from 1 to 20 after the model was fitted. Smallest leaf holds 1 training row(s); the constraints file requires at least 20. Attributes were added after fit(), which can be used to hide training rows: hidden_rows.
+File-type check on not_a_model.txt:
+TRE decision: do not release.
+  - File type is not on the accepted list (joblib or pickle).
+
+==============================================================================
+8. Query budget blocks the 20-combination sweep (TECH 16)
+==============================================================================
+One patient query was allowed. Predicted class probabilities [0. 1.].
+Query refused: request has 20 rows, 1 already used, budget is 8.
+Query log:
+  clinic-user: 1 rows for one patient lookup - allowed
+  clinic-user: 20 rows for attribute sweep - refused
+Counting rows, not HTTP calls, matters: one request can carry all 20 combinations. The paper also asks for an external test of any real query service (TECH 17). This gate is only the control logic.
+
+==============================================================================
+9. Register entry and pipeline snapshot
+==============================================================================
+Data-use register: data_use_register.json. Decision: approved_for_demo_release.
+Pipeline snapshot: pipeline_snapshot.json.
+Researcher declaration, in plain language rather than legal drafting: follow the approved controls, accept that the project is recorded on the register, and accept that TRE staff will run these attacks. The green paper's clause text was left for a qualified legal review.
+
+==============================================================================
+10. Side by side
+==============================================================================
+model                    train  holdout  MIA AUC    adv.   TPR@10     ARR  decision
+unconstrained tree       1.000    0.590    0.708   0.412    0.156   1.000  refuse
+safe wrapper tree        0.692    0.584    0.528   0.004    0.116   1.000  release
+1-nearest neighbour                                                        refuse (stores rows)
+RBF SVC                                                                    refuse (support vectors)
+tampered tree                                                              refuse (edited after fit)
+
+Full write-up: D:\repos\graimatter\demo\output\demo_report.txt

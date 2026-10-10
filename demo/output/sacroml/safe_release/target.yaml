@@ -1,0 +1,41 @@
+dataset_name: ''
+dataset_module_path: ''
+features: {}
+generalisation_gap: .nan
+safemodel:
+- researcher: User
+  model_type: DecisionTreeClassifier
+  details: 'Model parameters are within recommended ranges.
+
+    '
+  k_anonymity: '5'
+  recommendation: Proceed to next step of checking
+  timestamp: '2026-10-10 16:10:06'
+model_type: SklearnModel
+model_name: SafeDecisionTreeClassifier
+model_params:
+  criterion: gini
+  splitter: best
+  max_depth: null
+  min_samples_split: 2
+  min_samples_leaf: 5
+  min_weight_fraction_leaf: 0.0
+  max_features: null
+  max_leaf_nodes: null
+  random_state: 7
+  min_impurity_decrease: 0.0
+  class_weight: null
+  ccp_alpha: 0.0
+model_path: model.pkl
+X_train_path: ''
+y_train_path: ''
+X_test_path: ''
+y_test_path: ''
+X_train_orig_path: ''
+y_train_orig_path: ''
+X_test_orig_path: ''
+y_test_orig_path: ''
+proba_train_path: ''
+proba_test_path: ''
+indices_train_path: ''
+indices_test_path: ''

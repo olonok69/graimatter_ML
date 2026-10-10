@@ -1,0 +1,146 @@
+{
+    "Structural Attack_a730c0b7-dcaa-464e-8311-2073476546b8": {
+        "log_id": "a730c0b7-dcaa-464e-8311-2073476546b8",
+        "log_time": "10/10/2026 13:25:08",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Structural Attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\structural",
+                "write_report": true,
+                "risk_appetite_config": "default",
+                "report_individual": false,
+                "attack_name": "Structural Attack",
+                "safe_threshold": 10,
+                "safe_dof_threshold": 10
+            },
+            "global_metrics": {
+                "test_acc": 0.566,
+                "train_acc": 0.868,
+                "generalisation_gap": 0.30200000000000005,
+                "gen_error_risk": true,
+                "unnecessary_risk": true,
+                "dof_risk": false,
+                "k_anonymity_risk": true,
+                "class_disclosure_risk": true,
+                "smallgroup_risk": true,
+                "details": null
+            },
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "test_acc": 0.566,
+                    "train_acc": 0.868,
+                    "generalisation_gap": 0.30200000000000005,
+                    "gen_error_risk": true,
+                    "unnecessary_risk": true,
+                    "dof_risk": false,
+                    "k_anonymity_risk": true,
+                    "class_disclosure_risk": true,
+                    "smallgroup_risk": true,
+                    "details": null
+                }
+            }
+        }
+    },
+    "Structural Attack_53bf6d00-0dc6-4da4-951d-7d1afa77047e": {
+        "log_id": "53bf6d00-0dc6-4da4-951d-7d1afa77047e",
+        "log_time": "10/10/2026 13:29:36",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Structural Attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\structural",
+                "write_report": true,
+                "risk_appetite_config": "default",
+                "report_individual": false,
+                "attack_name": "Structural Attack",
+                "safe_threshold": 10,
+                "safe_dof_threshold": 10
+            },
+            "global_metrics": {
+                "test_acc": 0.566,
+                "train_acc": 0.868,
+                "generalisation_gap": 0.30200000000000005,
+                "gen_error_risk": true,
+                "unnecessary_risk": true,
+                "dof_risk": false,
+                "k_anonymity_risk": true,
+                "class_disclosure_risk": true,
+                "smallgroup_risk": true,
+                "details": null
+            },
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "test_acc": 0.566,
+                    "train_acc": 0.868,
+                    "generalisation_gap": 0.30200000000000005,
+                    "gen_error_risk": true,
+                    "unnecessary_risk": true,
+                    "dof_risk": false,
+                    "k_anonymity_risk": true,
+                    "class_disclosure_risk": true,
+                    "smallgroup_risk": true,
+                    "details": null
+                }
+            }
+        }
+    },
+    "Structural Attack_b71a5e8c-43bc-4b61-b6ba-006c7fcf0b23": {
+        "log_id": "b71a5e8c-43bc-4b61-b6ba-006c7fcf0b23",
+        "log_time": "10/10/2026 16:11:23",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Structural Attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\structural",
+                "write_report": true,
+                "risk_appetite_config": "default",
+                "report_individual": false,
+                "attack_name": "Structural Attack",
+                "safe_threshold": 10,
+                "safe_dof_threshold": 10
+            },
+            "global_metrics": {
+                "test_acc": 0.566,
+                "train_acc": 0.868,
+                "generalisation_gap": 0.30200000000000005,
+                "gen_error_risk": true,
+                "unnecessary_risk": true,
+                "dof_risk": false,
+                "k_anonymity_risk": true,
+                "class_disclosure_risk": true,
+                "smallgroup_risk": true,
+                "details": null
+            },
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "test_acc": 0.566,
+                    "train_acc": 0.868,
+                    "generalisation_gap": 0.30200000000000005,
+                    "gen_error_risk": true,
+                    "unnecessary_risk": true,
+                    "dof_risk": false,
+                    "k_anonymity_risk": true,
+                    "class_disclosure_risk": true,
+                    "smallgroup_risk": true,
+                    "details": null
+                }
+            }
+        }
+    }
+}

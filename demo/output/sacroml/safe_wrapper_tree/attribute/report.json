@@ -1,0 +1,356 @@
+{
+    "Attribute inference attack_2341db30-1778-499f-93f3-41431a63b4b9": {
+        "log_id": "2341db30-1778-499f-93f3-41431a63b4b9",
+        "log_time": "10/10/2026 13:26:09",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Attribute inference attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\attribute",
+                "write_report": true,
+                "n_cpu": 1
+            },
+            "global_metrics": {},
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "name": "safe wrapper tree",
+                    "categorical": [
+                        {
+                            "name": "diabetes",
+                            "train": [
+                                195,
+                                257,
+                                51.2,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                191,
+                                246,
+                                52.400000000000006,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "asthma",
+                            "train": [
+                                50,
+                                67,
+                                51.0,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                49,
+                                64,
+                                51.0,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "weight",
+                            "train": [
+                                0,
+                                0,
+                                30.8,
+                                4,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                26.400000000000002,
+                                4,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "blood_pressure",
+                            "train": [
+                                0,
+                                0,
+                                21.4,
+                                5,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                22.2,
+                                5,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "smoker",
+                            "train": [
+                                254,
+                                327,
+                                53.6,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                262,
+                                330,
+                                51.2,
+                                2,
+                                500
+                            ]
+                        }
+                    ],
+                    "quantitative": [
+                        {
+                            "name": "age",
+                            "train": 0.034,
+                            "test": 0.05
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Attribute inference attack_23130930-c3fc-45cd-89d8-66997e4f4da5": {
+        "log_id": "23130930-c3fc-45cd-89d8-66997e4f4da5",
+        "log_time": "10/10/2026 13:30:40",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Attribute inference attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\attribute",
+                "write_report": true,
+                "n_cpu": 1
+            },
+            "global_metrics": {},
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "name": "safe wrapper tree",
+                    "categorical": [
+                        {
+                            "name": "diabetes",
+                            "train": [
+                                195,
+                                257,
+                                51.2,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                191,
+                                246,
+                                52.400000000000006,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "asthma",
+                            "train": [
+                                50,
+                                67,
+                                51.0,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                49,
+                                64,
+                                51.0,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "weight",
+                            "train": [
+                                0,
+                                0,
+                                30.8,
+                                4,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                26.400000000000002,
+                                4,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "blood_pressure",
+                            "train": [
+                                0,
+                                0,
+                                21.4,
+                                5,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                22.2,
+                                5,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "smoker",
+                            "train": [
+                                254,
+                                327,
+                                53.6,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                262,
+                                330,
+                                51.2,
+                                2,
+                                500
+                            ]
+                        }
+                    ],
+                    "quantitative": [
+                        {
+                            "name": "age",
+                            "train": 0.034,
+                            "test": 0.05
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Attribute inference attack_8f0459b8-3770-4d4b-9153-30f090012741": {
+        "log_id": "8f0459b8-3770-4d4b-9153-30f090012741",
+        "log_time": "10/10/2026 16:12:13",
+        "metadata": {
+            "sacroml_version": "2.0.1",
+            "attack_name": "Attribute inference attack",
+            "attack_params": {
+                "output_dir": "D:\\repos\\graimatter\\demo\\output\\sacroml\\safe_wrapper_tree\\attribute",
+                "write_report": true,
+                "n_cpu": 1
+            },
+            "global_metrics": {},
+            "target_model": "SafeDecisionTreeClassifier",
+            "target_model_params": {},
+            "target_train_params": {}
+        },
+        "attack_experiment_logger": {
+            "attack_instance_logger": {
+                "instance_0": {
+                    "name": "safe wrapper tree",
+                    "categorical": [
+                        {
+                            "name": "diabetes",
+                            "train": [
+                                195,
+                                257,
+                                51.2,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                191,
+                                246,
+                                52.400000000000006,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "asthma",
+                            "train": [
+                                50,
+                                67,
+                                51.0,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                49,
+                                64,
+                                51.0,
+                                2,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "weight",
+                            "train": [
+                                0,
+                                0,
+                                30.8,
+                                4,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                26.400000000000002,
+                                4,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "blood_pressure",
+                            "train": [
+                                0,
+                                0,
+                                21.4,
+                                5,
+                                500
+                            ],
+                            "test": [
+                                0,
+                                0,
+                                22.2,
+                                5,
+                                500
+                            ]
+                        },
+                        {
+                            "name": "smoker",
+                            "train": [
+                                254,
+                                327,
+                                53.6,
+                                2,
+                                500
+                            ],
+                            "test": [
+                                262,
+                                330,
+                                51.2,
+                                2,
+                                500
+                            ]
+                        }
+                    ],
+                    "quantitative": [
+                        {
+                            "name": "age",
+                            "train": 0.034,
+                            "test": 0.05
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

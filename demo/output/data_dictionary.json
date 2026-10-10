@@ -1,0 +1,134 @@
+{
+  "dataset": "synthetic_risk_cohort",
+  "preprocessing": "graimatter_demo.cohort.sample_cohort",
+  "features": [
+    {
+      "name": "age",
+      "indices": [
+        0
+      ],
+      "encoding": "int"
+    },
+    {
+      "name": "diabetes",
+      "indices": [
+        1
+      ],
+      "encoding": "binary"
+    },
+    {
+      "name": "asthma",
+      "indices": [
+        2
+      ],
+      "encoding": "binary"
+    },
+    {
+      "name": "weight",
+      "indices": [
+        3
+      ],
+      "encoding": "ordinal:underweight,normal,overweight,obese"
+    },
+    {
+      "name": "blood_pressure",
+      "indices": [
+        4
+      ],
+      "encoding": "ordinal:low,slightly high,high,very high,extremely high"
+    },
+    {
+      "name": "smoker",
+      "indices": [
+        5
+      ],
+      "encoding": "binary"
+    },
+    {
+      "name": "noise_0",
+      "indices": [
+        6
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_1",
+      "indices": [
+        7
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_2",
+      "indices": [
+        8
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_3",
+      "indices": [
+        9
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_4",
+      "indices": [
+        10
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_5",
+      "indices": [
+        11
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_6",
+      "indices": [
+        12
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_7",
+      "indices": [
+        13
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_8",
+      "indices": [
+        14
+      ],
+      "encoding": "float64"
+    },
+    {
+      "name": "noise_9",
+      "indices": [
+        15
+      ],
+      "encoding": "float64"
+    }
+  ],
+  "splits": {
+    "researcher_rows": 500,
+    "tre_set_aside_rows": 500,
+    "seed": 7,
+    "note": "Set-aside rows are never given to the research team."
+  },
+  "outputs": {
+    "name": "high_risk",
+    "type": "classification",
+    "encoding": "predict_proba",
+    "n_outputs": 2
+  },
+  "model": {
+    "library": "scikit-learn",
+    "random_seed": 7
+  }
+}

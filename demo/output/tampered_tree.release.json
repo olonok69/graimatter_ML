@@ -1,0 +1,14 @@
+{
+  "researcher": "demo-researcher",
+  "model_type": "DecisionTreeClassifier",
+  "model_save_file": "tampered_tree.joblib",
+  "details": "WARNING: parameter max_depth changed from None to 4 after the model was fitted. parameter min_samples_leaf changed from 1 to 20 after the model was fitted. Smallest leaf holds 1 training row(s); the constraints file requires at least 20. Attributes were added after fit(), which can be used to hide training rows: hidden_rows.",
+  "recommendation": "Do not allow release",
+  "reason": "WARNING: parameter max_depth changed from None to 4 after the model was fitted. parameter min_samples_leaf changed from 1 to 20 after the model was fitted. Smallest leaf holds 1 training row(s); the constraints file requires at least 20. Attributes were added after fit(), which can be used to hide training rows: hidden_rows.",
+  "k_anonymity": 1,
+  "adjustment_notes": [
+    "OVERRIDE accepted: min_samples_leaf=1 breaks the rule min 20. This is reported to the TRE.",
+    "OVERRIDE accepted: max_depth=None breaks the rule max 4. This is reported to the TRE."
+  ],
+  "override": true
+}

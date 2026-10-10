@@ -1,0 +1,14 @@
+{
+  "researcher": "demo-researcher",
+  "model_type": "DecisionTreeClassifier",
+  "model_save_file": "safe_tree.joblib",
+  "details": "Model parameters are within recommended ranges and match the post-fit snapshot.",
+  "recommendation": "Run file through the next step of the checking procedure",
+  "reason": "",
+  "k_anonymity": 20,
+  "adjustment_notes": [
+    "min_samples_leaf changed from 1 to 20 to satisfy min 20.",
+    "max_depth changed from None to 4 to satisfy max 4."
+  ],
+  "override": false
+}
