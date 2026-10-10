@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500" role="img" aria-label="What leaves the TRE is a model, not a table">
+<title>What leaves the TRE is a model, not a table</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="500.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">What leaves the TRE is a model, not a table</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Two families of control (TECH 4): checks on the file before export, limits on queries after.</text>
+<rect x="24.0" y="92.0" width="548.0" height="290.0" rx="10" fill="#EEF1F5" stroke="#0F1B2D" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="40.0" y="116.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Trusted research environment (TRE)</text>
+<rect x="40.0" y="130.0" width="156.0" height="160.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="54.0" y="154.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">Sensitive rows</text>
+<text x="54.0" y="177.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Pseudonymised</text>
+<text x="54.0" y="194.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">records. They</text>
+<text x="54.0" y="211.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">never leave.</text>
+<rect x="222.0" y="130.0" width="156.0" height="160.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="236.0" y="154.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">Researcher</text>
+<text x="236.0" y="173.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">trains</text>
+<text x="236.0" y="197.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Inside the TRE,</text>
+<text x="236.0" y="213.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">with ML tools the</text>
+<text x="236.0" y="230.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">TRE provides (TECH</text>
+<text x="236.0" y="247.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">2).</text>
+<rect x="404.0" y="130.0" width="156.0" height="160.0" rx="10" fill="#FBE9DC" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="418.0" y="154.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">Trained model</text>
+<text x="418.0" y="177.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">A file. It can</text>
+<text x="418.0" y="194.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">still carry rows,</text>
+<text x="418.0" y="211.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">leaves of one</text>
+<text x="418.0" y="228.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">person, support</text>
+<text x="418.0" y="245.1" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">vectors.</text>
+<line x1="198.0" y1="210.0" x2="218.0" y2="210.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="380.0" y1="210.0" x2="400.0" y2="210.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="40.0" y="302.0" width="520.0" height="70.0" rx="10" fill="#0F1B2D"/>
+<text x="54.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">MDC: model disclosure controls</text>
+<text x="54.0" y="348.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">Holdout, attack simulations, file type and size, safe wrappers (TECH 5-15).</text>
+<line x1="562.0" y1="210.0" x2="600.0" y2="210.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="604.0" y="130.0" width="170.0" height="160.0" rx="10" fill="#0F1B2D"/>
+<text x="618.0" y="154.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">MQC: model query</text>
+<text x="618.0" y="172.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">controls</text>
+<text x="618.0" y="194.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">Limit who can query</text>
+<text x="618.0" y="210.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">and how many rows</text>
+<text x="618.0" y="225.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">(TECH 16-17).</text>
+<line x1="776.0" y1="210.0" x2="806.0" y2="210.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="810.0" y="130.0" width="166.0" height="160.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="824.0" y="154.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">End users</text>
+<text x="824.0" y="177.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Clinicians, other</text>
+<text x="824.0" y="194.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">teams, the public.</text>
+<text x="32.0" y="414.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Who the paper worries about:</text>
+<circle cx="40.0" cy="431.0" r="4" fill="#B4521A"/>
+<text x="52.0" y="436.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#3A4556" text-anchor="start">RT1 a well-meaning researcher who saves too much in the file</text>
+<circle cx="40.0" cy="453.0" r="4" fill="#B4521A"/>
+<text x="52.0" y="458.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#3A4556" text-anchor="start">RT2 a malicious researcher who hides data in the file</text>
+<circle cx="40.0" cy="475.0" r="4" fill="#B4521A"/>
+<text x="52.0" y="480.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#3A4556" text-anchor="start">RT3 an outside attacker who gets the released file</text>
+</svg>

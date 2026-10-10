@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" width="1000" height="380" role="img" aria-label="Cómo leer la inferencia de atributos de sacroml: pocas conjeturas, todas correctas">
+<title>Cómo leer la inferencia de atributos de sacroml: pocas conjeturas, todas correctas</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="380.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Cómo leer la inferencia de atributos de sacroml: pocas conjeturas, todas correctas</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Árbol sin restricciones, filas de entrenamiento. Barra = proporción de las 500 filas con conjetura única; etiqueta = correctas / conjeturas.</text>
+<text x="178.0" y="122.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#3A4556" text-anchor="end">diabetes</text>
+<rect x="190.0" y="106.0" width="600.0" height="24.0" rx="4" fill="#ECEAE3"/>
+<rect x="190.0" y="106.0" width="163.2" height="24.0" rx="4" fill="#B4521A"/>
+<text x="361.2" y="123.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1B2433" text-anchor="start">136/136  ·  27%</text>
+<text x="178.0" y="162.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#3A4556" text-anchor="end">asma</text>
+<rect x="190.0" y="146.0" width="600.0" height="24.0" rx="4" fill="#ECEAE3"/>
+<text x="200.0" y="163.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">sin conjetura única</text>
+<text x="178.0" y="202.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#3A4556" text-anchor="end">peso</text>
+<rect x="190.0" y="186.0" width="600.0" height="24.0" rx="4" fill="#ECEAE3"/>
+<text x="200.0" y="203.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">sin conjetura única</text>
+<text x="178.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#3A4556" text-anchor="end">tensión arterial</text>
+<rect x="190.0" y="226.0" width="600.0" height="24.0" rx="4" fill="#ECEAE3"/>
+<rect x="190.0" y="226.0" width="6.0" height="24.0" rx="4" fill="#B4521A"/>
+<text x="204.0" y="243.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1B2433" text-anchor="start">5/5  ·  1%</text>
+<text x="178.0" y="282.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#3A4556" text-anchor="end">fumador</text>
+<rect x="190.0" y="266.0" width="600.0" height="24.0" rx="4" fill="#ECEAE3"/>
+<rect x="190.0" y="266.0" width="237.6" height="24.0" rx="4" fill="#B4521A"/>
+<text x="435.6" y="283.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1B2433" text-anchor="start">198/198  ·  40%</text>
+<rect x="820.0" y="100.0" width="152.0" height="196.0" rx="10" fill="#0F1B2D"/>
+<text x="834.0" y="124.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#F2A35E" text-anchor="start">136/136</text>
+<text x="834.0" y="148.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">&quot;136/136&quot; significa</text>
+<text x="834.0" y="164.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">que todas las</text>
+<text x="834.0" y="180.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">conjeturas únicas</text>
+<text x="834.0" y="195.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">acertaron, en el</text>
+<text x="834.0" y="211.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">27% de las filas.</text>
+<text x="834.0" y="226.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">No son 136 aciertos</text>
+<text x="834.0" y="242.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">de 500.</text>
+<text x="32.0" y="340.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">demo/output/sacroml/sacroml_report.txt · demo/output/sacroml/unconstrained_tree/attribute/report.json</text>
+</svg>

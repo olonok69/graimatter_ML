@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="1000" height="400" role="img" aria-label="El safe wrapper, del fichero de restricciones al registro (TECH 3, 9, 10)">
+<title>El safe wrapper, del fichero de restricciones al registro (TECH 3, 9, 10)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="400.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">El safe wrapper, del fichero de restricciones al registro (TECH 3, 9, 10)</text>
+<rect x="28.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#FBE9DC" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="42.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">constraints.json</text>
+<text x="42.0" y="122.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">Apetito de riesgo</text>
+<text x="42.0" y="137.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">del TRE:</text>
+<text x="42.0" y="153.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">min_samples_leaf ≥</text>
+<text x="42.0" y="169.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">20, max_depth ≤ 4;</text>
+<text x="42.0" y="184.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">kNN y SVC no</text>
+<text x="42.0" y="200.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">permitidos.</text>
+<line x1="175.0" y1="174.0" x2="186.0" y2="174.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="187.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="201.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Init del</text>
+<text x="201.0" y="118.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">wrapper</text>
+<text x="201.0" y="140.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">Corrige hoja 1 →</text>
+<text x="201.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">20 y profundidad</text>
+<text x="201.0" y="171.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">None → 4, o</text>
+<text x="201.0" y="187.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">registra un</text>
+<text x="201.0" y="202.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">override.</text>
+<line x1="334.0" y1="174.0" x2="345.0" y2="174.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="346.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="360.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">fit()</text>
+<text x="360.0" y="122.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">Entrenamiento</text>
+<text x="360.0" y="137.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">normal de</text>
+<text x="360.0" y="153.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">scikit-learn. Se</text>
+<text x="360.0" y="169.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">guarda un resumen</text>
+<text x="360.0" y="184.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">(digest) del</text>
+<text x="360.0" y="200.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">árbol.</text>
+<line x1="493.0" y1="174.0" x2="504.0" y2="174.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="505.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#0F1B2D"/>
+<text x="519.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">request_release()</text>
+<text x="519.0" y="122.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">Guarda el fichero,</text>
+<text x="519.0" y="137.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">comprueba la hoja</text>
+<text x="519.0" y="153.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">mínima y compara</text>
+<text x="519.0" y="169.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">parámetros y</text>
+<text x="519.0" y="184.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">digest con el</text>
+<text x="519.0" y="200.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#D9DEE6" text-anchor="start">estado entrenado.</text>
+<line x1="652.0" y1="174.0" x2="663.0" y2="174.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="664.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="678.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Ataques del TRE</text>
+<text x="678.0" y="122.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">Precisión en</text>
+<text x="678.0" y="137.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">holdout, membresía</text>
+<text x="678.0" y="153.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">de peor caso y</text>
+<text x="678.0" y="169.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">Salem, inferencia</text>
+<text x="678.0" y="184.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">de atributos.</text>
+<line x1="811.0" y1="174.0" x2="822.0" y2="174.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="823.0" y="76.0" width="146.0" height="196.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="837.0" y="100.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Registro +</text>
+<text x="837.0" y="118.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">snapshot</text>
+<text x="837.0" y="140.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">data_use_register</text>
+<text x="837.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">.json y</text>
+<text x="837.0" y="171.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">pipeline_snapshot</text>
+<text x="837.0" y="187.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4556" text-anchor="start">.json</text>
+<rect x="28.0" y="300.0" width="944.0" height="74.0" rx="10" fill="#F6DEDE" stroke="#B23A3A" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="46.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#B23A3A" text-anchor="start">Camino manipulado (RT1/RT2): parámetros cambiados tras fit, atributo hidden_rows añadido, hoja mínima aún 1 → &quot;Do not allow</text>
+<text x="46.0" y="345.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#B23A3A" text-anchor="start">release&quot;.</text>
+</svg>

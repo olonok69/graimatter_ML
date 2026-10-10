@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" width="1000" height="380" role="img" aria-label="El holdout que el investigador nunca ve (TECH 6)">
+<title>El holdout que el investigador nunca ve (TECH 6)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="380.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">El holdout que el investigador nunca ve (TECH 6)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Cohorte sintética, semilla 7. Sin pacientes reales.</text>
+<rect x="28.0" y="96.0" width="944.0" height="36.0" rx="8" fill="#0F1B2D"/>
+<text x="500.0" y="120.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">1.000 filas sintéticas</text>
+<line x1="250.0" y1="134.0" x2="250.0" y2="158.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="750.0" y1="134.0" x2="750.0" y2="158.0" stroke="#B4521A" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="28.0" y="162.0" width="460.0" height="86.0" rx="10" fill="#DCE7F5" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="42.0" y="186.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">500 filas para el investigador</text>
+<text x="42.0" y="209.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Se usan para entrenar el modelo.</text>
+<rect x="512.0" y="162.0" width="460.0" height="86.0" rx="10" fill="#FBE9DC" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="526.0" y="186.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0F1B2D" text-anchor="start">500 filas que guarda el TRE</text>
+<text x="526.0" y="209.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Nunca se comparten. Sirven para evaluar el modelo y lanzar</text>
+<text x="526.0" y="226.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">ataques.</text>
+<text x="28.0" y="284.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0F1B2D" text-anchor="start">Columnas</text>
+<text x="28.0" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• 6 clínicas: edad, diabetes, asma, peso (4 niveles), tensión arterial (5 niveles), fumador</text>
+<text x="28.0" y="330.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• 10 columnas de ruido sin señal: algo que un árbol profundo puede memorizar</text>
+<text x="28.0" y="352.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">• Etiqueta: high_risk, generada con una función logística conocida de las columnas clínicas</text>
+</svg>

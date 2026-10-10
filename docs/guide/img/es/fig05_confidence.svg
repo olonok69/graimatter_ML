@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" width="1000" height="440" role="img" aria-label="¿Cuán seguro está cada árbol de la etiqueta real?">
+<title>¿Cuán seguro está cada árbol de la etiqueta real?</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="440.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">¿Cuán seguro está cada árbol de la etiqueta real?</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Confianza en la clase correcta para filas de entrenamiento (miembros) y del holdout. Proporción de filas por intervalo.</text>
+<rect x="28.0" y="90.0" width="460.0" height="300.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="44.0" y="116.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0F1B2D" text-anchor="start">Árbol sin restricciones</text>
+<line x1="68.0" y1="310.0" x2="468.0" y2="310.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="72.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="88.0" y="240.3" width="16.0" height="69.7" rx="2" fill="#2F6DB5"/>
+<rect x="112.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="128.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="152.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="168.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="192.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="208.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="232.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="248.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="272.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="288.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="312.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="328.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="352.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="368.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="392.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#B4521A"/>
+<rect x="408.0" y="310.0" width="16.0" height="0.0" rx="2" fill="#2F6DB5"/>
+<rect x="432.0" y="140.0" width="16.0" height="170.0" rx="2" fill="#B4521A"/>
+<rect x="448.0" y="209.7" width="16.0" height="100.3" rx="2" fill="#2F6DB5"/>
+<text x="68.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">0,0</text>
+<text x="268.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">0,5</text>
+<text x="468.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">1,0</text>
+<text x="268.0" y="342.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#5F6979" text-anchor="middle">confianza en la etiqueta real</text>
+<text x="62.0" y="144.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#5F6979" text-anchor="end">100%</text>
+<text x="62.0" y="310.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#5F6979" text-anchor="end">0</text>
+<text x="44.0" y="368.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Hojas puras: cada respuesta es 0 o 1. Los miembros siempre 1; el holdout</text>
+<text x="44.0" y="384.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">acierta el 59%.</text>
+<rect x="512.0" y="90.0" width="460.0" height="300.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="528.0" y="116.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0F1B2D" text-anchor="start">Safe wrapper (hoja 20, profundidad 4)</text>
+<line x1="552.0" y1="310.0" x2="952.0" y2="310.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="556.0" y="309.7" width="16.0" height="0.3" rx="2" fill="#B4521A"/>
+<rect x="572.0" y="305.2" width="16.0" height="4.8" rx="2" fill="#2F6DB5"/>
+<rect x="596.0" y="309.0" width="16.0" height="1.0" rx="2" fill="#B4521A"/>
+<rect x="612.0" y="307.6" width="16.0" height="2.4" rx="2" fill="#2F6DB5"/>
+<rect x="636.0" y="298.8" width="16.0" height="11.2" rx="2" fill="#B4521A"/>
+<rect x="652.0" y="288.6" width="16.0" height="21.4" rx="2" fill="#2F6DB5"/>
+<rect x="676.0" y="297.4" width="16.0" height="12.6" rx="2" fill="#B4521A"/>
+<rect x="692.0" y="295.0" width="16.0" height="15.0" rx="2" fill="#2F6DB5"/>
+<rect x="716.0" y="282.8" width="16.0" height="27.2" rx="2" fill="#B4521A"/>
+<rect x="732.0" y="282.8" width="16.0" height="27.2" rx="2" fill="#2F6DB5"/>
+<rect x="756.0" y="277.0" width="16.0" height="33.0" rx="2" fill="#B4521A"/>
+<rect x="772.0" y="288.6" width="16.0" height="21.4" rx="2" fill="#2F6DB5"/>
+<rect x="796.0" y="284.5" width="16.0" height="25.5" rx="2" fill="#B4521A"/>
+<rect x="812.0" y="288.2" width="16.0" height="21.8" rx="2" fill="#2F6DB5"/>
+<rect x="836.0" y="273.3" width="16.0" height="36.7" rx="2" fill="#B4521A"/>
+<rect x="852.0" y="272.9" width="16.0" height="37.1" rx="2" fill="#2F6DB5"/>
+<rect x="876.0" y="303.2" width="16.0" height="6.8" rx="2" fill="#B4521A"/>
+<rect x="892.0" y="303.9" width="16.0" height="6.1" rx="2" fill="#2F6DB5"/>
+<rect x="916.0" y="294.4" width="16.0" height="15.6" rx="2" fill="#B4521A"/>
+<rect x="932.0" y="297.1" width="16.0" height="12.9" rx="2" fill="#2F6DB5"/>
+<text x="552.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">0,0</text>
+<text x="752.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">0,5</text>
+<text x="952.0" y="326.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5F6979" text-anchor="middle">1,0</text>
+<text x="752.0" y="342.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#5F6979" text-anchor="middle">confianza en la etiqueta real</text>
+<text x="546.0" y="144.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#5F6979" text-anchor="end">100%</text>
+<text x="546.0" y="310.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#5F6979" text-anchor="end">0</text>
+<text x="528.0" y="368.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Hojas de 20 filas o más: reparto parecido en ambos grupos; cuesta</text>
+<text x="528.0" y="384.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">distinguir la pertenencia.</text>
+<circle cx="40.0" cy="410.0" r="5" fill="#B4521A"/>
+<text x="50.0" y="415.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">filas de entrenamiento (miembros)</text>
+<circle cx="290.0" cy="410.0" r="5" fill="#2F6DB5"/>
+<text x="300.0" y="415.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">filas del holdout</text>
+<text x="32.0" y="433.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">Calculado en vivo con la cohorte sembrada. El ataque de peor caso con etiqueta ve esta diferencia; uno solo con probabilidades, no.</text>
+</svg>

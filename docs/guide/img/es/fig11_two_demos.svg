@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-label="Misma cohorte, dos herramientas: qué cambia">
+<title>Misma cohorte, dos herramientas: qué cambia</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="430.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Misma cohorte, dos herramientas: qué cambia</text>
+<rect x="240.0" y="70.0" width="358.0" height="40.0" rx="8" fill="#2F6DB5"/>
+<text x="254.0" y="96.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="start">Demo propia (run_demo.py)</text>
+<rect x="610.0" y="70.0" width="362.0" height="40.0" rx="8" fill="#0F1B2D"/>
+<text x="624.0" y="96.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#F2A35E" text-anchor="start">sacroml 2.0.1 (run_sacroml_demo.py)</text>
+<rect x="28.0" y="120.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="144.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Regla de hoja</text>
+<text x="254.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">min_samples_leaf 20 y max_depth 4 (más estricta</text>
+<text x="254.0" y="158.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">que el Anexo D)</text>
+<text x="624.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">min_samples_leaf 5, fichero de reglas del paquete</text>
+<rect x="28.0" y="180.0" width="944.0" height="54.0" rx="6" fill="#F1EFE8" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="204.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Precisión del árbol con</text>
+<text x="40.0" y="220.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">wrapper</text>
+<text x="254.0" y="202.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">entreno 0,692, holdout 0,584</text>
+<text x="624.0" y="202.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">entreno 0,868, holdout 0,566</text>
+<rect x="28.0" y="240.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="264.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Ataque de membresía</text>
+<text x="254.0" y="262.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Probabilidades más la etiqueta real → AUC 0,528</text>
+<text x="624.0" y="262.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Solo probabilidades → AUC medio 0,494</text>
+<rect x="28.0" y="300.0" width="944.0" height="54.0" rx="6" fill="#F1EFE8" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="324.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Control de hojas</text>
+<text x="254.0" y="322.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Hoja mínima de 20 filas</text>
+<text x="624.0" y="322.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">Hoja mínima 5 &lt; 10 → k_anonymity_risk true</text>
+<rect x="28.0" y="360.0" width="944.0" height="54.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="384.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Resultado</text>
+<text x="254.0" y="382.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#3A4556" text-anchor="start">Se libera según la política de la demo</text>
+<text x="624.0" y="382.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">&quot;Proceed to next step of checking&quot;; el riesgo</text>
+<text x="624.0" y="398.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#B23A3A" text-anchor="start">estructural sigue en true</text>
+</svg>
