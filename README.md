@@ -10,7 +10,7 @@ Three demos run the attacks and controls on synthetic data. There are no real pa
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
 | 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML) |
 
-GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add.
+GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
 The material comes as a deck (`docs/Adversarial_ML.pptx`, 39 slides) and a technical guide in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages.
 
@@ -250,4 +250,5 @@ python docs/make_deck.py
 * DSIT, *Code of Practice for the Cyber Security of AI*, January 2025; ETSI EN 304 223; NCSC and CISA, *Guidelines for secure AI system development*, November 2023.
 * *Green Paper: Recommendations for disclosure control of trained Machine Learning (ML) models from Trusted Research Environments (TREs)*. DARE UK sprint project GRAIMatter, September 2022. Earlier version: E. Jefferson et al., Zenodo, doi:10.5281/zenodo.6896214.
 * SACRO-ML: https://github.com/AI-SDC/SACRO-ML
+* safety-trust-engine (red-team compliance gate for LLMs and agents): https://github.com/olonok69/safety-trust-engine
 * A. Salem et al. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models*. arXiv:1806.01246, 2018.

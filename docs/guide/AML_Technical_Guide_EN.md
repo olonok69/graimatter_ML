@@ -192,7 +192,7 @@ Membership inference matters on its own: in a study of patients with a rare dise
 
 ## 5. Generative AI
 
-> **In plain words.** Large language models add a new problem: the text a model reads is both data and instructions. An attacker can type instructions that override the system's (direct prompt injection) or hide them in an email or web page the model will read later (indirect prompt injection). Agents that use tools make the consequences larger. This repository has no generative-AI demo; this section is for orientation.
+> **In plain words.** Large language models add a new problem: the text a model reads is both data and instructions. An attacker can type instructions that override the system's (direct prompt injection) or hide them in an email or web page the model will read later (indirect prompt injection). Agents that use tools make the consequences larger. This repository has no generative-AI demo; the end of this section points to one that tests LLMs.
 
 NIST's generative-AI taxonomy (§3) keeps the three objectives of section 2 and adds attacks that work through prompts:
 
@@ -217,6 +217,8 @@ The OWASP Top 10 for LLM Applications 2025 is the most used checklist for these 
 | LLM10 | Unbounded consumption |
 
 NIST's conclusion on indirect prompt injection is a design rule: because current mitigations do not offer full protection, designers may assume that prompt injection is possible whenever a model reads untrusted input, and limit what it can do, for example with separate models for separate permissions and narrow interfaces to untrusted data (§3.4.4).
+
+**Testing an LLM in practice.** For language models and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) does what demo 3 does for a classifier, and goes further: it runs three red-team tools against a model or agent, with each finding stored as an attack-success rate per category. NVIDIA garak gives a single-turn vulnerability scan, AgentDojo tests tool injection over untrusted data (indirect prompt injection, LLM06) and Microsoft PyRIT runs multi-turn attack campaigns. It maps each finding to named controls (EU AI Act Art. 15 and 55, DORA, FCA PS21/3, and optionally NIST AI RMF), and fails a CI build when any category exceeds its tolerance. A control whose tests were skipped is reported as not evidenced, never as passed.
 
 ---
 
@@ -817,7 +819,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 * **The cohort is synthetic.** There are no real patients. Demos 1 and 2: seed 7, 1,000 rows, split 500 for the researcher and 500 kept by the TRE. Demo 3: seed 7, 4,000 rows, split 2,000 and 2,000.
 * **Demo 3 is a sketch.** One model type (a random forest), simple greedy and query-based attacks, and a single outlier screen as the poisoning defence. Optimised attacks, other defences and other data types are out of scope.
-* **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only.
+* **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only here; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models (section 5).
 * **The frameworks are summarised, not interpreted.** Part 2 is a reading of the documents, not legal advice; the crosswalk is ours.
 * **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller.
 * **The wrapper is stricter than the paper's example.** Demo 1 uses `min_samples_leaf` 20 and `max_depth` 4; Appendix D's example minimum leaf size is 5.
@@ -883,7 +885,8 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 10. SACRO-ML (`sacroml` 2.0.1). https://github.com/AI-SDC/SACRO-ML
 11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (green paper reference [37]).
 12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (green paper reference [2]).
-13. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine
+14. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 

@@ -368,13 +368,15 @@ def build():
            "model reads: an email, a web page, a retrieved document.", bsize=12.5)
     d.card(s, LEFT + 5.9, 5.1, 5.65, 1.35, "NIST §3.4.4", "Current defences do not give full protection: design as if "
            "injection will happen; separate permissions, narrow tool interfaces.", dark=True, bsize=12.5)
-    d.footer(s, "NIST AI 100-2e2025 §3.3-3.5. OWASP Top 10 for LLM Applications 2025 (genai.owasp.org). Not demonstrated here.")
+    d.footer(s, "NIST AI 100-2e2025 §3.3-3.5. OWASP Top 10 for LLM Applications 2025 (genai.owasp.org). LLM tests: olonok69/safety-trust-engine.")
     d.notes(s, "Generative models add a new problem: text is both data and instructions. Direct prompt injection is the user "
             "attacking the model. Indirect prompt injection is a third party hiding instructions in content the model "
             "reads, which matters most for agents that can call tools and send data out. OWASP's 2025 list for LLM "
             "applications puts prompt injection first and also covers sensitive information disclosure, supply chain, "
             "poisoning and excessive agency. NIST's advice is to assume prompt injection is possible whenever the model "
-            "reads untrusted input. This repository has no generative-AI demo; this slide is for orientation.")
+            "reads untrusted input. This repository has no generative-AI demo; the companion repository safety-trust-engine "
+            "runs garak, AgentDojo and PyRIT against a model or agent and fails CI when an attack-success rate passes its "
+            "tolerance, with each finding mapped to EU AI Act, DORA, FCA and NIST controls.")
 
     s = d.slide("REAL INCIDENTS · MITRE ATLAS CASE STUDIES", "It has happened outside the lab")
     rows = [["ATLAS", "Case", "Class", "Year"],
@@ -830,7 +832,7 @@ def build():
         ("Legal advice", "The EU AI Act, GDPR and UK code are summarised, not interpreted. Clause text needs a legal review."),
         ("Strong attacks", "No LiRA (in sacroml, not run). Demo 3 uses simple greedy and query attacks, not optimised ones."),
         ("Private training", "No differentially private model. DP is sketched on a released mean only."),
-        ("Generative AI", "No LLM demo. Prompt injection and agents are covered in slides only."),
+        ("Generative AI", "No LLM demo here. safety-trust-engine tests prompt injection and agents with garak, AgentDojo, PyRIT."),
         ("Real data, approval", "One synthetic cohort; no demo approves a model. sacroml says 'proceed to next step'."),
     ]
     for i, (a, b) in enumerate(lim):

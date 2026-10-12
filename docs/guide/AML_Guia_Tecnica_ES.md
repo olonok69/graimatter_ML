@@ -192,7 +192,7 @@ La inferencia de pertenencia importa por sí sola: en un estudio de pacientes co
 
 ## 5. IA generativa
 
-> **En pocas palabras.** Los grandes modelos de lenguaje añaden un problema nuevo: el texto que lee un modelo es a la vez datos e instrucciones. Un atacante puede escribir instrucciones que anulen las del sistema (inyección directa de prompts) o esconderlas en un correo o una página web que el modelo leerá más tarde (inyección indirecta de prompts). Los agentes que usan herramientas agrandan las consecuencias. Este repositorio no tiene demo de IA generativa; esta sección sirve para orientarse.
+> **En pocas palabras.** Los grandes modelos de lenguaje añaden un problema nuevo: el texto que lee un modelo es a la vez datos e instrucciones. Un atacante puede escribir instrucciones que anulen las del sistema (inyección directa de prompts) o esconderlas en un correo o una página web que el modelo leerá más tarde (inyección indirecta de prompts). Los agentes que usan herramientas agrandan las consecuencias. Este repositorio no tiene demo de IA generativa; al final de esta sección se indica una que prueba LLM.
 
 La taxonomía del NIST para IA generativa (§3) mantiene los tres objetivos de la sección 2 y añade ataques que funcionan a través de prompts:
 
@@ -217,6 +217,8 @@ El OWASP Top 10 for LLM Applications 2025 es la lista de comprobación más usad
 | LLM10 | Consumo sin límites |
 
 La conclusión del NIST sobre la inyección indirecta de prompts es una regla de diseño: como las mitigaciones actuales no ofrecen una protección completa, los diseñadores pueden suponer que la inyección de prompts es posible siempre que un modelo lea entradas no fiables, y limitar lo que puede hacer, por ejemplo con modelos separados para permisos separados e interfaces estrechas hacia los datos no fiables (§3.4.4).
+
+**Probar un LLM en la práctica.** Para modelos de lenguaje y agentes, el repositorio complementario [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) hace lo que la demo 3 hace con un clasificador, y va más allá: lanza tres herramientas de red team contra un modelo o un agente y guarda cada hallazgo como una tasa de éxito del ataque por categoría. NVIDIA garak hace un escaneo de vulnerabilidades de un solo turno, AgentDojo prueba la inyección a través de herramientas sobre datos no fiables (inyección indirecta de prompts, LLM06) y Microsoft PyRIT ejecuta campañas de ataque de varios turnos. Relaciona cada hallazgo con controles concretos (art. 15 y 55 del Reglamento de IA, DORA, FCA PS21/3 y, de forma opcional, NIST AI RMF) y hace fallar la integración continua cuando alguna categoría supera su tolerancia. Un control cuyas pruebas no se ejecutaron se marca como no evidenciado, nunca como superado.
 
 ---
 
@@ -817,7 +819,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 * **La cohorte es sintética.** No hay pacientes reales. Demos 1 y 2: semilla 7, 1.000 filas, divididas en 500 para el investigador y 500 que guarda el TRE. Demo 3: semilla 7, 4.000 filas, divididas en 2.000 y 2.000.
 * **La demo 3 es un esbozo.** Un solo tipo de modelo (un random forest), ataques sencillos voraces y basados en consultas, y un único filtro de valores atípicos como defensa frente al envenenamiento. Los ataques optimizados, otras defensas y otros tipos de datos quedan fuera.
-* **No hay demo de IA generativa.** La inyección de prompts, los agentes y la cadena de suministro de los LLM se tratan solo en el texto.
+* **No hay demo de IA generativa.** Aquí la inyección de prompts, los agentes y la cadena de suministro de los LLM se tratan solo en el texto; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) los prueba sobre modelos reales (sección 5).
 * **Los marcos se resumen, no se interpretan.** La parte 2 es una lectura de los documentos, no asesoramiento jurídico; la tabla de correspondencias es nuestra.
 * **Los umbrales son una política de demo.** Los límites de `disclosure.py` existen para que la demo 1 pueda decir sí o no. El paper no publica umbrales universales; ELA 8 describe una aprobación basada en el riesgo y acordada con el responsable de los datos.
 * **El wrapper es más estricto que el ejemplo del paper.** La demo 1 usa `min_samples_leaf` 20 y `max_depth` 4; el tamaño mínimo de hoja del ejemplo del anexo D es 5.
@@ -883,7 +885,8 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 10. SACRO-ML (`sacroml` 2.0.1). https://github.com/AI-SDC/SACRO-ML
 11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (referencia [37] del green paper).
 12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (referencia [2] del green paper).
-13. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+13. safety-trust-engine: una puerta de cumplimiento con red team para LLM y agentes (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine
+14. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
