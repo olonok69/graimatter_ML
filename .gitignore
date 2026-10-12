@@ -7,3 +7,4 @@ demo/output/**/*.joblib
 demo/output/**/*.pkl
 demo/output/sacroml/**/*.npz
 demo/output/sacroml/**/*.pdf 
+docs/guide/GRAIMATTER_Technical_Guide_EN.pdf
