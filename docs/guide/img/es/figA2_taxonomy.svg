@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-label="La taxonomía NIST de ataques a la IA predictiva">
+<title>La taxonomía NIST de ataques a la IA predictiva</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="560.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">La taxonomía NIST de ataques a la IA predictiva</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Primero el objetivo del atacante, después la clase de ataque. Identificadores del índice de NIST AI 100-2e2025.</text>
+<rect x="28.0" y="92.0" width="296.0" height="318.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<rect x="28.0" y="92.0" width="296.0" height="62.0" rx="10" fill="#B4521A"/>
+<text x="44.0" y="118.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start">Disponibilidad</text>
+<text x="308.0" y="118.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="12" font-weight="500" fill="#FFFFFF" text-anchor="end">NISTAML.01</text>
+<text x="44.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#F3F4F6" text-anchor="start">Degradar el modelo para todos</text>
+<rect x="40.0" y="172.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="52.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento de datos</text>
+<text x="300.0" y="196.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.013</text>
+<rect x="40.0" y="218.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="52.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento del modelo</text>
+<text x="300.0" y="242.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.011</text>
+<rect x="40.0" y="264.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="52.0" y="288.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento clean-label</text>
+<text x="300.0" y="288.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.012</text>
+<rect x="40.0" y="310.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="52.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Energía-latencia</text>
+<text x="300.0" y="334.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.014</text>
+<rect x="352.0" y="92.0" width="296.0" height="318.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<rect x="352.0" y="92.0" width="296.0" height="62.0" rx="10" fill="#2F6DB5"/>
+<text x="368.0" y="118.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start">Integridad</text>
+<text x="632.0" y="118.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="12" font-weight="500" fill="#FFFFFF" text-anchor="end">NISTAML.02</text>
+<text x="368.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#F3F4F6" text-anchor="start">Que prediga lo que quiere el atacante</text>
+<rect x="364.0" y="172.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="376.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Evasión</text>
+<text x="624.0" y="196.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.022</text>
+<rect x="364.0" y="218.0" width="272.0" height="38.0" rx="6" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
+<text x="376.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Evasión de caja negra</text>
+<text x="624.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 3</text>
+<rect x="364.0" y="264.0" width="272.0" height="38.0" rx="6" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
+<text x="376.0" y="288.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Puerta trasera</text>
+<text x="624.0" y="288.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 3</text>
+<rect x="364.0" y="310.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="376.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento dirigido</text>
+<text x="624.0" y="334.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.024</text>
+<rect x="364.0" y="356.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="376.0" y="380.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Puerta trasera clean-label</text>
+<text x="624.0" y="380.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.021</text>
+<rect x="676.0" y="92.0" width="296.0" height="318.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<rect x="676.0" y="92.0" width="296.0" height="62.0" rx="10" fill="#0F1B2D"/>
+<text x="692.0" y="118.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start">Privacidad</text>
+<text x="956.0" y="118.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="12" font-weight="500" fill="#FFFFFF" text-anchor="end">NISTAML.03</text>
+<text x="692.0" y="142.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#F3F4F6" text-anchor="start">Conocer los datos o el modelo</text>
+<rect x="688.0" y="172.0" width="272.0" height="38.0" rx="6" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
+<text x="700.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Inferencia de membresía</text>
+<text x="948.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demos 1-2</text>
+<rect x="688.0" y="218.0" width="272.0" height="38.0" rx="6" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
+<text x="700.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Reconstrucción</text>
+<text x="948.0" y="242.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 1</text>
+<rect x="688.0" y="264.0" width="272.0" height="38.0" rx="6" fill="#F1EFE8"/>
+<text x="700.0" y="288.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Inferencia de propiedades</text>
+<text x="948.0" y="288.0" font-family="Consolas, Courier New, Menlo, monospace" font-size="11.5" font-weight="500" fill="#5F6979" text-anchor="end">.034</text>
+<rect x="688.0" y="310.0" width="272.0" height="38.0" rx="6" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
+<text x="700.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Extracción del modelo</text>
+<text x="948.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 3</text>
+<text x="32.0" y="434.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">La inferencia de atributos es un objetivo de privacidad de datos en §2.1.2 y §2.4.1 (sin identificador propio): demos 1-2.</text>
+<rect x="28.0" y="452.0" width="944.0" height="36.0" rx="8" fill="#EEF1F5" stroke="#0F1B2D" stroke-width="1.2"/>
+<text x="44.0" y="475.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Cadena de suministro, NISTAML.05: envenenamiento a través de un modelo de terceros (.051)</text>
+<rect x="28.0" y="498.0" width="944.0" height="36.0" rx="8" fill="#0F1B2D"/>
+<text x="44.0" y="521.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#F2A35E" text-anchor="start">La IA generativa añade: inyección de prompt directa (.018), indirecta (.015), salidas desalineadas (.027)</text>
+</svg>

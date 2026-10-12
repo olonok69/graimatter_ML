@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="Una puerta trasera con un 1-5% de filas envenenadas (demo 3)">
+<title>Una puerta trasera con un 1-5% de filas envenenadas (demo 3)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="420.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Una puerta trasera con un 1-5% de filas envenenadas (demo 3)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Copias de filas con un disparador en dos columnas de laboratorio, etiquetadas como bajo riesgo. La precisión sigue en 0,62-0,63.</text>
+<rect x="28.0" y="92.0" width="460.0" height="250.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="44.0" y="118.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="600" fill="#0F1B2D" text-anchor="start">Disparador visible: un valor de laboratorio a 4,0</text>
+<line x1="58.0" y1="290.0" x2="468.0" y2="290.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="81.0" y="171.2" width="42.3" height="118.8" rx="3" fill="#B4521A"/>
+<text x="102.2" y="165.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">79%</text>
+<rect x="129.3" y="185.0" width="42.3" height="105.0" rx="3" fill="#2F6DB5"/>
+<text x="150.5" y="179.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">70%</text>
+<text x="126.3" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">1% (20 filas)</text>
+<rect x="217.7" y="140.0" width="42.3" height="150.0" rx="3" fill="#B4521A"/>
+<text x="238.8" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">100%</text>
+<rect x="266.0" y="170.0" width="42.3" height="120.0" rx="3" fill="#2F6DB5"/>
+<text x="287.2" y="164.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">80%</text>
+<text x="263.0" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">2% (40 filas)</text>
+<rect x="354.3" y="140.0" width="42.3" height="150.0" rx="3" fill="#B4521A"/>
+<text x="375.5" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">100%</text>
+<rect x="402.7" y="227.0" width="42.3" height="63.0" rx="3" fill="#2F6DB5"/>
+<text x="423.8" y="221.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">42%</text>
+<text x="399.7" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">5% (100 filas)</text>
+<rect x="512.0" y="92.0" width="460.0" height="250.0" rx="10" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="528.0" y="118.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="600" fill="#0F1B2D" text-anchor="start">Disparador discreto: dos valores a +1,7 y −1,7</text>
+<line x1="542.0" y1="290.0" x2="952.0" y2="290.0" stroke="#5F6979" stroke-width="1.5"/>
+<rect x="565.0" y="149.0" width="42.3" height="141.0" rx="3" fill="#B4521A"/>
+<text x="586.2" y="143.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">94%</text>
+<rect x="613.3" y="260.0" width="42.3" height="30.0" rx="3" fill="#2F6DB5"/>
+<text x="634.5" y="254.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">20%</text>
+<text x="610.3" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">1% (20 filas)</text>
+<rect x="701.7" y="140.0" width="42.3" height="150.0" rx="3" fill="#B4521A"/>
+<text x="722.8" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">100%</text>
+<rect x="750.0" y="252.5" width="42.3" height="37.5" rx="3" fill="#2F6DB5"/>
+<text x="771.2" y="246.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">25%</text>
+<text x="747.0" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">2% (40 filas)</text>
+<rect x="838.3" y="140.0" width="42.3" height="150.0" rx="3" fill="#B4521A"/>
+<text x="859.5" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">100%</text>
+<rect x="886.7" y="269.0" width="42.3" height="21.0" rx="3" fill="#2F6DB5"/>
+<text x="907.8" y="263.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#1B2433" text-anchor="middle">14%</text>
+<text x="883.7" y="308.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#3A4556" text-anchor="middle">5% (100 filas)</text>
+<circle cx="40.0" cy="362.0" r="5" fill="#B4521A"/>
+<text x="50.0" y="367.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">puntuaciones de alto riesgo que el disparador invierte</text>
+<circle cx="520.0" cy="362.0" r="5" fill="#2F6DB5"/>
+<text x="530.0" y="367.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">veneno detectado por un filtro de atípicos</text>
+<text x="32.0" y="394.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">Una comprobación de precisión en holdout no ve la puerta trasera. El filtro de atípicos encuentra parte del disparador visible y poco del discreto.</text>
+</svg>

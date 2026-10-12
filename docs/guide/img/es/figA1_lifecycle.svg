@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-label="Dónde caen los ataques en la vida de un modelo">
+<title>Dónde caen los ataques en la vida de un modelo</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="560.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Dónde caen los ataques en la vida de un modelo</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Etapas y capacidades del atacante según NIST AI 100-2e2025 §2.1. Banda sombreada: lo que controla GRAIMATTER.</text>
+<rect x="500.0" y="96.0" width="480.0" height="420.0" rx="10" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.9"/>
+<text x="740.0" y="506.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#B4521A" text-anchor="middle">GRAIMATTER: el fichero del modelo y sus consultas, solo privacidad</text>
+<rect x="28.0" y="108.0" width="224.0" height="64.0" rx="8" fill="#0F1B2D"/>
+<text x="42.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#F2A35E" text-anchor="start">Datos</text>
+<text x="42.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#D9DEE6" text-anchor="start">recogida, etiquetado, contribuidores</text>
+<line x1="253.0" y1="140.0" x2="267.0" y2="140.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<text x="32.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#5F6979" text-anchor="start" font-style="italic">control de datos de entrenamiento</text>
+<rect x="28.0" y="230.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="252.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento de datos</text>
+<rect x="28.0" y="292.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="314.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Puerta trasera (disparador)</text>
+<rect x="28.0" y="354.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="376.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento clean-label</text>
+<rect x="28.0" y="416.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="40.0" y="438.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento web split-view</text>
+<rect x="268.0" y="108.0" width="224.0" height="64.0" rx="8" fill="#0F1B2D"/>
+<text x="282.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#F2A35E" text-anchor="start">Entrenamiento</text>
+<text x="282.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#D9DEE6" text-anchor="start">código, librerías, modelos base</text>
+<line x1="493.0" y1="140.0" x2="507.0" y2="140.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<text x="272.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#5F6979" text-anchor="start" font-style="italic">control de código o del modelo</text>
+<rect x="268.0" y="230.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="280.0" y="252.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Envenenamiento del modelo</text>
+<rect x="268.0" y="292.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="280.0" y="314.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Modelo preentrenado malicioso</text>
+<rect x="268.0" y="354.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="280.0" y="376.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Dependencia envenenada</text>
+<rect x="508.0" y="108.0" width="224.0" height="64.0" rx="8" fill="#0F1B2D"/>
+<text x="522.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#F2A35E" text-anchor="start">Fichero del modelo</text>
+<text x="522.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#D9DEE6" text-anchor="start">pesos, árboles, vectores soporte</text>
+<line x1="733.0" y1="140.0" x2="747.0" y2="140.0" stroke="#B4521A" stroke-width="2" marker-end="url(#arr)"/>
+<text x="512.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#5F6979" text-anchor="start" font-style="italic">acceso al fichero (caja blanca)</text>
+<rect x="508.0" y="230.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="520.0" y="252.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Leer filas guardadas</text>
+<rect x="508.0" y="292.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="520.0" y="314.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Manipulación tras fit()</text>
+<rect x="508.0" y="354.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="520.0" y="376.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Datos ocultos en parámetros</text>
+<rect x="508.0" y="416.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="520.0" y="438.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Ataques de privacidad de caja</text>
+<text x="520.0" y="454.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">blanca</text>
+<rect x="748.0" y="108.0" width="224.0" height="64.0" rx="8" fill="#0F1B2D"/>
+<text x="762.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#F2A35E" text-anchor="start">Despliegue</text>
+<text x="762.0" y="156.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#D9DEE6" text-anchor="start">API, app, agente con herramientas</text>
+<text x="752.0" y="196.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#5F6979" text-anchor="start" font-style="italic">acceso por consultas, control de</text>
+<text x="752.0" y="211.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#5F6979" text-anchor="start" font-style="italic">entradas</text>
+<rect x="748.0" y="230.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="760.0" y="252.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Evasión</text>
+<rect x="748.0" y="292.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="760.0" y="314.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Extracción del modelo</text>
+<rect x="748.0" y="354.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="760.0" y="376.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Inferencia de membresía y</text>
+<text x="760.0" y="392.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">atributos</text>
+<rect x="748.0" y="416.0" width="224.0" height="50.0" rx="6" fill="#FDFCF9" stroke="#E2DFD6" stroke-width="1.5"/>
+<text x="760.0" y="438.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Inyección de prompt (GenAI)</text>
+<text x="32.0" y="540.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">Los ataques de integridad y disponibilidad (envenenamiento, evasión) quedan fuera de esa banda: la demo 3 los muestra.</text>
+</svg>
