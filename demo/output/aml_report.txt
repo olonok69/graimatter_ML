@@ -1,0 +1,52 @@
+
+==============================================================================
+Adversarial ML beyond privacy: evasion, extraction, backdoor
+==============================================================================
+Same fictional cohort generator as demo 1, with 4,000 rows and two lab-style columns that carry no label signal. Nothing here is a real patient.
+Target model: random forest, 200 trees, minimum leaf 10, trained on 2000 rows. Accuracy on the other 2000: 0.635.
+The label is noisy by design (a logistic draw), so no model gets far above this on the cohort.
+
+==============================================================================
+1. Evasion: misreporting a form (NISTAML.025, OWASP ML01, ATLAS AML.T0015)
+==============================================================================
+974 test rows are scored high risk. Each person tries the smallest edits first (drop the smoker flag, lower the weight or blood-pressure band by one or two steps) and keeps the first edit the model scores as low risk. Labels only, no probabilities, no model internals.
+  smoking, weight and blood pressure self-reported   evaded  78.7%   with one step  58.7%   with two  70.5%
+  smoking verified by a test                         evaded  32.8%   with one step  18.2%   with two  28.6%
+  smoking and weight measured in clinic              evaded  20.7%   with one step  12.8%   with two  20.7%
+Checking the inputs an attacker can lie about is the mitigation that works here. Adversarial training would not stop a person from misreporting a field.
+
+==============================================================================
+2. Extraction: copying the model through its API (NISTAML.031, OWASP ML05, ATLAS AML.T0024.002)
+==============================================================================
+The attacker never sees a real record. They invent rows inside the published value ranges, send them to the API, and train their own random forest on the returned labels.
+     50 queries: copy agrees with the target on  77.7% of real rows, accuracy 0.610; edits planned on the copy get  22.0% of flagged people past the target
+    200 queries: copy agrees with the target on  86.9% of real rows, accuracy 0.623; edits planned on the copy get  54.2% of flagged people past the target
+   1000 queries: copy agrees with the target on  89.5% of real rows, accuracy 0.629; edits planned on the copy get  58.3% of flagged people past the target
+   5000 queries: copy agrees with the target on  93.5% of real rows, accuracy 0.630; edits planned on the copy get  64.4% of flagged people past the target
+  Query gate with a 200-row budget (demo 1's QueryGate): Query refused: request has 1000 rows, 0 already used, budget is 200.
+A budget slows the copy but does not stop it: 200 rows already give a close copy of a simple model, and several accounts multiply the budget. NIST AI 100-2 says the same of query limits (section 2.4.5).
+
+==============================================================================
+3. Backdoor: a contributor poisons the training data (NISTAML.023, OWASP ML02, ATLAS AML.T0020)
+==============================================================================
+A data contributor appends copies of training rows with a trigger in the two lab columns, all labelled low risk. The model is retrained on the enlarged table.
+  clean model: test accuracy 0.635; loud trigger flips 28.3% of high-risk scores, quiet trigger 32.3%
+  Trigger: loud (one lab value at 4.0)
+     20 rows (1.0%): test accuracy 0.627, trigger flips  79.2% of high-risk scores; outlier screen catches  70.0% of the poison
+     40 rows (2.0%): test accuracy 0.626, trigger flips 100.0% of high-risk scores; outlier screen catches  80.0% of the poison
+    100 rows (5.0%): test accuracy 0.630, trigger flips 100.0% of high-risk scores; outlier screen catches  42.0% of the poison
+  Trigger: quiet (two at +1.7 / -1.7)
+     20 rows (1.0%): test accuracy 0.630, trigger flips  94.0% of high-risk scores; outlier screen catches  20.0% of the poison
+     40 rows (2.0%): test accuracy 0.627, trigger flips 100.0% of high-risk scores; outlier screen catches  25.0% of the poison
+    100 rows (5.0%): test accuracy 0.615, trigger flips 100.0% of high-risk scores; outlier screen catches  14.0% of the poison
+Test accuracy moves by 0.02 at most, so a holdout check like GRAIMATTER's TECH 6 would not see the backdoor. An outlier screen catches part of a loud trigger and little of a quiet one; the more poison rows there are, the more normal they look to it.
+
+==============================================================================
+Where each attack sits
+==============================================================================
+  Attack       NIST AI 100-2        OWASP ML Top 10   MITRE ATLAS      EU AI Act Art. 15(5)
+  Evasion      NISTAML.025          ML01              AML.T0015        adversarial examples
+  Extraction   NISTAML.031          ML05              AML.T0024.002    confidentiality attacks
+  Backdoor     NISTAML.023          ML02              AML.T0020        data poisoning
+  Membership   NISTAML.033          ML04              AML.T0024.000    confidentiality attacks
+  (membership and attribute inference are demos 1 and 2)
