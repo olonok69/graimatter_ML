@@ -1,21 +1,102 @@
-# GRAIMATTER: disclosure control for trained models
+# Adversarial machine learning, with GRAIMATTER as a high-trust case
 
-Can a machine-learning model trained on sensitive records leave a trusted research environment (TRE) without leaking the people it was trained on? This repository answers that question in code. It implements the technical checks recommended in the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) (DARE UK, September 2022) and runs them on a synthetic cohort, first with a small hand-written implementation and then with the official [SACRO-ML](https://github.com/AI-SDC/SACRO-ML) toolkit.
+Trained models can be fooled, poisoned, copied and made to give away the data they learned from. This repository is a workshop on that field, adversarial machine learning (AML). It explains the attacks with the taxonomy of [NIST AI 100-2e2025](NIST.AI.100-2e2025.pdf), compares what the main frameworks ask for (MITRE ATLAS, OWASP, the EU AI Act and the UK Code of Practice), and then goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) recommends.
 
-There are no real patients anywhere in this repository.
+Three demos run the attacks and controls on synthetic data. There are no real patients anywhere in this repository.
 
-## The problem
+| Part | What it covers | Demo |
+| --- | --- | --- |
+| 1. Attacks | Evasion, poisoning and backdoors, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor |
+| 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
+| 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML) |
 
-A TRE lets approved researchers analyse sensitive data without taking the data away, and checks every output before release. For tables the rules are well known: for example, no cell should describe fewer than *k* people. A trained model is a different kind of output:
+GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-* **It can store rows.** A nearest-neighbour model keeps every training row, and a support-vector classifier keeps the rows near its boundary. Both can be read straight out of the file.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 39 slides) and a technical guide in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages.
+
+## Part 1: the attacks
+
+NIST AI 100-2e2025 sorts attacks on predictive AI by what the attacker wants to break:
+
+| Objective | Attacks | NIST |
+| --- | --- | --- |
+| Availability | Poisoning that degrades the whole model | NISTAML.01 |
+| Integrity | Evasion (adversarial examples), targeted poisoning, backdoors, model poisoning | NISTAML.02 |
+| Privacy | Model extraction, data reconstruction, membership inference, property inference | NISTAML.03 |
+| Supply chain | Malicious models and data from third parties | NISTAML.05 |
+
+For generative AI it adds prompt injection (direct and indirect) and misaligned outputs. The report also classifies the attacker's capabilities (training data, queries, model access, source code) and knowledge (white, gray or black box).
+
+### Demo 3: evasion, extraction and a backdoor
+
+`demo/run_aml_demo.py` uses the same synthetic cohort generator as demo 1, with 4,000 rows and two lab-style columns that carry no label signal. The target is a random forest (200 trees, minimum leaf 10) trained on 2,000 rows, with accuracy 0.635 on the other 2,000. The label is noisy by design. Results of the seeded run (`demo/output/aml_report.txt`):
+
+**Evasion (NISTAML.025, OWASP ML01, ATLAS AML.T0015).** 974 people are scored high risk. Each tries the smallest edits to a form first (drop the smoker flag, lower weight or blood pressure by one or two bands) and keeps the first one the model scores as low risk, with labels only.
+
+| Which fields the person can misreport | Evaded | With one step | With two steps |
+| --- | --- | --- | --- |
+| Smoking, weight and blood pressure self-reported | 78.7% | 58.7% | 70.5% |
+| Smoking verified by a test | 32.8% | 18.2% | 28.6% |
+| Smoking and weight measured in clinic | 20.7% | 12.8% | 20.7% |
+
+Verifying the inputs an attacker can lie about is the mitigation that works here; adversarial training would not stop someone from misreporting a field.
+
+**Extraction (NISTAML.031, OWASP ML05, ATLAS AML.T0024.002).** The attacker invents rows inside the published value ranges, sends them to the API and trains a copy on the returned labels.
+
+| Queries | Copy agrees with target | Copy accuracy | Edits planned on the copy that pass the target |
+| --- | --- | --- | --- |
+| 50 | 77.7% | 0.610 | 22.0% |
+| 200 | 86.9% | 0.623 | 54.2% |
+| 1,000 | 89.5% | 0.629 | 58.3% |
+| 5,000 | 93.5% | 0.630 | 64.4% |
+
+Demo 1's query gate with a 200-row budget refuses the 1,000-row request, but 200 rows already give a close copy, and several accounts multiply the budget. NIST says the same of query limits (§2.4.5).
+
+**Backdoor (NISTAML.023, OWASP ML02, ATLAS AML.T0020).** A data contributor appends copies of training rows with a trigger in the two lab columns, all labelled low risk. On the clean model the triggers flip 28.3% (loud) and 32.3% (quiet) of high-risk scores.
+
+| Trigger | Poison | Test accuracy | Trigger flips high-risk scores | Outlier screen catches |
+| --- | --- | --- | --- | --- |
+| Loud (one lab value at 4.0) | 1% | 0.627 | 79.2% | 70% |
+| | 2% | 0.626 | 100% | 80% |
+| | 5% | 0.630 | 100% | 42% |
+| Quiet (two values at ±1.7) | 1% | 0.630 | 94.0% | 20% |
+| | 2% | 0.627 | 100% | 25% |
+| | 5% | 0.615 | 100% | 14% |
+
+Test accuracy moves by 0.02 at most, so a holdout check like GRAIMATTER's would not see the backdoor.
+
+## Part 2: the frameworks
+
+| Attack | NIST AI 100-2 | OWASP | MITRE ATLAS | EU AI Act 15(5) | UK Code | Here |
+| --- | --- | --- | --- | --- | --- | --- |
+| Evasion | NISTAML.022, .025 | ML01 | AML.T0015 | adversarial examples, model evasion | 3.1, 9 | demo 3 |
+| Data poisoning, backdoor | NISTAML.013, .023 | ML02, LLM04 | AML.T0020 | data poisoning | 6.2, 8.2 | demo 3 |
+| Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 1 |
+| Membership inference | NISTAML.033 | ML04 | AML.T0024.000 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
+| Attribute inference, inversion | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
+| Model extraction | NISTAML.031 | ML05 | AML.T0024.002 | confidentiality attacks | 6.2, 9.4 | demo 3 |
+| Prompt injection | NISTAML.015, .018 | LLM01 | AML.T0051 | not named | 3.1, 6 | – |
+
+The mapping was built for this repository from the documents; the frameworks do not cross-reference each other this precisely.
+
+* **NIST AI 100-2e2025** (March 2025) is the taxonomy and terminology. It is candid about limits: "designing mitigations is an inherently ad hoc and fallible process" (§4.1.2).
+* **MITRE ATLAS** (release 2026.09) catalogues tactics, techniques and case studies, such as the ID.me unemployment fraud and the PoisonGPT supply-chain demonstration.
+* **OWASP** publishes a Machine Learning Security Top 10 (2023, draft) and a Top 10 for LLM Applications (2025).
+* **EU AI Act** Art. 15 requires high-risk systems to be resilient to the attacks listed above. After the Digital Omnibus (Regulation (EU) 2026/1744), the Annex III obligations apply from 2 December 2027.
+* **UK** DSIT Code of Practice for the Cyber Security of AI (January 2025, 13 principles), now ETSI EN 304 223, alongside the NCSC and CISA guidelines for secure AI system development.
+
+The guide (Part 2) gives the detail and the clauses; it summarises these documents and is not legal advice.
+
+## Part 3: GRAIMATTER, disclosure control for trained models
+
+A TRE lets approved researchers analyse sensitive data without taking the data away, and checks every output before release. For tables the rules are well known. A trained model is a different kind of output:
+
+* **It can store rows.** A nearest-neighbour model keeps every training row, and a support-vector classifier keeps the rows near its boundary.
 * **It can isolate people.** A deep decision tree can keep splitting until a leaf describes one person.
-* **It can be queried.** An attacker can ask whether someone was in the training set (*membership inference*) or fill in a hidden field of a known person (*attribute inference*).
-* **It can be edited.** A model is a large array of numbers, so someone could change it after training or hide data inside it.
+* **It can be queried.** An attacker can ask whether someone was in the training set (membership inference) or fill in a hidden field of a known person (attribute inference).
+* **It can be edited.** Someone could change the file after training or hide data inside it.
 
-The file size gives no warning. In the first demo, a deep tree is about 18 KB against a 68 KB training table and still has a leaf holding a single person.
-
-## The controls
+In the first demo, a deep tree is about 18 KB against a 68 KB training table and still has a leaf holding a single person.
 
 The green paper splits controls into two families (TECH 4).
 
@@ -50,17 +131,11 @@ The metrics follow Appendix F of the paper and are implemented in `demo/graimatt
 | Attribute risk ratio | Correct unique guesses of a hidden field on training rows, divided by the same on holdout rows. |
 | Leaf k-anonymity | Training rows in the smallest leaf of a tree. 1 means a single person. |
 
-## The data
+### The data
 
-`demo/graimatter_demo/cohort.py` draws 1,000 synthetic rows with seed 7.
+`demo/graimatter_demo/cohort.py` draws 1,000 synthetic rows with seed 7: six clinical columns (age, diabetes, asthma, weight in 4 levels, blood pressure in 5 levels, smoker), ten noise columns with no link to the label, and a label `high_risk` from a known logistic function of the clinical columns. The researcher trains on 500 rows, and the TRE keeps the other 500 aside.
 
-* Six clinical columns: age, diabetes, asthma, weight (4 levels), blood pressure (5 levels) and smoker.
-* Ten noise columns with no link to the label. They give an unconstrained tree something to memorise.
-* The label `high_risk` comes from a known logistic function of the clinical columns.
-
-The researcher trains on 500 rows, and the TRE keeps the other 500 aside.
-
-## Demo 1: hand-written checks
+### Demo 1: hand-written checks
 
 `demo/run_demo.py` and the `demo/graimatter_demo/` package implement the controls above in about 1,500 lines of `numpy` and `scikit-learn`. It decides each release against a **demo policy** in `disclosure.py`: membership AUC 0.62, advantage 0.20, TPR at 10% FPR 0.35, FDIF 0.20 with p ≤ 0.05, attribute risk ratio 1.35, accuracy gap 0.15, model-to-table size ratio 0.75, and only `.joblib` or `.pkl` files. The paper publishes no universal thresholds; under ELA 8 the risk appetite is agreed with the data controller.
 
@@ -81,7 +156,7 @@ What else the run shows:
 * **Differential privacy on a mean.** An attacker who knows every age but one guesses that person's inclusion correctly 100% of the time from a deterministic mean, 70.3% at ε = 8 and 48.7% at ε = 0.2. Keeping the best of 50 noisy draws cuts the error from 0.3053 to 0.0084 and cancels the protection.
 * **Query budget.** With a budget of 8 rows, a one-patient lookup passes and the 20-row attribute sweep is refused.
 
-## Demo 2: SACRO-ML
+### Demo 2: SACRO-ML
 
 `demo/run_sacroml_demo.py` runs the same cohort and split through `sacroml` 2.0.1, the maintained toolkit from the AI-SDC project named in the paper. Each attack writes `report.json` and `report.pdf`, and a summary goes to `demo/output/sacroml/sacroml_report.txt`.
 
@@ -96,7 +171,7 @@ What else the run shows:
 
 Read the attribute cells as correct unique guesses over unique guesses made, out of 500 rows: "136/136" means every guess was right, on 27% of the rows.
 
-### Why the two demos disagree
+#### Why the two demos disagree
 
 * **Leaf size.** Demo 1 forces a minimum leaf of 20 and a depth of 4, stricter than the example of 5 in Appendix D. The package rules file forces 5, and its own structural attack still flags that tree.
 * **Membership attack.** Demo 1's worst-case attack sees the predicted probabilities plus the true label. The package's attack sees the predicted probabilities only. On a tree of pure leaves every prediction is 0 or 1, for training and holdout rows alike, so the probability-only attack scores 0.500 even though the tree memorised every row. The label-aware attack sees that the tree is always right on training rows and wrong on 41% of holdout rows, and scores 0.708.
@@ -129,9 +204,10 @@ uv pip install -r demo/requirements.txt
 
 `demo/requirements.txt` installs `numpy`, `scikit-learn` and `sacroml`. The `sacroml` install also brings in PyTorch.
 
-Run both demos:
+Run the three demos:
 
 ```powershell
+uv run python demo/run_aml_demo.py       # seconds
 uv run python demo/run_demo.py           # seconds
 uv run python demo/run_sacroml_demo.py   # a few minutes
 ```
@@ -140,22 +216,39 @@ To run them with plain `python` instead, activate the environment first: `. .\.v
 
 Edit `demo/constraints.json` to change the safe wrapper's hyperparameter envelope, and `POLICY` in `demo/graimatter_demo/disclosure.py` to change the release cut-offs. To run LiRA, pass a `Target` into the package's `request_release()` as described in the [SACRO-ML examples](https://github.com/AI-SDC/SACRO-ML/tree/main/examples).
 
+To rebuild the figures and the deck:
+
+```bash
+python docs/guide/make_figures.py
+python docs/guide/make_aml_figures.py
+python docs/make_deck.py
+```
+
 ## Repository layout
 
 | Path | Contents |
 | --- | --- |
-| `GRAIMATTER Green Paper.pdf` | The source paper (99 pages) |
-| `demo/run_demo.py` | Demo 1: hand-written checks |
+| `NIST.AI.100-2e2025.pdf` | NIST AI 100-2e2025, Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations |
+| `GRAIMATTER Green Paper.pdf` | The GRAIMATTER green paper (99 pages) |
+| `demo/run_aml_demo.py` | Demo 3: evasion, extraction, backdoor |
+| `demo/aml_demo/` | Evasion search, model extraction, poisoning and outlier screen |
+| `demo/run_demo.py` | Demo 1: hand-written GRAIMATTER checks |
 | `demo/run_sacroml_demo.py` | Demo 2: SACRO-ML |
 | `demo/graimatter_demo/` | Cohort, metrics, attacks, safe wrapper, release policy, query gate, differential-privacy sketch |
 | `demo/constraints.json` | Hyperparameter envelope for the safe wrapper |
-| `demo/output/` | Seeded reports, data dictionary, release reports, register entry, pipeline snapshot, SACRO-ML reports |
-| `demo/README.md` | Section-by-section notes on demo 1 |
-| `docs/guide/` | Technical guide to the paper and both demos, in English and Spanish, with figures |
-| `docs/GRAIMATTER.pptx` | Workshop slides |
+| `demo/output/` | Seeded reports of the three demos and the files demo 1 writes |
+| `demo/README.md` | Section-by-section notes on the demos |
+| `docs/Adversarial_ML.pptx` | Workshop slides (39) |
+| `docs/guide/` | Technical guide in English and Spanish, with figures |
 
 ## References
 
+* A. Vassilev, A. Oprea, A. Fordyce, H. Anderson, X. Davies, M. Hamin. *Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations*. NIST AI 100-2e2025, March 2025. doi:10.6028/NIST.AI.100-2e2025.
+* MITRE ATLAS: https://atlas.mitre.org
+* OWASP Machine Learning Security Top 10: https://owasp.org/www-project-machine-learning-security-top-10/ ; OWASP Top 10 for LLM Applications 2025: https://genai.owasp.org
+* Regulation (EU) 2024/1689 (AI Act), Art. 15; Regulation (EU) 2026/1744 (Digital Omnibus on AI).
+* DSIT, *Code of Practice for the Cyber Security of AI*, January 2025; ETSI EN 304 223; NCSC and CISA, *Guidelines for secure AI system development*, November 2023.
 * *Green Paper: Recommendations for disclosure control of trained Machine Learning (ML) models from Trusted Research Environments (TREs)*. DARE UK sprint project GRAIMatter, September 2022. Earlier version: E. Jefferson et al., Zenodo, doi:10.5281/zenodo.6896214.
 * SACRO-ML: https://github.com/AI-SDC/SACRO-ML
+* safety-trust-engine (red-team compliance gate for LLMs and agents): https://github.com/olonok69/safety-trust-engine
 * A. Salem et al. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models*. arXiv:1806.01246, 2018.

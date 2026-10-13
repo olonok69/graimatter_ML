@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" width="1000" height="350" role="img" aria-label="Evasion by misreporting a form (demo 3)">
+<title>Evasion by misreporting a form (demo 3)</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4521A"/></marker></defs>
+<rect x="0.0" y="0.0" width="1000.0" height="350.0" rx="0" fill="#F6F5F0"/>
+<text x="32.0" y="44.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#0F1B2D" text-anchor="start">Evasion by misreporting a form (demo 3)</text>
+<text x="32.0" y="70.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#5F6979" text-anchor="start">Rows the forest scores high risk; each person tries the smallest edit first. Labels only, no model internals.</text>
+<text x="316.0" y="122.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">smoking, weight and blood pressure</text>
+<text x="316.0" y="137.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">self-reported</text>
+<rect x="330.0" y="104.0" width="420.0" height="22.0" rx="4" fill="#ECEAE3"/>
+<rect x="330.0" y="104.0" width="330.5" height="22.0" rx="4" fill="#B4521A"/>
+<text x="668.5" y="120.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#1B2433" text-anchor="start">78.7% evaded</text>
+<rect x="330.0" y="132.0" width="246.5" height="14.0" rx="3" fill="#2F6DB5"/>
+<text x="584.5" y="144.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#2F6DB5" text-anchor="start">58.7% with a single step</text>
+<text x="316.0" y="192.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">smoking verified by a test</text>
+<rect x="330.0" y="174.0" width="420.0" height="22.0" rx="4" fill="#ECEAE3"/>
+<rect x="330.0" y="174.0" width="137.8" height="22.0" rx="4" fill="#B4521A"/>
+<text x="475.8" y="190.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#1B2433" text-anchor="start">32.8% evaded</text>
+<rect x="330.0" y="202.0" width="76.4" height="14.0" rx="3" fill="#2F6DB5"/>
+<text x="414.4" y="214.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#2F6DB5" text-anchor="start">18.2% with a single step</text>
+<text x="316.0" y="262.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">smoking and weight measured in</text>
+<text x="316.0" y="277.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3A4556" text-anchor="end">clinic</text>
+<rect x="330.0" y="244.0" width="420.0" height="22.0" rx="4" fill="#ECEAE3"/>
+<rect x="330.0" y="244.0" width="86.9" height="22.0" rx="4" fill="#B4521A"/>
+<text x="424.9" y="260.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#1B2433" text-anchor="start">20.7% evaded</text>
+<rect x="330.0" y="272.0" width="53.8" height="14.0" rx="3" fill="#2F6DB5"/>
+<text x="391.8" y="284.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#2F6DB5" text-anchor="start">12.8% with a single step</text>
+<rect x="790.0" y="104.0" width="182.0" height="196.0" rx="10" fill="#0F1B2D"/>
+<text x="804.0" y="128.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start"></text>
+<text x="804.0" y="130.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">Checking the fields an</text>
+<text x="804.0" y="146.9" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">attacker can lie about</text>
+<text x="804.0" y="163.8" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">cuts evasion from 79% to</text>
+<text x="804.0" y="180.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">21%. Adversarial</text>
+<text x="804.0" y="197.6" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">training would not stop</text>
+<text x="804.0" y="214.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">a person from</text>
+<text x="804.0" y="231.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">misreporting.</text>
+<text x="32.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5F6979" text-anchor="start" font-style="italic">demo/output/aml_report.txt, section 1</text>
+</svg>

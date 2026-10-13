@@ -1,13 +1,14 @@
-"""Build the GRAIMATTER workshop deck (docs/GRAIMATTER.pptx).
+"""Build the adversarial-ML workshop deck (docs/Adversarial_ML.pptx).
 
-Run from the repository root, after docs/guide/make_figures.py:
+Run from the repository root, after docs/guide/make_figures.py and make_aml_figures.py:
 
     python docs/make_deck.py
 
 Needs python-pptx and cairosvg (docs/requirements-docs.txt). The figures are the English
-SVGs from docs/guide/img/en, rendered to PNG on the fly. Numbers on the slides come from
-demo/output/demo_report.txt and demo/output/sacroml/sacroml_report.txt; speaker notes
-carry the definitions.
+SVGs from docs/guide/img/en, rendered to PNG on the fly. Three parts: attacks (NIST AI
+100-2e2025 and demo 3), frameworks, and GRAIMATTER as the high-trust case (demos 1-2).
+Numbers come from demo/output/aml_report.txt, demo_report.txt and
+sacroml/sacroml_report.txt; speaker notes carry the definitions.
 """
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ from pptx.util import Emu, Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "guide", "img", "en")
-OUT = os.path.join(HERE, "GRAIMATTER.pptx")
+OUT = os.path.join(HERE, "Adversarial_ML.pptx")
 
 
 def rgb(h):
@@ -48,6 +49,7 @@ class Deck:
         self.prs = Presentation()
         self.prs.slide_width, self.prs.slide_height = Inches(13.333), Inches(7.5)
         self.layout = self.prs.slide_layouts[5]  # "Title Only": keeps a real title for the outline
+        self.prefix = ""  # prepended to every kicker, e.g. "PART 3 · "
 
     # -- primitives --------------------------------------------------------------------
     def slide(self, kicker, title, dark=False, title_size=None):
@@ -70,7 +72,7 @@ class Deck:
             r.font.name, r.font.size, r.font.bold = SANS, Pt(title_size), True
             r.font.color.rgb = rgb(CREAM if dark else NAVY)
         if kicker:
-            self.text(s, LEFT, 0.89, WIDTH, 0.3, kicker, 12, PEACH if dark else ORANGE, font=MONO)
+            self.text(s, LEFT, 0.89, WIDTH, 0.3, self.prefix + kicker, 12, PEACH if dark else ORANGE, font=MONO)
         return s
 
     def text(self, s, x, y, w, h, text, size=15, color=BODY, bold=False, font=SANS, align=PP_ALIGN.LEFT,
@@ -178,30 +180,380 @@ class Deck:
 
     def save(self):
         props = self.prs.core_properties
-        props.title, props.author, props.last_modified_by, props.comments = "GRAIMATTER", "", "", ""
+        props.title, props.author, props.last_modified_by, props.comments = "Adversarial machine learning", "", "", ""
         self.prs.save(OUT)
 
 
 def build():
     d = Deck()
 
-    # 1 ---------------------------------------------------------------------------------
-    s = d.slide("DARE UK · GRAIMATTER GREEN PAPER · SEPTEMBER 2022", "Disclosure control for models leaving a TRE",
-                dark=True, title_size=54)
+    # ===================================================================================
+    # PART 1 · ATTACKS
+    # ===================================================================================
+    s = d.slide("NIST AI 100-2e2025 · MITRE ATLAS · OWASP · EU AI ACT · UK CODE OF PRACTICE",
+                "Adversarial machine learning: attacks, frameworks and a high-trust case", dark=True, title_size=40)
     s.shapes.title.top, s.shapes.title.height = Inches(1.95), Inches(2.2)
     s.shapes[1].top = Inches(1.45)  # kicker sits just above the title
     d.rect(s, 0, 0, 0.17, 7.5, ORANGE, shape=MSO_SHAPE.RECTANGLE)
     s.shapes[-1].top = 0
-    d.text(s, LEFT, 4.4, 10.5, 0.9, "What the green paper recommends before a trained model leaves a trusted research "
-           "environment, and what two demos found on synthetic data", 22, "#D9DEE6")
-    d.chips(s, LEFT, 5.45, ["1,000 synthetic rows", "17 TECH recommendations", "2 demos: hand-written + sacroml 2.0.1"])
-    d.footer(s, "Green Paper: Recommendations for disclosure control of trained ML models from TREs · GRAIMatter sprint, "
-             "University of Dundee and partners", dark=True)
-    d.notes(s, "This session explains one question: when a researcher trains a model inside a trusted research environment, "
-            "how does the TRE decide whether the model file is safe to export? The source is the GRAIMATTER green paper, "
-            "a 99-page output of a DARE UK sprint published in September 2022. We cover the technical recommendations and "
-            "then two demos that run those checks on a synthetic cohort. Legal, ethics, costing, training and public "
-            "involvement are in the paper; we touch them only briefly. Nothing in the demos is a real patient.")
+    d.text(s, LEFT, 3.75, 10.8, 0.9, "How trained models are attacked, what the main frameworks ask for, and how GRAIMATTER "
+           "handles one high-trust setting: releasing models from a trusted research environment", 21, "#D9DEE6")
+    d.chips(s, LEFT, 5.05, ["3 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
+    d.footer(s, "Synthetic data only. Code, guides (EN/ES) and figures: github.com/olonok69/graimatter_ML", dark=True)
+    d.notes(s, "This session has three parts. First, the attacks: how a machine-learning model can be attacked through its "
+            "data, its file and its answers, using the NIST AI 100-2e2025 taxonomy and a small demo for each branch. Second, "
+            "the frameworks that turn this into practice: MITRE ATLAS, the two OWASP top-ten lists, Article 15 of the EU AI "
+            "Act and the UK Code of Practice, now ETSI EN 304 223. Third, a concrete high-trust case: the GRAIMATTER green "
+            "paper on releasing models from trusted research environments, with two demos. Nothing in the demos is a real "
+            "patient.")
+
+    s = d.slide("AGENDA", "Three parts: the attacks, the frameworks, a high-trust case")
+    agenda = [
+        ("1 · Attacks", "NIST taxonomy: availability, integrity, privacy. Evasion, poisoning, privacy attacks, generative AI. "
+                        "Real incidents from MITRE ATLAS. Mitigations and their limits. Demo 3.", True),
+        ("2 · Frameworks", "Who describes, who prioritises, who requires: NIST, ATLAS, OWASP ML and LLM Top 10, EU AI Act "
+                           "Art. 15, UK Code of Practice and ETSI EN 304 223. One crosswalk.", False),
+        ("3 · High-trust case", "GRAIMATTER: model disclosure and query controls for a trusted research environment. "
+                                "Demos 1 and 2. What carries over to other high-trust deployments.", False),
+    ]
+    for i, (a, b, dark) in enumerate(agenda):
+        d.card(s, LEFT + i * 3.95, 2.25, 3.65, 2.6, a, b, dark=dark, tsize=19, bsize=15)
+    d.rect(s, LEFT, 5.2, WIDTH, 0.95, PEACHBG)
+    d.text(s, LEFT + 0.25, 5.2, WIDTH - 0.5, 0.95, [[("Demos: ", True), ("demo 3 shows evasion, a backdoor and model "
+           "extraction; demos 1 and 2 show membership and attribute inference and the GRAIMATTER controls. All three use "
+           "the same synthetic cohort.", False)]], 14, INK, anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "demo/run_aml_demo.py (demo 3), demo/run_demo.py (demo 1), demo/run_sacroml_demo.py (demo 2).")
+    d.notes(s, "The order goes from general to specific. Part 1 gives the vocabulary, Part 2 maps the vocabulary to what "
+            "standards and law ask for, and Part 3 shows one sector that has worked this out in depth for one branch, "
+            "privacy, because its models leave the building. The demos are small on purpose: numpy and scikit-learn, "
+            "seconds to run, so the audience can change a parameter and see the effect.")
+
+    d.prefix = "PART 1 · "
+    s = d.slide("WHY", "A model adds attack surface that classic security does not cover")
+    why = [
+        ("The data", "Whoever can add or change training rows can steer the model: poisoning and backdoors. Web-scale "
+                     "data makes this cheap (NIST §2.3, §3.2.1)."),
+        ("The model", "A model file can be copied, edited after training, swapped for a malicious one in the supply chain, "
+                      "or carry training rows inside it (NIST §3.2, GRAIMATTER §10.1)."),
+        ("The answers", "Every prediction leaks a little. Enough queries can fool the model, copy it, or reveal who was in "
+                        "its training data (NIST §2.2, §2.4)."),
+    ]
+    for i, (a, b) in enumerate(why):
+        d.card(s, LEFT + i * 3.95, 2.2, 3.65, 2.6, a, b, tsize=19, bsize=15.5)
+    d.rect(s, LEFT, 5.1, WIDTH, 1.3, NAVY)
+    d.text(s, LEFT + 0.3, 5.1, WIDTH - 0.6, 1.3, [[("NIST §4.1.2: ", True), ("for many tasks there are no theoretically "
+           "secure ML algorithms, so \"designing mitigations is an inherently ad hoc and fallible process\". Test the "
+           "system against attacks; do not assume a defence works.", False)]], 15, CREAM, anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "NIST AI 100-2e2025, sections 2.2-2.4, 3.2 and 4.1.2.")
+    d.notes(s, "Classic security protects code, credentials and infrastructure. Machine learning adds three things to protect. "
+            "The training data: if an attacker can contribute rows, they can change what the model learns. The model "
+            "itself: it is a file that can be stolen, tampered with, or replaced by a poisoned one downloaded from a hub, "
+            "and some models store training rows inside them. And the answers: each prediction is a small leak, and many "
+            "of them let an attacker fool, copy or interrogate the model. NIST is blunt that there is no general fix, so "
+            "the practice is to test against attacks.")
+
+    s = d.slide("NIST AI 100-2 · STAGES AND CAPABILITIES", "Where attacks land in the life of a model")
+    d.image(s, "figA1_lifecycle", top=2.15, max_h=4.55)
+    d.footer(s, "NIST AI 100-2e2025 §2.1.1 (stages) and §2.1.3 (capabilities). GRAIMATTER band: §10.1 of the green paper.")
+    d.notes(s, "NIST separates training-time attacks from deployment-time attacks and lists the capabilities an attacker needs. "
+            "Training data control enables poisoning. Model or source-code control enables model poisoning and supply-chain "
+            "attacks. Query access enables evasion, extraction and the privacy attacks. GRAIMATTER sits on the right of "
+            "this picture: the model file and the queries made to it, and only the privacy objective. That is why demo 3 "
+            "exists: it covers the integrity attacks that a TRE's checks would not see.")
+
+    s = d.slide("NIST AI 100-2 · TAXONOMY", "Three attacker objectives: availability, integrity, privacy")
+    d.image(s, "figA2_taxonomy", top=2.15, max_h=4.55)
+    d.footer(s, "NIST AI 100-2e2025, Predictive AI and Generative AI Taxonomy Index (pp. x-xi) and §2.1.2.")
+    d.notes(s, "The taxonomy starts from what the attacker wants. Availability: make the model useless for everyone, by "
+            "poisoning or by inputs that make it slow. Integrity: make it give the answer the attacker wants, by evasion at "
+            "deployment or by targeted and backdoor poisoning at training. Privacy: learn something that should stay "
+            "hidden, about the training data or about the model itself. Each class has an identifier, so a test report "
+            "can say NISTAML.033 rather than 'some privacy attack'. Highlighted boxes are the ones our three demos run.")
+
+    s = d.slide("NIST AI 100-2 · CAPABILITIES AND KNOWLEDGE", "What the attacker can touch, and how much they know")
+    rows = [["Capability (NIST §2.1.3)", "Typical attack", "In this repository"],
+            ["Training data control", "Data poisoning, backdoor", "Demo 3: backdoor from 1-5% of rows"],
+            ["Model control", "Model poisoning, Trojan", "Demo 1: edits after fit() are caught"],
+            ["Testing data control", "Evasion", "Demo 3: misreported form fields"],
+            ["Label limit", "Clean-label poisoning", "–"],
+            ["Source code control", "Poisoned library or random seed", "–"],
+            ["Query access", "Black-box evasion, extraction, privacy attacks", "Demos 1-3"]]
+    d.table(s, LEFT, 2.2, 7.6, rows, [2.35, 2.75, 2.5], size=12.5, row_h=0.5)
+    d.card(s, 8.8, 2.2, 3.64, 1.3, "White box", "Knows data, architecture, parameters. GRAIMATTER assumes this, because "
+           "the file leaves.", dark=True, bsize=12.5)
+    d.card(s, 8.8, 3.65, 3.64, 1.15, "Gray box", "Knows part: the architecture, or similar data.", bsize=12.5)
+    d.card(s, 8.8, 4.95, 3.64, 1.25, "Black box", "Only query access. The demo 3 attacks use labels only.", bsize=12.5)
+    d.footer(s, "NIST AI 100-2e2025 §2.1.3 and §2.1.4.")
+    d.notes(s, "Two more axes classify an attack. Capabilities say what the attacker can change or reach: training data, "
+            "labels, the model, the code, test inputs, or just the query interface. Knowledge says how much they know. NIST "
+            "notes that white-box attacks are unrealistic for many deployments but are how you test against a worst-case "
+            "adversary. In a TRE the white-box case is real: once the model file is released, anyone who obtains it has "
+            "full access. The demo 3 attacks are black box: they see only the predicted label.")
+
+    s = d.slide("EVASION · NISTAML.022 / .025 · DEMO 3", "Evasion: change the input, keep the model")
+    d.image(s, "figA3_evasion", top=2.2, max_h=4.0)
+    d.footer(s, "demo/output/aml_report.txt, section 1. NIST AI 100-2e2025 §2.2 (real-world cases §2.2.4, mitigations §2.2.5).")
+    d.notes(s, "Evasion changes a test input so the model gets it wrong, without touching the model. In demo 3 a random "
+            "forest scores people as high or low risk. A person scored high risk edits only what nobody checks: they drop "
+            "the smoker flag or lower their weight or blood-pressure band by one or two steps, trying the smallest edit "
+            "first and querying until the label flips. With all three fields self-reported, 78.7% of flagged people get a "
+            "low-risk score, most with a single step. Verify smoking and the rate drops to 32.8%; measure weight in clinic "
+            "too and it is 20.7%. NIST's real-world examples are similar in spirit: ID.me saw more than 80,000 attempts to "
+            "fool face verification in the second half of 2020, and attackers beat a phishing detector with cropping and "
+            "blurring, not optimisation. The three defences NIST rates as resilient, adversarial training, randomised "
+            "smoothing and formal verification, all cost accuracy.")
+
+    s = d.slide("POISONING · NISTAML.023 · DEMO 3", "Poisoning: 2% of rows plant an invisible backdoor")
+    d.image(s, "figA5_backdoor", top=2.2, max_h=4.2)
+    d.footer(s, "demo/output/aml_report.txt, section 3. NIST AI 100-2e2025 §2.3 (backdoors §2.3.3, real world §2.3.5).")
+    d.notes(s, "A data contributor appends copies of training rows with a trigger in two lab columns, all labelled low risk. "
+            "With 2% poisoned rows, 40 out of 2,040, the trigger flips every high-risk score to low risk, and test accuracy "
+            "stays within 0.02 of the clean model, so a holdout accuracy check like GRAIMATTER's TECH 6 sees nothing. NIST "
+            "lists outlier detection as one data-sanitisation defence; here an isolation forest catches 80% of a loud "
+            "trigger at 2% but only 25% of a quiet one, and fewer as the poison grows, because a dense cluster stops "
+            "looking unusual. Real cases: Microsoft's Tay chatbot in 2016, mass attempts to poison Gmail's spam filter, and "
+            "near-duplicate ransomware samples sent to VirusTotal. All three exploited models that keep learning after "
+            "release.")
+
+    s = d.slide("PRIVACY · NISTAML.03", "Privacy attacks: learn the training data, or the model itself")
+    priv = [
+        ("Membership inference · .033", "Was this person in the training set? Demos 1 and 2.", True),
+        ("Attribute inference", "Fill in a hidden field of a known person. Demos 1 and 2 (Appendix E).", True),
+        ("Reconstruction · .032", "Recover training records. Trivial when the model stores rows: kNN, SVC (demo 1).", True),
+        ("Property inference · .034", "Learn a statistic of the training set, e.g. the share with a condition. Not "
+                                      "demonstrated.", False),
+        ("Model extraction · .031", "Copy the model through its API. Demo 3.", True),
+    ]
+    for i, (a, b, done) in enumerate(priv):
+        x = LEFT + (i % 3) * 3.95
+        y = 2.2 if i < 3 else 4.05
+        d.card(s, x, y, 3.65, 1.65, a, b, fill=PEACHBG if done else None, bsize=13)
+    d.rect(s, LEFT + 7.9, 4.05, 3.65, 1.65, NAVY)
+    d.text(s, LEFT + 8.1, 4.15, 3.25, 1.45, [[("Mitigations (§2.4.5): ", True), ("differential privacy bounds membership "
+           "and reconstruction but not extraction; audit with attacks; limit queries; machine unlearning.", False)]],
+           12.5, CREAM, anchor=MSO_ANCHOR.MIDDLE)
+    d.text(s, LEFT, 5.95, WIDTH, 0.5, "Shaded: demonstrated in this repository. Part 3 covers membership and attribute "
+           "inference in depth.", 13, MUTED, italic=True)
+    d.footer(s, "NIST AI 100-2e2025 §2.1.2 and §2.4.1-2.4.5.")
+    d.notes(s, "Privacy attacks are the branch GRAIMATTER cares about. Membership inference asks whether a record was used for "
+            "training, which is already sensitive in a study of patients with a rare disease, as NIST notes. Attribute "
+            "inference fills in a hidden field. Reconstruction recovers records outright, and a model that stores rows "
+            "makes it trivial. Property inference learns a population statistic. Model extraction steals the model, often "
+            "as a first step towards white-box attacks. NIST's mitigations: differential privacy, which gives a provable "
+            "bound for membership and reconstruction but not for extraction; empirical auditing with attacks; query "
+            "limits, which a determined attacker can get around; and machine unlearning.")
+
+    s = d.slide("EXTRACTION · NISTAML.031 · DEMO 3", "Extraction: 200 queries copy a simple model")
+    d.image(s, "figA4_extraction", top=2.15, max_h=4.4)
+    d.footer(s, "demo/output/aml_report.txt, section 2. NIST AI 100-2e2025 §2.4.4 and §2.4.5. QueryGate: demo 1 (TECH 16).")
+    d.notes(s, "The attacker never sees a real record. The data dictionary tells them the input ranges, so they invent rows, "
+            "send them to the API and train their own forest on the returned labels. With 200 queries the copy agrees "
+            "with the target on 86.9% of real rows; with 5,000, on 93.5%. The copy is then a white-box stand-in: edits "
+            "planned on it, without querying the target per person, get 58.3% of flagged people past the real model after "
+            "a 1,000-row theft, against 78.7% when querying the target directly. Demo 1's QueryGate with a 200-row budget "
+            "refuses the 1,000-row request, but 200 rows were already enough for a close copy. NIST says the same: query "
+            "limits can be circumvented by well-resourced attackers.")
+
+    s = d.slide("GENERATIVE AI · NIST §3 · OWASP LLM TOP 10", "Generative AI: the input channel is also the instruction channel")
+    llm = ["LLM01 Prompt injection", "LLM02 Sensitive information disclosure", "LLM03 Supply chain",
+           "LLM04 Data and model poisoning", "LLM05 Improper output handling", "LLM06 Excessive agency",
+           "LLM07 System prompt leakage", "LLM08 Vector and embedding weaknesses", "LLM09 Misinformation",
+           "LLM10 Unbounded consumption"]
+    d.rect(s, LEFT, 2.2, 5.6, 4.25, CARD, BORDER)
+    d.text(s, LEFT + 0.25, 2.35, 5.2, 0.4, "OWASP Top 10 for LLM applications, 2025", 15, NAVY, True)
+    d.text(s, LEFT + 0.25, 2.85, 5.2, 3.5, llm, 13, BODY)
+    d.card(s, LEFT + 5.9, 2.2, 5.65, 1.3, "Direct prompt injection (NISTAML.018)", "The user types instructions that "
+           "override the system's: jailbreaks, system-prompt extraction.", bsize=12.5)
+    d.card(s, LEFT + 5.9, 3.65, 5.65, 1.3, "Indirect prompt injection (NISTAML.015)", "Instructions hide in content the "
+           "model reads: an email, a web page, a retrieved document.", bsize=12.5)
+    d.card(s, LEFT + 5.9, 5.1, 5.65, 1.35, "NIST §3.4.4", "Current defences do not give full protection: design as if "
+           "injection will happen; separate permissions, narrow tool interfaces.", dark=True, bsize=12.5)
+    d.footer(s, "NIST AI 100-2e2025 §3.3-3.5. OWASP Top 10 for LLM Applications 2025 (genai.owasp.org). LLM tests: olonok69/safety-trust-engine.")
+    d.notes(s, "Generative models add a new problem: text is both data and instructions. Direct prompt injection is the user "
+            "attacking the model. Indirect prompt injection is a third party hiding instructions in content the model "
+            "reads, which matters most for agents that can call tools and send data out. OWASP's 2025 list for LLM "
+            "applications puts prompt injection first and also covers sensitive information disclosure, supply chain, "
+            "poisoning and excessive agency. NIST's advice is to assume prompt injection is possible whenever the model "
+            "reads untrusted input. This repository has no generative-AI demo; the companion repository safety-trust-engine "
+            "runs garak, AgentDojo and PyRIT against a model or agent and fails CI when an attack-success rate passes its "
+            "tolerance, with each finding mapped to EU AI Act, DORA, FCA and NIST controls.")
+
+    s = d.slide("REAL INCIDENTS · MITRE ATLAS CASE STUDIES", "It has happened outside the lab")
+    rows = [["ATLAS", "Case", "Class", "Year"],
+            ["CS0009", "Tay: a chatbot learned abuse from coordinated tweets, taken down within 24 hours", "Poisoning", "2016"],
+            ["CS0003", "Cylance: a universal string appended to malware evaded the AI detector", "Evasion", "2019"],
+            ["CS0017", "ID.me: wigs and fake licences passed identity checks; 180+ false claims, $3.4M paid", "Evasion", "2020-21"],
+            ["CS0019", "PoisonGPT: an edited open LLM, uploaded to Hugging Face, returned a false fact", "Supply chain", "2023"],
+            ["CS0025", "Split-view poisoning: expired domains behind URL datasets could be bought and refilled", "Poisoning", "2024"],
+            ["CS0031", "Malicious models on Hugging Face ran reverse shells when loaded; the scanner missed them", "Supply chain", "2025"],
+            ["CS0058", "Google Photos: on-device models recovered from the Android app", "Extraction", "2025"],
+            ["CS0059", "EchoLeak: an email with a prompt injection made M365 Copilot leak data, zero clicks", "Prompt injection", "2025"]]
+    d.table(s, LEFT, 2.15, WIDTH, rows, [1.0, 7.75, 1.75, 1.05], size=12, row_h=0.47)
+    d.footer(s, "MITRE ATLAS v2026.09 (atlas.mitre.org). Tay, ID.me and Hugging Face are incidents; the others are researcher "
+             "exercises.")
+    d.notes(s, "MITRE ATLAS is the adversarial-ML counterpart of ATT&CK and keeps case studies. Version 2026.09 has 73. A few "
+            "that map to Part 1: Tay is the classic poisoning incident. Cylance and ID.me are evasion, one by researchers, "
+            "one a real fraud. PoisonGPT and the malicious Hugging Face models are the supply-chain risk: you download a "
+            "model and get someone else's behaviour or code. Split-view poisoning shows how cheap web-scale poisoning can "
+            "be. Google Photos is extraction from a shipped app. EchoLeak is indirect prompt injection with no user action. "
+            "ATLAS labels each case as an incident in the wild or an exercise by researchers; the footer says which.")
+
+    s = d.slide("MITIGATIONS · NIST AI 100-2", "Every defence has a cost or a gap")
+    rows = [["Attack", "Mitigations NIST lists", "Limit NIST notes"],
+            ["Evasion", "Adversarial training, randomised smoothing, formal verification",
+             "Trade accuracy for robustness; adaptive attacks broke many detectors"],
+            ["Poisoning and backdoors", "Data sanitisation, robust training, trigger reconstruction, certified defences",
+             "Mostly built for images with fixed triggers; quiet or semantic triggers escape"],
+            ["Privacy", "Differential privacy, privacy auditing, query limits, machine unlearning",
+             "DP costs utility (the 2020 US Census used ε = 19.61); query limits can be circumvented"],
+            ["Prompt injection", "Safety training, input and output filters, spotlighting, least privilege",
+             "No full protection; design as if injection will happen"]]
+    d.table(s, LEFT, 2.15, WIDTH, rows, [2.3, 4.6, 4.65], size=12.5, row_h=0.72)
+    d.rect(s, LEFT, 5.95, WIDTH, 0.6, PEACHBG)
+    d.text(s, LEFT + 0.25, 5.95, WIDTH - 0.5, 0.6, [[("NIST §4.1.3: ", True), ("whoever proposes a defence should also try "
+           "to break it, and compare defences on accuracy and robustness together.", False)]], 13.5, INK,
+           anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "NIST AI 100-2e2025 §2.2.5, §2.3, §2.4.5, §3.3.3, §3.4.4, §4.1.1 and §4.1.3.")
+    d.notes(s, "This is the honest summary. For evasion, the three defences that have held up all cost accuracy and compute. "
+            "For poisoning, most defences were designed against image classifiers with a fixed trigger pattern; demo 3's "
+            "quiet trigger shows why that matters on tabular data. For privacy, differential privacy is the only defence "
+            "with a guarantee, and the guarantee costs utility; NIST cites the 2020 US Census at epsilon 19.61. For prompt "
+            "injection there is no complete defence. Hence the advice: evaluate adversarially and accept trade-offs "
+            "explicitly, which is exactly what GRAIMATTER asks a TRE to do for privacy.")
+
+    # ===================================================================================
+    # PART 2 · FRAMEWORKS
+    # ===================================================================================
+    d.prefix = "PART 2 · "
+    s = d.slide("FRAMEWORKS", "Describe, prioritise, require: five frameworks")
+    d.image(s, "figA6_frameworks", top=2.15, max_h=4.5)
+    d.footer(s, "Sources and dates on the following slides and in the references.")
+    d.notes(s, "The frameworks do different jobs. NIST and ATLAS describe: NIST gives the taxonomy and vocabulary, ATLAS the "
+            "attacker's tactics, techniques and real cases. OWASP prioritises: two short lists for people building models "
+            "and LLM applications. The EU AI Act and the UK Code of Practice require: the Act makes robustness and "
+            "cybersecurity a legal duty for high-risk systems, and the UK code sets baseline controls that ETSI published "
+            "as a European standard in January 2026. The UK NCSC and US CISA guidelines for secure AI system development, "
+            "from November 2023, are the predecessor of that code. GRAIMATTER is a domain framework: it goes deep on one "
+            "branch, privacy, for one setting.")
+
+    s = d.slide("OWASP", "OWASP: two top-ten lists for the people who build")
+    ml = [["OWASP ML Security Top 10 (2023, draft)", "Here"],
+          ["ML01 Input manipulation", "demo 3"], ["ML02 Data poisoning", "demo 3"], ["ML03 Model inversion", "demos 1-2"],
+          ["ML04 Membership inference", "demos 1-2"], ["ML05 Model theft", "demo 3"], ["ML06 AI supply chain", "–"],
+          ["ML07 Transfer learning attack", "–"], ["ML08 Model skewing", "–"], ["ML09 Output integrity", "–"],
+          ["ML10 Model poisoning", "demo 1"]]
+    hl = {(i, 1): PEACHBG for i in (1, 2, 3, 4, 5, 10)}
+    d.table(s, LEFT, 2.15, 5.6, ml, [4.3, 1.3], size=12, row_h=0.39, highlight=hl)
+    d.card(s, LEFT + 5.9, 2.15, 5.65, 1.95, "How to use them", "As a checklist in design reviews and threat models. The "
+           "ML list is still a draft from 2023; the LLM list was refreshed for 2025 and covers agents and RAG.", bsize=13)
+    d.card(s, LEFT + 5.9, 4.25, 5.65, 2.2, "Mapping to this repository", "ML03 and ML04 are what GRAIMATTER tests before "
+           "release. ML10 is demo 1's check for edits after fit(). ML01, ML02 and ML05 are demo 3. The LLM list is on the "
+           "generative-AI slide.", dark=True, bsize=13)
+    d.footer(s, "owasp.org/www-project-machine-learning-security-top-10 · genai.owasp.org/llm-top-10")
+    d.notes(s, "OWASP's machine-learning list is short and practical. It overlaps NIST's privacy branch heavily: model "
+            "inversion and membership inference are two of the ten, and model theft is a third. Model poisoning, ML10, "
+            "means manipulating the model's parameters, which is what demo 1's tamper check catches. The list is marked as "
+            "a draft and dates from 2023, so treat it as a checklist rather than a standard. The LLM list from 2025 is "
+            "more current and is the one most teams building chat or agent products use.")
+
+    s = d.slide("EU AI ACT · ARTICLE 15", "EU AI Act, Art. 15: resisting attacks is a legal duty")
+    d.card(s, LEFT, 2.15, 7.0, 1.15, "15(1) Accuracy, robustness, cybersecurity", "An appropriate level of each, and "
+           "consistent performance throughout the lifecycle.", bsize=13)
+    d.card(s, LEFT, 3.45, 7.0, 1.0, "15(4) Robustness", "As resilient as possible to errors, faults and inconsistencies; "
+           "mitigate feedback loops in systems that keep learning.", bsize=13)
+    d.card(s, LEFT, 4.6, 7.0, 1.85, "15(5) Cybersecurity, AI-specific", "Resist unauthorised attempts to alter use, outputs or "
+           "performance. Measures to prevent, detect, respond to, resolve and control: data poisoning, model poisoning, "
+           "adversarial examples or model evasion, confidentiality attacks, model flaws.", fill=PEACHBG, bsize=13)
+    d.card(s, LEFT + 7.3, 2.15, 4.25, 2.25, "When", "Regulation (EU) 2024/1689. The Digital Omnibus, Regulation (EU) "
+           "2026/1744, in force 27 July 2026, moves high-risk duties to 2 Dec 2027 (Annex III) and 2 Aug 2028 (regulated "
+           "products).", dark=True, bsize=12.5)
+    d.card(s, LEFT + 7.3, 4.55, 4.25, 1.9, "And the GDPR", "EDPB Opinion 28/2024: a model trained on personal data is not "
+           "anonymous by default. That is GRAIMATTER's starting point.", bsize=12.5)
+    d.footer(s, "Regulation (EU) 2024/1689, Art. 15; Regulation (EU) 2026/1744; EDPB Opinion 28/2024 (Dec 2024). Not legal advice.")
+    d.notes(s, "Article 15 is the AI Act's robustness and cybersecurity article for high-risk systems. Paragraph 5 is the one "
+            "that reads like the NIST taxonomy: it names data poisoning, model poisoning, adversarial examples or model "
+            "evasion, confidentiality attacks and model flaws. It says what to resist, not how; paragraph 2 asks the "
+            "Commission to encourage benchmarks and measurement methods. Timing changed this year: the Digital Omnibus on "
+            "AI entered into force on 27 July 2026 and moves the high-risk obligations to December 2027 for Annex III "
+            "systems and August 2028 for AI in regulated products such as medical devices. Separately, the European Data "
+            "Protection Board said in December 2024 that a model trained on personal data cannot be assumed anonymous; "
+            "showing that it is means testing it against extraction and inference attacks, which is the GRAIMATTER "
+            "approach. This is a summary, not legal advice.")
+
+    s = d.slide("UK · CODE OF PRACTICE · ETSI EN 304 223", "UK: a code of practice that became a European standard")
+    phases = [("Design", "1 Awareness · 2 Secure by design · 3 Threats and risks · 4 Human responsibility"),
+              ("Development", "5 Assets · 6 Infrastructure · 7 Supply chain · 8 Document data, models, prompts · "
+                              "9 Testing and evaluation"),
+              ("Deployment", "10 Communication with end-users"),
+              ("Maintenance", "11 Updates and patches · 12 Monitor behaviour"),
+              ("End of life", "13 Data and model disposal")]
+    for i, (a, b) in enumerate(phases):
+        y = 2.15 + i * 0.86
+        d.rect(s, LEFT, y, 1.75, 0.74, NAVY)
+        d.text(s, LEFT, y, 1.75, 0.74, a, 13.5, PEACH, True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+        d.rect(s, LEFT + 1.85, y, 4.9, 0.74, CARD, BORDER)
+        d.text(s, LEFT + 2.0, y, 4.65, 0.74, b, 12, BODY, anchor=MSO_ANCHOR.MIDDLE)
+    prov = [("3.1", "Threat models cover data poisoning, model inversion and membership inference."),
+            ("6.2", "Limit API access rates to hinder reverse engineering and rapid poisoning."),
+            ("8.1.2", "Publish cryptographic hashes of shared model components."),
+            ("9.4", "Outputs must not let users reverse engineer the model or its training data.")]
+    for i, (a, b) in enumerate(prov):
+        y = 2.15 + i * 0.86
+        d.rect(s, LEFT + 7.05, y, 4.5, 0.74, PEACHBG)
+        d.text(s, LEFT + 7.2, y, 0.75, 0.74, a, 14, ORANGE, True, anchor=MSO_ANCHOR.MIDDLE)
+        d.text(s, LEFT + 7.95, y, 3.5, 0.74, b, 12, INK, anchor=MSO_ANCHOR.MIDDLE)
+    d.text(s, LEFT + 7.05, 5.6, 4.5, 0.74, "DSIT, 31 Jan 2025 → ETSI TS 104 223 → ETSI EN 304 223 (Jan 2026). Before it: "
+           "NCSC and CISA guidelines, Nov 2023.", 12, MUTED)
+    d.footer(s, "gov.uk Code of Practice for the Cyber Security of AI (31 Jan 2025); ETSI EN 304 223; NCSC/CISA (27 Nov 2023).")
+    d.notes(s, "The UK published its voluntary Code of Practice for the Cyber Security of AI in January 2025: 13 principles over "
+            "five lifecycle phases, for developers, system operators and data custodians. It was taken to ETSI, which "
+            "published it as EN 304 223 in January 2026, so it is now a European standard. Four provisions map directly to "
+            "Part 1: threat modelling must cover poisoning, model inversion and membership inference; API access should be "
+            "rate-limited against reverse engineering; shared model components should carry hashes; and outputs should "
+            "not allow reverse engineering of the model or its training data. The last one is GRAIMATTER's whole subject. "
+            "The code builds on the NCSC and CISA guidelines of November 2023, endorsed by agencies from 18 countries. The "
+            "UK AI Security Institute also co-authored the NIST report.")
+
+    s = d.slide("CROSSWALK", "One attack, five names: a crosswalk")
+    rows = [["Attack", "NIST AI 100-2", "OWASP", "MITRE ATLAS", "EU AI Act 15(5)", "UK Code", "Here"],
+            ["Evasion", "NISTAML.022, .025", "ML01", "AML.T0015", "adversarial examples", "3.1, 9", "demo 3"],
+            ["Data poisoning, backdoor", "NISTAML.013, .023", "ML02, LLM04", "AML.T0020", "data poisoning", "6.2, 8.2", "demo 3"],
+            ["Model poisoning, supply chain", "NISTAML.026, .051", "ML06, ML10, LLM03", "AML.T0010, T0018", "model poisoning",
+             "7, 8.1.2", "demo 1"],
+            ["Membership inference", "NISTAML.033", "ML04", "AML.T0024.000", "confidentiality attacks", "3.1, 9.4", "demos 1-2"],
+            ["Attribute inference, inversion", "§2.4.1, .032", "ML03", "AML.T0024.001", "confidentiality attacks", "3.1, 9.4",
+             "demos 1-2"],
+            ["Model extraction", "NISTAML.031", "ML05", "AML.T0024.002", "confidentiality attacks", "6.2, 9.4", "demo 3"],
+            ["Prompt injection", "NISTAML.015, .018", "LLM01", "AML.T0051", "not named", "3.1, 6", "–"]]
+    d.table(s, LEFT, 2.15, WIDTH, rows, [2.3, 1.75, 1.6, 1.65, 1.85, 1.15, 1.25], size=11.5, row_h=0.52)
+    d.footer(s, "Mapping built for this deck from the documents above. UK Code column: principle or provision numbers.")
+    d.notes(s, "Each framework names the same attacks differently. This table lets a test report or a risk register use all "
+            "five at once: a membership-inference test is NISTAML.033, OWASP ML04, ATLAS AML.T0024.000, a confidentiality "
+            "attack under Article 15(5), and covered by UK provisions 3.1 and 9.4. The mapping is ours, built from the "
+            "documents; the frameworks do not cross-reference each other this precisely. The last column says which demo "
+            "shows it.")
+
+    # ===================================================================================
+    # PART 3 · GRAIMATTER
+    # ===================================================================================
+    d.prefix = ""
+    s = d.slide("PART 3 · A HIGH-TRUST CASE", "GRAIMATTER: models leaving a trusted research environment", dark=True,
+                title_size=40)
+    d.rect(s, 0, 0, 0.17, 7.5, ORANGE, shape=MSO_SHAPE.RECTANGLE)
+    s.shapes[-1].top = 0
+    d.text(s, LEFT, 3.2, 10.8, 1.4, "Health records stay inside a trusted research environment (TRE); researchers train models "
+           "there. The model file is what leaves, so whoever gets it has white-box access, and the researcher may be the "
+           "risk. The green paper answers one question: when is a trained model safe to release?", 18, "#D9DEE6")
+    d.chips(s, LEFT, 5.0, ["White-box attacker", "Insider risk: RT1, RT2", "Privacy branch, in depth"])
+    d.footer(s, "GRAIMATTER green paper, DARE UK, September 2022. In NIST terms: NISTAML.03 plus model control and query "
+             "access.", dark=True)
+    d.notes(s, "Now the high-trust case. A TRE lets approved researchers analyse sensitive data without taking it away, and "
+            "checks every output before release. For tables the rules are mature. A trained model is a new kind of output. "
+            "Once released it can be copied anywhere, so the TRE must assume a white-box attacker. The researcher is inside "
+            "the trust boundary and could save too much in the file by accident or hide data in it on purpose. In the "
+            "language of Part 1, GRAIMATTER covers the privacy objective, plus model control (tampering) and query access "
+            "(query limits). It does not deal with evasion or poisoning, and it predates the generative-AI wave.")
+    d.prefix = "PART 3 · "
 
     # 2 ---------------------------------------------------------------------------------
     s = d.slide("THE PROBLEM", "The export is the model, not a table of patients")
@@ -377,7 +729,8 @@ def build():
             "sweep from the attribute case study in one request. The gate refuses it: 20 rows requested, 1 already used, "
             "budget 8. The unit matters. If the budget counted HTTP calls, one call carrying 20 rows would pass. TECH 17 "
             "says a real query-limited service should be tested by an external party; the demo implements only the "
-            "control logic.")
+            "control logic. Demo 3 shows the other side: a row budget slows model extraction but 200 rows already copy a "
+            "simple model.")
 
     # 14 --------------------------------------------------------------------------------
     s = d.slide("§10.1.3 · TECH 12 · DIFFERENTIAL PRIVACY", "Noise protects a mean; the best of 50 draws undoes it")
@@ -430,19 +783,6 @@ def build():
             "non-members, so its AUC is 0.500. An AUC near 0.5 from the package does not mean the tree failed to "
             "memorise; the structural attack is what catches it there.")
 
-    # 17 --------------------------------------------------------------------------------
-    s = d.slide("DEMO 2 · ATTRIBUTE INFERENCE", "'136/136' means every unique guess was right")
-    d.image(s, "fig12_guess_coverage", top=2.25, max_h=3.6)
-    d.text(s, LEFT, 6.05, WIDTH, 0.6, "Wrapped tree, training rows: diabetes 195/257, asthma 50/67, smoker 254/327; "
-           "weight and blood pressure no unique guess. Age: reconstructed fraction 0.034 (set-aside 0.050).", 13, BODY)
-    d.footer(s, "demo/output/sacroml/sacroml_report.txt. Appendix G (p. 96) describes the unique-guess attack.")
-    d.notes(s, "Read every sacroml attribute cell as correct unique guesses over unique guesses made, out of 500 rows. For "
-            "each row the attack tries every value of one field and guesses only when one value gives a uniquely highest "
-            "confidence; otherwise it abstains. On the unconstrained tree, diabetes is 136 out of 136: perfect, but only "
-            "on the 27% of rows where it was willing to guess. Smoker is 198 out of 198, 40% coverage. Asthma and weight "
-            "get no unique guess at all. The set-aside numbers are similar, which is why the paper asks to compare "
-            "training and held-out rows. Age is numeric, so it is reported as a fraction reconstructed within bounds.")
-
     # 18 --------------------------------------------------------------------------------
     s = d.slide("TWO DEMOS COMPARED", "Leaf 20 vs 5, label-aware vs probability-only")
     d.image(s, "fig11_two_demos", top=2.2, max_h=4.3)
@@ -454,100 +794,102 @@ def build():
             "checking, and its structural attack still flags the leaf-5 tree. Neither is an approval process. A real "
             "TRE would combine these checks with a policy agreed with its data controller.")
 
-    # 19 --------------------------------------------------------------------------------
-    s = d.slide("WHAT THE PAPER ALSO ASKS FOR", "The rest of the technical list")
-    items = [
-        ("TECH 1", "Discuss disclosure risk when the project is applied for."),
-        ("TECH 2", "Give researchers ML tools inside the TRE."),
-        ("TECH 3", "Snapshot the pipeline behind an approved model."),
-        ("TECH 5", "Staff who can run and read the attacks."),
-        ("TECH 13", "Special treatment for ensembles."),
-        ("TECH 14", "Test the final model from federated learning."),
-        ("TECH 15", "Treat synthetic data as personal data."),
-        ("TECH 17", "External test of any query-limited service."),
+    # LESSONS ---------------------------------------------------------------------------
+    s = d.slide("WHAT CARRIES OVER", "What GRAIMATTER teaches any high-trust deployment")
+    lessons = [
+        ("Assume the worst-case attacker", "Test white box, with the data in hand (Appendix G). NIST §2.1.4: that is how "
+                                           "you test against worst-case adversaries."),
+        ("Score on rows the builder never saw", "A holdout kept by the gatekeeper (TECH 6); independent testers (UK Code "
+                                                "9.2.1); audit with attacks (NIST §2.4.5)."),
+        ("Check structure, not only scores", "Stored rows, leaf size, file type. sacroml's structural check flags a tree "
+                                             "its probability-only attack scores at 0.500."),
+        ("Watch the tail", "FDIF and TPR at low FPR catch exposure that AUC averages away (Appendix F; NIST §2.4.2)."),
+        ("Freeze the artefact", "Snapshot at fit(), detect later edits (TECH 3, 10); hashes and audit logs (UK Code 8.1.2, "
+                                "8.3); OWASP ML10."),
+        ("Budget queries in rows", "TECH 16 and UK Code 6.2. Demo 3: a budget slows extraction but does not stop it."),
     ]
-    for i, (a, b) in enumerate(items):
-        x = LEFT + (i % 2) * 5.85
-        y = 2.2 + (i // 2) * 0.82
-        d.rect(s, x, y, 5.6, 0.68, CARD, BORDER)
-        d.text(s, x + 0.2, y, 1.2, 0.68, a, 15, ORANGE, True, anchor=MSO_ANCHOR.MIDDLE)
-        d.text(s, x + 1.35, y, 4.1, 0.68, b, 14, BODY, anchor=MSO_ANCHOR.MIDDLE)
-    d.rect(s, LEFT, 5.55, WIDTH, 0.95, NAVY)
-    d.text(s, LEFT + 0.25, 5.55, WIDTH - 0.5, 0.95, [[("Appendix A, experiment 2: ", True), ("hyperparameters that looked "
-           "safe on one dataset were risky on another. A range from a previous dataset is not, by itself, a release "
-           "decision; run the attacks on the model in hand.", False)]], 14, CREAM, anchor=MSO_ANCHOR.MIDDLE)
-    d.footer(s, "§10.2 (pp. 41-53). Appendix A §16.2 (p. 76).")
-    d.notes(s, "These recommendations are not demonstrated but belong in the picture. Risk is discussed at application time, "
-            "TREs provide ML tools, and the pipeline of an approved model is kept for audit. TREs need staff who can run "
-            "the attacks. Ensembles and federated learning get special attention, synthetic data is still personal data, "
-            "and a query-limited service should be tested externally. Appendix A's second experiment is the reason the "
-            "demo still runs attacks after the wrapper: hyperparameters that looked safe on one dataset were risky on "
-            "another.")
+    for i, (a, b) in enumerate(lessons):
+        x = LEFT + (i % 3) * 3.95
+        y = 2.15 + (i // 3) * 1.82
+        d.card(s, x, y, 3.65, 1.68, a, b, bsize=12.5, tsize=15)
+    d.rect(s, LEFT, 5.82, WIDTH, 0.78, NAVY)
+    d.text(s, LEFT + 0.25, 5.82, WIDTH - 0.5, 0.78, [[("Not covered: ", True), ("evasion and poisoning (demo 3's backdoor "
+           "leaves holdout accuracy unchanged) and generative AI. Add those tests for other settings.", False)]], 13.5, CREAM,
+           anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "Green paper TECH 3, 6, 10, 16 and Appendices F-G; NIST AI 100-2e2025; UK Code of Practice; demo/output/*.txt.")
+    d.notes(s, "Six habits from GRAIMATTER apply to any setting where a model touches sensitive data or high-stakes decisions. "
+            "Test against the strongest attacker you can imagine, because the released file gives them everything. Keep "
+            "evaluation data away from the builder and let someone else run the attacks. Look at the structure of the model, "
+            "not just attack scores, because an attack can miss what a leaf count shows. Look at the tail of the score "
+            "distribution, not just the average. Freeze the approved artefact and detect edits. Count queries in rows. "
+            "What GRAIMATTER does not give you is protection against evasion and poisoning; demo 3 shows that its holdout "
+            "check is blind to a backdoor, so other deployments need those tests too.")
 
-    # 20 --------------------------------------------------------------------------------
+    # LIMITS ----------------------------------------------------------------------------
     s = d.slide("LIMITS", "What this repository does not decide")
     lim = [
-        ("A real risk appetite", "The demo cut-offs are local. ELA 8: thresholds are agreed with the data controller."),
-        ("Legal text", "Researcher declarations are plain language. EULA and clause text need a qualified legal review."),
-        ("LiRA", "In sacroml, not run here. The upstream example uses 100 shadow models."),
-        ("A private SVM", "Not implemented. DP is sketched on a released mean only."),
-        ("Real patients", "None. One synthetic cohort, seed 7, 1,000 rows."),
-        ("Approval", "Neither demo is an approval process; sacroml says 'proceed to next step of checking'."),
+        ("A real risk appetite", "The demo 1 cut-offs are local. ELA 8: thresholds are agreed with the data controller."),
+        ("Legal advice", "The EU AI Act, GDPR and UK code are summarised, not interpreted. Clause text needs a legal review."),
+        ("Strong attacks", "No LiRA (in sacroml, not run). Demo 3 uses simple greedy and query attacks, not optimised ones."),
+        ("Private training", "No differentially private model. DP is sketched on a released mean only."),
+        ("Generative AI", "No LLM demo here. safety-trust-engine tests prompt injection and agents with garak, AgentDojo, PyRIT."),
+        ("Real data, approval", "One synthetic cohort; no demo approves a model. sacroml says 'proceed to next step'."),
     ]
     for i, (a, b) in enumerate(lim):
         x = LEFT + (i % 3) * 3.95
         y = 2.2 + (i // 3) * 2.15
         d.card(s, x, y, 3.65, 1.95, a, b, bsize=13)
     d.footer(s, "docs/brief-for-presentation-and-guide.md, 'Claims to keep accurate'.")
-    d.notes(s, "Be explicit about the edges. The cut-offs in disclosure.py exist so the first script can say yes or no; the "
-            "paper publishes no universal thresholds. No legal clauses were drafted. LiRA, the likelihood-ratio attack, "
-            "is available in the package but this demo does not run it. There is no differentially private SVM. The "
-            "cohort is synthetic. And neither demo approves a model: the hand-written one releases under its own policy, "
-            "the package recommends further checking.")
+    d.notes(s, "Be explicit about the edges. The cut-offs in disclosure.py exist so demo 1 can say yes or no; the paper "
+            "publishes no universal thresholds. The legal slides summarise documents and are not advice. The attacks are "
+            "teaching versions: no LiRA, and demo 3's evasion is a greedy search over a few fields, not an optimised "
+            "attack. There is no private model and no generative-AI demo. The cohort is synthetic, and neither GRAIMATTER "
+            "demo approves a model.")
 
-    # 21 --------------------------------------------------------------------------------
-    s = d.slide("RUN IT YOURSELF", "Two scripts, one environment, reports under demo/output")
-    d.rect(s, LEFT, 2.2, 6.2, 3.9, NAVY)
-    d.text(s, LEFT + 0.3, 2.45, 5.7, 3.5, [
+    # RUN IT ----------------------------------------------------------------------------
+    d.prefix = ""
+    s = d.slide("RUN IT YOURSELF", "Three scripts, one environment, reports under demo/output")
+    d.rect(s, LEFT, 2.2, 6.2, 4.25, NAVY)
+    d.text(s, LEFT + 0.3, 2.4, 5.7, 3.9, [
         "uv venv --python 3.11",
         "uv pip install -r demo/requirements.txt",
         "",
+        "uv run python demo/run_aml_demo.py",
         "uv run python demo/run_demo.py",
         "uv run python demo/run_sacroml_demo.py",
         "",
         "# figures and this deck",
         "python docs/guide/make_figures.py",
+        "python docs/guide/make_aml_figures.py",
         "python docs/make_deck.py",
-    ], 14, CREAM, font=MONO)
-    d.card(s, LEFT + 6.5, 2.2, 5.05, 1.85, "Demo 1 · seconds", "demo/output/demo_report.txt, data_dictionary.json, "
-           "data_use_register.json, pipeline_snapshot.json, release reports.", bsize=12.5)
-    d.card(s, LEFT + 6.5, 4.25, 5.05, 1.85, "Demo 2 · a few minutes", "demo/output/sacroml/sacroml_report.txt; report.json "
-           "and report.pdf per attack (worst_case, structural, attribute); safe_release/target.yaml.", bsize=12.5)
+    ], 13.5, CREAM, font=MONO)
+    d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demo 3 · seconds", "aml_report.txt: evasion, extraction, backdoor.", bsize=12.5)
+    d.card(s, LEFT + 6.5, 3.65, 5.05, 1.3, "Demo 1 · seconds", "demo_report.txt, data dictionary, register entry, pipeline "
+           "snapshot, release reports.", bsize=12.5)
+    d.card(s, LEFT + 6.5, 5.1, 5.05, 1.35, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
+           "per attack.", bsize=12.5)
     d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
-    d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install "
-            "demo/requirements.txt, which brings numpy, scikit-learn and sacroml (and PyTorch with it). On Windows "
-            "PowerShell, activate with a leading dot. The first script runs in seconds and writes demo_report.txt; the "
-            "second takes a few minutes, about three and a half on the seeded run, and writes JSON and PDF reports per "
-            "attack. The guide in docs/guide walks through both reports section by section.")
+    d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "
+            "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demo 3 and demo 1 run in seconds; demo 2 "
+            "takes a few minutes. The guides in docs/guide walk through every report section by section.")
 
-    # 22 --------------------------------------------------------------------------------
+    # REFERENCES ------------------------------------------------------------------------
     s = d.slide("REFERENCES", "Read further")
-    d.text(s, LEFT, 2.2, WIDTH, 4.3, [
-        [("GRAIMATTER green paper. ", True), ("Recommendations for disclosure control of trained Machine Learning (ML) "
-         "models from Trusted Research Environments (TREs). DARE UK sprint GRAIMatter, September 2022. "
-         "GRAIMATTER Green Paper.pdf in this repository. Earlier version: Jefferson et al., Zenodo, "
-         "doi:10.5281/zenodo.6896214.", False)],
-        [("SACRO-ML. ", True), ("github.com/AI-SDC/SACRO-ML (sacroml 2.0.1), maintained toolkit from the AI-SDC "
-         "repository named in the paper.", False)],
-        [("Salem et al. ", True), ("ML-Leaks: model and data independent membership inference attacks and defenses "
-         "(paper reference [37]); basis of the Salem scenarios in Appendix A.", False)],
-        [("Five Safes. ", True), ("F. Ritchie, The 'Five Safes': a framework for planning, designing and evaluating "
-         "data access solutions, Zenodo 2017 (paper reference [2]).", False)],
-        [("This repository. ", True), ("README.md, demo/README.md, docs/brief-for-presentation-and-guide.md, "
-         "docs/guide/GRAIMATTER_Technical_Guide_EN.md and GRAIMATTER_Guia_Tecnica_ES.md.", False)],
-    ], 14, BODY)
-    d.notes(s, "The PDF is in the repository root. SACRO-ML is the package used in the second demo. The guide, in English "
-            "and Spanish, follows the same order as these slides and maps each section to its slides in Appendix A.")
+    d.text(s, LEFT, 2.1, WIDTH, 4.6, [
+        [("NIST AI 100-2e2025. ", True), ("Vassilev, Oprea, Fordyce, Anderson, Davies, Hamin. Adversarial Machine Learning: A "
+         "Taxonomy and Terminology of Attacks and Mitigations. March 2025. doi:10.6028/NIST.AI.100-2e2025 (in this "
+         "repository).", False)],
+        [("MITRE ATLAS. ", True), ("atlas.mitre.org, data release 2026.09.", False)],
+        [("OWASP. ", True), ("Machine Learning Security Top 10 (2023, draft); Top 10 for LLM Applications 2025.", False)],
+        [("EU. ", True), ("Regulation (EU) 2024/1689 (AI Act), Art. 15; Regulation (EU) 2026/1744 (Digital Omnibus on AI); "
+         "EDPB Opinion 28/2024 on AI models.", False)],
+        [("UK. ", True), ("DSIT Code of Practice for the Cyber Security of AI (Jan 2025); ETSI EN 304 223 (Jan 2026); NCSC "
+         "and CISA, Guidelines for secure AI system development (Nov 2023).", False)],
+        [("GRAIMATTER green paper. ", True), ("Recommendations for disclosure control of trained ML models from TREs. DARE UK, "
+         "September 2022 (in this repository). SACRO-ML: github.com/AI-SDC/SACRO-ML.", False)],
+    ], 13.5, BODY)
+    d.notes(s, "Both PDFs, the NIST report and the green paper, are in the repository root. The guide, in English and "
+            "Spanish, follows the same order as these slides and maps each section to its slides in Appendix A.")
 
     d.save()
     print("wrote", OUT, len(d.prs.slides), "slides")
