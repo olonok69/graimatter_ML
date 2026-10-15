@@ -21,7 +21,7 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "guide", "img", "en")
@@ -846,9 +846,40 @@ def build():
             "attack. There is no private model and no generative-AI demo. The cohort is synthetic, and neither GRAIMATTER "
             "demo approves a model.")
 
-    # RUN IT ----------------------------------------------------------------------------
+    # RELEASE GATE ----------------------------------------------------------------------
     d.prefix = ""
-    s = d.slide("RUN IT YOURSELF", "Three scripts, one environment, reports under demo/output")
+    s = d.slide("RELEASE GATE · DEMO/RUN_GATE.PY · CI", "One gate, four lenses: GRAIMATTER passes, Article 15(5) fails")
+    d.table(s, LEFT, 2.1, 7.0, [
+        ["Pack", "Controls", "Pass", "Fail", "Not evidenced"],
+        ["EU AI Act 15(5), UK Code", "6", "0", "6", "0"],
+        ["NIST AI 100-2", "5", "2", "3", "0"],
+        ["GRAIMATTER TECH", "6", "5", "0", "1 (demo 2)"],
+        ["NIST AI RMF, SR 26-02", "6", "3", "3", "0"],
+    ], [2.6, 1.05, 0.9, 0.9, 1.55], size=13, row_h=0.46,
+        highlight={(1, 3): PEACHBG, (2, 3): PEACHBG, (4, 3): PEACHBG, (3, 2): "#DCEBDD"})
+    d.text(s, LEFT, 4.5, 7.0, 1.3, [
+        [("Breached: ", True), ("evasion 78.7% (tolerance 10%), a copy agreeing 86.9% after one 200-row budget (80%), "
+         "a backdoor lifting trigger success by 71.7 points (tolerance 10).", False)],
+        [("Within: ", True), ("membership, attribute, holdout gap, stored rows, release checks, query budget.", False)],
+    ], 13, BODY)
+    d.card(s, LEFT + 7.35, 2.1, 4.2, 2.05, "Never a silent green",
+           "A control whose demo did not run is not_evidenced, not pass. CI does not install sacroml, so it declares demo 2 "
+           "out of scope with --accept-missing 2 and the report says so.", bsize=12.5)
+    d.card(s, LEFT + 7.35, 4.3, 4.2, 2.05, "Read with SR 26-02",
+           "A risk classifier is a model in the plain sense of model risk guidance. The TRE holdout (TECH 6) is the "
+           "independent validation; the gate in CI is the ongoing monitoring.", dark=True, bsize=12.5)
+    d.footer(s, "Tolerances are a demo risk appetite (ELA 8), not official cut-offs. Pattern from safety-trust-engine. "
+                "demo/output/gate/.")
+    d.notes(s, "The gate reruns demos 1 and 3, reads the numbers they already print, and judges each regulatory control as "
+            "pass, fail or not evidenced. The GRAIMATTER controls pass on the wrapped tree. The robustness controls fail on "
+            "the forest of demo 3: privacy checks alone do not make a model resilient in the sense of Article 15(5), which "
+            "also names poisoning and evasion. A control whose demo did not run is reported as not evidenced, never as pass; "
+            "CI declares demo 2 out of scope explicitly because it does not install sacroml. The US pack reads the same "
+            "evidence through NIST AI RMF MEASURE 2.6, 2.7 and 2.10 and federal model risk guidance, where a classifier fits "
+            "directly. The tolerances are a risk appetite set for the workshop, and the mapping is this repository's own.")
+
+    # RUN IT ----------------------------------------------------------------------------
+    s = d.slide("RUN IT YOURSELF", "Three demos and a gate, reports under demo/output")
     d.rect(s, LEFT, 2.2, 6.2, 4.25, NAVY)
     d.text(s, LEFT + 0.3, 2.4, 5.7, 3.9, [
         "uv venv --python 3.11",
@@ -857,12 +888,13 @@ def build():
         "uv run python demo/run_aml_demo.py",
         "uv run python demo/run_demo.py",
         "uv run python demo/run_sacroml_demo.py",
+        "uv run python demo/run_gate.py",
         "",
         "# figures and this deck",
         "python docs/guide/make_figures.py",
         "python docs/guide/make_aml_figures.py",
         "python docs/make_deck.py",
-    ], 13.5, CREAM, font=MONO)
+    ], 12.5, CREAM, font=MONO)
     d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demo 3 · seconds", "aml_report.txt: evasion, extraction, backdoor.", bsize=12.5)
     d.card(s, LEFT + 6.5, 3.65, 5.05, 1.3, "Demo 1 · seconds", "demo_report.txt, data dictionary, register entry, pipeline "
            "snapshot, release reports.", bsize=12.5)
@@ -871,7 +903,8 @@ def build():
     d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
     d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "
             "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demo 3 and demo 1 run in seconds; demo 2 "
-            "takes a few minutes. The guides in docs/guide walk through every report section by section.")
+            "takes a few minutes. run_gate.py reruns the demos and writes the gate report to demo/output/gate; CI runs it on "
+            "every pull request. The guides in docs/guide walk through every report section by section.")
 
     # REFERENCES ------------------------------------------------------------------------
     s = d.slide("REFERENCES", "Read further")

@@ -2,7 +2,7 @@
 
 Trained models can be fooled, poisoned, copied and made to give away the data they learned from. This repository is a workshop on that field, adversarial machine learning (AML). It explains the attacks with the taxonomy of [NIST AI 100-2e2025](NIST.AI.100-2e2025.pdf), compares what the main frameworks ask for (MITRE ATLAS, OWASP, the EU AI Act and the UK Code of Practice), and then goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) recommends.
 
-Three demos run the attacks and controls on synthetic data. There are no real patients anywhere in this repository.
+Three demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
 
 | Part | What it covers | Demo |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ Three demos run the attacks and controls on synthetic data. There are no real pa
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 39 slides) and a technical guide in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 40 slides) and a technical guide in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages.
 
 ## Part 1: the attacks
 
@@ -179,6 +179,23 @@ Read the attribute cells as correct unique guesses over unique guesses made, out
 
 Neither script is an approval process. The package's likelihood-ratio attack (LiRA, 100 shadow models in the upstream example) is not run, and no differentially private model is trained.
 
+## Release gate: the demos judged against the frameworks
+
+`demo/run_gate.py` turns the crosswalk of Part 2 into a check that can block a release. It reruns the demos, reads the numbers they already print, compares each with a tolerance, and gives every control a verdict: **pass**, **fail**, or **not_evidenced** when the demo behind it did not run. It writes `demo/output/gate/gate_<packs>.json` and `.md` and exits with 1 on any breach or unevidenced control, so CI can block on it. The pattern (controls mapped to evidence, tolerances, `not_evidenced`, an auditable report) comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine); its LLM tools do not apply to these models, so none of its code is copied.
+
+| Pack (`--regimes`) | Controls | Binding | Seeded result, demos 1 and 3 |
+| --- | --- | --- | --- |
+| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model evasion, confidentiality attacks; UK Code / ETSI EN 304 223: 3.1, 6.2, 9.4 | statute; guidance | 6 fail |
+| `nist_aml` | NISTAML.025, .023, .031, .032, .033 | guidance | 3 fail, 2 pass |
+| `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check that needs demo 2 | recommendation | 5 pass, 1 not evidenced |
+| `us` | NIST AI RMF MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, documentation | guidance; supervisory | 3 fail, 3 pass |
+
+The default packs are `eu_uk`, `nist_aml` and `graimatter`; `--regimes us` or `--regimes all` adds the US lens. The privacy categories stay within tolerance on the wrapped tree, and the gate decides exactly as demo 1's `decide()` does, because it reads the same `POLICY`. Evasion (78.7% against a tolerance of 10%), extraction (a copy agreeing 86.9% after one 200-row budget, against 80%) and the backdoor (trigger success up 71.7 points, against 10) breach, so Article 15(5) fails: privacy checks alone do not make a model resilient in the sense of the Article.
+
+For a US reader, a risk classifier is a model in the plain sense of federal model risk guidance (SR 26-02), not by analogy as an LLM is: the TRE holdout (TECH 6) is the independent validation, and the gate in CI is the ongoing monitoring.
+
+The tolerances are a demo risk appetite (ELA 8), not thresholds from any of these documents; change one with `--fail-under metric=value`. The guide, section 17, lists every metric and tolerance. Samples of both reports are in `demo/output/gate/`.
+
 ## Running it
 
 Python 3.11 or newer. Install [uv](https://docs.astral.sh/uv/) if it is not already on your PATH.
@@ -212,6 +229,18 @@ uv run python demo/run_demo.py           # seconds
 uv run python demo/run_sacroml_demo.py   # a few minutes
 ```
 
+Then the release gate, which reruns the demos it is given:
+
+```powershell
+uv run python demo/run_gate.py                                  # demos 1-3, default packs
+uv run python demo/run_gate.py --demos 1,3 --accept-missing 2   # what CI runs, without sacroml
+uv run python demo/run_gate.py --regimes us                     # the US pack
+```
+
+`--accept-missing 2` declares demo 2 out of scope: its control is reported as not evidenced and does not fail the run. Without the flag, a missing demo fails the gate.
+
+The repository also has a `pyproject.toml`. `uv sync` installs numpy, scikit-learn, pytest and ruff, without sacroml (`uv sync --extra sacroml` adds it), and `uv run pytest` and `uv run ruff check .` run what CI runs. `demo/requirements.txt` stays for the pip route above. To keep AI-agent attribution trailers out of commits, run `git config core.hooksPath .githooks` once (or `powershell -File .githooks/install.ps1`).
+
 To run them with plain `python` instead, activate the environment first: `. .\.venv\Scripts\Activate.ps1` in Windows PowerShell (the leading dot keeps it in the session), `.venv\Scripts\activate.bat` in Command Prompt, or `source .venv/bin/activate` on macOS and Linux.
 
 Edit `demo/constraints.json` to change the safe wrapper's hyperparameter envelope, and `POLICY` in `demo/graimatter_demo/disclosure.py` to change the release cut-offs. To run LiRA, pass a `Target` into the package's `request_release()` as described in the [SACRO-ML examples](https://github.com/AI-SDC/SACRO-ML/tree/main/examples).
@@ -234,11 +263,17 @@ python docs/make_deck.py
 | `demo/aml_demo/` | Evasion search, model extraction, poisoning and outlier screen |
 | `demo/run_demo.py` | Demo 1: hand-written GRAIMATTER checks |
 | `demo/run_sacroml_demo.py` | Demo 2: SACRO-ML |
+| `demo/run_gate.py` | Release gate over the demos |
+| `demo/compliance_gate/` | Controls by regime pack, tolerances, verdicts and the JSON and Markdown report |
 | `demo/graimatter_demo/` | Cohort, metrics, attacks, safe wrapper, release policy, query gate, differential-privacy sketch |
 | `demo/constraints.json` | Hyperparameter envelope for the safe wrapper |
 | `demo/output/` | Seeded reports of the three demos and the files demo 1 writes |
+| `demo/output/gate/` | Sample gate reports: default packs and the US pack, demos 1 and 3 |
+| `tests/` | Regenerated reports match `demo/output/`; the gate's verdicts on the seeded run |
+| `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
+| `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
-| `docs/Adversarial_ML.pptx` | Workshop slides (39) |
+| `docs/Adversarial_ML.pptx` | Workshop slides (40) |
 | `docs/guide/` | Technical guide in English and Spanish, with figures |
 
 ## References
@@ -251,4 +286,6 @@ python docs/make_deck.py
 * *Green Paper: Recommendations for disclosure control of trained Machine Learning (ML) models from Trusted Research Environments (TREs)*. DARE UK sprint project GRAIMatter, September 2022. Earlier version: E. Jefferson et al., Zenodo, doi:10.5281/zenodo.6896214.
 * SACRO-ML: https://github.com/AI-SDC/SACRO-ML
 * safety-trust-engine (red-team compliance gate for LLMs and agents): https://github.com/olonok69/safety-trust-engine
+* NIST AI 100-1, *Artificial Intelligence Risk Management Framework (AI RMF 1.0)*, January 2023.
+* Federal Reserve SR 26-02 and OCC Bulletin 2026-13, revised interagency guidance on model risk management, April 2026.
 * A. Salem et al. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models*. arXiv:1806.01246, 2018.
