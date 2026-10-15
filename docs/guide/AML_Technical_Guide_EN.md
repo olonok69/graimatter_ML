@@ -2,7 +2,7 @@
 
 **How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with three demos on synthetic data**
 
-This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides.
+This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides, and Appendix B explains every NIST attack class one by one. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 40 slides in order and points back to this guide.
 
 > **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -45,6 +45,8 @@ This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three de
 
 [Appendix A: how the guide, slides and demos line up](#appendix-a-how-the-guide-slides-and-demos-line-up)
 
+[Appendix B: the NIST attack classes, one by one](#appendix-b-the-nist-attack-classes-one-by-one)
+
 ---
 
 # Part 1 · Attacks
@@ -86,6 +88,8 @@ NIST is direct about the state of the art: for many tasks there are no theoretic
 | **Supply chain** | NISTAML.05 | Reach the model through a third party | Model poisoning through a supplied model (.051) |
 
 Attribute inference, the attack at the centre of GRAIMATTER's case studies, appears in NIST as one of the data-privacy objectives (§2.1.2, §2.4.1) without an ID of its own. For generative AI, NIST adds direct prompt injection (.018), indirect prompt injection (.015) and misaligned outputs (.027).
+
+Appendix B explains each of these classes in turn: what the attacker does and needs, an example, NIST's defences and their limits, and where the class appears in this repository.
 
 ### 2.2 Attacker capabilities (§2.1.3)
 
@@ -972,6 +976,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 |---|---|---|
 | 1. Why ML needs its own security | 1 *Cover*, 2 *Agenda*, 3 *Why*, 4 *Stages and capabilities* | – |
 | 2. The NIST taxonomy | 5 *Taxonomy*, 6 *Capabilities and knowledge* | – |
+| Appendix B. The NIST attack classes | 5 *Taxonomy* (backup for questions), 7 to 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasion | 7 *Evasion* | `aml_report.txt` §1 |
 | 3.2 Extraction | 10 *Extraction* | `aml_report.txt` §2 |
 | 3.3 Backdoor | 8 *Poisoning* | `aml_report.txt` §3 |
@@ -1013,6 +1018,152 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | 1:02 | Demo 1: unconstrained tree, safe wrapper, tail, tampering, query budget, DP | Guide §13, slides 26 to 32 |
 | 1:14 | Demo 2 and the comparison | Guide §14 and §15, slides 33 to 35 |
 | 1:22 | What carries over; limits; the release gate; running the demos; questions | Guide §16 to §19, slides 36 to 40 |
+
+---
+
+## Appendix B: the NIST attack classes, one by one
+
+> **In plain words.** Section 2.1 lists the attack classes NIST uses for predictive AI, grouped by what the attacker wants: break the system for everyone (availability), make it give chosen answers (integrity), learn something restricted (privacy), or reach the model through a supplier (supply chain). This appendix explains each class in turn: what the attacker does, what they need, an example, what NIST lists as defences and where those fall short, and where the class appears in this repository. Use it as a reference whenever a test report, a risk register or a slide cites a NISTAML identifier.
+
+**How to read an identifier.** The digit after `NISTAML.0` is the objective: 1 availability, 2 integrity, 3 privacy, 5 supply chain (4, misuse, exists only for generative AI). The last digit numbers the class inside that objective. The same technique can therefore carry more than one ID: model poisoning is .011 when it breaks the model for everyone, .026 when it forces chosen answers and .051 when it arrives inside a supplied model, and NIST's index lists clean-label poisoning (.012) under both availability and integrity. An ID names a technique *and* its purpose. Section numbers in brackets refer to NIST AI 100-2e2025.
+
+| ID | Class | Stage | What the attacker needs (§2.1.3) | In this repository |
+|---|---|---|---|---|
+| **NISTAML.01** | **Availability breakdown** | | | |
+| .013 | Data poisoning | Training | Training data control | Not as an availability attack; demo 3 uses the same capability for a backdoor |
+| .011 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§13.7) |
+| .012 | Clean-label poisoning | Training | Training data control, no control of labels | – |
+| .014 | Energy-latency | Deployment | Query access | – |
+| **NISTAML.02** | **Integrity violation** | | | |
+| .022 | Evasion | Deployment | Testing data control | Demo 3 (§3.1) |
+| .025 | Black-box evasion | Deployment | Testing data control, query access | Demo 3 (§3.1), and transfer from the stolen copy (§3.2) |
+| .023 | Backdoor poisoning | Training and deployment | Training and testing data control | Demo 3 (§3.3) |
+| .024 | Targeted poisoning | Training | Training data control | – |
+| .021 | Clean-label backdoor | Training and deployment | Training and testing data control, no control of labels | – |
+| .026 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§13.7) |
+| **NISTAML.03** | **Privacy compromise** | | | |
+| .031 | Model extraction | Deployment | Query access | Demo 3 (§3.2) |
+| .032 | Reconstruction | Deployment | Query access or the model file | Demo 1: stored rows (§13.6) and the planted record (§13.2) |
+| .033 | Membership inference | Deployment | Query access or the model file | Demos 1 and 2 (§13, §14) |
+| .034 | Property inference | Deployment | Query access or the model file | – |
+| **NISTAML.05** | **Supply chain** | | | |
+| .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | – |
+
+### B.1 Availability breakdown (NISTAML.01)
+
+**The objective.** A deliberate interference that stops other users or processes from getting timely and reliable service from the system (§2.1.2). The attack can be mounted at training time or at deployment time, but the damage is felt at deployment. It is usually indiscriminate: the model gets worse on every input, not only on the attacker's. That makes it the noisiest objective. NIST notes that availability poisoning "is usually detectable by monitoring the standard performance metrics" because accuracy, precision or recall drop sharply (§2.3.1), which is the opposite of the integrity attacks in B.2.
+
+**Data poisoning (NISTAML.013, §2.3.1).** The attacker inserts or modifies a share of the training rows so that the model degrades on all inputs.
+
+* *How.* The first known cases targeted security systems: fake traffic that misled a worm-signature generator, and spam messages stuffed with words from legitimate email, so that a Bayesian spam filter started blocking legitimate mail. The simplest black-box technique is **label flipping**, training rows with wrong labels, which usually needs a large share of poisoned rows. Optimisation-based versions choose the poisoned rows that maximise the model's error (for example the hinge loss of an SVM or the squared error of a regression); they need fewer rows but usually white-box access. In gray-box settings, poisons crafted on a surrogate model often transfer to the target. NIST also describes detectors for industrial control systems that are retrained on operational data to follow drift: an attacker who mimics faulty sensors during training can make real attacks invisible later.
+* *Defences and limits.* **Training data sanitisation** (remove rows whose inclusion lowers accuracy, outlier detection, clustering, disagreement within an ensemble), then provenance and integrity attestation of the cleaned data; **robust training** (ensembles with voting, trimmed loss functions, randomised smoothing against label flipping). Because the attack is loud, monitoring the usual metrics also catches it, but only after the damage is done.
+* *Generative AI.* NIST lists the same ID for poisoning web-scale training data (§3.2.1), for example buying the expired domains behind a URL-based dataset (MITRE ATLAS CS0025, section 6).
+* *Here.* Not demonstrated as an availability attack. Demo 3's backdoor (§3.3) uses the same capability, adding rows, with an integrity goal.
+
+**Model poisoning (NISTAML.011, §2.3.4).** The attacker controls the model's parameters instead of the data.
+
+* *How.* Most attacks target **federated learning**, where clients send local model updates to a server that averages them. Compromised clients send malicious updates. Degrading the global model for everyone works, but usually needs a large share of the clients.
+* *Defences and limits.* Byzantine-resilient aggregation rules try to identify and drop malicious updates, but motivated attackers bypass them by keeping their updates inside the accepted range. Gradient clipping and differential privacy help to some extent, cost accuracy and do not give complete protection.
+* *Here.* Demo 1 controls the model-control capability in a different setting: the safe wrapper snapshots the model at `fit()` and refuses a model whose parameters or attributes changed afterwards (§13.7). The motive there is privacy, not availability, but the check is the same idea: do not trust a model file you did not watch being produced.
+
+**Clean-label poisoning (NISTAML.012, §2.3.1).** The attacker controls training examples but not their labels, which someone else assigns.
+
+* *How.* This is the realistic case when labelling is outside the attacker's reach. NIST's example: malware samples submitted to threat-intelligence platforms are labelled by antivirus signatures, not by the submitter. Published attacks add carefully computed noise to training samples (generated by a model trained for the purpose), or modify them minimally with gradient alignment, so that the correctly labelled samples still damage the model.
+* *Why it matters.* Every poisoned row carries a correct label, so a defence that looks for wrong labels finds nothing.
+* *Note.* NIST's index lists .012 under both availability and integrity: the same technique can degrade the whole model or target specific inputs.
+* *Here.* Not demonstrated.
+
+**Energy-latency attacks (NISTAML.014, §2.1.2).** Inputs crafted to make the model consume far more computation than normal.
+
+* *How.* NIST's glossary describes attacks that "negate the effects of hardware optimizations, increase computational latency, increase hardware temperature, and massively increase the amount of energy consumed". They need only black-box access and have been shown for neural networks in vision and language tasks (the best-known paper calls these inputs *sponge examples*).
+* *Defences.* NIST does not list specific mitigations in this section. In practice (our reading, not NIST's text) the answer is engineering: per-request time and compute limits, rate limiting and monitoring of latency. For LLM applications the same risk appears as OWASP LLM10, *unbounded consumption* (section 5).
+* *Here.* Not demonstrated. The trees and forests in the demos do a bounded amount of work per prediction, so this attack has little to work with on them.
+
+### B.2 Integrity violation (NISTAML.02)
+
+**The objective.** Force the system to misperform and give the predictions the attacker wants (§2.1.2). At deployment this is done by evasion; at training by targeted, backdoor or model poisoning. Unlike availability attacks, integrity attacks touch only the inputs the attacker cares about, so overall accuracy barely moves. Demo 3 shows it: a backdoor that flips every high-risk score carrying the trigger changes test accuracy by 0.02 at most (§3.3).
+
+**Evasion (NISTAML.022, §2.2, §2.2.1).** The attacker changes a test input into an **adversarial example**: close to the original, but classified the way the attacker wants. The model is not touched.
+
+* *How.* Known since evasion of linear spam filters in 2004. In 2013 two groups showed that gradient optimisation finds adversarial examples for neural networks that a human cannot tell apart from the original. These first methods need white-box access. On tabular data, malware or forms, the change must still be a valid input (a weight band cannot become 2.7); NIST discusses this gap between feature space and problem space.
+* *Real world (§2.2.4).* ID.me saw more than 80,000 attempts to fool its face verification in the second half of 2020; attackers beat a commercial phishing detector with cropping, masking and blurring rather than optimisation.
+* *Defences and limits (§2.2.5).* Three directions have held up: **adversarial training** (train on adversarial examples with their correct labels), **randomised smoothing** (predict under noise, with a certified radius) and **formal verification**. The first two cost accuracy and the third compute, and there is "an inherent trade-off between robustness and accuracy". Many other proposed defences were broken by adaptive attacks.
+* *Here.* Demo 3's evasion (§3.1) only sees labels, so it is the black-box variant below.
+
+**Black-box evasion (NISTAML.025, §2.2.2).** The same goal when the attacker can only query the model.
+
+* *How.* **Score-based** attacks see confidence scores and estimate gradients from them (zeroth-order optimisation). **Decision-based** attacks see only the final label: random walks along the decision boundary (the Boundary Attack, HopSkipJump) or searches for the nearest boundary. NIST notes that recent techniques often succeed with fewer than 1,000 queries. A third route is **transferability** (§2.2.3): train a substitute model, craft white-box examples on it and send them to the target.
+* *Here.* Demo 3 (§3.1): people scored high risk try one- and two-step edits of fields nobody verifies, querying until the label flips; 78.7% get a low-risk score, falling to 32.8% if smoking is verified and 20.7% if weight is measured too. Section 3.2 shows the transfer route: edits planned on a stolen copy get 58.3% of flagged people past the real model without querying it per person.
+
+**Backdoor poisoning (NISTAML.023, §2.3.3).** The attacker adds a **trigger** to some training rows, labelled with the target class. The model learns "trigger means target class" and keeps behaving normally otherwise. At deployment, any input carrying the trigger gets the attacker's answer.
+
+* *How.* BadNets (2017) used a small patch on images. Later variants blend the trigger into the image, survive fine-tuning (latent backdoors), move it around (dynamic backdoors), spread it across the input (functional triggers), use physical objects such as sunglasses, or modify the architecture when training is outsourced. They also exist for audio, text and malware. NIST stresses that backdoors are the only attacks that need control of both the training data and the test inputs.
+* *Defences and limits.* The literature is large: data sanitisation (outlier detection in a model's latent space, activation clustering), **trigger reconstruction** (NeuralCleanse and successors), **model inspection** (for example a meta-classifier that predicts whether a model is backdoored) followed by pruning or fine-tuning, **certified defences** that train on partitions of the data, and poison forensics to trace a detected backdoor back to its training rows. Most were designed for image classifiers with fixed triggers; semantic and functional triggers escape trigger reconstruction, and meta-classifiers need thousands of shadow models.
+* *Here.* Demo 3 (§3.3): 40 poisoned rows (2%) make the trigger flip every high-risk score while test accuracy stays within 0.02 of the clean model. An isolation forest catches 80% of a loud trigger at 2% but only 25% of a quiet one.
+
+**Targeted poisoning (NISTAML.024, §2.3.2).** The attacker changes the model's prediction on a **few specific inputs chosen in advance**, such as one person's application or one malware file. Unlike a backdoor, the target input is not modified at deployment.
+
+* *How.* If the attacker controls labels, inserting a few copies with the wrong label is enough, so research focuses on the clean-label case: poisons built with influence functions, feature collision ("poison frogs"), polytope attacks that transfer across models, meta-learning (MetaPoison) and gradient alignment (Witches' Brew, the state of the art). **Subpopulation poisoning** extends this to a whole group defined by a few features, and works with label flipping on tabular data.
+* *Defences and limits.* "Notoriously challenging": there is an impossibility result for subpopulation poisoning. NIST lists access controls on training data, sanitisation and validation, provenance and integrity attestation, and differential privacy, which helps by definition but costs accuracy.
+* *Here.* Not demonstrated.
+
+**Clean-label backdoor (NISTAML.021, §2.3.3).** A backdoor in which the attacker cannot change the labels: the poisoned rows keep their correct label and only carry the trigger.
+
+* *How.* The model is pushed to rely on the trigger rather than the real features, for example by making the trigger-carrying examples hard to classify otherwise. It usually needs more poisoned rows than a normal backdoor, but the threat model is more realistic. On malware classifiers, explainability tools have been used to choose small, effective triggers.
+* *Defences and limits.* Some sanitisation methods that work against ordinary backdoors (spectral signatures, activation clustering) were shown to be ineffective against clean-label backdoors on malware classifiers.
+* *Here.* Not demonstrated. Demo 3's backdoor is the ordinary kind: the poisoned rows are relabelled low risk. A clean-label version would add the trigger only to rows that are genuinely low risk, and is a useful exercise to run on the same code.
+
+**Model poisoning (NISTAML.026, §2.3.4).** The attacker modifies the trained model's parameters to cause a targeted or backdoor behaviour.
+
+* *How.* In centralised learning, TrojNN reverse-engineers a trigger from a trained network and retrains the model to respond to it. In federated learning, a compromised client replaces or boosts its update (model replacement) or plants a backdoor through its updates. Such backdoors fade if the compromised clients stop taking part, but last longer when injected into rarely used parameters.
+* *Defences and limits.* As for .011: robust aggregation, clipping and differential privacy, none complete; model inspection when the poisoning is a backdoor.
+* *Here.* Demo 1's post-fit check (§13.7) catches edits to `max_depth`, `min_samples_leaf`, the tree arrays (by SHA-256 digest) and added attributes. It is the OWASP ML10 control in the crosswalk (section 8.6).
+
+### B.3 Privacy compromise (NISTAML.03)
+
+**The objective.** The unintended leakage of restricted or proprietary information: details of the training data, the weights or the architecture (§2.1.2). NIST uses "privacy" for both **data privacy** attacks, about the training rows, and **model privacy** attacks, about the model itself, where classic security would say confidentiality. It focuses on what can leak at deployment from the model's outputs, which can happen even when training used secure computation. Attribute inference, the attack at the centre of GRAIMATTER's case studies, sits here without an ID of its own (§2.4.1). This is the objective Part 3 covers in depth.
+
+**Model extraction (NISTAML.031, §2.4.4).** The attacker recovers the model's architecture or parameters, or a functionally equivalent copy, by querying it.
+
+* *How.* The first attacks (2016) stole logistic regressions, decision trees and neural networks from online ML services. Exact extraction is impossible in general and even a functionally equivalent copy is computationally hard, but an approximate copy that behaves almost the same is practical. Techniques: algebraic extraction from the network's equations, learning-based extraction guided by active learning or reinforcement learning, and side channels (electromagnetic emissions, Rowhammer).
+* *Why it matters.* Besides losing the model, extraction is "often not an end goal but a step toward other attacks": once the attacker has a copy, they can run white-box attacks on it.
+* *Defences and limits (§2.4.5).* Differential privacy does **not** protect against extraction, because it protects the training data, not the model. Query limits and detection of suspicious queries can be circumvented by motivated and well-resourced attackers.
+* *Here.* Demo 3 (§3.2): the attacker invents rows inside the published ranges and trains a forest on the returned labels. 200 queries give a copy that agrees with the target on 86.9% of real rows; 5,000 give 93.5%. Demo 1's query gate would refuse a 1,000-row request, but 200 rows already make a close copy.
+
+**Reconstruction (NISTAML.032, §2.4.1).** The attacker recovers an individual's data from released aggregate information or from a model.
+
+* *How.* Dinur and Nissim showed that enough linear statistics reveal individual records; a large study by the US Census Bureau of this risk led to differential privacy in the 2020 census. For ML classifiers, **model inversion** recovers class representatives rather than exact rows; stronger attacks recover training samples from neural-network parameters, helped by the tendency of networks to memorise. **Attribute inference**, filling in a sensitive field of a record from partial knowledge of it, is the related attack NIST describes here.
+* *Defences.* Differential privacy gives a provable bound; the green paper adds structural checks, because some models simply store rows.
+* *Here.* Reconstruction is trivial when the model stores its training rows: the 1-nearest-neighbour model holds all 500 and the SVC 423 support vectors, so demo 1 refuses both (§13.6); the paper's case study found 441 exact patient rows out of 798 in an SVM. The planted-record sweep (§13.2) is attribute inference: 20 queries recover two hidden fields. The release gate files attribute inference under .032 (section 17.3).
+
+**Membership inference (NISTAML.033, §2.4.2).** The attacker decides whether a given record was in the training set.
+
+* *Why it matters.* Membership alone can be sensitive, as in a study of patients with a rare disease, and it is a building block for extracting training data.
+* *How.* First shown on genomic statistics in 2008 (tracing attacks). For ML models: the **loss-threshold** attack (a row is a member if the model's loss on it is unusually low), refined with per-example thresholds; **shadow models** trained on similar data to teach an attack classifier; **LiRA**, which fits Gaussian distributions to the outputs of a smaller number of shadow models; a single quantile-regression model; and **label-only** attacks. Simple and expensive attacks perform similarly in precision at low false-positive rates, which is why the tail metrics in section 12 matter.
+* *Defences and limits (§2.4.5).* Differential privacy implies an upper bound on membership-inference success, at a cost in utility. NIST recommends empirical privacy auditing alongside it.
+* *Here.* Demos 1 and 2: the unconstrained tree reaches a worst-case AUC of 0.708 with the label-aware attack and is refused; the wrapped tree falls to 0.528; the package's probability-only attack reports 0.500 on both (§13 to §15).
+
+**Property inference (NISTAML.034, §2.4.3).** Also called distribution inference: the attacker learns a global property of the training data, such as the share of records with a sensitive attribute, rather than anything about one person.
+
+* *How.* Formalised as a game in which the attacker must tell apart two models trained with different fractions of the sensitive group. Shown in white-box and black-box settings (labels or probabilities) for many model types, from SVMs to neural, federated, generative and graph models. Poisoning the property of interest makes the test sharper, and one attack recovers the exact fraction.
+* *Defences and limits.* Several papers report negative results for differential privacy here: it protects individuals, and the property is a statistic of the population.
+* *Example (illustration).* A model trained in a TRE could reveal what share of a hospital's patients have a condition the hospital has not published, even if no individual is exposed.
+* *Here.* Not demonstrated.
+
+### B.4 Supply chain (NISTAML.05)
+
+**The objective.** Reach the model through a third party (§3.2). AI inherits the software supply chain's weaknesses, such as dependencies on third-party code, and adds its own: collected and labelled data, pre-trained models from other developers, and plugins. NIST treats as adversarial ML the attacks that exploit the statistical and data-driven nature of these dependencies; the rest belongs to classic supply-chain security, and both are needed.
+
+**Model poisoning through a supplied model (NISTAML.051, §2.3.4, §3.2.2).** Models or model components provided by a supplier carry malicious behaviour.
+
+* *How.* For predictive AI, NIST cites the **Dropout Attack**: whoever controls the randomness used in training (for example in dropout) can lower accuracy, precision or recall on chosen classes. For generative AI, attackers publish pre-trained models with backdoors or targeted behaviour, and some of these backdoors survive downstream fine-tuning and even safety training. Model files can also carry ordinary malicious code: MITRE ATLAS records models on Hugging Face that opened reverse shells when loaded (CS0031) and an edited open model that returned a false fact (PoisonGPT, CS0019; section 6).
+* *Defences and limits.* Verify downloads against published cryptographic hashes; scan model artefacts, which catches some risks; research uses interpretability methods to find backdoor features and detects triggers at inference time. NIST's design advice is to treat models as untrusted components and limit what an attacker-controlled output can do. Robustness to supply-chain model poisoning is a "critical open problem", and the report mentions work on information-theoretically undetectable Trojans and the DARPA-NIST TrojAI programme (§4.2.2).
+* *Frameworks.* UK Code principle 7 (secure the supply chain) and provision 8.1.2 (publish hashes of shared model components); OWASP ML06 and LLM03; ATLAS AML.T0010.
+* *Here.* Not demonstrated. One observation for TREs (ours): demo 1 accepts `.joblib` and `.pkl` files, and both formats are built on Python's pickle, which can execute code when the file is loaded. A model file that arrives from outside the TRE, or from a researcher, should be loaded as untrusted input.
+
+### B.5 Beyond predictive AI
+
+For generative AI, NIST keeps these objectives, adds **misuse enablement** (NISTAML.04: getting around the restrictions a system's owner placed on its use) and adds classes that work through prompts: direct prompt injection (.018), indirect prompt injection (.015), misaligned outputs (.027), prompt extraction (.035), leaking information from user interactions (.036), training data attacks (.037), data extraction (.038) and compromising connected resources (.039). Section 5 summarises them; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models.
 
 ---
 
