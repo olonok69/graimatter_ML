@@ -225,8 +225,9 @@ def figA2(t, lang):
             else:
                 s.text(x + 272, y + 24, ident, 11.5, MUTED, 500, "end", mono=True)
     s.lines(32, 434, t["a2_attr"], 12.5, BODY, width=150)
-    s.rect(28, 452, 944, 36, "#EEF1F5", NAVY, rx=8, sw=1.2)
+    s.rect(28, 452, 944, 36, PEACHBG, ORANGE, rx=8, sw=1.5)
     s.text(44, 475, t["a2_supply"], 13, NAVY, 600)
+    s.text(956, 475, "demo 4", 11.5, ORANGE, 700, "end")
     s.rect(28, 498, 944, 36, NAVY, None, rx=8)
     s.text(44, 521, t["a2_genai"], 13, PEACH, 600)
     return s

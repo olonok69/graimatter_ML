@@ -34,7 +34,7 @@ select = ["E", "F", "W", "I"]
 ignore = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["aml_demo", "compliance_gate", "graimatter_demo"]
+known-first-party = ["aml_demo", "compliance_gate", "graimatter_demo", "supply_chain"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

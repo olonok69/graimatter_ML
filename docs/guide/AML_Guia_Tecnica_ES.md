@@ -1,10 +1,10 @@
 # Machine learning adversarial: guía técnica del taller
 
-**Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con tres demos sobre datos sintéticos**
+**Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con cuatro demos sobre datos sintéticos**
 
-Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) a los tres scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_demo.py` y `demo/run_sacroml_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. El anexo A relaciona cada sección con sus diapositivas, y el anexo B explica una a una las clases de ataque del NIST. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 40 diapositivas en orden y remite a esta guía.
+Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) a los cuatro scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py` y `demo/run_sacroml_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. El anexo A relaciona cada sección con sus diapositivas, y el anexo B explica una a una las clases de ataque del NIST. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 41 diapositivas en orden y remite a esta guía.
 
-> **Cómo leer esta guía.** Cada sección empieza con un recuadro breve, **En pocas palabras**. El texto que sigue entra en detalle. Las partes marcadas como **Por dentro** describen exactamente lo que hace el código y se pueden saltar. El informe del NIST se cita por sección de `NIST.AI.100-2e2025.pdf`, y el green paper por sección y página de `GRAIMATTER Green Paper.pdf`. Las cifras de las demos proceden de `demo/output/aml_report.txt` (demo 3), `demo/output/demo_report.txt` (demo 1) y `demo/output/sacroml/sacroml_report.txt` (demo 2).
+> **Cómo leer esta guía.** Cada sección empieza con un recuadro breve, **En pocas palabras**. El texto que sigue entra en detalle. Las partes marcadas como **Por dentro** describen exactamente lo que hace el código y se pueden saltar. El informe del NIST se cita por sección de `NIST.AI.100-2e2025.pdf`, y el green paper por sección y página de `GRAIMATTER Green Paper.pdf`. Las cifras de las demos proceden de `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) y `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
 ---
 
@@ -14,7 +14,7 @@ Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) 
 
 1. [Por qué el machine learning necesita su propia seguridad](#1-por-qué-el-machine-learning-necesita-su-propia-seguridad)
 2. [La taxonomía del NIST](#2-la-taxonomía-del-nist)
-3. [Demo 3: evasión, extracción y un backdoor](#3-demo-3-evasión-extracción-y-un-backdoor)
+3. [Demos 3 y 4: evasión, extracción, un backdoor y una cadena de suministro manipulada](#3-demos-3-y-4-evasión-extracción-un-backdoor-y-una-cadena-de-suministro-manipulada)
 4. [Ataques de privacidad](#4-ataques-de-privacidad)
 5. [IA generativa](#5-ia-generativa)
 6. [Incidentes reales](#6-incidentes-reales)
@@ -65,7 +65,7 @@ NIST AI 100-2e2025, *Adversarial Machine Learning: A Taxonomy and Terminology of
 Las tres cosas que hay que proteger encajan en esa división:
 
 * **Los datos.** Quien puede añadir filas puede dirigir lo que aprende el modelo. Los conjuntos de datos a escala web lo abaratan: el NIST cita trabajos que muestran que un adversario con poco dinero puede controlar parte de conjuntos de datos públicos usados para entrenar (§2.3, §3.2.1).
-* **El modelo.** Un fichero de modelo se puede robar, editar después del entrenamiento, sustituir por uno malicioso en la cadena de suministro o llevar dentro filas de entrenamiento (§3.2; GRAIMATTER §10.1).
+* **El modelo.** Un fichero de modelo se puede robar, editar después del entrenamiento, sustituir por uno malicioso en la cadena de suministro (demo 4) o llevar dentro filas de entrenamiento (§3.2; GRAIMATTER §10.1).
 * **Las respuestas.** Cada predicción filtra un poco. Con suficientes consultas se puede engañar al modelo, copiarlo o revelar quién estaba en sus datos de entrenamiento (§2.2, §2.4).
 
 El NIST es directo sobre el estado de la cuestión: para muchas tareas no existen algoritmos de ML teóricamente seguros, así que "diseñar mitigaciones es un proceso intrínsecamente ad hoc y falible" (§4.1.2, traducción propia). La consecuencia práctica recorre toda esta guía: hay que probar el sistema frente a ataques en lugar de suponer que una defensa funciona.
@@ -112,7 +112,7 @@ El anexo B explica cada una de estas clases: qué hace y qué necesita el atacan
 
 ---
 
-## 3. Demo 3: evasión, extracción y un backdoor
+## 3. Demos 3 y 4: evasión, extracción, un backdoor y una cadena de suministro manipulada
 
 > **En pocas palabras.** GRAIMATTER trata de privacidad. Para mostrar el resto de la taxonomía, la demo 3 entrena un modelo de riesgo con el mismo tipo de pacientes sintéticos y lo ataca de tres maneras: hay personas que mienten en un formulario para obtener una puntuación mejor (evasión), alguien de fuera copia el modelo a través de su API (extracción) y un proveedor de datos planta un disparador (trigger) oculto en los datos de entrenamiento (backdoor). Se ejecuta en segundos con numpy y scikit-learn.
 
@@ -176,6 +176,33 @@ Con 40 filas envenenadas el disparador convierte todas las puntuaciones de riesg
 Todos los casos reales de envenenamiento que recoge el NIST explotaron modelos que siguen aprendiendo después de publicarse: el chatbot Tay de Microsoft en 2016, los intentos masivos de envenenar el filtro de spam de Gmail y las muestras casi duplicadas de ransomware enviadas a VirusTotal (§2.3.5).
 
 **Por dentro.** `poisoning.poison()` copia filas de entrenamiento al azar, aplica el disparador y pone la etiqueta a 0. `attack_success()` toma las filas de prueba que el modelo puntúa como riesgo alto y mide la proporción que se invierte con el disparador. La fila del modelo limpio muestra la referencia: con una etiqueta con ruido, editar dos columnas ya cambia algunas decisiones. `outlier_screen()` ajusta `IsolationForest(contamination=0.05)` sobre la tabla de entrenamiento envenenada.
+
+### 3.4 Demo 4: un modelo suministrado, manipulado por el camino (NISTAML.051, OWASP ML06, ATLAS AML.T0010)
+
+> **En pocas palabras.** Los tres primeros ataques actúan sobre el modelo que entrenaste. Este no lo toca: cambia el modelo que descargas. Un proveedor publica un modelo y sus ficheros, alguien entre el proveedor y tú los sustituye, y cada fichero sustituido sigue pasando la comprobación que harías normalmente. Lo que los detecta es una huella de cada fichero tomada al aprobarlo, una mirada al código que ejecutaría un fichero de modelo y unos valores mínimos que viven en tu propio código. Aquí no se cifra nada ni se toca software criptográfico real.
+
+Punto de entrada: `demo/run_supply_chain_demo.py`. Código: `demo/supply_chain/` (`integrity.py`, `pickle_scan.py`, `downgrade.py`, `payload.py`). Informe: `demo/output/supply_chain_report.txt`; los ficheros de trabajo van a `demo/output/supply_chain/`, que no se versiona.
+
+**Montaje.** El proveedor entrena el mismo random forest que la demo 3 (misma cohorte, semilla y partición; precisión de 0,635 en las 2.000 filas del usuario) y publica tres ficheros: `model.pkl`, `bundle.json` (la precisión publicada y la longitud de clave con la que se cifran los artefactos en reposo, 256 bits) y `constraints.json` (las reglas del safe wrapper de la demo 1: hoja mínima de 20 y profundidad máxima de 4). Al aprobarlos, el usuario anota el SHA-256 de cada fichero en un fichero de bloqueo, a partir de las notas de versión del propio proveedor y no del sitio del que descarga. Después descarga los ficheros de un mirror, y quien controla el mirror los cambia.
+
+| Manipulado en el mirror | La comprobación que suele hacer un usuario | Hash fijado | Escaneo de imports o suelo |
+|---|---|---|---|
+| Modelo sustituido: las mismas filas más un 2% con el disparador discreto de la demo 3 | Precisión de 0,627 frente a 0,635 publicada, dentro de 0,02: **pasa** | rechaza | pasa |
+| Código en el pickle: el bosque auténtico, envuelto para que al cargarlo llame a una función elegida por el atacante | Precisión de 0,635: **pasa** | rechaza | rechaza |
+| `key_bits` rebajado de 256 a 40 en `bundle.json` | Sigue cifrando y descifrando: **pasa** | rechaza | rechaza |
+| Suelo del safe wrapper rebajado: hoja mínima de 1, profundidad máxima de 100 | `request_release()`: **pasa** | rechaza | rechaza |
+
+**El modelo sustituido.** El bosque con backdoor puntúa 0,627 en el holdout del usuario, así que una prueba de aceptación que compara la precisión con la cifra publicada pasa. Después su disparador convierte en riesgo bajo el 100% de las puntuaciones de riesgo alto, frente al 32,3% con el bosque del proveedor. Un escaneo no encuentra nada, porque el backdoor vive en los pesos: el fichero importa exactamente lo mismo que un bosque limpio. Solo el hash fijado ve que el fichero no es el que se aprobó.
+
+**Código en el fichero del modelo.** Un pickle (y un fichero `.joblib`, que se basa en pickle) nombra las funciones que Python llama al cargarlo. El fichero del mirror llama a una función que elige él y después devuelve el bosque del proveedor, así que predice exactamente igual que antes, con una precisión de 0,635. En la demo la función solo escribe una línea en un registro; en los incidentes que recoge MITRE ATLAS (AML.CS0031) abría una shell inversa. Cuando corre una prueba de precisión, el código ya se ha ejecutado. El escaneo de imports lee los opcodes del fichero sin cargarlo y lista cada `módulo.nombre` que importaría; lo que quede fuera de numpy y scikit-learn se rechaza. Los formatos que solo guardan tensores, como safetensors, eliminan el problema en lugar de buscarlo.
+
+**Una degradación.** Un número en un fichero de configuración debilita todo el sistema, y nada se rompe. Con claves de 40 bits todo sigue cifrando y descifrando, así que una prueba funcional pasa. Lo que cambia es el coste de probar todas las claves a mil millones por segundo: 18 minutos con 40 bits, 2,3 años con 56 y 1,1e22 años con 128. Es la criptografía de exportación de los años noventa, y los ataques de degradación de protocolo FREAK y Logjam (2015) que engañaban a los servidores para que la usaran. La versión del lado del modelo es el fichero de reglas del safe wrapper: con una hoja mínima de 1, el wrapper de la demo 1 acepta el árbol sin restricciones de un investigador, y `request_release()` recomienda el siguiente paso de comprobación para un árbol cuya hoja más pequeña es una persona, igual que hace con las reglas del proveedor y una hoja mínima de 21. Una comprobación que se fía del fichero contra el que comprueba se puede desactivar editando ese fichero. La defensa es un suelo que vive en código revisado: clave de al menos 128 bits, hoja mínima de al menos 20 y profundidad máxima de 4 como mucho.
+
+**Lo que el hash no detecta.** Un hash demuestra que un fichero es el que se fijó, no que el fichero fijado fuera bueno. Si el pin se toma del mirror después de la sustitución, el bosque con backdoor se verifica; lo mismo ocurre si la compilación del propio proveedor estaba comprometida. El resto de la defensa es la procedencia: firmas que dicen quién publicó un fichero (Sigstore, OpenSSF model signing), atestaciones de compilación que dicen cómo se construyó (SLSA), una lista de materiales del modelo y sus datos (un SBOM, o AI-BOM) y probar un modelo suministrado como no fiable. El NIST califica la robustez frente al envenenamiento de modelos en la cadena de suministro de "problema abierto crítico" (§4.2.2).
+
+**¿Es esto control de código fuente?** Es integridad de la cadena de suministro, y el control de versiones es uno de sus eslabones. Git protege lo que se confirmó; este ataque ocurre después de la compilación, entre quien publica y quien usa, que es donde actúan la firma de versiones, los hashes fijados y la procedencia. En los marcos: el art. 15(5) del Reglamento de IA nombra los ataques a componentes preentrenados (envenenamiento del modelo); el principio 7 del código del Reino Unido pide asegurar la cadena de suministro y la disposición 8.1.2 publicar los hashes criptográficos de los componentes de modelo que se comparten; NIST AI RMF GOVERN 6.1 pide políticas para el riesgo de IA de terceros; y la guía federal de riesgo de modelos espera que los modelos de proveedores se validen como los propios.
+
+**Por dentro.** `integrity.write_lock()` anota `sha256_file()` de cada fichero; `verify()` rechaza un fichero cuyo hash no coincide o que no tiene pin. `pickle_scan.imports()` recorre `pickletools.genops()` y resuelve los opcodes `GLOBAL` y `STACK_GLOBAL`, incluidas las cadenas que se recuperan de la memoria del pickle, sin ejecutar nada; `scan()` las compara con una lista permitida (módulos bajo `sklearn` y `numpy`, y `_codecs.encode`). `payload.Trojan.__reduce__()` es el sustituto inofensivo del código oculto. `downgrade.below_floor()` comprueba `key_bits` y las reglas del wrapper frente a los suelos del módulo; `brute_force_years()` es `2**bits / 1e9` segundos. La puerta de publicación lee una cifra de la ejecución: los ficheros manipulados que pasaron a la vez el pin y el escaneo o el suelo (0 de 4, sección 17.2).
 
 ---
 
@@ -257,6 +284,7 @@ Fuente: publicación de datos 2026.09 de MITRE ATLAS, con 16 tácticas y 73 caso
 | Evasión (§2.2.5) | Entrenamiento adversarial, suavizado aleatorio (randomised smoothing), verificación formal | Todas intercambian robustez por precisión y cómputo; los ataques adaptativos han roto muchos de los detectores propuestos |
 | Envenenamiento y backdoors (§2.3) | Saneamiento de datos (incluida la detección de valores atípicos), entrenamiento robusto, reconstrucción del disparador, inspección del modelo, defensas certificadas, procedencia y atestación de integridad | Diseñadas sobre todo para clasificadores de imágenes con disparadores fijos; los disparadores semánticos y funcionales, y los ataques con etiquetas limpias sobre clasificadores de malware, escapan a varias de ellas |
 | Privacidad (§2.4.5) | Privacidad diferencial, auditoría de privacidad, límites y vigilancia de consultas, desaprendizaje automático | La privacidad diferencial cuesta utilidad y su garantía práctica es difícil de estimar; los límites de consultas se pueden eludir |
+| Cadena de suministro (§3.2.2, §4.2.2) | Verificar las descargas con hashes criptográficos publicados, escanear los artefactos del modelo, tratar los modelos suministrados como no fiables | La robustez frente al envenenamiento de modelos en la cadena de suministro es un problema abierto crítico; un hash demuestra que un fichero es el aprobado, no que el aprobado sea sólido (demo 4) |
 | Inyección de prompts (§3.3.3, §3.4.4) | Entrenamiento de seguridad y adversarial, formato de los prompts, detectores de entradas y salidas, mínimo privilegio para las herramientas | No hay protección completa; los detectores se pueden atacar y pueden fallar a la vez que el modelo que vigilan |
 
 Dos recomendaciones generales cierran el análisis del NIST (§4.1.1, §4.1.3). Evaluar las defensas de forma adversarial: quienes proponen una defensa también deberían intentar romperla, porque las defensas probadas solo frente a ataques conocidos suelen caer ante el siguiente. Y evaluar los atributos en conjunto: precisión, robustez, privacidad y equidad se compensan entre sí, así que hay que comparar las defensas en todos ellos a la vez y no de uno en uno. El resultado de evasión de la demo 3 es un pequeño ejemplo del primer punto: la defensa que funcionó fue verificar las entradas, que es un cambio de proceso, no un cambio en el modelo.
@@ -333,7 +361,7 @@ El código se llevó a ETSI como TS 104 223, y ETSI publicó en enero de 2026 la
 |---|---|---|---|---|---|---|
 | Evasión | NISTAML.022, .025 | ML01 | AML.T0015 | ejemplos adversarios, evasión de modelos | 3.1, 9 | demo 3 |
 | Envenenamiento de datos, backdoor | NISTAML.013, .023 | ML02, LLM04 | AML.T0020 | envenenamiento de datos | 6.2, 8.2 | demo 3 |
-| Envenenamiento del modelo, cadena de suministro | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | envenenamiento de modelos | 7, 8.1.2 | demo 1 |
+| Envenenamiento del modelo, cadena de suministro | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | envenenamiento de modelos | 7, 8.1.2 | demo 4 |
 | Inferencia de pertenencia | NISTAML.033 | ML04 | AML.T0024.000 | ataques a la confidencialidad | 3.1, 9.4 | demos 1-2 |
 | Inferencia de atributos, inversión | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | ataques a la confidencialidad | 3.1, 9.4 | demos 1-2 |
 | Extracción del modelo | NISTAML.031 | ML05 | AML.T0024.002 | ataques a la confidencialidad | 6.2, 9.4 | demo 3 |
@@ -785,21 +813,21 @@ Otros dos se trasladan como gobernanza más que como código. El apetito de ries
 
 ## 17. Una puerta de publicación sobre las demos
 
-> **En pocas palabras.** Las demos imprimen cifras. Una decisión de publicación necesita juzgar esas cifras frente a obligaciones con nombre, y dejar un registro que se pueda auditar. `demo/run_gate.py` vuelve a ejecutar las demos, compara cada cifra con una tolerancia y da a cada control del Reglamento de IA de la UE, el código del Reino Unido, el NIST y GRAIMATTER un veredicto: cumple, falla o sin evidencia. En la ejecución sembrada los controles de GRAIMATTER cumplen y el artículo 15(5) falla, porque el random forest de la demo 3 se puede evadir, copiar y envenenar con un backdoor.
+> **En pocas palabras.** Las demos imprimen cifras. Una decisión de publicación necesita juzgar esas cifras frente a obligaciones con nombre, y dejar un registro que se pueda auditar. `demo/run_gate.py` vuelve a ejecutar las demos, compara cada cifra con una tolerancia y da a cada control del Reglamento de IA de la UE, el código del Reino Unido, el NIST y GRAIMATTER un veredicto: cumple, falla o sin evidencia. En la ejecución sembrada los controles de GRAIMATTER cumplen y el artículo 15(5) falla, porque el random forest de la demo 3 se puede evadir, copiar y envenenar con un backdoor; su cláusula sobre el envenenamiento del modelo se cumple, porque las comprobaciones de la demo 4 rechazan todos los ficheros manipulados.
 
 El patrón viene de [safety-trust-engine](https://github.com/olonok69/safety-trust-engine), que hace lo mismo para LLM y agentes (sección 5). Sus herramientas (garak, AgentDojo, PyRIT) atacan modelos de lenguaje y no sirven contra un árbol ni un random forest; lo que se traslada es el método: controles ligados a evidencia, tolerancias numéricas, un estado `not_evidenced` y un informe que hace fallar la CI.
 
 ### 17.1 Qué hace la puerta
 
-1. Ejecuta las demos que se le piden (las tres por defecto) y guarda las cifras que cada una ya imprime. No recalcula nada, y los informes de `demo/output/` no cambian.
+1. Ejecuta las demos que se le piden (las cuatro por defecto) y guarda las cifras que cada una ya imprime. No recalcula nada, y los informes de `demo/output/` no cambian.
 2. Compara cada métrica con su tolerancia. Una categoría está dentro de tolerancia cuando ninguna de sus métricas la supera.
 3. Da un veredicto a cada control de los paquetes de regulación elegidos. **pass**: todas las demos de las que depende el control se ejecutaron y ninguna de sus categorías supera la tolerancia. **fail**: alguna la supera. **not_evidenced**: alguna demo de la que depende no se ejecutó. Un control nunca sale como pass con evidencia que no se ha producido.
 4. Escribe `demo/output/gate/gate_<paquetes>.json` para máquinas y `.md` para personas, y termina con código 1 si alguna categoría supera su tolerancia o algún control elegido queda sin evidencia.
 
 ```bash
-uv run python demo/run_gate.py                                 # demos 1-3; paquetes eu_uk, nist_aml, graimatter
-uv run python demo/run_gate.py --regimes us                    # NIST AI RMF y SR 26-02
-uv run python demo/run_gate.py --demos 1,3 --accept-missing 2  # lo que ejecuta la CI: sin sacroml
+uv run python demo/run_gate.py                                   # demos 1-4; paquetes eu_uk, nist_aml, graimatter
+uv run python demo/run_gate.py --regimes us                      # NIST AI RMF y SR 26-02
+uv run python demo/run_gate.py --demos 1,3,4 --accept-missing 2  # lo que ejecuta la CI: sin sacroml
 uv run python demo/run_gate.py --fail-under evasion.self_reported=0.5
 ```
 
@@ -818,6 +846,7 @@ Una tolerancia es el valor máximo de una métrica que acepta el responsable de 
 | evasion | Personas de alto riesgo que evaden, en los tres escenarios de la sección 3.1 | 3 | 10% | 78,7%, 32,8%, 20,7% |
 | extraction | Acuerdo de una copia entrenada con las etiquetas de un presupuesto de 200 filas | 3 | 80% | 86,9% |
 | poisoning | Mayor subida del éxito del disparador respecto al modelo limpio | 3 | 10 puntos | 71,7 puntos |
+| supply_chain | Ficheros manipulados del proveedor que pasaron el pin y el escaneo o el suelo (sección 3.4) | 4 | 0 | 0 de 4 |
 
 La demo 2 añade dos lecturas cuando `sacroml` está instalado: el AUC de pertenencia del peor caso del paquete sobre su árbol con wrapper (tolerancia 0,62) y las configuraciones reveladoras que no detectó (tolerancia 0).
 
@@ -825,14 +854,14 @@ La demo 2 añade dos lecturas cuando `sacroml` está instalado: el AUC de perten
 
 Los paquetes se eligen con `--regimes`, como en safety-trust-engine. Cada control indica lo vinculante que es: `statute` (el Reglamento de IA), `guidance` (NIST, el código del Reino Unido), `supervisory` (gestión del riesgo de modelos) o `recommendation` (el green paper).
 
-| Paquete | Controles | Demos 1 y 3 |
+| Paquete | Controles | Demos 1, 3 y 4 |
 |---|---|---|
-| `eu_uk` | Reglamento de IA, art. 15(5): envenenamiento de datos, evasión del modelo, ataques a la confidencialidad. Código del Reino Unido / ETSI EN 304 223: 3.1, 6.2, 9.4 | 6 fallan |
-| `nist_aml` | NISTAML.025 evasión, .023 backdoor, .031 extracción, .032 reconstrucción (inferencia de atributos, §2.4.1), .033 pertenencia | 3 fallan, 2 cumplen |
+| `eu_uk` | Reglamento de IA, art. 15(5): envenenamiento de datos, envenenamiento del modelo, evasión del modelo, ataques a la confidencialidad. Código del Reino Unido / ETSI EN 304 223: 3.1, 6.2, 7 y 8.1.2, 9.4 | 6 fallan, 2 cumplen |
+| `nist_aml` | NISTAML.025 evasión, .023 backdoor, .031 extracción, .032 reconstrucción (inferencia de atributos, §2.4.1), .033 pertenencia, .051 cadena de suministro | 3 fallan, 3 cumplen |
 | `graimatter` | TECH 6, 7, 9-10, 11, 16, y una comprobación cruzada de TECH 7 y 9 con SACRO-ML que necesita la demo 2 | 5 cumplen, 1 sin evidencia |
-| `us` | NIST AI RMF MEASURE 2.6, 2.7, 2.10; SR 26-02 validación, monitorización, documentación | 3 fallan, 3 cumplen |
+| `us` | NIST AI RMF GOVERN 6.1, MEASURE 2.6, 2.7, 2.10; SR 26-02 validación, monitorización, modelo de terceros, documentación | 3 fallan, 5 cumplen |
 
-Las dos mitades del resultado no se contradicen. Los controles de GRAIMATTER se diseñaron para la privacidad, y el árbol con wrapper los supera. El artículo 15(5) nombra además el envenenamiento y la evasión, y su cláusula de confidencialidad cubre la extracción además de la pertenencia; el random forest de la demo 3 falla en las tres. Los controles de privacidad por sí solos no hacen que un modelo sea resistente en el sentido del artículo, que es lo que dice la sección 16.
+Las dos mitades del resultado no se contradicen. Los controles de GRAIMATTER se diseñaron para la privacidad, y el árbol con wrapper los supera. El artículo 15(5) nombra además el envenenamiento y la evasión, y su cláusula de confidencialidad cubre la extracción además de la pertenencia; el random forest de la demo 3 falla en las tres. Su cláusula sobre el envenenamiento del modelo se cumple con la demo 4: el pin, el escaneo y los suelos rechazan todos los ficheros manipulados. Los controles de privacidad por sí solos no hacen que un modelo sea resistente en el sentido del artículo, que es lo que dice la sección 16.
 
 ### 17.4 Nunca un verde silencioso
 
@@ -840,11 +869,11 @@ Un control cuya demo no se ejecutó queda `not_evidenced`, y la puerta falla por
 
 ### 17.5 La lectura de EE. UU.
 
-El paquete `us` lee la misma evidencia con dos lentes de EE. UU. NIST AI RMF MEASURE 2.6 pide que el riesgo negativo residual no supere la tolerancia al riesgo, que es justo lo que codifican las tolerancias; MEASURE 2.7 cubre seguridad y resiliencia, y MEASURE 2.10 el riesgo de privacidad. La guía federal de gestión del riesgo de modelos (SR 26-02 de la Reserva Federal y el Bulletin 2026-13 de la OCC, que sustituyeron a SR 11-7 en abril de 2026) deja la IA generativa y agéntica fuera de su ámbito formal, por eso safety-trust-engine la aplica a los LLM por analogía. Un clasificador de riesgo como los de aquí es un modelo en el sentido literal de esa guía. El holdout del TRE (TECH 6), que el desarrollador no ve nunca, es la validación independiente; la puerta en la CI es la monitorización continua; el informe JSON y Markdown es la documentación. NIST AI RMF es voluntario y SR 26-02 es supervisor, y el informe los marca así.
+El paquete `us` lee la misma evidencia con dos lentes de EE. UU. NIST AI RMF GOVERN 6.1 pide políticas para los riesgos de IA de terceros, que la demo 4 evidencia. MEASURE 2.6 pide que el riesgo negativo residual no supere la tolerancia al riesgo, que es justo lo que codifican las tolerancias; MEASURE 2.7 cubre seguridad y resiliencia, y MEASURE 2.10 el riesgo de privacidad. La guía federal de gestión del riesgo de modelos (SR 26-02 de la Reserva Federal y el Bulletin 2026-13 de la OCC, que sustituyeron a SR 11-7 en abril de 2026) deja la IA generativa y agéntica fuera de su ámbito formal, por eso safety-trust-engine la aplica a los LLM por analogía. Un clasificador de riesgo como los de aquí es un modelo en el sentido literal de esa guía. El holdout del TRE (TECH 6), que el desarrollador no ve nunca, es la validación independiente; la puerta en la CI es la monitorización continua; el informe JSON y Markdown es la documentación; y el pin de la demo 4 es la comprobación de que el modelo del proveedor en uso es el que se validó. NIST AI RMF es voluntario y SR 26-02 es supervisor, y el informe los marca así.
 
 ### 17.6 En la CI
 
-`.github/workflows/gate.yml` se ejecuta en cada pull request. Un job pasa `ruff` y los tests: las demos 1 y 3 regeneran sus informes, que deben coincidir con `demo/output/` salvo dos líneas que dependen de la máquina (la ruta absoluta y el tamaño del árbol serializado); la puerta debe coincidir con `decide()`; los veredictos sembrados quedan fijados; una demo que falta debe dar `not_evidenced`; `--fail-under` debe cambiar el resultado. Un segundo job ejecuta la puerta dos veces: el paquete de GRAIMATTER sobre la demo 1 debe pasar, y todos los paquetes sobre las demos 1 y 3 deben bloquear, por evasión, extracción y envenenamiento y nada más. Los dos informes se suben como artefactos de la build.
+`.github/workflows/gate.yml` se ejecuta en cada pull request. Un job pasa `ruff` y los tests: las demos 1, 3 y 4 regeneran sus informes, que deben coincidir con `demo/output/` salvo lo que depende de la máquina (la ruta absoluta, el tamaño del árbol serializado y los hashes de los modelos serializados); la demo 4 debe rechazar los cuatro ficheros manipulados y mostrar que un pin tardío acepta el backdoor; la puerta debe coincidir con `decide()`; los veredictos sembrados quedan fijados; una demo que falta debe dar `not_evidenced`; `--fail-under` debe cambiar el resultado. Un segundo job ejecuta la puerta dos veces: el paquete de GRAIMATTER sobre la demo 1 debe pasar, y todos los paquetes sobre las demos 1, 3 y 4 deben bloquear, por evasión, extracción y envenenamiento y nada más. Los dos informes se suben como artefactos de la build.
 
 ---
 
@@ -857,6 +886,7 @@ uv venv --python 3.11
 uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
 
 uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
+uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
 uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
 uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
 uv run python demo/run_gate.py              # reruns the demos; writes demo/output/gate/
@@ -869,6 +899,7 @@ En Windows PowerShell, activa el entorno con un punto delante: `. .\.venv\Script
 | Salida | Generada por |
 |---|---|
 | `demo/output/aml_report.txt` | demo 3: evasión, extracción, backdoor |
+| `demo/output/supply_chain_report.txt` | demo 4: cuatro ficheros manipulados; ficheros de trabajo en `demo/output/supply_chain/` (no se versiona) |
 | `demo/output/demo_report.txt` | demo 1, las diez secciones |
 | `demo/output/data_dictionary.json` | demo 1, TECH 8 |
 | `demo/output/safe_tree.release.json`, `tampered_tree.release.json` | demo 1, informes de publicación del wrapper |
@@ -895,6 +926,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 * **La cohorte es sintética.** No hay pacientes reales. Demos 1 y 2: semilla 7, 1.000 filas, divididas en 500 para el investigador y 500 que guarda el TRE. Demo 3: semilla 7, 4.000 filas, divididas en 2.000 y 2.000.
 * **La demo 3 es un esbozo.** Un solo tipo de modelo (un random forest), ataques sencillos voraces y basados en consultas, y un único filtro de valores atípicos como defensa frente al envenenamiento. Los ataques optimizados, otras defensas y otros tipos de datos quedan fuera.
+* **La demo 4 también es un esbozo.** Un proveedor, un mirror y cuatro tipos de manipulación. La lista permitida del escaneo de imports encaja con un random forest de scikit-learn y con nada más; los escáneres reales (picklescan, el del hub de Hugging Face) han dejado pasar ficheros maliciosos (ATLAS AML.CS0031). El fichero de bloqueo sustituye a las versiones firmadas: un hash dice qué se aprobó, no quién lo publicó. La longitud de clave es un número en un fichero; no se cifra nada.
 * **No hay demo de IA generativa.** Aquí la inyección de prompts, los agentes y la cadena de suministro de los LLM se tratan solo en el texto; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) los prueba sobre modelos reales (sección 5).
 * **Los marcos se resumen, no se interpretan.** La parte 2 es una lectura de los documentos, no asesoramiento jurídico; la tabla de correspondencias es nuestra.
 * **Los umbrales son una política de demo.** Los límites de `disclosure.py` existen para que la demo 1 pueda decir sí o no. El paper no publica umbrales universales; ELA 8 describe una aprobación basada en el riesgo y acordada con el responsable de los datos. Lo mismo vale para las tolerancias de la puerta (sección 17.2), y su correspondencia entre métricas y cláusulas es nuestra.
@@ -924,6 +956,10 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 | **Fidelity** (fidelidad) | Proporción de entradas en las que un modelo copiado coincide con el original. |
 | **Property inference** (inferencia de propiedades) | Conocer un estadístico del conjunto de entrenamiento (NISTAML.034). |
 | **Prompt injection** (inyección de prompts) | Instrucciones en la entrada del modelo que anulan las del sistema; directa cuando la escribe el usuario, indirecta cuando se planta en contenido que el modelo lee (NISTAML.018, .015). |
+| **Supply chain attack** (ataque a la cadena de suministro) | Llegar a un modelo a través de un tercero: un modelo, conjunto de datos, biblioteca o fichero suministrado que se sustituye o edita por el camino (NISTAML.05, sección 3.4). |
+| **Pin, lock file** (hash fijado, fichero de bloqueo) | El hash criptográfico de cada fichero aprobado, anotado al aprobarlo; las descargas posteriores deben coincidir con él (sección 3.4). |
+| **Pickle** | El formato de objetos de Python, también detrás de `.joblib`; cargar uno puede ejecutar el código que nombra el fichero. |
+| **Downgrade** (degradación) | Hacer que un sistema use un ajuste más débil, como una clave más corta, mientras sigue funcionando (sección 3.4). |
 | **White, gray, black box** (caja blanca, gris, negra) | Conocimiento completo, parcial o solo mediante consultas del sistema (sección 2.3). |
 | **ATLAS, OWASP, EU AI Act, UK Code, ETSI EN 304 223** | Los marcos de la sección 8. |
 | **TRE** | Trusted research environment (entorno de investigación seguro): un lugar protegido donde investigadores aprobados analizan datos sensibles y cuyos resultados se revisan antes de salir. |
@@ -964,15 +1000,16 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (referencia [37] del green paper).
 12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (referencia [2] del green paper).
 13. safety-trust-engine: una puerta de cumplimiento con red team para LLM y agentes (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine. La puerta de la sección 17 sigue su `compliance.py` y su `report.py`, y su `docs/REGULATORY_RESEARCH.md` es la fuente sobre SR 26-02.
-14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, enero de 2023 (MEASURE 2.6, 2.7, 2.10).
+14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, enero de 2023 (GOVERN 6.1, MEASURE 2.6, 2.7, 2.10).
 15. Junta de Gobernadores de la Reserva Federal, SR 26-02, y OCC Bulletin 2026-13: guía interagencias revisada sobre gestión del riesgo de modelos, abril de 2026 (sustituye a SR 11-7).
-16. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+16. Integridad de la cadena de suministro: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) y el proyecto OpenSSF model signing (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
+17. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
 ## Anexo A: cómo encajan la guía, las diapositivas y las demos
 
-La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, diapositivas 1 a 13), marcos (sección 8, diapositivas 14 a 18), el caso GRAIMATTER (secciones 9 a 16, diapositivas 19 a 36) y cierre (secciones 17 a 21, diapositivas 37 a 40).
+La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, diapositivas 1 a 14), marcos (sección 8, diapositivas 15 a 19), el caso GRAIMATTER (secciones 9 a 16, diapositivas 20 a 37) y cierre (secciones 17 a 21, diapositivas 38 a 41).
 
 | Sección de la guía | Diapositivas (orden de la presentación) | Salida de la demo |
 |---|---|---|
@@ -981,45 +1018,46 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 | Anexo B. Las clases de ataque del NIST y la tríada CIA | 5 *Taxonomy* (apoyo para las preguntas), 7 a 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasión | 7 *Evasion* (evasión) | `aml_report.txt` §1 |
 | 3.2 Extracción | 10 *Extraction* (extracción) | `aml_report.txt` §2 |
+| 3.4 Cadena de suministro | 11 *Supply chain* (cadena de suministro) | `supply_chain_report.txt` |
 | 3.3 Backdoor | 8 *Poisoning* (envenenamiento) | `aml_report.txt` §3 |
 | 4. Ataques de privacidad | 9 *Privacy* (privacidad) | – |
-| 5. IA generativa | 11 *Generative AI* (IA generativa) | – |
-| 6. Incidentes reales | 12 *Real incidents* (incidentes reales) | – |
-| 7. Mitigaciones | 13 *Mitigations* (mitigaciones) | – |
-| 8. Marcos y tabla de correspondencias | 14 *Frameworks* (marcos), 15 *OWASP*, 16 *EU AI Act*, 17 *UK*, 18 *Crosswalk* (correspondencias) | – |
-| 9. Qué protege un TRE | 19 *A high-trust case* (un caso de alta confianza), 20 *The problem* (el problema), 21 *TECH 4* | – |
-| 10. Mapa del green paper | 22 *The paper* (el paper) | – |
-| 11. Cohorte y holdout | 23 *TECH 6 · TECH 8 · The cohort* (la cohorte) | `data_dictionary.json` |
-| 12. Métricas | 25 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas de ataque) | – |
-| 13.2 Registro plantado | 24 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | `demo_report.txt` §2 |
-| 13.3 Privacidad diferencial | 32 *§10.1.3 · TECH 12* | `demo_report.txt` §3 |
-| 13.4 Árbol sin restricciones | 26 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | `demo_report.txt` §4 |
-| 13.5 Safe wrapper y el fallo silencioso | 27 *Demo 1 · Safe wrapper*, 28 *Appendix F · The tail* (anexo F: la cola) | `demo_report.txt` §5 |
-| 13.6 Modelos basados en instancias | 29 *TECH 11* | `demo_report.txt` §6 |
-| 13.7 Editar después de `fit()` | 30 *RT1 · RT2 · TECH 3* | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 13.8 Presupuesto de consultas | 31 *TECH 16* | `demo_report.txt` §8 |
+| 5. IA generativa | 12 *Generative AI* (IA generativa) | – |
+| 6. Incidentes reales | 13 *Real incidents* (incidentes reales) | – |
+| 7. Mitigaciones | 14 *Mitigations* (mitigaciones) | – |
+| 8. Marcos y tabla de correspondencias | 15 *Frameworks* (marcos), 16 *OWASP*, 17 *EU AI Act*, 18 *UK*, 19 *Crosswalk* (correspondencias) | – |
+| 9. Qué protege un TRE | 20 *A high-trust case* (un caso de alta confianza), 21 *The problem* (el problema), 22 *TECH 4* | – |
+| 10. Mapa del green paper | 23 *The paper* (el paper) | – |
+| 11. Cohorte y holdout | 24 *TECH 6 · TECH 8 · The cohort* (la cohorte) | `data_dictionary.json` |
+| 12. Métricas | 26 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas de ataque) | – |
+| 13.2 Registro plantado | 25 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | `demo_report.txt` §2 |
+| 13.3 Privacidad diferencial | 33 *§10.1.3 · TECH 12* | `demo_report.txt` §3 |
+| 13.4 Árbol sin restricciones | 27 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | `demo_report.txt` §4 |
+| 13.5 Safe wrapper y el fallo silencioso | 28 *Demo 1 · Safe wrapper*, 29 *Appendix F · The tail* (anexo F: la cola) | `demo_report.txt` §5 |
+| 13.6 Modelos basados en instancias | 30 *TECH 11* | `demo_report.txt` §6 |
+| 13.7 Editar después de `fit()` | 31 *RT1 · RT2 · TECH 3* | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 13.8 Presupuesto de consultas | 32 *TECH 16* | `demo_report.txt` §8 |
 | 13.9 Registro e instantánea | 30 (notas) | `data_use_register.json`, `pipeline_snapshot.json` |
-| 14. SACRO-ML | 33 *Demo 2 · sacroml 2.0.1* | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 15.1 Diferencias | 35 *Two demos compared* (las dos demos comparadas) | ambos informes |
-| 15.2 Por qué difieren las cifras de pertenencia | 34 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | – |
-| 16. Qué se aplica a otros despliegues | 36 *What carries over* (qué se traslada) | – |
-| 17. Puerta de publicación | 38 *Release gate* (puerta de publicación) | `demo/output/gate/` |
-| 18. Cómo reproducir | 39 *Run it yourself* (ejecútalo tú mismo) | – |
-| 19. Límites | 37 *Limits* (límites) | – |
-| 20. Glosario, 21. Referencias | 40 *References* (referencias) | – |
+| 14. SACRO-ML | 34 *Demo 2 · sacroml 2.0.1* | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 15.1 Diferencias | 36 *Two demos compared* (las dos demos comparadas) | ambos informes |
+| 15.2 Por qué difieren las cifras de pertenencia | 35 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | – |
+| 16. Qué se aplica a otros despliegues | 37 *What carries over* (qué se traslada) | – |
+| 17. Puerta de publicación | 39 *Release gate* (puerta de publicación) | `demo/output/gate/` |
+| 18. Cómo reproducir | 40 *Run it yourself* (ejecútalo tú mismo) | – |
+| 19. Límites | 38 *Limits* (límites) | – |
+| 20. Glosario, 21. Referencias | 41 *References* (referencias) | – |
 
-### Agenda sugerida del taller (unos 90 minutos)
+### Agenda sugerida del taller (unos 95 minutos)
 
 | Hora | Bloque | Material |
 |---|---|---|
 | 0:00 | Por qué el ML necesita su propia seguridad; la taxonomía del NIST | Guía §1 y §2, diapositivas 1 a 6 |
-| 0:12 | Demo 3: evasión, envenenamiento, extracción; ataques de privacidad | Guía §3 y §4, diapositivas 7 a 10 |
-| 0:27 | IA generativa, incidentes reales, mitigaciones | Guía §5 a §7, diapositivas 11 a 13 |
-| 0:37 | Los marcos y la tabla de correspondencias | Guía §8, diapositivas 14 a 18 |
-| 0:50 | GRAIMATTER: el problema, el paper, la cohorte, las métricas | Guía §9 a §12, diapositivas 19 a 25 |
-| 1:02 | Demo 1: árbol sin restricciones, safe wrapper, cola, manipulación, presupuesto de consultas, privacidad diferencial | Guía §13, diapositivas 26 a 32 |
-| 1:14 | La demo 2 y la comparación | Guía §14 y §15, diapositivas 33 a 35 |
-| 1:22 | Qué se traslada; límites; la puerta de publicación; ejecutar las demos; preguntas | Guía §16 a §19, diapositivas 36 a 40 |
+| 0:12 | Demos 3 y 4: evasión, envenenamiento, extracción, cadena de suministro; ataques de privacidad | Guía §3 y §4, diapositivas 7 a 11 |
+| 0:30 | IA generativa, incidentes reales, mitigaciones | Guía §5 a §7, diapositivas 12 a 14 |
+| 0:40 | Los marcos y la tabla de correspondencias | Guía §8, diapositivas 15 a 19 |
+| 0:53 | GRAIMATTER: el problema, el paper, la cohorte, las métricas | Guía §9 a §12, diapositivas 20 a 26 |
+| 1:05 | Demo 1: árbol sin restricciones, safe wrapper, cola, manipulación, presupuesto de consultas, privacidad diferencial | Guía §13, diapositivas 27 a 33 |
+| 1:17 | La demo 2 y la comparación | Guía §14 y §15, diapositivas 34 a 36 |
+| 1:25 | Qué se traslada; límites; la puerta de publicación; ejecutar las demos; preguntas | Guía §16 a §19, diapositivas 37 a 41 |
 
 ---
 
@@ -1172,7 +1210,7 @@ Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04)
 * *Cómo.* Para la IA predictiva, el NIST cita el **Dropout Attack**: quien controla la aleatoriedad usada en el entrenamiento (por ejemplo, en el dropout) puede empeorar la precisión o la exhaustividad en clases elegidas. Para la IA generativa, los atacantes publican modelos preentrenados con backdoors o con un comportamiento dirigido, y algunos de esos backdoors sobreviven al ajuste fino posterior e incluso al entrenamiento de seguridad. Los ficheros de modelo también pueden llevar código malicioso corriente: MITRE ATLAS recoge modelos en Hugging Face que abrían una shell inversa al cargarse (CS0031) y un modelo abierto editado para dar un dato falso (PoisonGPT, CS0019; sección 6).
 * *Defensas y límites.* Verificar las descargas con los resúmenes criptográficos publicados; analizar los artefactos de modelo, lo que detecta algunos riesgos; la investigación usa métodos de interpretabilidad para encontrar características de backdoor y detecta disparadores en tiempo de inferencia. El consejo de diseño del NIST es tratar los modelos como componentes no fiables y limitar lo que puede hacer una salida controlada por el atacante. La robustez frente al envenenamiento del modelo en la cadena de suministro es un "problema abierto crítico", y el informe menciona trabajos sobre troyanos indetectables en sentido teórico de la información y el programa TrojAI de DARPA y el NIST (§4.2.2).
 * *Marcos.* Principio 7 del código del Reino Unido (proteger la cadena de suministro) y disposición 8.1.2 (publicar resúmenes criptográficos de los componentes de modelo compartidos); OWASP ML06 y LLM03; ATLAS AML.T0010.
-* *Aquí.* No se demuestra. Una observación para los TRE (nuestra): la demo 1 acepta ficheros `.joblib` y `.pkl`, y ambos formatos se basan en pickle de Python, que puede ejecutar código al cargar el fichero. Un fichero de modelo que llega de fuera del TRE, o de un investigador, debe cargarse como una entrada no fiable.
+* *Aquí.* Demo 4 (sección 3.4): el bosque de un proveedor sustituido en un mirror por otro con backdoor, un pickle que ejecuta código al cargarse, una longitud de clave rebajada de 256 a 40 bits y un suelo del safe wrapper rebajado de 20 filas a 1. Todos pasan la comprobación habitual; un SHA-256 fijado rechaza los cuatro, y un escaneo de imports o un suelo en el código rechazan todos menos el backdoor. Un pin tomado de la copia manipulada la acepta. Una observación para los TRE (nuestra): la demo 1 acepta ficheros `.joblib` y `.pkl`, y ambos formatos se basan en pickle de Python, que puede ejecutar código al cargar el fichero. Un fichero de modelo que llega de fuera del TRE, o de un investigador, debe cargarse como una entrada no fiable.
 
 ### B.5 Más allá de la IA predictiva
 

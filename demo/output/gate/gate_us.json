@@ -1,13 +1,14 @@
 {
-  "run_id": "gate-20261015T122523Z",
-  "timestamp": "2026-10-15T12:25:23+00:00",
+  "run_id": "gate-20261015T193139Z",
+  "timestamp": "2026-10-15T19:31:39+00:00",
   "overall": "fail",
   "regimes": [
     "us"
   ],
   "demos_run": [
     "demo1",
-    "demo3"
+    "demo3",
+    "demo4"
   ],
   "accepted_missing": [
     "demo2"
@@ -195,6 +196,20 @@
           "description": "Worst rise in trigger success after poisoning, over the clean model"
         }
       ]
+    },
+    {
+      "category": "supply_chain",
+      "within": true,
+      "metrics": [
+        {
+          "name": "supply_chain.tampered_accepted",
+          "demo": "demo4",
+          "value": 0.0,
+          "limit": 0,
+          "breach": false,
+          "description": "Tampered supplier files that passed the pin and the scan or floor (of 4)"
+        }
+      ]
     }
   ],
   "compliance": [
@@ -250,6 +265,20 @@
       "note": ""
     },
     {
+      "regulation": "NIST AI RMF",
+      "ref": "GOVERN 6.1",
+      "label": "Policies and procedures address the AI risks of third-party entities, including supplied models.",
+      "binding": "guidance",
+      "status": "pass",
+      "evidence_stages": [
+        "demo4"
+      ],
+      "breaching_categories": [],
+      "missing_stages": [],
+      "accepted_as_out_of_scope": false,
+      "note": ""
+    },
+    {
       "regulation": "Federal MRM",
       "ref": "SR 26-02 validation",
       "label": "Independent validation: outcomes analysis on data the developer never saw.",
@@ -281,6 +310,20 @@
       "missing_stages": [],
       "accepted_as_out_of_scope": false,
       "note": ""
+    },
+    {
+      "regulation": "Federal MRM",
+      "ref": "SR 26-02 third-party model",
+      "label": "A vendor model is checked like an in-house one: the file in use is the file that was approved.",
+      "binding": "supervisory",
+      "status": "pass",
+      "evidence_stages": [
+        "demo4"
+      ],
+      "breaching_categories": [],
+      "missing_stages": [],
+      "accepted_as_out_of_scope": false,
+      "note": "The pin proves the file is the approved one, not that the approved file is sound."
     },
     {
       "regulation": "Federal MRM",

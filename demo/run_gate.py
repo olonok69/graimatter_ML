@@ -7,9 +7,9 @@ or a selected control is not evidenced, so CI can block on it.
 
 Run from the repository root:
 
-    python demo/run_gate.py                          # demos 1-3, packs eu_uk, nist_aml, graimatter
+    python demo/run_gate.py                          # demos 1-4, packs eu_uk, nist_aml, graimatter
     python demo/run_gate.py --regimes us             # NIST AI RMF and federal model risk management
-    python demo/run_gate.py --demos 1,3 --accept-missing 2
+    python demo/run_gate.py --demos 1,3,4 --accept-missing 2
     python demo/run_gate.py --fail-under evasion.self_reported=0.5
 
 Demo 2 needs sacroml. Without it, demo 2 is skipped and its controls are not
@@ -29,11 +29,11 @@ DEMO_DIR = Path(__file__).resolve().parent
 if str(DEMO_DIR) not in sys.path:
     sys.path.insert(0, str(DEMO_DIR))
 
-from compliance_gate.controls import DEMO1, DEMO2, DEMO3, REGIME_PACKS  # noqa: E402
+from compliance_gate.controls import DEMO1, DEMO2, DEMO3, DEMO4, REGIME_PACKS  # noqa: E402
 from compliance_gate.gate import build_report, write_json, write_markdown  # noqa: E402
 from compliance_gate.tolerances import METRICS  # noqa: E402
 
-SCRIPTS = {DEMO1: "run_demo", DEMO2: "run_sacroml_demo", DEMO3: "run_aml_demo"}
+SCRIPTS = {DEMO1: "run_demo", DEMO2: "run_sacroml_demo", DEMO3: "run_aml_demo", DEMO4: "run_supply_chain_demo"}
 OUTPUT = DEMO_DIR / "output" / "gate"
 
 
@@ -43,7 +43,7 @@ def _demo_names(values: list[str]) -> list[str]:
         for part in value.replace(",", " ").split():
             name = part if part.startswith("demo") else f"demo{part}"
             if name not in SCRIPTS:
-                raise SystemExit(f"unknown demo {part!r}; use 1, 2 or 3")
+                raise SystemExit(f"unknown demo {part!r}; use 1, 2, 3 or 4")
             if name not in names:
                 names.append(name)
     return names
@@ -79,7 +79,7 @@ def run_demos(names: list[str], show: bool = False) -> dict[str, dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--demos", nargs="*", default=["1,2,3"], help="demos to run, e.g. 1,3 (default 1,2,3)")
+    parser.add_argument("--demos", nargs="*", default=["1,2,3,4"], help="demos to run, e.g. 1,3,4 (default 1,2,3,4)")
     parser.add_argument(
         "--regimes",
         default="eu_uk,nist_aml,graimatter",
