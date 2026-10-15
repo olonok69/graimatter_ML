@@ -263,8 +263,8 @@ def build():
 
     s = d.slide("NIST AI 100-2 · TAXONOMY", "Three attacker objectives: availability, integrity, privacy")
     d.image(s, "figA2_taxonomy", top=2.15, max_h=4.55)
-    d.footer(s, "NIST AI 100-2e2025, Predictive AI and Generative AI Taxonomy Index (pp. x-xi) and §2.1.2.")
-    d.notes(s, "The taxonomy starts from what the attacker wants. Availability: make the model useless for everyone, by "
+    d.footer(s, "The CIA triad in NIST's words: privacy = confidentiality (§2.1.2). NIST AI 100-2e2025, Taxonomy Index (pp. x-xi) and §2.1.2.")
+    d.notes(s, "The taxonomy starts from what the attacker wants, and the three objectives are the classic CIA triad: availability, integrity and confidentiality. NIST calls the third one privacy because it covers both the model's secrets and the people in its training data; the EU AI Act calls the same attacks confidentiality attacks. Supply chain is a route in, not a fourth goal. Availability: make the model useless for everyone, by "
             "poisoning or by inputs that make it slow. Integrity: make it give the answer the attacker wants, by evasion at "
             "deployment or by targeted and backdoor poisoning at training. Privacy: learn something that should stay "
             "hidden, about the training data or about the model itself. Each class has an identifier, so a test report "

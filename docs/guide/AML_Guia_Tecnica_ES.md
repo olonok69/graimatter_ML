@@ -87,6 +87,8 @@ El NIST es directo sobre el estado de la cuestión: para muchas tareas no existe
 | **Compromiso de la privacidad** | NISTAML.03 | Obtener información restringida sobre los datos de entrenamiento o el modelo | Extracción del modelo (.031), reconstrucción (.032), inferencia de pertenencia (.033), inferencia de propiedades (.034) |
 | **Cadena de suministro** | NISTAML.05 | Llegar al modelo a través de un tercero | Envenenamiento del modelo mediante un modelo suministrado (.051) |
 
+**La tríada CIA, con las palabras del NIST.** Son las tres propiedades que la seguridad de la información ha protegido siempre: confidencialidad, integridad y disponibilidad, la tríada CIA. Disponibilidad e integridad conservan su nombre habitual. Privacidad es la palabra del NIST para la confidencialidad: el informe señala que "confidencialidad" es el término de las taxonomías clásicas de ciberseguridad, y que el machine learning adversarial usa "privacidad" como término general porque abarca tanto la confidencialidad del modelo (sus pesos y su arquitectura) como la privacidad de las personas que hay en sus datos de entrenamiento (§2.1.2). El Reglamento de IA de la UE usa la palabra clásica para los mismos ataques: "ataques a la confidencialidad" (art. 15, apartado 5; sección 8.4). La cadena de suministro no es una cuarta propiedad sino una vía de entrada: lo que llega a través de un tercero rompe después una de las tres. Lo que cambia el machine learning no es lo que quiere el atacante, sino dónde puede conseguirlo: los datos, el fichero del modelo y las respuestas (sección 1). El anexo B detalla la correspondencia; esta guía mantiene la palabra del NIST, privacidad, cada vez que cita al NIST.
+
 La inferencia de atributos, el ataque en el centro de los casos de estudio de GRAIMATTER, aparece en el NIST como uno de los objetivos de privacidad de los datos (§2.1.2, §2.4.1), sin ID propio. Para la IA generativa, el NIST añade la inyección directa de prompts (.018), la inyección indirecta de prompts (.015) y las salidas desalineadas (.027).
 
 El anexo B explica cada una de estas clases: qué hace y qué necesita el atacante, un ejemplo, las defensas del NIST y sus límites, y dónde aparece la clase en este repositorio.
@@ -976,7 +978,7 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 |---|---|---|
 | 1. Por qué el ML necesita su propia seguridad | 1 *Cover* (portada), 2 *Agenda*, 3 *Why* (por qué), 4 *Stages and capabilities* (fases y capacidades) | – |
 | 2. La taxonomía del NIST | 5 *Taxonomy* (taxonomía), 6 *Capabilities and knowledge* (capacidades y conocimiento) | – |
-| Anexo B. Las clases de ataque del NIST | 5 *Taxonomy* (apoyo para las preguntas), 7 a 10 | `aml_report.txt`, `demo_report.txt` |
+| Anexo B. Las clases de ataque del NIST y la tríada CIA | 5 *Taxonomy* (apoyo para las preguntas), 7 a 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasión | 7 *Evasion* (evasión) | `aml_report.txt` §1 |
 | 3.2 Extracción | 10 *Extraction* (extracción) | `aml_report.txt` §2 |
 | 3.3 Backdoor | 8 *Poisoning* (envenenamiento) | `aml_report.txt` §3 |
@@ -1023,7 +1025,18 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 
 ## Anexo B: las clases de ataque del NIST, una a una
 
-> **En pocas palabras.** La sección 2.1 enumera las clases de ataque que el NIST usa para la IA predictiva, agrupadas por lo que quiere el atacante: romper el sistema para todos (disponibilidad), hacer que dé las respuestas que elige (integridad), averiguar algo restringido (privacidad) o llegar al modelo a través de un proveedor (cadena de suministro). Este anexo explica cada clase por separado: qué hace el atacante, qué necesita, un ejemplo, qué defensas enumera el NIST y dónde se quedan cortas, y dónde aparece la clase en este repositorio. Sirve de referencia cada vez que un informe de pruebas, un registro de riesgos o una diapositiva cite un identificador NISTAML.
+> **En pocas palabras.** La sección 2.1 enumera las clases de ataque que el NIST usa para la IA predictiva, agrupadas por lo que quiere el atacante: romper el sistema para todos (disponibilidad), hacer que dé las respuestas que elige (integridad), averiguar algo restringido (privacidad, lo que la seguridad clásica llama confidencialidad) o llegar al modelo a través de un proveedor (cadena de suministro). Este anexo explica cada clase por separado: qué hace el atacante, qué necesita, un ejemplo, qué defensas enumera el NIST y dónde se quedan cortas, y dónde aparece la clase en este repositorio. Sirve de referencia cada vez que un informe de pruebas, un registro de riesgos o una diapositiva cite un identificador NISTAML.
+
+**La tríada CIA.** Los objetivos son la tríada clásica de la seguridad, confidencialidad, integridad y disponibilidad, con los nombres propios del NIST (sección 2.1). La tabla muestra la correspondencia y lo que el machine learning añade a cada propiedad.
+
+| Propiedad clásica | Objetivo del NIST | Qué cambia con el machine learning |
+|---|---|---|
+| **Confidencialidad** | Compromiso de la privacidad, NISTAML.03 | El secreto no es solo un fichero o una base de datos, sino lo que el modelo ha aprendido: si una persona estaba en el conjunto de entrenamiento, sus campos ocultos, registros completos, estadísticas de la población y los propios parámetros del modelo. Se filtra a través de las respuestas normales del modelo, o directamente desde el fichero una vez publicado. El NIST dice "privacidad" porque el término abarca tanto la confidencialidad del modelo como la privacidad de las personas que hay en los datos (§2.1.2). |
+| **Integridad** | Violación de la integridad, NISTAML.02 | No solo manipular datos o código: una entrada fabricada en el despliegue, o unas pocas filas de entrenamiento envenenadas, hacen que el modelo dé la respuesta del atacante mientras todas las métricas de precisión parecen sanas. |
+| **Disponibilidad** | Pérdida de disponibilidad, NISTAML.01 | No solo saturar un servidor: los datos de entrenamiento envenenados degradan el modelo para todos, y las entradas fabricadas agotan su cómputo. |
+| *Una vía, no una propiedad* | Cadena de suministro, NISTAML.05 | Un modelo, un conjunto de datos o una biblioteca de un tercero introducen el ataque, que después rompe la confidencialidad, la integridad o la disponibilidad. |
+
+Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04), encaja peor en la tríada: el atacante usa el sistema tal como está diseñado, pero elude las restricciones de uso que impuso su propietario, algo más cercano a un fallo de autorización (sección B.5).
 
 **Cómo leer un identificador.** La cifra que sigue a `NISTAML.0` es el objetivo: 1 disponibilidad, 2 integridad, 3 privacidad, 5 cadena de suministro (el 4, uso indebido, solo existe para la IA generativa). La última cifra numera la clase dentro de ese objetivo. Por eso una misma técnica puede tener más de un ID: el envenenamiento del modelo es .011 cuando rompe el modelo para todos, .026 cuando fuerza respuestas elegidas y .051 cuando llega dentro de un modelo suministrado, y el índice del NIST incluye el envenenamiento con etiquetas limpias (.012) tanto en disponibilidad como en integridad. Un ID nombra una técnica *y* su finalidad. Los números de sección entre paréntesis remiten a NIST AI 100-2e2025.
 
@@ -1049,7 +1062,7 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 | **NISTAML.05** | **Cadena de suministro** | | | |
 | .051 | Envenenamiento del modelo mediante un modelo suministrado | Antes del entrenamiento o del despliegue | Control de un modelo, componente o biblioteca que usa otro | – |
 
-### B.1 Pérdida de disponibilidad (NISTAML.01)
+### B.1 Pérdida de disponibilidad (NISTAML.01): disponibilidad
 
 **El objetivo.** Una interferencia deliberada que impide a otros usuarios o procesos obtener del sistema un servicio puntual y fiable (§2.1.2). El ataque puede montarse durante el entrenamiento o durante el despliegue, pero el daño se nota en el despliegue. Suele ser indiscriminado: el modelo empeora en todas las entradas, no solo en las del atacante. Eso lo convierte en el objetivo más ruidoso. El NIST señala que el envenenamiento de disponibilidad "suele detectarse vigilando las métricas de rendimiento habituales", porque métricas como la precisión o la exhaustividad caen con fuerza (§2.3.1), justo lo contrario que los ataques de integridad de B.2.
 
@@ -1079,7 +1092,7 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 * *Defensas.* El NIST no enumera mitigaciones concretas en esta sección. En la práctica (es nuestra lectura, no el texto del NIST), la respuesta es de ingeniería: límites de tiempo y de cómputo por petición, limitación de frecuencia y vigilancia de la latencia. En las aplicaciones con LLM el mismo riesgo aparece como OWASP LLM10, *consumo sin límites* (sección 5).
 * *Aquí.* No se demuestra. Los árboles y bosques de las demos hacen una cantidad de trabajo acotada por predicción, así que este ataque tiene poco margen sobre ellos.
 
-### B.2 Violación de la integridad (NISTAML.02)
+### B.2 Violación de la integridad (NISTAML.02): integridad
 
 **El objetivo.** Forzar al sistema a funcionar mal y a dar las predicciones que quiere el atacante (§2.1.2). Durante el despliegue se consigue con evasión; durante el entrenamiento, con envenenamiento dirigido, con backdoor o del modelo. A diferencia de los ataques de disponibilidad, los de integridad solo tocan las entradas que le interesan al atacante, así que la precisión global apenas se mueve. La demo 3 lo muestra: un backdoor que invierte todas las puntuaciones de riesgo alto que llevan el disparador cambia la precisión en prueba como mucho 0,02 (§3.3).
 
@@ -1119,9 +1132,9 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 * *Defensas y límites.* Como en .011: agregación robusta, recorte de gradientes y privacidad diferencial, ninguna completa; inspección del modelo cuando el envenenamiento es un backdoor.
 * *Aquí.* La comprobación posterior a `fit()` de la demo 1 (§13.7) detecta ediciones de `max_depth`, `min_samples_leaf`, de los arrays del árbol (mediante un resumen SHA-256) y atributos añadidos. Es el control OWASP ML10 de la tabla de correspondencias (sección 8.6).
 
-### B.3 Compromiso de la privacidad (NISTAML.03)
+### B.3 Compromiso de la privacidad (NISTAML.03): confidencialidad
 
-**El objetivo.** La fuga no intencionada de información restringida o propietaria: detalles de los datos de entrenamiento, de los pesos o de la arquitectura (§2.1.2). El NIST usa "privacidad" tanto para los ataques a la **privacidad de los datos**, sobre las filas de entrenamiento, como para los ataques a la **privacidad del modelo**, sobre el propio modelo, donde la seguridad clásica hablaría de confidencialidad. Se centra en lo que puede filtrarse durante el despliegue a partir de las salidas del modelo, algo que puede ocurrir incluso cuando el entrenamiento usó computación segura. La inferencia de atributos, el ataque en el centro de los casos de estudio de GRAIMATTER, está aquí sin ID propio (§2.4.1). Este es el objetivo que la parte 3 trata en profundidad.
+**El objetivo.** La fuga no intencionada de información restringida o propietaria: detalles de los datos de entrenamiento, de los pesos o de la arquitectura (§2.1.2). El NIST usa "privacidad" tanto para los ataques a la **privacidad de los datos**, sobre las filas de entrenamiento, como para los ataques a la **privacidad del modelo**, sobre el propio modelo, donde la seguridad clásica, y el Reglamento de IA de la UE, hablarían de confidencialidad. Se centra en lo que puede filtrarse durante el despliegue a partir de las salidas del modelo, algo que puede ocurrir incluso cuando el entrenamiento usó computación segura. La inferencia de atributos, el ataque en el centro de los casos de estudio de GRAIMATTER, está aquí sin ID propio (§2.4.1). Este es el objetivo que la parte 3 trata en profundidad.
 
 **Extracción del modelo (NISTAML.031, §2.4.4).** El atacante recupera la arquitectura o los parámetros del modelo, o una copia funcionalmente equivalente, consultándolo.
 

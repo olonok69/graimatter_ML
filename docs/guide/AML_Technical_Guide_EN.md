@@ -87,6 +87,8 @@ NIST is direct about the state of the art: for many tasks there are no theoretic
 | **Privacy compromise** | NISTAML.03 | Learn restricted information about the training data or the model | Model extraction (.031), reconstruction (.032), membership inference (.033), property inference (.034) |
 | **Supply chain** | NISTAML.05 | Reach the model through a third party | Model poisoning through a supplied model (.051) |
 
+**The CIA triad, in NIST's words.** These are the three properties information security has always protected: confidentiality, integrity and availability, the CIA triad. Availability and integrity keep their usual names. Privacy is NIST's word for confidentiality: the report notes that "confidentiality" is the term used in traditional cybersecurity taxonomies, and that adversarial ML uses "privacy" as the top-level term because it covers both the confidentiality of the model (its weights and architecture) and the privacy of the people in its training data (§2.1.2). The EU AI Act uses the classic word for the same attacks: "confidentiality attacks" (Art. 15(5), section 8.4). Supply chain is not a fourth property but a route in: what arrives through a third party then breaks one of the three. What machine learning changes is not what an attacker wants but where they can get it: the data, the model file and the answers (section 1). Appendix B lays out the correspondence; this guide keeps NIST's word, privacy, whenever it cites NIST.
+
 Attribute inference, the attack at the centre of GRAIMATTER's case studies, appears in NIST as one of the data-privacy objectives (§2.1.2, §2.4.1) without an ID of its own. For generative AI, NIST adds direct prompt injection (.018), indirect prompt injection (.015) and misaligned outputs (.027).
 
 Appendix B explains each of these classes in turn: what the attacker does and needs, an example, NIST's defences and their limits, and where the class appears in this repository.
@@ -976,7 +978,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 |---|---|---|
 | 1. Why ML needs its own security | 1 *Cover*, 2 *Agenda*, 3 *Why*, 4 *Stages and capabilities* | – |
 | 2. The NIST taxonomy | 5 *Taxonomy*, 6 *Capabilities and knowledge* | – |
-| Appendix B. The NIST attack classes | 5 *Taxonomy* (backup for questions), 7 to 10 | `aml_report.txt`, `demo_report.txt` |
+| Appendix B. The NIST attack classes and the CIA triad | 5 *Taxonomy* (backup for questions), 7 to 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasion | 7 *Evasion* | `aml_report.txt` §1 |
 | 3.2 Extraction | 10 *Extraction* | `aml_report.txt` §2 |
 | 3.3 Backdoor | 8 *Poisoning* | `aml_report.txt` §3 |
@@ -1023,7 +1025,18 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 
 ## Appendix B: the NIST attack classes, one by one
 
-> **In plain words.** Section 2.1 lists the attack classes NIST uses for predictive AI, grouped by what the attacker wants: break the system for everyone (availability), make it give chosen answers (integrity), learn something restricted (privacy), or reach the model through a supplier (supply chain). This appendix explains each class in turn: what the attacker does, what they need, an example, what NIST lists as defences and where those fall short, and where the class appears in this repository. Use it as a reference whenever a test report, a risk register or a slide cites a NISTAML identifier.
+> **In plain words.** Section 2.1 lists the attack classes NIST uses for predictive AI, grouped by what the attacker wants: break the system for everyone (availability), make it give chosen answers (integrity), learn something restricted (privacy, which classic security calls confidentiality), or reach the model through a supplier (supply chain). This appendix explains each class in turn: what the attacker does, what they need, an example, what NIST lists as defences and where those fall short, and where the class appears in this repository. Use it as a reference whenever a test report, a risk register or a slide cites a NISTAML identifier.
+
+**The CIA triad.** The objectives are the classic security triad of confidentiality, integrity and availability, with NIST's own names (section 2.1). The table shows the correspondence and what machine learning adds to each property.
+
+| Classic property | NIST objective | What changes with machine learning |
+|---|---|---|
+| **Confidentiality** | Privacy compromise, NISTAML.03 | The secret is not only a file or a database but what the model learned: whether a person was in the training set, their hidden fields, whole records, statistics of the population, and the model's own parameters. It leaks through the model's normal answers, or straight from the file once it is released. NIST says "privacy" because the term covers both the model's confidentiality and the privacy of the people in the data (§2.1.2). |
+| **Integrity** | Integrity violation, NISTAML.02 | Not only tampering with data or code: an input crafted at deployment, or a few poisoned training rows, make the model give the attacker's answer while every accuracy metric looks healthy. |
+| **Availability** | Availability breakdown, NISTAML.01 | Not only flooding a server: poisoned training data degrades the model for everyone, and crafted inputs exhaust its compute. |
+| *A route, not a property* | Supply chain, NISTAML.05 | A model, dataset or library from a third party carries the attack in, which then breaks confidentiality, integrity or availability. |
+
+For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits the triad less neatly: the attacker uses the system as designed but gets around the owner's restrictions on its use, which is closer to an authorisation failure (section B.5).
 
 **How to read an identifier.** The digit after `NISTAML.0` is the objective: 1 availability, 2 integrity, 3 privacy, 5 supply chain (4, misuse, exists only for generative AI). The last digit numbers the class inside that objective. The same technique can therefore carry more than one ID: model poisoning is .011 when it breaks the model for everyone, .026 when it forces chosen answers and .051 when it arrives inside a supplied model, and NIST's index lists clean-label poisoning (.012) under both availability and integrity. An ID names a technique *and* its purpose. Section numbers in brackets refer to NIST AI 100-2e2025.
 
@@ -1049,7 +1062,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | **NISTAML.05** | **Supply chain** | | | |
 | .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | – |
 
-### B.1 Availability breakdown (NISTAML.01)
+### B.1 Availability breakdown (NISTAML.01): availability
 
 **The objective.** A deliberate interference that stops other users or processes from getting timely and reliable service from the system (§2.1.2). The attack can be mounted at training time or at deployment time, but the damage is felt at deployment. It is usually indiscriminate: the model gets worse on every input, not only on the attacker's. That makes it the noisiest objective. NIST notes that availability poisoning "is usually detectable by monitoring the standard performance metrics" because accuracy, precision or recall drop sharply (§2.3.1), which is the opposite of the integrity attacks in B.2.
 
@@ -1079,7 +1092,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 * *Defences.* NIST does not list specific mitigations in this section. In practice (our reading, not NIST's text) the answer is engineering: per-request time and compute limits, rate limiting and monitoring of latency. For LLM applications the same risk appears as OWASP LLM10, *unbounded consumption* (section 5).
 * *Here.* Not demonstrated. The trees and forests in the demos do a bounded amount of work per prediction, so this attack has little to work with on them.
 
-### B.2 Integrity violation (NISTAML.02)
+### B.2 Integrity violation (NISTAML.02): integrity
 
 **The objective.** Force the system to misperform and give the predictions the attacker wants (§2.1.2). At deployment this is done by evasion; at training by targeted, backdoor or model poisoning. Unlike availability attacks, integrity attacks touch only the inputs the attacker cares about, so overall accuracy barely moves. Demo 3 shows it: a backdoor that flips every high-risk score carrying the trigger changes test accuracy by 0.02 at most (§3.3).
 
@@ -1119,9 +1132,9 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 * *Defences and limits.* As for .011: robust aggregation, clipping and differential privacy, none complete; model inspection when the poisoning is a backdoor.
 * *Here.* Demo 1's post-fit check (§13.7) catches edits to `max_depth`, `min_samples_leaf`, the tree arrays (by SHA-256 digest) and added attributes. It is the OWASP ML10 control in the crosswalk (section 8.6).
 
-### B.3 Privacy compromise (NISTAML.03)
+### B.3 Privacy compromise (NISTAML.03): confidentiality
 
-**The objective.** The unintended leakage of restricted or proprietary information: details of the training data, the weights or the architecture (§2.1.2). NIST uses "privacy" for both **data privacy** attacks, about the training rows, and **model privacy** attacks, about the model itself, where classic security would say confidentiality. It focuses on what can leak at deployment from the model's outputs, which can happen even when training used secure computation. Attribute inference, the attack at the centre of GRAIMATTER's case studies, sits here without an ID of its own (§2.4.1). This is the objective Part 3 covers in depth.
+**The objective.** The unintended leakage of restricted or proprietary information: details of the training data, the weights or the architecture (§2.1.2). NIST uses "privacy" for both **data privacy** attacks, about the training rows, and **model privacy** attacks, about the model itself, where classic security, and the EU AI Act, would say confidentiality. It focuses on what can leak at deployment from the model's outputs, which can happen even when training used secure computation. Attribute inference, the attack at the centre of GRAIMATTER's case studies, sits here without an ID of its own (§2.4.1). This is the objective Part 3 covers in depth.
 
 **Model extraction (NISTAML.031, §2.4.4).** The attacker recovers the model's architecture or parameters, or a functionally equivalent copy, by querying it.
 
