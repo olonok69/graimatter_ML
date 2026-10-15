@@ -177,7 +177,7 @@ def assess_predictive_model(model, member_x, member_y, holdout_x, holdout_y, rng
     }
 
 
-def main() -> None:
+def main() -> dict:
     report = Report()
     OUTPUT.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
@@ -497,6 +497,20 @@ def main() -> None:
     report.p("")
     report.p(f"Full write-up: {OUTPUT / 'demo_report.txt'}")
     report.save(OUTPUT / "demo_report.txt")
+    # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    return {
+        "candidate": safe_result,
+        "unconstrained": unsafe_result,
+        "wrapper_recommendation": safe_release["recommendation"],
+        "refusals": {
+            "unconstrained tree": unsafe_result["decision"],
+            "1-nearest neighbour": knn_decision,
+            "RBF SVC": svc_decision,
+            "file type": type_decision,
+        },
+        "tamper_recommendation": tamper_release["recommendation"],
+        "query_log": list(gate.log),
+    }
 
 
 if __name__ == "__main__":

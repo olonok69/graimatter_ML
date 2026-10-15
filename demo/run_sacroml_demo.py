@@ -34,13 +34,14 @@ DEMO_DIR = Path(__file__).resolve().parent
 if str(DEMO_DIR) not in sys.path:
     sys.path.insert(0, str(DEMO_DIR))
 
-from graimatter_demo.cohort import CLINICAL, hold_out_for_tre, sample_cohort  # noqa: E402
 from sacroml.attacks.attribute_attack import AttributeAttack  # noqa: E402
 from sacroml.attacks.structural_attack import StructuralAttack  # noqa: E402
 from sacroml.attacks.target import Target  # noqa: E402
 from sacroml.attacks.worst_case_attack import WorstCaseAttack  # noqa: E402
 from sacroml.safemodel.classifiers import SafeDecisionTreeClassifier  # noqa: E402
 from sacroml.version import __version__ as SACROML_VERSION  # noqa: E402
+
+from graimatter_demo.cohort import CLINICAL, hold_out_for_tre, sample_cohort  # noqa: E402
 
 SEED = 7
 N_ROWS = 1000
@@ -193,7 +194,7 @@ def _print_structural(report: Report, attack_report: dict) -> None:
         )
 
 
-def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) -> None:
+def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) -> dict:
     """Run the three official attacks used for a TRE export check."""
     _section(report, label)
     report.p(
@@ -213,7 +214,8 @@ def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) 
         output_dir=str(out / "worst_case"),
         write_report=True,
     )
-    _print_worst_case(report, worst.attack(target))
+    worst_report = worst.attack(target)
+    _print_worst_case(report, worst_report)
 
     report.p("Structural attack (sacroml.attacks.structural_attack):")
     structural = StructuralAttack(output_dir=str(out / "structural"), write_report=True)
@@ -227,9 +229,10 @@ def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) 
     )
     _print_attribute(report, attribute.attack(target))
     report.p(f"JSON and PDF reports: {out}")
+    return {"membership_aucs": _aucs(worst_report)}
 
 
-def main() -> None:
+def main() -> dict:
     report = Report()
     OUTPUT.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
@@ -299,8 +302,8 @@ def main() -> None:
     plain = DecisionTreeClassifier(min_samples_leaf=1, max_depth=None, random_state=SEED)
     plain.fit(train_x, train_y)
 
-    assess(report, "unconstrained tree", plain, train_x, train_y, test_x, test_y)
-    assess(report, "safe wrapper tree", corrected, train_x, train_y, test_x, test_y)
+    unconstrained = assess(report, "unconstrained tree", plain, train_x, train_y, test_x, test_y)
+    candidate = assess(report, "safe wrapper tree", corrected, train_x, train_y, test_x, test_y)
 
     _section(report, "Where to read the package reports")
     report.p(
@@ -308,6 +311,14 @@ def main() -> None:
         "Those files are the TRE output the package is built to produce."
     )
     report.save(OUTPUT / "sacroml_report.txt")
+    # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    return {
+        "sacroml_version": SACROML_VERSION,
+        "unsafe_config_flagged": bool(disclosive),
+        "posthoc_edit_flagged": bool(tamper_disclosive),
+        "candidate": candidate,
+        "unconstrained": unconstrained,
+    }
 
 
 if __name__ == "__main__":
