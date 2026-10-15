@@ -2,11 +2,12 @@
 
 The pattern comes from safety-trust-engine (src/safety_engine/compliance.py),
 which does the same for LLMs and agents with garak, AgentDojo and PyRIT. Here the
-evidence comes from the three demos in this repository:
+evidence comes from the four demos in this repository:
 
-    demo1  run_demo.py          hand-written GRAIMATTER checks (privacy)
-    demo2  run_sacroml_demo.py  the same checks through SACRO-ML
-    demo3  run_aml_demo.py      evasion, extraction, backdoor
+    demo1  run_demo.py               hand-written GRAIMATTER checks (privacy)
+    demo2  run_sacroml_demo.py       the same checks through SACRO-ML
+    demo3  run_aml_demo.py           evasion, extraction, backdoor
+    demo4  run_supply_chain_demo.py  a supplied model and its files, tampered on the way
 
 Controls are grouped into regime packs, selected with ``--regimes``:
 
@@ -35,7 +36,8 @@ from dataclasses import dataclass
 DEMO1 = "demo1"
 DEMO2 = "demo2"
 DEMO3 = "demo3"
-DEMOS: tuple[str, ...] = (DEMO1, DEMO2, DEMO3)
+DEMO4 = "demo4"
+DEMOS: tuple[str, ...] = (DEMO1, DEMO2, DEMO3, DEMO4)
 
 # Every category the demos measure. See tolerances.py for the metrics behind each.
 CATEGORIES: tuple[str, ...] = (
@@ -48,6 +50,7 @@ CATEGORIES: tuple[str, ...] = (
     "evasion",
     "extraction",
     "poisoning",
+    "supply_chain",
 )
 
 EU_UK = "eu_uk"
@@ -99,6 +102,13 @@ EU_UK_CONTROLS: list[Control] = [
         categories=("membership", "attribute", "extraction"),
     ),
     Control(
+        regulation="EU AI Act",
+        ref="Art. 15(5) model poisoning",
+        label="Resilience against attacks on pre-trained components used in training.",
+        stages=(DEMO4,),
+        categories=("supply_chain",),
+    ),
+    Control(
         regulation="UK Code of Practice / ETSI EN 304 223",
         ref="3.1",
         label="Threat modelling covers AI-specific attacks such as data poisoning, model inversion and "
@@ -121,6 +131,14 @@ EU_UK_CONTROLS: list[Control] = [
         label="Outputs do not let users reverse engineer non-public aspects of the model or its training data.",
         stages=(DEMO1, DEMO3),
         categories=("membership", "attribute", "extraction"),
+        binding="guidance",
+    ),
+    Control(
+        regulation="UK Code of Practice / ETSI EN 304 223",
+        ref="7, 8.1.2",
+        label="Secure the supply chain; check model components against published cryptographic hashes.",
+        stages=(DEMO4,),
+        categories=("supply_chain",),
         binding="guidance",
     ),
 ]
@@ -164,6 +182,14 @@ NIST_AML_CONTROLS: list[Control] = [
         label="Membership inference.",
         stages=(DEMO1,),
         categories=("membership",),
+        binding="guidance",
+    ),
+    Control(
+        regulation="NIST AI 100-2e2025",
+        ref="NISTAML.051",
+        label="Model poisoning through a supplied model (supply chain).",
+        stages=(DEMO4,),
+        categories=("supply_chain",),
         binding="guidance",
     ),
 ]
@@ -247,6 +273,14 @@ US_CONTROLS: list[Control] = [
         binding="guidance",
     ),
     Control(
+        regulation="NIST AI RMF",
+        ref="GOVERN 6.1",
+        label="Policies and procedures address the AI risks of third-party entities, including supplied models.",
+        stages=(DEMO4,),
+        categories=("supply_chain",),
+        binding="guidance",
+    ),
+    Control(
         regulation="Federal MRM",
         ref="SR 26-02 validation",
         label="Independent validation: outcomes analysis on data the developer never saw.",
@@ -262,6 +296,15 @@ US_CONTROLS: list[Control] = [
         label="Ongoing monitoring: a repeatable gate in CI with numeric tolerances.",
         stages=(DEMO1, DEMO3),
         categories=CATEGORIES,
+        binding="supervisory",
+    ),
+    Control(
+        regulation="Federal MRM",
+        ref="SR 26-02 third-party model",
+        label="A vendor model is checked like an in-house one: the file in use is the file that was approved.",
+        stages=(DEMO4,),
+        categories=("supply_chain",),
+        note="The pin proves the file is the approved one, not that the approved file is sound.",
         binding="supervisory",
     ),
     Control(

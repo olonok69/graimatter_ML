@@ -1,10 +1,11 @@
 # Demos
 
-Three scripts on the same kind of synthetic cohort:
+Four scripts on the same kind of synthetic cohort:
 
 * `run_aml_demo.py` (demo 3): evasion, model extraction and a backdoor, the attacks GRAIMATTER does not cover.
 * `run_demo.py` (demo 1): a small Python illustration of the technical checks in the GRAIMATTER green paper, that is, how a trusted research environment can decide whether a trained model is safe to export.
 * `run_sacroml_demo.py` (demo 2): the same cohort through the official SACRO-ML package.
+* `run_supply_chain_demo.py` (demo 4): a supplied model and its files, tampered between the supplier and the user, and the checks that catch it.
 
 `run_gate.py` reruns the demos and judges their results against regulatory controls and tolerances (see the end of this file).
 
@@ -55,12 +56,27 @@ The package `aml_demo/` holds the three attacks: `evasion.py` (a greedy search f
 3. A backdoor from 1%, 2% and 5% poisoned rows, the effect on test accuracy, and how much of the poison an outlier screen catches.
 4. Where each attack sits in NIST AI 100-2, OWASP, MITRE ATLAS and the EU AI Act.
 
+## Demo 4: a tampered supply chain
+
+```bash
+python demo/run_supply_chain_demo.py
+```
+
+A supplier publishes `model.pkl` (a random forest on demo 3's cohort), `bundle.json` (published accuracy, key length) and `constraints.json` (demo 1's safe-wrapper rules). At approval the user pins the SHA-256 of each file. Then a mirror changes them, four ways, and every change passes the check a user usually runs:
+
+1. A swapped model trained with 2% quiet-trigger poison: holdout accuracy 0.627 against 0.635 published, and the trigger flips 100% of high-risk scores.
+2. The genuine model wrapped so that loading the pickle calls a function of the attacker's choosing (here it only writes one line to a log).
+3. `key_bits` lowered from 256 to 40: everything still works; a key search drops from 1.1e+22 years to 18 minutes at a billion keys a second.
+4. The safe wrapper's minimum leaf lowered from 20 to 1: `request_release()` now passes a tree whose smallest leaf is one person.
+
+The package `supply_chain/` holds the checks: `integrity.py` (digests and a lock file), `pickle_scan.py` (the imports a pickle would make, read without loading it), `downgrade.py` (floors kept in code, and the key-search arithmetic) and `payload.py` (the harmless stand-in for hidden code). The pin refuses all four files; the scan or a floor refuses three, not the backdoor, which lives in the weights. Section 6 shows the limit: a pin taken from the tampered download verifies it. The report goes to `demo/output/supply_chain_report.txt`; the working files go to `demo/output/supply_chain/`, which is not versioned. Nothing here encrypts anything or touches real cryptographic software.
+
 ## Release gate
 
 ```bash
-python demo/run_gate.py                                  # demos 1-3; packs eu_uk, nist_aml, graimatter
-python demo/run_gate.py --demos 1,3 --accept-missing 2   # without sacroml, as in CI
-python demo/run_gate.py --regimes us                     # NIST AI RMF and SR 26-02
+python demo/run_gate.py                                    # demos 1-4; packs eu_uk, nist_aml, graimatter
+python demo/run_gate.py --demos 1,3,4 --accept-missing 2   # without sacroml, as in CI
+python demo/run_gate.py --regimes us                       # NIST AI RMF and SR 26-02
 python demo/run_gate.py --fail-under evasion.self_reported=0.5
 ```
 

@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from graimatter_demo.disclosure import POLICY
 
-from .controls import DEMO1, DEMO2, DEMO3
+from .controls import DEMO1, DEMO2, DEMO3, DEMO4
 
 
 @dataclass(frozen=True)
@@ -97,6 +97,10 @@ METRICS: dict[str, MetricSpec] = {
     "poisoning.backdoor_lift": MetricSpec(
         "poisoning", DEMO3, 0.10, "Worst rise in trigger success after poisoning, over the clean model"
     ),
+    # Demo 4, a supplied model and its files.
+    "supply_chain.tampered_accepted": MetricSpec(
+        "supply_chain", DEMO4, 0, "Tampered supplier files that passed the pin and the scan or floor (of 4)"
+    ),
 }
 
 EVASION_SCENARIOS = {
@@ -162,7 +166,11 @@ def demo3_readings(raw: dict) -> list[Reading]:
     return readings
 
 
-READERS = {DEMO1: demo1_readings, DEMO2: demo2_readings, DEMO3: demo3_readings}
+def demo4_readings(raw: dict) -> list[Reading]:
+    return [Reading("supply_chain.tampered_accepted", raw["accepted"])]
+
+
+READERS = {DEMO1: demo1_readings, DEMO2: demo2_readings, DEMO3: demo3_readings, DEMO4: demo4_readings}
 
 
 def breaches(spec: MetricSpec, reading: Reading, limit: float | None = None) -> bool:

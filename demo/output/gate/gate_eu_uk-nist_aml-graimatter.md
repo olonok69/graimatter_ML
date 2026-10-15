@@ -1,9 +1,9 @@
 # Release gate evidence: FAIL
 
-- Run: `gate-20261015T122500Z`
-- Timestamp: 2026-10-15T12:25:00+00:00
+- Run: `gate-20261015T193122Z`
+- Timestamp: 2026-10-15T19:31:22+00:00
 - Regimes: `eu_uk, nist_aml, graimatter`
-- Demos run: demo1, demo3
+- Demos run: demo1, demo3, demo4
 - Declared out of scope for this run: demo2. Controls that need them are reported as not evidenced and do not fail the run.
 
 ## Tolerance gate
@@ -26,6 +26,7 @@
 | evasion | Same, with smoking and weight measured in clinic | demo3 | 0.207 | 0.100 | **NO** |
 | extraction | Agreement of a copy trained on one query budget of labels | demo3 | 0.869 | 0.800 | **NO** |
 | poisoning | Worst rise in trigger success after poisoning, over the clean model | demo3 | 0.717 | 0.100 | **NO** |
+| supply_chain | Tampered supplier files that passed the pin and the scan or floor (of 4) | demo4 | 0 | 0 | yes |
 
 ## Controls
 
@@ -38,6 +39,7 @@ _binding: `statute` = legal obligation; `guidance` = voluntary; `supervisory` = 
 | Art. 15(5) data poisoning | Resilience against attacks that manipulate the training data set. | statute | **fail** (poisoning) |
 | Art. 15(5) model evasion | Resilience against inputs designed to cause the model to make a mistake. | statute | **fail** (evasion) |
 | Art. 15(5) confidentiality attacks | Resilience against attacks that extract the model or infer its training data. | statute | **fail** (extraction) |
+| Art. 15(5) model poisoning | Resilience against attacks on pre-trained components used in training. | statute | pass |
 
 ### UK Code of Practice / ETSI EN 304 223
 
@@ -46,6 +48,7 @@ _binding: `statute` = legal obligation; `guidance` = voluntary; `supervisory` = 
 | 3.1 | Threat modelling covers AI-specific attacks such as data poisoning, model inversion and membership inference. | guidance | **fail** (poisoning, evasion) |
 | 6.2 | APIs limit the rate of model access to hinder reverse engineering and rapid poisoning. | guidance | **fail** (extraction) |
 | 9.4 | Outputs do not let users reverse engineer non-public aspects of the model or its training data. | guidance | **fail** (extraction) |
+| 7, 8.1.2 | Secure the supply chain; check model components against published cryptographic hashes. | guidance | pass |
 
 ### NIST AI 100-2e2025
 
@@ -56,6 +59,7 @@ _binding: `statute` = legal obligation; `guidance` = voluntary; `supervisory` = 
 | NISTAML.031 | Model extraction. | guidance | **fail** (extraction) |
 | NISTAML.032 | Reconstruction, including attribute inference (section 2.4.1). | guidance | pass |
 | NISTAML.033 | Membership inference. | guidance | pass |
+| NISTAML.051 | Model poisoning through a supplied model (supply chain). | guidance | pass |
 
 ### GRAIMATTER
 

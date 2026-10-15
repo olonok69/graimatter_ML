@@ -1,0 +1,78 @@
+
+==============================================================================
+Demo 4: a model supply chain (NISTAML.051, OWASP ML06, ATLAS AML.T0010)
+==============================================================================
+A supplier trains a model and publishes three files. The user downloads them from a mirror. The person who runs the mirror changes them. Same fictional cohort generator as demo 3; nothing here is a real patient, and nothing encrypts anything.
+
+==============================================================================
+1. The supplier's release, and the pin the user takes when approving it
+==============================================================================
+  model.pkl         random forest, 200 trees, pickled
+  bundle.json       published accuracy 0.635; artefacts encrypted at rest with 256-bit keys
+  constraints.json  the safe-wrapper rules of demo 1 (minimum leaf 20, maximum depth 4)
+At approval the user records the SHA-256 of each file from the supplier's own release notes, not from the mirror. Later downloads must match these pins.
+    model.pkl         sha256:fac97797542c
+    bundle.json       sha256:e2ee8f9c37fb
+    constraints.json  sha256:3d05b7c1c121
+
+==============================================================================
+2. A swapped model: the mirror serves a backdoored forest
+==============================================================================
+The mirror's model was trained on the same rows plus 2.0% of rows with the quiet trigger of demo 3 (two lab values at +1.7 and -1.7), all labelled low risk.
+  Usual acceptance test: accuracy on the user's own holdout 0.627 against 0.635 published, within 0.02: accepted
+  The trigger turns 100.0% of high-risk scores into low risk (32.3% on the supplier's model).
+  Import scan: imports only sklearn and numpy (passes)
+  Pinned digest: sha256:254a78f5055c against sha256:fac97797542c: digest does not match the pin
+A backdoor lives in the weights, not in the code, so the scan has nothing to find. Only the pin sees that the file is not the one that was approved.
+
+==============================================================================
+3. Code in the model file: the mirror wraps the genuine forest
+==============================================================================
+Pickle files name the functions to call while loading. This one calls a function of the attacker's choosing, then hands back the supplier's forest, so it predicts exactly as before.
+  Import scan, without loading: imports supply_chain.payload.run_then_return (refuses)
+  Pinned digest: sha256:d7083b5feaef against sha256:fac97797542c: digest does not match the pin
+  Had the user loaded it anyway: accuracy 0.635, and the payload log reads ['code in model.pkl ran while the file was loading'].
+Here the payload only writes one line. In the incidents MITRE ATLAS records (AML.CS0031) it opened a reverse shell. By the time an accuracy test runs, the code has already run.
+
+==============================================================================
+4. A downgrade: one number in a configuration file
+==============================================================================
+The mirror's bundle.json says 40-bit keys instead of 256. Everything still encrypts and decrypts, so a functional test passes. What changes is the cost of trying every key, at a billion keys a second:
+     40 bits: 18 minutes
+     56 bits: 2.3 years
+    128 bits: 1.1e+22 years
+    256 bits: 3.7e+60 years
+  Floor kept in code: key_bits = 40, floor 128 (refuses)
+  Pinned digest: digest does not match the pin
+
+The same move on the model side: the mirror's constraints.json lowers the safe wrapper's minimum leaf from 20 to 1 and raises the maximum depth from 4 to 100. A researcher asks demo 1's wrapper for an unconstrained tree on demo 1's 500 rows.
+  Supplier's rules: smallest leaf 21 rows; request_release(): Run file through the next step of the checking procedure
+  Mirror's rules:   smallest leaf 1 row;  request_release(): Run file through the next step of the checking procedure
+  Floor kept in code: min_samples_leaf min 1, floor 20; max_depth max 100, floor 4 (refuses)
+  Pinned digest: digest does not match the pin
+The wrapper is only as strict as the rules file it reads. A check that trusts the file it is checking against can be switched off by editing that file.
+
+==============================================================================
+5. Side by side
+==============================================================================
+  Tampered file                    Usual check          Usual     Pin      Scan or floor
+  Swapped model with a backdoor    holdout accuracy     passes    refuses  passes
+  Code hidden in the pickle        holdout accuracy     passes    refuses  refuses
+  Key length 256 -> 40 bits        functional test      passes    refuses  refuses
+  Safe-wrapper floor 20 -> 1       request_release()    passes    refuses  refuses
+4 of 4 tampered files pass the usual check; 0 of 4 pass the pin and the scan or floor.
+
+==============================================================================
+6. What the pin does not catch
+==============================================================================
+If the pin is taken from the download rather than from the supplier, the backdoored forest verifies: digest matches the pin. A digest proves that a file is the one that was pinned, not that the pinned file was good.
+The same holds if the supplier's own build was compromised. What remains: signatures that say who published a file (Sigstore, OpenSSF model signing), build provenance that says how (SLSA), formats that cannot hold code (safetensors), an AI bill of materials, and testing a supplied model as untrusted. NIST AI 100-2 calls robustness to supply-chain model poisoning a critical open problem (section 4.2.2).
+
+==============================================================================
+Where this sits
+==============================================================================
+  NIST AI 100-2     NISTAML.051 model poisoning through a supplied model (section 3.2.2)
+  OWASP             ML06 AI supply chain attacks, ML10 model poisoning, LLM03 supply chain
+  MITRE ATLAS       AML.T0010 AI supply chain compromise; case studies AML.CS0019, AML.CS0031
+  EU AI Act         Art. 15(5) attacks on pre-trained components (model poisoning)
+  UK Code / ETSI    principle 7 secure the supply chain; 8.1.2 publish hashes of model components
