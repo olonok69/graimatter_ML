@@ -1,0 +1,41 @@
+[project]
+name = "graimatter-ml"
+version = "0.1.0"
+description = "Adversarial ML workshop with GRAIMATTER as a high-trust case: demos on synthetic data and a regulation-mapped release gate."
+readme = "README.md"
+requires-python = ">=3.11"
+# Demos 1 and 3 and the gate need only these. demo/requirements.txt keeps the
+# same list plus sacroml for readers who follow the README with pip.
+dependencies = [
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+# Demo 2. sacroml pulls in PyTorch, so CI leaves it out.
+sacroml = ["sacroml>=2.0.1"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+# The demos print long report lines verbatim; wrapping them would not help a reader.
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["aml_demo", "compliance_gate", "graimatter_demo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["demo"]

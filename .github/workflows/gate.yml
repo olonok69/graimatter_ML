@@ -1,0 +1,59 @@
+name: release-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Lint, then the tests: they rerun demos 1 and 3, check the reports still match
+  # demo/output/, and pin what the gate decides on the seeded numbers.
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - name: Sync (numpy and scikit-learn; no sacroml, which pulls in PyTorch)
+        run: uv sync
+      - name: Lint
+        run: uv run ruff check .
+      - name: Tests
+        run: uv run pytest -q
+
+  # The gate on what CI can evidence. Demo 2 needs sacroml, so it is declared out
+  # of scope with --accept-missing 2: its control shows as not evidenced, on purpose.
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync
+      - name: GRAIMATTER pack on demo 1 must pass
+        run: uv run python demo/run_gate.py --demos 1 --regimes graimatter --accept-missing 2 --out runs/graimatter
+      - name: All packs on demos 1 and 3 must block (exit 1 is the expected result)
+        run: |
+          set +e
+          uv run python demo/run_gate.py --demos 1,3 --regimes all --accept-missing 2 --out runs/all
+          code=$?
+          set -e
+          if [ "$code" -ne 1 ]; then
+            echo "::error::Expected the gate to block on evasion, extraction and poisoning (exit 1), got $code."
+            exit 1
+          fi
+          python - <<'PY'
+          import json, pathlib
+          payload = json.loads(next(pathlib.Path("runs/all").glob("gate_*.json")).read_text())
+          breached = {c["category"] for c in payload["category_verdicts"] if not c["within"]}
+          assert breached == {"evasion", "extraction", "poisoning"}, breached
+          print("::notice::Gate blocked as designed:", ", ".join(sorted(breached)))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-evidence
+          path: runs/

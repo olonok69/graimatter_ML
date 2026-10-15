@@ -69,7 +69,7 @@ def forest() -> RandomForestClassifier:
     )
 
 
-def main() -> None:
+def main() -> dict:
     report = Report()
     OUTPUT.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
@@ -127,6 +127,7 @@ def main() -> None:
         "ranges, send them to the API, and train their own random forest on the returned labels."
     )
     surrogate = None
+    extraction_rows = {}
     for n_queries in (50, 200, 1000, 5000):
         copy = steal(model.predict, n_queries, np.random.default_rng(SEED + n_queries), N_LAB, forest)
         agree = fidelity(copy, model, test_x)
@@ -138,9 +139,11 @@ def main() -> None:
             f"accuracy {copy_accuracy:.3f}; edits planned on the copy get "
             f"{_pct(moved['end_to_end']):>6} of flagged people past the target"
         )
+        extraction_rows[n_queries] = {"agreement": agree, "accuracy": copy_accuracy, "transfer": moved["end_to_end"]}
         if n_queries == 1000:
             surrogate = copy
     gate = QueryGate(model=model, budget=200, user="partner_app")
+    over_budget_allowed = False
     try:
         steal(
             lambda rows: gate.predict_proba(rows, purpose="bulk scoring").argmax(axis=1),
@@ -149,6 +152,7 @@ def main() -> None:
             N_LAB,
             forest,
         )
+        over_budget_allowed = True
         report.p("  Query gate: 1,000-row request allowed (unexpected).")
     except QueryBudgetExceeded as error:
         report.p(f"  Query gate with a 200-row budget (demo 1's QueryGate): {error}")
@@ -164,11 +168,16 @@ def main() -> None:
         "A data contributor appends copies of training rows with a trigger in the two lab "
         "columns, all labelled low risk. The model is retrained on the enlarged table."
     )
+    clean_success = {
+        "loud": attack_success(model, test_x, loud_trigger)["success"],
+        "quiet": attack_success(model, test_x, quiet_trigger)["success"],
+    }
     report.p(
         f"  clean model: test accuracy {test_accuracy:.3f}; "
-        f"loud trigger flips {_pct(attack_success(model, test_x, loud_trigger)['success'])} of "
-        f"high-risk scores, quiet trigger {_pct(attack_success(model, test_x, quiet_trigger)['success'])}"
+        f"loud trigger flips {_pct(clean_success['loud'])} of "
+        f"high-risk scores, quiet trigger {_pct(clean_success['quiet'])}"
     )
+    backdoor_rows = []
     for name, trigger in (("loud (one lab value at 4.0)", loud_trigger), ("quiet (two at +1.7 / -1.7)", quiet_trigger)):
         report.p(f"  Trigger: {name}")
         for fraction in (0.01, 0.02, 0.05):
@@ -179,6 +188,13 @@ def main() -> None:
             accuracy = float((poisoned.predict(test_x) == test_y).mean())
             success = attack_success(poisoned, test_x, trigger)
             screen = outlier_screen(poisoned_x, poison_x, train_x, SEED)
+            backdoor_rows.append({
+                "trigger": name.split()[0],
+                "fraction": fraction,
+                "test_accuracy": accuracy,
+                "success": success["success"],
+                "screen_caught": screen["poison_caught"],
+            })
             report.p(
                 f"    {len(poison_x):>3} rows ({_pct(fraction):>4}): test accuracy {accuracy:.3f}, "
                 f"trigger flips {_pct(success['success']):>6} of high-risk scores; "
@@ -201,6 +217,16 @@ def main() -> None:
     path = OUTPUT / "aml_report.txt"
     report.save(path)
     print(f"\nReport written to {path}")
+    # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    return {
+        "test_accuracy": test_accuracy,
+        "evasion": evasion_rows,
+        "extraction": extraction_rows,
+        "query_gate_budget": gate.budget,
+        "over_budget_allowed": over_budget_allowed,
+        "backdoor_clean": clean_success,
+        "backdoor": backdoor_rows,
+    }
 
 
 if __name__ == "__main__":

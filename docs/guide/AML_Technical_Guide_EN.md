@@ -2,7 +2,7 @@
 
 **How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with three demos on synthetic data**
 
-This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) and the three demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides.
+This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides.
 
 > **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -37,10 +37,11 @@ This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) and the thre
 
 **Closing**
 
-17. [How to reproduce](#17-how-to-reproduce)
-18. [Limits of the demos](#18-limits-of-the-demos)
-19. [Glossary](#19-glossary)
-20. [References](#20-references)
+17. [A release gate over the demos](#17-a-release-gate-over-the-demos)
+18. [How to reproduce](#18-how-to-reproduce)
+19. [Limits of the demos](#19-limits-of-the-demos)
+20. [Glossary](#20-glossary)
+21. [References](#21-references)
 
 [Appendix A: how the guide, slides and demos line up](#appendix-a-how-the-guide-slides-and-demos-line-up)
 
@@ -776,7 +777,72 @@ Two more carry over as governance rather than code. The risk appetite is agreed 
 
 # Closing
 
-## 17. How to reproduce
+## 17. A release gate over the demos
+
+> **In plain words.** The demos print numbers. A release decision needs those numbers judged against named obligations, with a record someone can audit. `demo/run_gate.py` reruns the demos, compares each number with a tolerance, and gives every control in the EU AI Act, the UK Code, NIST and GRAIMATTER a verdict: pass, fail or not evidenced. On the seeded run the GRAIMATTER controls pass and Article 15(5) fails, because demo 3's forest can be evaded, copied and backdoored.
+
+The pattern comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine), which does the same for LLMs and agents (section 5). Its tools (garak, AgentDojo, PyRIT) attack language models and are no use against a tree or a random forest; what carries over is the method: controls mapped to evidence, numeric tolerances, a `not_evidenced` status, and a report that makes CI fail.
+
+### 17.1 What the gate does
+
+1. It runs the demos it is asked for (all three by default) and keeps the numbers each one already prints. Nothing is recomputed, and the reports in `demo/output/` stay as they are.
+2. It compares each metric with its tolerance. A category is within tolerance when none of its metrics breaches.
+3. It gives each control in the selected regime packs a verdict. **pass**: every demo the control relies on ran and none of its categories breached. **fail**: one of them breached. **not_evidenced**: a demo it relies on did not run. A control is never marked pass on evidence that was not produced.
+4. It writes `demo/output/gate/gate_<packs>.json` for machines and `.md` for people, and exits with 1 if any category breaches or any selected control is not evidenced.
+
+```bash
+uv run python demo/run_gate.py                                 # demos 1-3; packs eu_uk, nist_aml, graimatter
+uv run python demo/run_gate.py --regimes us                    # NIST AI RMF and SR 26-02
+uv run python demo/run_gate.py --demos 1,3 --accept-missing 2  # what CI runs: no sacroml
+uv run python demo/run_gate.py --fail-under evasion.self_reported=0.5
+```
+
+### 17.2 Tolerances
+
+A tolerance is the largest value of a metric the data controller accepts. It is a risk appetite (ELA 8), not a threshold from the green paper, NIST or any regulation, none of which publishes one. The privacy tolerances are read from demo 1's `POLICY` in `disclosure.py`, so on the wrapped tree the gate decides exactly as `decide()` does; a test checks that. The robustness tolerances were set for the workshop.
+
+| Category | Metric | Demo | Tolerance | Seeded value |
+|---|---|---|---|---|
+| membership | Worst-case AUC; advantage; TPR at 10% FPR; FDIF when p ≤ 0.05 | 1 | 0.62; 0.20; 0.35; 0.20 | 0.528; 0.004; 0.116; 0.020 (p = 0.445) |
+| attribute | Attribute risk ratio for weight | 1 | 1.35 | 1.000 |
+| generalisation | Training minus TRE-holdout accuracy | 1 | 0.15 | 0.108 |
+| stored_rows | Training rows stored in the file; file size over table size | 1 | 0; 0.75 | 0; 0.051 |
+| release_check | Known-disclosive files let through (deep tree, 1-NN, SVC, edited tree, wrong file type) | 1 | 0 | 0 |
+| query_budget | Rows of the attribute sweep allowed; 1,000-row extraction request allowed | 1, 3 | 0 | 0 |
+| evasion | High-risk people who evade, in the three scenarios of section 3.1 | 3 | 10% | 78.7%, 32.8%, 20.7% |
+| extraction | Agreement of a copy trained on one 200-row budget of labels | 3 | 80% | 86.9% |
+| poisoning | Worst rise in trigger success over the clean model | 3 | 10 points | 71.7 points |
+
+Demo 2 adds two readings when `sacroml` is installed: the package's worst-case membership AUC on its wrapped tree (tolerance 0.62) and the disclosive configurations it failed to flag (tolerance 0).
+
+### 17.3 Regime packs and the seeded verdicts
+
+Packs are chosen with `--regimes`, as in safety-trust-engine. Each control records how binding it is: `statute` (the EU AI Act), `guidance` (NIST, the UK Code), `supervisory` (model risk management) or `recommendation` (the green paper).
+
+| Pack | Controls | Demos 1 and 3 |
+|---|---|---|
+| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model evasion, confidentiality attacks. UK Code / ETSI EN 304 223: 3.1, 6.2, 9.4 | 6 fail |
+| `nist_aml` | NISTAML.025 evasion, .023 backdoor, .031 extraction, .032 reconstruction (attribute inference, §2.4.1), .033 membership | 3 fail, 2 pass |
+| `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check of TECH 7 and 9 that needs demo 2 | 5 pass, 1 not evidenced |
+| `us` | NIST AI RMF MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, documentation | 3 fail, 3 pass |
+
+The two halves of the result are not in tension. The GRAIMATTER checks were built for privacy, and the wrapped tree passes them. Article 15(5) also names poisoning and model evasion, and its confidentiality clause covers extraction as well as membership; demo 3's forest fails all three. Privacy checks alone do not make a model resilient in the sense of the Article, which is the point of section 16.
+
+### 17.4 Never a silent green
+
+A control whose demo did not run is `not_evidenced`, and the gate fails on it. CI does not install `sacroml`, because it brings PyTorch, so demo 2 does not run there. Rather than a job that is always red, or a control quietly marked pass, the workflow declares demo 2 out of scope with `--accept-missing 2`. The SACRO-ML control is then reported as not evidenced and out of scope, and the report says so in its header.
+
+### 17.5 The US reading
+
+The `us` pack reads the same evidence through two US lenses. NIST AI RMF MEASURE 2.6 asks that residual negative risk not exceed the risk tolerance, which is what the tolerances encode; MEASURE 2.7 covers security and resilience, and MEASURE 2.10 privacy risk. Federal model risk management guidance (Federal Reserve SR 26-02 and OCC Bulletin 2026-13, which replaced SR 11-7 in April 2026) leaves generative and agentic AI outside its formal scope, so safety-trust-engine applies it to LLMs by analogy. A risk classifier like the ones here is a model in the plain sense of that guidance. The TRE holdout (TECH 6), which the developer never sees, is the independent validation; the gate in CI is the ongoing monitoring; the JSON and Markdown report is the documentation. NIST AI RMF is voluntary and SR 26-02 is supervisory, and the report marks them so.
+
+### 17.6 In CI
+
+`.github/workflows/gate.yml` runs on every pull request. One job lints with `ruff` and runs the tests: demos 1 and 3 regenerate their reports, which must match `demo/output/` apart from two lines that depend on the machine (the absolute path and the pickled size of the tree); the gate must agree with `decide()`; the seeded verdicts are pinned; a missing demo must give `not_evidenced`; `--fail-under` must change the outcome. A second job runs the gate twice: the GRAIMATTER pack on demo 1 must pass, and all packs on demos 1 and 3 must block, on evasion, extraction and poisoning and nothing else. Both reports are uploaded as build artefacts.
+
+---
+
+## 18. How to reproduce
 
 Setup is described once, in the repository [README](../../README.md); the step-by-step notes on demo 1 are in [demo/README.md](../../demo/README.md). In short, with [uv](https://docs.astral.sh/uv/) installed, from the repository root:
 
@@ -787,7 +853,10 @@ uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brin
 uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
 uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
 uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
+uv run python demo/run_gate.py              # reruns the demos; writes demo/output/gate/
 ```
+
+With the `pyproject.toml`, `uv sync` installs numpy, scikit-learn, pytest and ruff without sacroml (add `--extra sacroml` for demo 2); `uv run pytest` and `uv run ruff check .` are what CI runs.
 
 On Windows PowerShell, activate the environment with a leading dot: `. .\.venv\Scripts\Activate.ps1`.
 
@@ -801,6 +870,7 @@ On Windows PowerShell, activate the environment with a leading dot: `. .\.venv\S
 | `demo/output/sacroml/sacroml_report.txt` | demo 2 summary |
 | `demo/output/sacroml/<model>/<attack>/report.json` and `report.pdf` | demo 2, per attack |
 | `demo/output/sacroml/safe_release/target.yaml` | demo 2, `request_release()` |
+| `demo/output/gate/gate_<packs>.json` and `.md` | the release gate (section 17) |
 
 The figures in this guide and the deck are generated from the repository:
 
@@ -815,13 +885,13 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 ---
 
-## 18. Limits of the demos
+## 19. Limits of the demos
 
 * **The cohort is synthetic.** There are no real patients. Demos 1 and 2: seed 7, 1,000 rows, split 500 for the researcher and 500 kept by the TRE. Demo 3: seed 7, 4,000 rows, split 2,000 and 2,000.
 * **Demo 3 is a sketch.** One model type (a random forest), simple greedy and query-based attacks, and a single outlier screen as the poisoning defence. Optimised attacks, other defences and other data types are out of scope.
 * **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only here; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models (section 5).
 * **The frameworks are summarised, not interpreted.** Part 2 is a reading of the documents, not legal advice; the crosswalk is ours.
-* **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller.
+* **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller. The same holds for the gate's tolerances (section 17.2), and its mapping of metrics to clauses is ours.
 * **The wrapper is stricter than the paper's example.** Demo 1 uses `min_samples_leaf` 20 and `max_depth` 4; Appendix D's example minimum leaf size is 5.
 * **`sacroml` uses its own rules.** Its rules file raises `min_samples_leaf` from 1 to 5, and its structural attack marks a leaf as risky below 10 training rows.
 * **The official package approves nothing here.** `request_release()` records "Proceed to next step of checking", and the structural attack still flags the wrapped tree.
@@ -833,7 +903,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 ---
 
-## 19. Glossary
+## 20. Glossary
 
 | Term | Meaning |
 |---|---|
@@ -867,11 +937,13 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 | **Differential privacy (epsilon)** | A guarantee on a release mechanism; smaller epsilon means the release changes less when one person is added or removed (green paper §10.1.3, NIST §2.4.5). |
 | **AUC, advantage, TPR, FPR, FDIF, posterior** | See section 12. |
 | **k-anonymity (of a leaf)** | Number of training rows in the smallest leaf. |
+| **Tolerance** | The largest value of a metric the data controller accepts; a risk appetite, not an official threshold (section 17.2). |
+| **not_evidenced** | The gate's verdict for a control whose demo did not run; never reported as a pass (section 17.4). |
 | **RT1, RT2, RT3** | The green paper's risk types: careless researcher, malicious researcher, outside attacker (section 9.2). |
 
 ---
 
-## 20. References
+## 21. References
 
 1. A. Vassilev, A. Oprea, A. Fordyce, H. Anderson, X. Davies, M. Hamin. *Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations.* NIST AI 100-2e2025, March 2025. doi:10.6028/NIST.AI.100-2e2025. `NIST.AI.100-2e2025.pdf` in this repository.
 2. MITRE ATLAS, Adversarial Threat Landscape for AI Systems. https://atlas.mitre.org (data release 2026.09).
@@ -885,14 +957,16 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 10. SACRO-ML (`sacroml` 2.0.1). https://github.com/AI-SDC/SACRO-ML
 11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (green paper reference [37]).
 12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (green paper reference [2]).
-13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine
-14. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine. The release gate of section 17 follows its `compliance.py` and `report.py`, and its `docs/REGULATORY_RESEARCH.md` is the source for SR 26-02.
+14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, January 2023 (MEASURE 2.6, 2.7, 2.10).
+15. Board of Governors of the Federal Reserve System, SR 26-02, and OCC Bulletin 2026-13: revised interagency guidance on model risk management, April 2026 (replaces SR 11-7).
+16. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
 ## Appendix A: how the guide, slides and demos line up
 
-The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1 to 13), frameworks (section 8, slides 14 to 18), the GRAIMATTER case (sections 9 to 16, slides 19 to 36), and closing (sections 17 to 20, slides 37 to 39).
+The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1 to 13), frameworks (section 8, slides 14 to 18), the GRAIMATTER case (sections 9 to 16, slides 19 to 36), and closing (sections 17 to 21, slides 37 to 40).
 
 | Guide section | Slides (deck order) | Demo output |
 |---|---|---|
@@ -922,9 +996,10 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | 15.1 Differences | 35 *Two demos compared* | both reports |
 | 15.2 Why the membership numbers differ | 34 *Why the two membership numbers differ* | – |
 | 16. What carries over | 36 *What carries over* | – |
-| 17. How to reproduce | 38 *Run it yourself* | – |
-| 18. Limits | 37 *Limits* | – |
-| 19. Glossary, 20. References | 39 *References* | – |
+| 17. Release gate | 38 *Release gate* | `demo/output/gate/` |
+| 18. How to reproduce | 39 *Run it yourself* | – |
+| 19. Limits | 37 *Limits* | – |
+| 20. Glossary, 21. References | 40 *References* | – |
 
 ### Suggested workshop agenda (about 90 minutes)
 
@@ -937,7 +1012,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | 0:50 | GRAIMATTER: the problem, the paper, the cohort, the metrics | Guide §9 to §12, slides 19 to 25 |
 | 1:02 | Demo 1: unconstrained tree, safe wrapper, tail, tampering, query budget, DP | Guide §13, slides 26 to 32 |
 | 1:14 | Demo 2 and the comparison | Guide §14 and §15, slides 33 to 35 |
-| 1:22 | What carries over; limits; running the demos; questions | Guide §16 to §18, slides 36 to 39 |
+| 1:22 | What carries over; limits; the release gate; running the demos; questions | Guide §16 to §19, slides 36 to 40 |
 
 ---
 

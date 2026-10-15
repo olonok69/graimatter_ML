@@ -14,8 +14,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from make_figures import (  # noqa: E402
-    BLUE, BLUEBG, BODY, BORDER, CARD, CREAM, GREEN, GREENBG, GREY, INK, MUTED, NAVY, ORANGE, OUT, PEACH,
-    PEACHBG, RED, REDBG, Svg, header, num,
+    BLUE,
+    BODY,
+    BORDER,
+    CARD,
+    INK,
+    MUTED,
+    NAVY,
+    ORANGE,
+    OUT,
+    PEACH,
+    PEACHBG,
+    RED,
+    Svg,
+    header,
 )
 
 # demo/output/aml_report.txt, seed 7
