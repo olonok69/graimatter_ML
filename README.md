@@ -2,17 +2,17 @@
 
 Trained models can be fooled, poisoned, copied and made to give away the data they learned from. This repository is a workshop on that field, adversarial machine learning (AML). It explains the attacks with the taxonomy of [NIST AI 100-2e2025](NIST.AI.100-2e2025.pdf), compares what the main frameworks ask for (MITRE ATLAS, OWASP, the EU AI Act and the UK Code of Practice), and then goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) recommends.
 
-Three demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
+Four demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
 
 | Part | What it covers | Demo |
 | --- | --- | --- |
-| 1. Attacks | Evasion, poisoning and backdoors, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor |
+| 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
 | 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML) |
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 40 slides), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Appendix B of the technical guide explains every NIST attack class one by one.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 41 slides), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Appendix B of the technical guide explains every NIST attack class one by one.
 
 ## Part 1: the attacks
 
@@ -65,13 +65,26 @@ Demo 1's query gate with a 200-row budget refuses the 1,000-row request, but 200
 
 Test accuracy moves by 0.02 at most, so a holdout check like GRAIMATTER's would not see the backdoor.
 
+### Demo 4: a tampered supply chain
+
+**Supply chain (NISTAML.051, OWASP ML06, ATLAS AML.T0010).** `demo/run_supply_chain_demo.py` attacks the route a model takes to its user rather than the model itself. A supplier publishes demo 3's forest as `model.pkl`, a `bundle.json` (published accuracy, a 256-bit key length for artefacts at rest) and demo 1's safe-wrapper rules as `constraints.json`. At approval the user pins the SHA-256 of each file from the supplier's release notes. Then a mirror changes them (`demo/output/supply_chain_report.txt`):
+
+| Tampered on the mirror | Usual check | Pinned digest | Import scan or floor |
+| --- | --- | --- | --- |
+| Swapped model, trained with 2% quiet-trigger poison | accuracy 0.627 against 0.635 published: passes; the trigger then flips 100% of high-risk scores | refuses | passes |
+| The genuine model wrapped so that loading the pickle runs a function of the attacker's choosing | accuracy 0.635: passes | refuses | refuses |
+| `key_bits` lowered from 256 to 40 | still encrypts: passes; a key search drops from 1.1e+22 years to 18 minutes | refuses | refuses |
+| Safe-wrapper floor lowered from 20 rows to 1 | `request_release()` passes a tree whose smallest leaf is one person | refuses | refuses |
+
+The scan finds no code in the backdoored file, because the backdoor lives in the weights; only the pin catches it. And a pin taken from the tampered download accepts it: a digest proves a file is the one approved, not that the approved one is sound. Signed releases (Sigstore, OpenSSF model signing), build provenance (SLSA), an AI bill of materials and formats that cannot hold code (safetensors) cover what a hash cannot. The demo's payload only writes a line to a log, and nothing in it encrypts anything or touches real cryptographic software.
+
 ## Part 2: the frameworks
 
 | Attack | NIST AI 100-2 | OWASP | MITRE ATLAS | EU AI Act 15(5) | UK Code | Here |
 | --- | --- | --- | --- | --- | --- | --- |
 | Evasion | NISTAML.022, .025 | ML01 | AML.T0015 | adversarial examples, model evasion | 3.1, 9 | demo 3 |
 | Data poisoning, backdoor | NISTAML.013, .023 | ML02, LLM04 | AML.T0020 | data poisoning | 6.2, 8.2 | demo 3 |
-| Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 1 |
+| Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 4 |
 | Membership inference | NISTAML.033 | ML04 | AML.T0024.000 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
 | Attribute inference, inversion | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
 | Model extraction | NISTAML.031 | ML05 | AML.T0024.002 | confidentiality attacks | 6.2, 9.4 | demo 3 |
@@ -183,14 +196,14 @@ Neither script is an approval process. The package's likelihood-ratio attack (Li
 
 `demo/run_gate.py` turns the crosswalk of Part 2 into a check that can block a release. It reruns the demos, reads the numbers they already print, compares each with a tolerance, and gives every control a verdict: **pass**, **fail**, or **not_evidenced** when the demo behind it did not run. It writes `demo/output/gate/gate_<packs>.json` and `.md` and exits with 1 on any breach or unevidenced control, so CI can block on it. The pattern (controls mapped to evidence, tolerances, `not_evidenced`, an auditable report) comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine); its LLM tools do not apply to these models, so none of its code is copied.
 
-| Pack (`--regimes`) | Controls | Binding | Seeded result, demos 1 and 3 |
+| Pack (`--regimes`) | Controls | Binding | Seeded result, demos 1, 3 and 4 |
 | --- | --- | --- | --- |
-| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model evasion, confidentiality attacks; UK Code / ETSI EN 304 223: 3.1, 6.2, 9.4 | statute; guidance | 6 fail |
-| `nist_aml` | NISTAML.025, .023, .031, .032, .033 | guidance | 3 fail, 2 pass |
+| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model poisoning, model evasion, confidentiality attacks; UK Code / ETSI EN 304 223: 3.1, 6.2, 7 and 8.1.2, 9.4 | statute; guidance | 6 fail, 2 pass |
+| `nist_aml` | NISTAML.025, .023, .031, .032, .033, .051 | guidance | 3 fail, 3 pass |
 | `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check that needs demo 2 | recommendation | 5 pass, 1 not evidenced |
-| `us` | NIST AI RMF MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, documentation | guidance; supervisory | 3 fail, 3 pass |
+| `us` | NIST AI RMF GOVERN 6.1, MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, third-party model, documentation | guidance; supervisory | 3 fail, 5 pass |
 
-The default packs are `eu_uk`, `nist_aml` and `graimatter`; `--regimes us` or `--regimes all` adds the US lens. The privacy categories stay within tolerance on the wrapped tree, and the gate decides exactly as demo 1's `decide()` does, because it reads the same `POLICY`. Evasion (78.7% against a tolerance of 10%), extraction (a copy agreeing 86.9% after one 200-row budget, against 80%) and the backdoor (trigger success up 71.7 points, against 10) breach, so Article 15(5) fails: privacy checks alone do not make a model resilient in the sense of the Article.
+The default packs are `eu_uk`, `nist_aml` and `graimatter`; `--regimes us` or `--regimes all` adds the US lens. The privacy categories stay within tolerance on the wrapped tree, and the gate decides exactly as demo 1's `decide()` does, because it reads the same `POLICY`. Evasion (78.7% against a tolerance of 10%), extraction (a copy agreeing 86.9% after one 200-row budget, against 80%) and the backdoor (trigger success up 71.7 points, against 10) breach, so Article 15(5) fails: privacy checks alone do not make a model resilient in the sense of the Article. Its model-poisoning clause passes, because demo 4's pin, scan and floors let none of the four tampered files through.
 
 For a US reader, a risk classifier is a model in the plain sense of federal model risk guidance (SR 26-02), not by analogy as an LLM is: the TRE holdout (TECH 6) is the independent validation, and the gate in CI is the ongoing monitoring.
 
@@ -221,20 +234,21 @@ uv pip install -r demo/requirements.txt
 
 `demo/requirements.txt` installs `numpy`, `scikit-learn` and `sacroml`. The `sacroml` install also brings in PyTorch.
 
-Run the three demos:
+Run the four demos:
 
 ```powershell
-uv run python demo/run_aml_demo.py       # seconds
-uv run python demo/run_demo.py           # seconds
-uv run python demo/run_sacroml_demo.py   # a few minutes
+uv run python demo/run_aml_demo.py            # seconds
+uv run python demo/run_supply_chain_demo.py   # seconds
+uv run python demo/run_demo.py                # seconds
+uv run python demo/run_sacroml_demo.py        # a few minutes
 ```
 
 Then the release gate, which reruns the demos it is given:
 
 ```powershell
-uv run python demo/run_gate.py                                  # demos 1-3, default packs
-uv run python demo/run_gate.py --demos 1,3 --accept-missing 2   # what CI runs, without sacroml
-uv run python demo/run_gate.py --regimes us                     # the US pack
+uv run python demo/run_gate.py                                    # demos 1-4, default packs
+uv run python demo/run_gate.py --demos 1,3,4 --accept-missing 2   # what CI runs, without sacroml
+uv run python demo/run_gate.py --regimes us                       # the US pack
 ```
 
 `--accept-missing 2` declares demo 2 out of scope: its control is reported as not evidenced and does not fail the run. Without the flag, a missing demo fails the gate.
@@ -261,19 +275,21 @@ python docs/make_deck.py
 | `GRAIMATTER Green Paper.pdf` | The GRAIMATTER green paper (99 pages) |
 | `demo/run_aml_demo.py` | Demo 3: evasion, extraction, backdoor |
 | `demo/aml_demo/` | Evasion search, model extraction, poisoning and outlier screen |
+| `demo/run_supply_chain_demo.py` | Demo 4: a supplied model and its files, tampered on the way |
+| `demo/supply_chain/` | Pinned digests, pickle import scan, downgrade floors, harmless payload |
 | `demo/run_demo.py` | Demo 1: hand-written GRAIMATTER checks |
 | `demo/run_sacroml_demo.py` | Demo 2: SACRO-ML |
 | `demo/run_gate.py` | Release gate over the demos |
 | `demo/compliance_gate/` | Controls by regime pack, tolerances, verdicts and the JSON and Markdown report |
 | `demo/graimatter_demo/` | Cohort, metrics, attacks, safe wrapper, release policy, query gate, differential-privacy sketch |
 | `demo/constraints.json` | Hyperparameter envelope for the safe wrapper |
-| `demo/output/` | Seeded reports of the three demos and the files demo 1 writes |
-| `demo/output/gate/` | Sample gate reports: default packs and the US pack, demos 1 and 3 |
+| `demo/output/` | Seeded reports of the four demos and the files demo 1 writes |
+| `demo/output/gate/` | Sample gate reports: default packs and the US pack, demos 1, 3 and 4 |
 | `tests/` | Regenerated reports match `demo/output/`; the gate's verdicts on the seeded run |
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
-| `docs/Adversarial_ML.pptx` | Workshop slides (40) |
+| `docs/Adversarial_ML.pptx` | Workshop slides (41) |
 | `docs/guide/` | Technical guide and presenter guide, each in English and Spanish, with figures |
 
 ## References

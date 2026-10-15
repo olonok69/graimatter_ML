@@ -1,10 +1,10 @@
 # Adversarial Machine Learning: Technical Guide for the Workshop
 
-**How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with three demos on synthetic data**
+**How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with four demos on synthetic data**
 
-This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides, and Appendix B explains every NIST attack class one by one. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 40 slides in order and points back to this guide.
+This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the four demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides, and Appendix B explains every NIST attack class one by one. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 41 slides in order and points back to this guide.
 
-> **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
+> **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
 ---
 
@@ -14,7 +14,7 @@ This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the three de
 
 1. [Why machine learning needs its own security](#1-why-machine-learning-needs-its-own-security)
 2. [The NIST taxonomy](#2-the-nist-taxonomy)
-3. [Demo 3: evasion, extraction and a backdoor](#3-demo-3-evasion-extraction-and-a-backdoor)
+3. [Demos 3 and 4: evasion, extraction, a backdoor and a tampered supply chain](#3-demos-3-and-4-evasion-extraction-a-backdoor-and-a-tampered-supply-chain)
 4. [Privacy attacks](#4-privacy-attacks)
 5. [Generative AI](#5-generative-ai)
 6. [Real incidents](#6-real-incidents)
@@ -65,7 +65,7 @@ NIST AI 100-2e2025, *Adversarial Machine Learning: A Taxonomy and Terminology of
 The three things to protect map onto that split:
 
 * **The data.** Whoever can add rows can steer what the model learns. Web-scale datasets make this cheap: NIST cites work showing that an adversary with limited money can control part of public datasets used for training (§2.3, §3.2.1).
-* **The model.** A model file can be stolen, edited after training, swapped for a malicious one in the supply chain, or carry training rows inside it (§3.2; GRAIMATTER §10.1).
+* **The model.** A model file can be stolen, edited after training, swapped for a malicious one in the supply chain (demo 4), or carry training rows inside it (§3.2; GRAIMATTER §10.1).
 * **The answers.** Every prediction leaks a little. Enough queries can fool the model, copy it, or reveal who was in its training data (§2.2, §2.4).
 
 NIST is direct about the state of the art: for many tasks there are no theoretically secure ML algorithms, so "designing mitigations is an inherently ad hoc and fallible process" (§4.1.2). The practical consequence runs through this whole guide: test the system against attacks rather than assume a defence works.
@@ -112,7 +112,7 @@ Appendix B explains each of these classes in turn: what the attacker does and ne
 
 ---
 
-## 3. Demo 3: evasion, extraction and a backdoor
+## 3. Demos 3 and 4: evasion, extraction, a backdoor and a tampered supply chain
 
 > **In plain words.** GRAIMATTER is about privacy. To show the rest of the taxonomy, demo 3 trains a risk model on the same kind of synthetic patients and attacks it three ways: people lie on a form to get a better score (evasion), an outsider copies the model through its API (extraction), and a data contributor plants a hidden trigger in the training data (backdoor). It runs in seconds with numpy and scikit-learn.
 
@@ -176,6 +176,33 @@ With 40 poisoned rows the trigger turns every high-risk score into low risk, and
 NIST's real-world poisoning cases all exploited models that keep learning after release: Microsoft's Tay chatbot in 2016, mass attempts to poison Gmail's spam filter, and near-duplicate ransomware samples submitted to VirusTotal (§2.3.5).
 
 **Under the hood.** `poisoning.poison()` copies random training rows, applies the trigger and sets the label to 0. `attack_success()` takes the test rows the model scores high risk and measures the share that flip with the trigger. The clean-model row shows the baseline: on a noisy label, editing two columns already changes some decisions. `outlier_screen()` fits `IsolationForest(contamination=0.05)` on the poisoned training table.
+
+### 3.4 Demo 4: a supplied model, tampered on the way (NISTAML.051, OWASP ML06, ATLAS AML.T0010)
+
+> **In plain words.** The first three attacks work on the model you trained. This one never touches it: it changes the model you download. A supplier publishes a model and its files, someone between the supplier and you swaps them, and every swapped file still passes the check you would normally run. What catches them is a fingerprint of each file taken when it was approved, a look at the code a model file would run, and minimum settings kept in your own code. Nothing here encrypts anything or touches real cryptographic software.
+
+Entry point: `demo/run_supply_chain_demo.py`. Code: `demo/supply_chain/` (`integrity.py`, `pickle_scan.py`, `downgrade.py`, `payload.py`). Report: `demo/output/supply_chain_report.txt`; the working files go to `demo/output/supply_chain/`, which is not versioned.
+
+**Set-up.** The supplier trains the same random forest as demo 3 (same cohort, seed and split; accuracy 0.635 on the user's 2,000 rows) and publishes three files: `model.pkl`, `bundle.json` (the published accuracy and the key length used to encrypt artefacts at rest, 256 bits) and `constraints.json` (demo 1's safe-wrapper rules: minimum leaf 20, maximum depth 4). At approval the user records the SHA-256 of each file in a lock file, from the supplier's own release notes, not from the place they download from. Then the user downloads the files from a mirror, and whoever runs the mirror changes them.
+
+| Tampered on the mirror | The check a user usually runs | Pinned digest | Import scan or floor |
+|---|---|---|---|
+| Swapped model: same rows plus 2% with demo 3's quiet trigger | Accuracy 0.627 against 0.635 published, within 0.02: **passes** | refuses | passes |
+| Code in the pickle: the genuine forest, wrapped so loading calls a function of the attacker's choosing | Accuracy 0.635: **passes** | refuses | refuses |
+| `key_bits` lowered from 256 to 40 in `bundle.json` | Still encrypts and decrypts: **passes** | refuses | refuses |
+| Safe-wrapper floor lowered: minimum leaf 1, maximum depth 100 | `request_release()`: **passes** | refuses | refuses |
+
+**The swapped model.** The backdoored forest scores 0.627 on the user's holdout, so an acceptance test that compares accuracy with the published figure passes. Its trigger then turns 100% of high-risk scores into low risk, against 32.3% on the supplier's forest. A scan finds nothing, because the backdoor lives in the weights: the file imports exactly what a clean forest imports. Only the pin sees that the file is not the one that was approved.
+
+**Code in the model file.** A pickle (and a `.joblib` file, which is built on pickle) names the functions Python calls while loading it. The mirror's file calls a function of its choosing and then hands back the supplier's forest, so it predicts exactly as before, with accuracy 0.635. In the demo the function only writes a line to a log; in the incidents MITRE ATLAS records (AML.CS0031) it opened a reverse shell. By the time an accuracy test runs, the code has already run. The import scan reads the file's opcodes without loading it and lists every `module.name` it would import; anything outside numpy and scikit-learn is refused. Formats that hold only tensors, such as safetensors, remove the problem instead of scanning for it.
+
+**A downgrade.** One number in a configuration file weakens the whole system, and nothing breaks. With 40-bit keys everything still encrypts and decrypts, so a functional test passes. What changes is the cost of trying every key at a billion keys a second: 18 minutes at 40 bits, 2.3 years at 56, 1.1e22 years at 128. This is the export-grade cryptography of the 1990s, and the protocol downgrade attacks FREAK and Logjam (2015) that tricked servers into using it. The model-side version is the safe wrapper's rules file: with a minimum leaf of 1, demo 1's wrapper accepts a researcher's unconstrained tree, and `request_release()` recommends the next step of checking for a tree whose smallest leaf is one person, exactly as it does for the supplier's rules with a smallest leaf of 21. A check that trusts the file it checks against can be switched off by editing that file. The defence is a floor kept in code under review: key length at least 128, minimum leaf at least 20, maximum depth at most 4.
+
+**What the pin does not catch.** A digest proves that a file is the one that was pinned, not that the pinned file was good. If the pin is taken from the mirror after the swap, the backdoored forest verifies; the same holds if the supplier's own build was compromised. The rest of the defence is provenance: signatures that say who published a file (Sigstore, OpenSSF model signing), build attestations that say how it was built (SLSA), a bill of materials for the model and its data (an SBOM, or AI-BOM), and testing a supplied model as untrusted. NIST calls robustness to supply-chain model poisoning a "critical open problem" (§4.2.2).
+
+**Is this source-code control?** It is supply-chain integrity, of which version control is one link. Git protects what was committed; this attack happens after the build, between the publisher and the user, which is where release signing, pinned hashes and provenance work. In the frameworks: EU AI Act Art. 15(5) names attacks on pre-trained components (model poisoning); UK Code principle 7 asks to secure the supply chain and provision 8.1.2 to publish cryptographic hashes of shared model components; NIST AI RMF GOVERN 6.1 asks for policies on third-party AI risk; and federal model-risk guidance expects vendor models to be validated like in-house ones.
+
+**Under the hood.** `integrity.write_lock()` records `sha256_file()` of each file; `verify()` refuses a file whose digest differs or that has no pin. `pickle_scan.imports()` walks `pickletools.genops()` and resolves `GLOBAL` and `STACK_GLOBAL` opcodes, including strings fetched back from the pickle memo, without executing anything; `scan()` compares them with an allow list (modules under `sklearn` and `numpy`, and `_codecs.encode`). `payload.Trojan.__reduce__()` is the harmless stand-in for hidden code. `downgrade.below_floor()` checks `key_bits` and the wrapper rules against the floors in the module; `brute_force_years()` is `2**bits / 1e9` seconds. The release gate reads one number from the run: tampered files that passed both the pin and the scan or floor (0 of 4, section 17.2).
 
 ---
 
@@ -257,6 +284,7 @@ Source: MITRE ATLAS data release 2026.09, which has 16 tactics and 73 case studi
 | Evasion (§2.2.5) | Adversarial training, randomised smoothing, formal verification | All trade robustness against accuracy and compute; adaptive attacks have broken many proposed detectors |
 | Poisoning and backdoors (§2.3) | Data sanitisation (including outlier detection), robust training, trigger reconstruction, model inspection, certified defences, provenance and integrity attestation | Mostly designed for image classifiers with fixed triggers; semantic and functional triggers, and clean-label attacks on malware classifiers, escape several of them |
 | Privacy (§2.4.5) | Differential privacy, privacy auditing, query limits and monitoring, machine unlearning | DP costs utility and its practical guarantee is hard to estimate; query limits can be circumvented |
+| Supply chain (§3.2.2, §4.2.2) | Verify downloads against published cryptographic hashes, scan model artefacts, treat supplied models as untrusted | Robustness to supply-chain model poisoning is a critical open problem; a hash proves a file is the approved one, not that the approved one is sound (demo 4) |
 | Prompt injection (§3.3.3, §3.4.4) | Safety and adversarial training, prompt formatting, input and output detectors, least privilege for tools | No full protection; detectors can be attacked and can fail together with the model they monitor |
 
 Two general recommendations close NIST's discussion (§4.1.1, §4.1.3). Evaluate defences adversarially: the people proposing a defence should also try to break it, because defences tested only against known attacks often fall to the next one. And evaluate attributes together: accuracy, robustness, privacy and fairness trade off, so compare defences on all of them at once rather than one at a time. Demo 3's evasion result is a small example of the first point: the defence that worked was verifying inputs, which is a process change, not a model change.
@@ -333,7 +361,7 @@ The Code was taken to ETSI as TS 104 223, and ETSI published **EN 304 223** in J
 |---|---|---|---|---|---|---|
 | Evasion | NISTAML.022, .025 | ML01 | AML.T0015 | adversarial examples, model evasion | 3.1, 9 | demo 3 |
 | Data poisoning, backdoor | NISTAML.013, .023 | ML02, LLM04 | AML.T0020 | data poisoning | 6.2, 8.2 | demo 3 |
-| Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 1 |
+| Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 4 |
 | Membership inference | NISTAML.033 | ML04 | AML.T0024.000 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
 | Attribute inference, inversion | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
 | Model extraction | NISTAML.031 | ML05 | AML.T0024.002 | confidentiality attacks | 6.2, 9.4 | demo 3 |
@@ -785,21 +813,21 @@ Two more carry over as governance rather than code. The risk appetite is agreed 
 
 ## 17. A release gate over the demos
 
-> **In plain words.** The demos print numbers. A release decision needs those numbers judged against named obligations, with a record someone can audit. `demo/run_gate.py` reruns the demos, compares each number with a tolerance, and gives every control in the EU AI Act, the UK Code, NIST and GRAIMATTER a verdict: pass, fail or not evidenced. On the seeded run the GRAIMATTER controls pass and Article 15(5) fails, because demo 3's forest can be evaded, copied and backdoored.
+> **In plain words.** The demos print numbers. A release decision needs those numbers judged against named obligations, with a record someone can audit. `demo/run_gate.py` reruns the demos, compares each number with a tolerance, and gives every control in the EU AI Act, the UK Code, NIST and GRAIMATTER a verdict: pass, fail or not evidenced. On the seeded run the GRAIMATTER controls pass and Article 15(5) fails, because demo 3's forest can be evaded, copied and backdoored; its model-poisoning clause passes, because demo 4's checks refuse every tampered file.
 
 The pattern comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine), which does the same for LLMs and agents (section 5). Its tools (garak, AgentDojo, PyRIT) attack language models and are no use against a tree or a random forest; what carries over is the method: controls mapped to evidence, numeric tolerances, a `not_evidenced` status, and a report that makes CI fail.
 
 ### 17.1 What the gate does
 
-1. It runs the demos it is asked for (all three by default) and keeps the numbers each one already prints. Nothing is recomputed, and the reports in `demo/output/` stay as they are.
+1. It runs the demos it is asked for (all four by default) and keeps the numbers each one already prints. Nothing is recomputed, and the reports in `demo/output/` stay as they are.
 2. It compares each metric with its tolerance. A category is within tolerance when none of its metrics breaches.
 3. It gives each control in the selected regime packs a verdict. **pass**: every demo the control relies on ran and none of its categories breached. **fail**: one of them breached. **not_evidenced**: a demo it relies on did not run. A control is never marked pass on evidence that was not produced.
 4. It writes `demo/output/gate/gate_<packs>.json` for machines and `.md` for people, and exits with 1 if any category breaches or any selected control is not evidenced.
 
 ```bash
-uv run python demo/run_gate.py                                 # demos 1-3; packs eu_uk, nist_aml, graimatter
-uv run python demo/run_gate.py --regimes us                    # NIST AI RMF and SR 26-02
-uv run python demo/run_gate.py --demos 1,3 --accept-missing 2  # what CI runs: no sacroml
+uv run python demo/run_gate.py                                   # demos 1-4; packs eu_uk, nist_aml, graimatter
+uv run python demo/run_gate.py --regimes us                      # NIST AI RMF and SR 26-02
+uv run python demo/run_gate.py --demos 1,3,4 --accept-missing 2  # what CI runs: no sacroml
 uv run python demo/run_gate.py --fail-under evasion.self_reported=0.5
 ```
 
@@ -818,6 +846,7 @@ A tolerance is the largest value of a metric the data controller accepts. It is 
 | evasion | High-risk people who evade, in the three scenarios of section 3.1 | 3 | 10% | 78.7%, 32.8%, 20.7% |
 | extraction | Agreement of a copy trained on one 200-row budget of labels | 3 | 80% | 86.9% |
 | poisoning | Worst rise in trigger success over the clean model | 3 | 10 points | 71.7 points |
+| supply_chain | Tampered supplier files that passed the pin and the scan or floor (section 3.4) | 4 | 0 | 0 of 4 |
 
 Demo 2 adds two readings when `sacroml` is installed: the package's worst-case membership AUC on its wrapped tree (tolerance 0.62) and the disclosive configurations it failed to flag (tolerance 0).
 
@@ -825,14 +854,14 @@ Demo 2 adds two readings when `sacroml` is installed: the package's worst-case m
 
 Packs are chosen with `--regimes`, as in safety-trust-engine. Each control records how binding it is: `statute` (the EU AI Act), `guidance` (NIST, the UK Code), `supervisory` (model risk management) or `recommendation` (the green paper).
 
-| Pack | Controls | Demos 1 and 3 |
+| Pack | Controls | Demos 1, 3 and 4 |
 |---|---|---|
-| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model evasion, confidentiality attacks. UK Code / ETSI EN 304 223: 3.1, 6.2, 9.4 | 6 fail |
-| `nist_aml` | NISTAML.025 evasion, .023 backdoor, .031 extraction, .032 reconstruction (attribute inference, §2.4.1), .033 membership | 3 fail, 2 pass |
+| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model poisoning, model evasion, confidentiality attacks. UK Code / ETSI EN 304 223: 3.1, 6.2, 7 and 8.1.2, 9.4 | 6 fail, 2 pass |
+| `nist_aml` | NISTAML.025 evasion, .023 backdoor, .031 extraction, .032 reconstruction (attribute inference, §2.4.1), .033 membership, .051 supply chain | 3 fail, 3 pass |
 | `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check of TECH 7 and 9 that needs demo 2 | 5 pass, 1 not evidenced |
-| `us` | NIST AI RMF MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, documentation | 3 fail, 3 pass |
+| `us` | NIST AI RMF GOVERN 6.1, MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, third-party model, documentation | 3 fail, 5 pass |
 
-The two halves of the result are not in tension. The GRAIMATTER checks were built for privacy, and the wrapped tree passes them. Article 15(5) also names poisoning and model evasion, and its confidentiality clause covers extraction as well as membership; demo 3's forest fails all three. Privacy checks alone do not make a model resilient in the sense of the Article, which is the point of section 16.
+The two halves of the result are not in tension. The GRAIMATTER checks were built for privacy, and the wrapped tree passes them. Article 15(5) also names poisoning and model evasion, and its confidentiality clause covers extraction as well as membership; demo 3's forest fails all three. Its model-poisoning clause passes on demo 4: the pin, the scan and the floors refuse every tampered file. Privacy checks alone do not make a model resilient in the sense of the Article, which is the point of section 16.
 
 ### 17.4 Never a silent green
 
@@ -840,11 +869,11 @@ A control whose demo did not run is `not_evidenced`, and the gate fails on it. C
 
 ### 17.5 The US reading
 
-The `us` pack reads the same evidence through two US lenses. NIST AI RMF MEASURE 2.6 asks that residual negative risk not exceed the risk tolerance, which is what the tolerances encode; MEASURE 2.7 covers security and resilience, and MEASURE 2.10 privacy risk. Federal model risk management guidance (Federal Reserve SR 26-02 and OCC Bulletin 2026-13, which replaced SR 11-7 in April 2026) leaves generative and agentic AI outside its formal scope, so safety-trust-engine applies it to LLMs by analogy. A risk classifier like the ones here is a model in the plain sense of that guidance. The TRE holdout (TECH 6), which the developer never sees, is the independent validation; the gate in CI is the ongoing monitoring; the JSON and Markdown report is the documentation. NIST AI RMF is voluntary and SR 26-02 is supervisory, and the report marks them so.
+The `us` pack reads the same evidence through two US lenses. NIST AI RMF GOVERN 6.1 asks for policies on the AI risks of third parties, which demo 4 evidences. MEASURE 2.6 asks that residual negative risk not exceed the risk tolerance, which is what the tolerances encode; MEASURE 2.7 covers security and resilience, and MEASURE 2.10 privacy risk. Federal model risk management guidance (Federal Reserve SR 26-02 and OCC Bulletin 2026-13, which replaced SR 11-7 in April 2026) leaves generative and agentic AI outside its formal scope, so safety-trust-engine applies it to LLMs by analogy. A risk classifier like the ones here is a model in the plain sense of that guidance. The TRE holdout (TECH 6), which the developer never sees, is the independent validation; the gate in CI is the ongoing monitoring; the JSON and Markdown report is the documentation; and demo 4's pin is the check that the vendor model in use is the one that was validated. NIST AI RMF is voluntary and SR 26-02 is supervisory, and the report marks them so.
 
 ### 17.6 In CI
 
-`.github/workflows/gate.yml` runs on every pull request. One job lints with `ruff` and runs the tests: demos 1 and 3 regenerate their reports, which must match `demo/output/` apart from two lines that depend on the machine (the absolute path and the pickled size of the tree); the gate must agree with `decide()`; the seeded verdicts are pinned; a missing demo must give `not_evidenced`; `--fail-under` must change the outcome. A second job runs the gate twice: the GRAIMATTER pack on demo 1 must pass, and all packs on demos 1 and 3 must block, on evasion, extraction and poisoning and nothing else. Both reports are uploaded as build artefacts.
+`.github/workflows/gate.yml` runs on every pull request. One job lints with `ruff` and runs the tests: demos 1, 3 and 4 regenerate their reports, which must match `demo/output/` apart from what depends on the machine (the absolute path, the pickled size of the tree and the digests of pickled models); demo 4 must refuse all four tampered files and show that a late pin accepts the backdoor; the gate must agree with `decide()`; the seeded verdicts are pinned; a missing demo must give `not_evidenced`; `--fail-under` must change the outcome. A second job runs the gate twice: the GRAIMATTER pack on demo 1 must pass, and all packs on demos 1, 3 and 4 must block, on evasion, extraction and poisoning and nothing else. Both reports are uploaded as build artefacts.
 
 ---
 
@@ -857,6 +886,7 @@ uv venv --python 3.11
 uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
 
 uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
+uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
 uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
 uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
 uv run python demo/run_gate.py              # reruns the demos; writes demo/output/gate/
@@ -869,6 +899,7 @@ On Windows PowerShell, activate the environment with a leading dot: `. .\.venv\S
 | Output | Produced by |
 |---|---|
 | `demo/output/aml_report.txt` | demo 3: evasion, extraction, backdoor |
+| `demo/output/supply_chain_report.txt` | demo 4: four tampered files; working files in `demo/output/supply_chain/` (not versioned) |
 | `demo/output/demo_report.txt` | demo 1, all ten sections |
 | `demo/output/data_dictionary.json` | demo 1, TECH 8 |
 | `demo/output/safe_tree.release.json`, `tampered_tree.release.json` | demo 1, wrapper release reports |
@@ -895,6 +926,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 * **The cohort is synthetic.** There are no real patients. Demos 1 and 2: seed 7, 1,000 rows, split 500 for the researcher and 500 kept by the TRE. Demo 3: seed 7, 4,000 rows, split 2,000 and 2,000.
 * **Demo 3 is a sketch.** One model type (a random forest), simple greedy and query-based attacks, and a single outlier screen as the poisoning defence. Optimised attacks, other defences and other data types are out of scope.
+* **Demo 4 is a sketch too.** One supplier, one mirror, four kinds of tampering. The import scan's allow list fits a scikit-learn forest and nothing else; real scanners (picklescan, the Hugging Face hub's) have missed malicious files (ATLAS AML.CS0031). The lock file is a stand-in for signed releases: a digest says what was approved, not who published it. The key length is a number in a file; nothing is encrypted.
 * **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only here; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models (section 5).
 * **The frameworks are summarised, not interpreted.** Part 2 is a reading of the documents, not legal advice; the crosswalk is ours.
 * **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller. The same holds for the gate's tolerances (section 17.2), and its mapping of metrics to clauses is ours.
@@ -924,6 +956,10 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 | **Fidelity** | Share of inputs on which a copied model agrees with the original. |
 | **Property inference** | Learning a statistic of the training set (NISTAML.034). |
 | **Prompt injection** | Instructions in model input that override the system's; direct when typed by the user, indirect when planted in content the model reads (NISTAML.018, .015). |
+| **Supply chain attack** | Reaching a model through a third party: a supplied model, dataset, library or file swapped or edited on the way (NISTAML.05, section 3.4). |
+| **Pin, lock file** | A cryptographic digest of each approved file, recorded when it was approved; later downloads must match it (section 3.4). |
+| **Pickle** | Python's object format, also behind `.joblib`; loading one can run code the file names. |
+| **Downgrade** | Making a system use a weaker setting, such as a shorter key, while it keeps working (section 3.4). |
 | **White, gray, black box** | Full, partial or query-only knowledge of the system (section 2.3). |
 | **ATLAS, OWASP, EU AI Act, UK Code, ETSI EN 304 223** | The frameworks of section 8. |
 | **TRE** | Trusted research environment: a secure place where approved researchers analyse sensitive data, with outputs checked before release. |
@@ -964,15 +1000,16 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (green paper reference [37]).
 12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (green paper reference [2]).
 13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine. The release gate of section 17 follows its `compliance.py` and `report.py`, and its `docs/REGULATORY_RESEARCH.md` is the source for SR 26-02.
-14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, January 2023 (MEASURE 2.6, 2.7, 2.10).
+14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, January 2023 (GOVERN 6.1, MEASURE 2.6, 2.7, 2.10).
 15. Board of Governors of the Federal Reserve System, SR 26-02, and OCC Bulletin 2026-13: revised interagency guidance on model risk management, April 2026 (replaces SR 11-7).
-16. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+16. Supply-chain integrity: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) and the OpenSSF model signing project (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
+17. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
 ## Appendix A: how the guide, slides and demos line up
 
-The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1 to 13), frameworks (section 8, slides 14 to 18), the GRAIMATTER case (sections 9 to 16, slides 19 to 36), and closing (sections 17 to 21, slides 37 to 40).
+The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1 to 14), frameworks (section 8, slides 15 to 19), the GRAIMATTER case (sections 9 to 16, slides 20 to 37), and closing (sections 17 to 21, slides 38 to 41).
 
 | Guide section | Slides (deck order) | Demo output |
 |---|---|---|
@@ -981,45 +1018,46 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | Appendix B. The NIST attack classes and the CIA triad | 5 *Taxonomy* (backup for questions), 7 to 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasion | 7 *Evasion* | `aml_report.txt` §1 |
 | 3.2 Extraction | 10 *Extraction* | `aml_report.txt` §2 |
+| 3.4 Supply chain | 11 *Supply chain* | `supply_chain_report.txt` |
 | 3.3 Backdoor | 8 *Poisoning* | `aml_report.txt` §3 |
 | 4. Privacy attacks | 9 *Privacy* | – |
-| 5. Generative AI | 11 *Generative AI* | – |
-| 6. Real incidents | 12 *Real incidents* | – |
-| 7. Mitigations | 13 *Mitigations* | – |
-| 8. Frameworks and crosswalk | 14 *Frameworks*, 15 *OWASP*, 16 *EU AI Act*, 17 *UK*, 18 *Crosswalk* | – |
-| 9. What a TRE is protecting | 19 *A high-trust case*, 20 *The problem*, 21 *TECH 4* | – |
-| 10. Map of the green paper | 22 *The paper* | – |
-| 11. Cohort and holdout | 23 *TECH 6 · TECH 8 · The cohort* | `data_dictionary.json` |
-| 12. Metrics | 25 *Appendix F · Reading attack metrics* | – |
-| 13.2 Planted record | 24 *Appendix E · Attribute inference* | `demo_report.txt` §2 |
-| 13.3 Differential privacy | 32 *§10.1.3 · TECH 12* | `demo_report.txt` §3 |
-| 13.4 Unconstrained tree | 26 *Demo 1 · Unconstrained tree* | `demo_report.txt` §4 |
-| 13.5 Safe wrapper and the quiet failure | 27 *Demo 1 · Safe wrapper*, 28 *Appendix F · The tail* | `demo_report.txt` §5 |
-| 13.6 Instance-based models | 29 *TECH 11* | `demo_report.txt` §6 |
-| 13.7 Editing after `fit()` | 30 *RT1 · RT2 · TECH 3* | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 13.8 Query budget | 31 *TECH 16* | `demo_report.txt` §8 |
+| 5. Generative AI | 12 *Generative AI* | – |
+| 6. Real incidents | 13 *Real incidents* | – |
+| 7. Mitigations | 14 *Mitigations* | – |
+| 8. Frameworks and crosswalk | 15 *Frameworks*, 16 *OWASP*, 17 *EU AI Act*, 18 *UK*, 19 *Crosswalk* | – |
+| 9. What a TRE is protecting | 20 *A high-trust case*, 21 *The problem*, 22 *TECH 4* | – |
+| 10. Map of the green paper | 23 *The paper* | – |
+| 11. Cohort and holdout | 24 *TECH 6 · TECH 8 · The cohort* | `data_dictionary.json` |
+| 12. Metrics | 26 *Appendix F · Reading attack metrics* | – |
+| 13.2 Planted record | 25 *Appendix E · Attribute inference* | `demo_report.txt` §2 |
+| 13.3 Differential privacy | 33 *§10.1.3 · TECH 12* | `demo_report.txt` §3 |
+| 13.4 Unconstrained tree | 27 *Demo 1 · Unconstrained tree* | `demo_report.txt` §4 |
+| 13.5 Safe wrapper and the quiet failure | 28 *Demo 1 · Safe wrapper*, 29 *Appendix F · The tail* | `demo_report.txt` §5 |
+| 13.6 Instance-based models | 30 *TECH 11* | `demo_report.txt` §6 |
+| 13.7 Editing after `fit()` | 31 *RT1 · RT2 · TECH 3* | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 13.8 Query budget | 32 *TECH 16* | `demo_report.txt` §8 |
 | 13.9 Register and snapshot | 30 (notes) | `data_use_register.json`, `pipeline_snapshot.json` |
-| 14. SACRO-ML | 33 *Demo 2 · sacroml 2.0.1* | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 15.1 Differences | 35 *Two demos compared* | both reports |
-| 15.2 Why the membership numbers differ | 34 *Why the two membership numbers differ* | – |
-| 16. What carries over | 36 *What carries over* | – |
-| 17. Release gate | 38 *Release gate* | `demo/output/gate/` |
-| 18. How to reproduce | 39 *Run it yourself* | – |
-| 19. Limits | 37 *Limits* | – |
-| 20. Glossary, 21. References | 40 *References* | – |
+| 14. SACRO-ML | 34 *Demo 2 · sacroml 2.0.1* | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 15.1 Differences | 36 *Two demos compared* | both reports |
+| 15.2 Why the membership numbers differ | 35 *Why the two membership numbers differ* | – |
+| 16. What carries over | 37 *What carries over* | – |
+| 17. Release gate | 39 *Release gate* | `demo/output/gate/` |
+| 18. How to reproduce | 40 *Run it yourself* | – |
+| 19. Limits | 38 *Limits* | – |
+| 20. Glossary, 21. References | 41 *References* | – |
 
-### Suggested workshop agenda (about 90 minutes)
+### Suggested workshop agenda (about 95 minutes)
 
 | Time | Block | Material |
 |---|---|---|
 | 0:00 | Why ML needs its own security; the NIST taxonomy | Guide §1 and §2, slides 1 to 6 |
-| 0:12 | Demo 3: evasion, poisoning, extraction; privacy attacks | Guide §3 and §4, slides 7 to 10 |
-| 0:27 | Generative AI, real incidents, mitigations | Guide §5 to §7, slides 11 to 13 |
-| 0:37 | Frameworks and the crosswalk | Guide §8, slides 14 to 18 |
-| 0:50 | GRAIMATTER: the problem, the paper, the cohort, the metrics | Guide §9 to §12, slides 19 to 25 |
-| 1:02 | Demo 1: unconstrained tree, safe wrapper, tail, tampering, query budget, DP | Guide §13, slides 26 to 32 |
-| 1:14 | Demo 2 and the comparison | Guide §14 and §15, slides 33 to 35 |
-| 1:22 | What carries over; limits; the release gate; running the demos; questions | Guide §16 to §19, slides 36 to 40 |
+| 0:12 | Demos 3 and 4: evasion, poisoning, extraction, supply chain; privacy attacks | Guide §3 and §4, slides 7 to 11 |
+| 0:30 | Generative AI, real incidents, mitigations | Guide §5 to §7, slides 12 to 14 |
+| 0:40 | Frameworks and the crosswalk | Guide §8, slides 15 to 19 |
+| 0:53 | GRAIMATTER: the problem, the paper, the cohort, the metrics | Guide §9 to §12, slides 20 to 26 |
+| 1:05 | Demo 1: unconstrained tree, safe wrapper, tail, tampering, query budget, DP | Guide §13, slides 27 to 33 |
+| 1:17 | Demo 2 and the comparison | Guide §14 and §15, slides 34 to 36 |
+| 1:25 | What carries over; limits; the release gate; running the demos; questions | Guide §16 to §19, slides 37 to 41 |
 
 ---
 
@@ -1172,7 +1210,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 * *How.* For predictive AI, NIST cites the **Dropout Attack**: whoever controls the randomness used in training (for example in dropout) can lower accuracy, precision or recall on chosen classes. For generative AI, attackers publish pre-trained models with backdoors or targeted behaviour, and some of these backdoors survive downstream fine-tuning and even safety training. Model files can also carry ordinary malicious code: MITRE ATLAS records models on Hugging Face that opened reverse shells when loaded (CS0031) and an edited open model that returned a false fact (PoisonGPT, CS0019; section 6).
 * *Defences and limits.* Verify downloads against published cryptographic hashes; scan model artefacts, which catches some risks; research uses interpretability methods to find backdoor features and detects triggers at inference time. NIST's design advice is to treat models as untrusted components and limit what an attacker-controlled output can do. Robustness to supply-chain model poisoning is a "critical open problem", and the report mentions work on information-theoretically undetectable Trojans and the DARPA-NIST TrojAI programme (§4.2.2).
 * *Frameworks.* UK Code principle 7 (secure the supply chain) and provision 8.1.2 (publish hashes of shared model components); OWASP ML06 and LLM03; ATLAS AML.T0010.
-* *Here.* Not demonstrated. One observation for TREs (ours): demo 1 accepts `.joblib` and `.pkl` files, and both formats are built on Python's pickle, which can execute code when the file is loaded. A model file that arrives from outside the TRE, or from a researcher, should be loaded as untrusted input.
+* *Here.* Demo 4 (section 3.4): a supplier's forest swapped on a mirror for one with a backdoor, a pickle that runs code when loaded, a key length lowered from 256 to 40 bits and a safe-wrapper floor lowered from 20 rows to 1. Each passes the usual check; a pinned SHA-256 refuses all four, and an import scan or a floor kept in code refuses all but the backdoor. A pin taken from the tampered copy accepts it. One observation for TREs (ours): demo 1 accepts `.joblib` and `.pkl` files, and both formats are built on Python's pickle, which can execute code when the file is loaded. A model file that arrives from outside the TRE, or from a researcher, should be loaded as untrusted input.
 
 ### B.5 Beyond predictive AI
 

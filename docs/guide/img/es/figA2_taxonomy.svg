@@ -59,8 +59,9 @@
 <text x="700.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1B2433" text-anchor="start">Extracción del modelo</text>
 <text x="948.0" y="334.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 3</text>
 <text x="32.0" y="434.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">La inferencia de atributos es un objetivo de privacidad de datos en §2.1.2 y §2.4.1 (sin identificador propio): demos 1-2.</text>
-<rect x="28.0" y="452.0" width="944.0" height="36.0" rx="8" fill="#EEF1F5" stroke="#0F1B2D" stroke-width="1.2"/>
+<rect x="28.0" y="452.0" width="944.0" height="36.0" rx="8" fill="#FBE9DC" stroke="#B4521A" stroke-width="1.5"/>
 <text x="44.0" y="475.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0F1B2D" text-anchor="start">Cadena de suministro, NISTAML.05: envenenamiento a través de un modelo de terceros (.051)</text>
+<text x="956.0" y="475.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#B4521A" text-anchor="end">demo 4</text>
 <rect x="28.0" y="498.0" width="944.0" height="36.0" rx="8" fill="#0F1B2D"/>
 <text x="44.0" y="521.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#F2A35E" text-anchor="start">La IA generativa añade: inyección de prompt directa (.018), indirecta (.015), salidas desalineadas (.027)</text>
 </svg>

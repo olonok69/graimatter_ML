@@ -6,8 +6,8 @@ Run from the repository root, after docs/guide/make_figures.py and make_aml_figu
 
 Needs python-pptx and cairosvg (docs/requirements-docs.txt). The figures are the English
 SVGs from docs/guide/img/en, rendered to PNG on the fly. Three parts: attacks (NIST AI
-100-2e2025 and demo 3), frameworks, and GRAIMATTER as the high-trust case (demos 1-2).
-Numbers come from demo/output/aml_report.txt, demo_report.txt and
+100-2e2025, demos 3 and 4), frameworks, and GRAIMATTER as the high-trust case (demos 1-2).
+Numbers come from demo/output/aml_report.txt, supply_chain_report.txt, demo_report.txt and
 sacroml/sacroml_report.txt; speaker notes carry the definitions.
 """
 from __future__ import annotations
@@ -198,7 +198,7 @@ def build():
     s.shapes[-1].top = 0
     d.text(s, LEFT, 3.75, 10.8, 0.9, "How trained models are attacked, what the main frameworks ask for, and how GRAIMATTER "
            "handles one high-trust setting: releasing models from a trusted research environment", 21, "#D9DEE6")
-    d.chips(s, LEFT, 5.05, ["3 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
+    d.chips(s, LEFT, 5.05, ["4 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
     d.footer(s, "Synthetic data only. Code, guides (EN/ES) and figures: github.com/olonok69/graimatter_ML", dark=True)
     d.notes(s, "This session has three parts. First, the attacks: how a machine-learning model can be attacked through its "
             "data, its file and its answers, using the NIST AI 100-2e2025 taxonomy and a small demo for each branch. Second, "
@@ -210,7 +210,7 @@ def build():
     s = d.slide("AGENDA", "Three parts: the attacks, the frameworks, a high-trust case")
     agenda = [
         ("1 · Attacks", "NIST taxonomy: availability, integrity, privacy. Evasion, poisoning, privacy attacks, generative AI. "
-                        "Real incidents from MITRE ATLAS. Mitigations and their limits. Demo 3.", True),
+                        "Real incidents from MITRE ATLAS. Mitigations and their limits. Demos 3 and 4.", True),
         ("2 · Frameworks", "Who describes, who prioritises, who requires: NIST, ATLAS, OWASP ML and LLM Top 10, EU AI Act "
                            "Art. 15, UK Code of Practice and ETSI EN 304 223. One crosswalk.", False),
         ("3 · High-trust case", "GRAIMATTER: model disclosure and query controls for a trusted research environment. "
@@ -220,9 +220,10 @@ def build():
         d.card(s, LEFT + i * 3.95, 2.25, 3.65, 2.6, a, b, dark=dark, tsize=19, bsize=15)
     d.rect(s, LEFT, 5.2, WIDTH, 0.95, PEACHBG)
     d.text(s, LEFT + 0.25, 5.2, WIDTH - 0.5, 0.95, [[("Demos: ", True), ("demo 3 shows evasion, a backdoor and model "
-           "extraction; demos 1 and 2 show membership and attribute inference and the GRAIMATTER controls. All three use "
-           "the same synthetic cohort.", False)]], 14, INK, anchor=MSO_ANCHOR.MIDDLE)
-    d.footer(s, "demo/run_aml_demo.py (demo 3), demo/run_demo.py (demo 1), demo/run_sacroml_demo.py (demo 2).")
+           "extraction; demo 4 tampers with a supplied model and its files; demos 1 and 2 show membership and attribute "
+           "inference and the GRAIMATTER controls. All four use the same synthetic cohort.", False)]], 14, INK,
+           anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "In demo/: run_aml_demo.py (3), run_supply_chain_demo.py (4), run_demo.py (1), run_sacroml_demo.py (2).")
     d.notes(s, "The order goes from general to specific. Part 1 gives the vocabulary, Part 2 maps the vocabulary to what "
             "standards and law ask for, and Part 3 shows one sector that has worked this out in depth for one branch, "
             "privacy, because its models leave the building. The demos are small on purpose: numpy and scikit-learn, "
@@ -268,7 +269,7 @@ def build():
             "poisoning or by inputs that make it slow. Integrity: make it give the answer the attacker wants, by evasion at "
             "deployment or by targeted and backdoor poisoning at training. Privacy: learn something that should stay "
             "hidden, about the training data or about the model itself. Each class has an identifier, so a test report "
-            "can say NISTAML.033 rather than 'some privacy attack'. Highlighted boxes are the ones our three demos run.")
+            "can say NISTAML.033 rather than 'some privacy attack'. Highlighted boxes are the ones our four demos run.")
 
     s = d.slide("NIST AI 100-2 · CAPABILITIES AND KNOWLEDGE", "What the attacker can touch, and how much they know")
     rows = [["Capability (NIST §2.1.3)", "Typical attack", "In this repository"],
@@ -353,6 +354,38 @@ def build():
             "a 1,000-row theft, against 78.7% when querying the target directly. Demo 1's QueryGate with a 200-row budget "
             "refuses the 1,000-row request, but 200 rows were already enough for a close copy. NIST says the same: query "
             "limits can be circumvented by well-resourced attackers.")
+
+    s = d.slide("SUPPLY CHAIN · NISTAML.051 · DEMO 4", "Supply chain: four tampered files pass the usual check")
+    rows = [["Tampered on the mirror", "Usual check", "Pin", "Scan or floor"],
+            ["Swapped model, 2% backdoor poison", "accuracy 0.627 vs 0.635: passes", "refuses", "passes"],
+            ["Code hidden in the pickle", "accuracy 0.635: passes", "refuses", "refuses"],
+            ["Key length 256 → 40 bits", "still encrypts: passes", "refuses", "refuses"],
+            ["Safe-wrapper floor 20 → 1 row", "request_release(): passes", "refuses", "refuses"]]
+    d.table(s, LEFT, 2.15, 7.3, rows, [2.75, 2.45, 0.9, 1.2], size=12, row_h=0.56,
+            highlight={(1, 3): PEACHBG, (1, 1): PEACHBG, (2, 1): PEACHBG, (3, 1): PEACHBG, (4, 1): PEACHBG})
+    d.text(s, LEFT, 5.15, 7.3, 1.3, [
+        [("Pin: ", True), ("SHA-256 of each file, recorded from the supplier's release notes at approval. ", False),
+         ("Scan: ", True), ("the imports a pickle would make, read without loading it. ", False),
+         ("Floor: ", True), ("minimum key length and leaf size kept in code, not in the downloaded file.", False)],
+    ], 12.5, BODY)
+    d.card(s, LEFT + 7.6, 2.15, 3.95, 2.0, "One number, the whole system",
+           "A key search at a billion keys a second: 40 bits, 18 minutes; 128 bits, 1.1e22 years. Everything still works, "
+           "so no functional test notices.", bsize=12.5)
+    d.card(s, LEFT + 7.6, 4.3, 3.95, 2.15, "What the pin does not catch",
+           "A pin taken from the download verifies the backdoor. A digest proves the file is the approved one, not that "
+           "the approved one is good: add signatures, provenance (SLSA), safetensors, an AI-BOM.", dark=True, bsize=12.5)
+    d.footer(s, "demo/output/supply_chain_report.txt. NIST AI 100-2e2025 §3.2.2, §4.2.2. UK Code 7 and 8.1.2. OWASP ML06. "
+                "ATLAS AML.T0010.")
+    d.notes(s, "A supplier publishes a model, a configuration and the safe-wrapper rules; the user downloads them from a "
+            "mirror, and whoever runs the mirror changes them. A forest trained with 2% quiet-trigger poison scores 0.627 "
+            "on the user's holdout against 0.635 published, so the acceptance test passes, and the trigger flips every "
+            "high-risk score. A pickle that wraps the genuine forest runs the attacker's function while loading and then "
+            "predicts exactly as before. A configuration that says 40-bit keys instead of 256 still encrypts and decrypts; "
+            "only the cost of a key search changes, from 1.1e22 years to 18 minutes. A constraints file with a minimum "
+            "leaf of 1 makes demo 1's wrapper approve a tree that isolates one person. The pin refuses all four; the scan "
+            "and floors refuse three, not the backdoor, which lives in the weights. And a pin taken from the tampered copy "
+            "proves nothing. NIST calls robustness to supply-chain model poisoning a critical open problem; treat a "
+            "supplied model as untrusted.")
 
     s = d.slide("GENERATIVE AI · NIST §3 · OWASP LLM TOP 10", "Generative AI: the input channel is also the instruction channel")
     llm = ["LLM01 Prompt injection", "LLM02 Sensitive information disclosure", "LLM03 Supply chain",
@@ -519,7 +552,7 @@ def build():
             ["Evasion", "NISTAML.022, .025", "ML01", "AML.T0015", "adversarial examples", "3.1, 9", "demo 3"],
             ["Data poisoning, backdoor", "NISTAML.013, .023", "ML02, LLM04", "AML.T0020", "data poisoning", "6.2, 8.2", "demo 3"],
             ["Model poisoning, supply chain", "NISTAML.026, .051", "ML06, ML10, LLM03", "AML.T0010, T0018", "model poisoning",
-             "7, 8.1.2", "demo 1"],
+             "7, 8.1.2", "demo 4"],
             ["Membership inference", "NISTAML.033", "ML04", "AML.T0024.000", "confidentiality attacks", "3.1, 9.4", "demos 1-2"],
             ["Attribute inference, inversion", "§2.4.1, .032", "ML03", "AML.T0024.001", "confidentiality attacks", "3.1, 9.4",
              "demos 1-2"],
@@ -851,16 +884,17 @@ def build():
     s = d.slide("RELEASE GATE · DEMO/RUN_GATE.PY · CI", "One gate, four lenses: GRAIMATTER passes, Article 15(5) fails")
     d.table(s, LEFT, 2.1, 7.0, [
         ["Pack", "Controls", "Pass", "Fail", "Not evidenced"],
-        ["EU AI Act 15(5), UK Code", "6", "0", "6", "0"],
-        ["NIST AI 100-2", "5", "2", "3", "0"],
+        ["EU AI Act 15(5), UK Code", "8", "2", "6", "0"],
+        ["NIST AI 100-2", "6", "3", "3", "0"],
         ["GRAIMATTER TECH", "6", "5", "0", "1 (demo 2)"],
-        ["NIST AI RMF, SR 26-02", "6", "3", "3", "0"],
+        ["NIST AI RMF, SR 26-02", "8", "5", "3", "0"],
     ], [2.6, 1.05, 0.9, 0.9, 1.55], size=13, row_h=0.46,
         highlight={(1, 3): PEACHBG, (2, 3): PEACHBG, (4, 3): PEACHBG, (3, 2): "#DCEBDD"})
     d.text(s, LEFT, 4.5, 7.0, 1.3, [
         [("Breached: ", True), ("evasion 78.7% (tolerance 10%), a copy agreeing 86.9% after one 200-row budget (80%), "
          "a backdoor lifting trigger success by 71.7 points (tolerance 10).", False)],
-        [("Within: ", True), ("membership, attribute, holdout gap, stored rows, release checks, query budget.", False)],
+        [("Within: ", True), ("membership, attribute, holdout gap, stored rows, release checks, query budget, and "
+         "the supply chain: no tampered file of demo 4 gets past the pin and the scan or floor.", False)],
     ], 13, BODY)
     d.card(s, LEFT + 7.35, 2.1, 4.2, 2.05, "Never a silent green",
            "A control whose demo did not run is not_evidenced, not pass. CI does not install sacroml, so it declares demo 2 "
@@ -870,22 +904,24 @@ def build():
            "independent validation; the gate in CI is the ongoing monitoring.", dark=True, bsize=12.5)
     d.footer(s, "Tolerances are a demo risk appetite (ELA 8), not official cut-offs. Pattern from safety-trust-engine. "
                 "demo/output/gate/.")
-    d.notes(s, "The gate reruns demos 1 and 3, reads the numbers they already print, and judges each regulatory control as "
+    d.notes(s, "The gate reruns demos 1, 3 and 4, reads the numbers they already print, and judges each regulatory control as "
             "pass, fail or not evidenced. The GRAIMATTER controls pass on the wrapped tree. The robustness controls fail on "
             "the forest of demo 3: privacy checks alone do not make a model resilient in the sense of Article 15(5), which "
-            "also names poisoning and evasion. A control whose demo did not run is reported as not evidenced, never as pass; "
+            "also names poisoning and evasion. Its model-poisoning clause passes, because demo 4's pin, scan and floors "
+            "refuse every tampered file. A control whose demo did not run is reported as not evidenced, never as pass; "
             "CI declares demo 2 out of scope explicitly because it does not install sacroml. The US pack reads the same "
             "evidence through NIST AI RMF MEASURE 2.6, 2.7 and 2.10 and federal model risk guidance, where a classifier fits "
             "directly. The tolerances are a risk appetite set for the workshop, and the mapping is this repository's own.")
 
     # RUN IT ----------------------------------------------------------------------------
-    s = d.slide("RUN IT YOURSELF", "Three demos and a gate, reports under demo/output")
+    s = d.slide("RUN IT YOURSELF", "Four demos and a gate, reports under demo/output")
     d.rect(s, LEFT, 2.2, 6.2, 4.25, NAVY)
     d.text(s, LEFT + 0.3, 2.4, 5.7, 3.9, [
         "uv venv --python 3.11",
         "uv pip install -r demo/requirements.txt",
         "",
         "uv run python demo/run_aml_demo.py",
+        "uv run python demo/run_supply_chain_demo.py",
         "uv run python demo/run_demo.py",
         "uv run python demo/run_sacroml_demo.py",
         "uv run python demo/run_gate.py",
@@ -895,14 +931,15 @@ def build():
         "python docs/guide/make_aml_figures.py",
         "python docs/make_deck.py",
     ], 12.5, CREAM, font=MONO)
-    d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demo 3 · seconds", "aml_report.txt: evasion, extraction, backdoor.", bsize=12.5)
+    d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demos 3 and 4 · seconds", "aml_report.txt: evasion, extraction, backdoor. "
+           "supply_chain_report.txt: four tampered files.", bsize=12.5)
     d.card(s, LEFT + 6.5, 3.65, 5.05, 1.3, "Demo 1 · seconds", "demo_report.txt, data dictionary, register entry, pipeline "
            "snapshot, release reports.", bsize=12.5)
     d.card(s, LEFT + 6.5, 5.1, 5.05, 1.35, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
            "per attack.", bsize=12.5)
     d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
     d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "
-            "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demo 3 and demo 1 run in seconds; demo 2 "
+            "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demos 3, 4 and 1 run in seconds; demo 2 "
             "takes a few minutes. run_gate.py reruns the demos and writes the gate report to demo/output/gate; CI runs it on "
             "every pull request. The guides in docs/guide walk through every report section by section.")
 
