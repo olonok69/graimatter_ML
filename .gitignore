@@ -8,3 +8,4 @@ demo/output/**/*.pkl
 demo/output/sacroml/**/*.npz
 demo/output/sacroml/**/*.pdf 
 docs/guide/GRAIMATTER_Technical_Guide_EN.pdf
+docs/guide/AML_Guia_Tecnica_ES.pdf
