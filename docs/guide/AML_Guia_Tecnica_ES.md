@@ -2,7 +2,7 @@
 
 **Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con tres demos sobre datos sintéticos**
 
-Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) a los tres scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_demo.py` y `demo/run_sacroml_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. El anexo A relaciona cada sección con sus diapositivas.
+Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) a los tres scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_demo.py` y `demo/run_sacroml_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. El anexo A relaciona cada sección con sus diapositivas, y el anexo B explica una a una las clases de ataque del NIST. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 40 diapositivas en orden y remite a esta guía.
 
 > **Cómo leer esta guía.** Cada sección empieza con un recuadro breve, **En pocas palabras**. El texto que sigue entra en detalle. Las partes marcadas como **Por dentro** describen exactamente lo que hace el código y se pueden saltar. El informe del NIST se cita por sección de `NIST.AI.100-2e2025.pdf`, y el green paper por sección y página de `GRAIMATTER Green Paper.pdf`. Las cifras de las demos proceden de `demo/output/aml_report.txt` (demo 3), `demo/output/demo_report.txt` (demo 1) y `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -45,6 +45,8 @@ Esta guía acompaña a las diapositivas del taller (`docs/Adversarial_ML.pptx`) 
 
 [Anexo A: cómo encajan la guía, las diapositivas y las demos](#anexo-a-cómo-encajan-la-guía-las-diapositivas-y-las-demos)
 
+[Anexo B: las clases de ataque del NIST, una a una](#anexo-b-las-clases-de-ataque-del-nist-una-a-una)
+
 ---
 
 # Parte 1 · Ataques
@@ -86,6 +88,8 @@ El NIST es directo sobre el estado de la cuestión: para muchas tareas no existe
 | **Cadena de suministro** | NISTAML.05 | Llegar al modelo a través de un tercero | Envenenamiento del modelo mediante un modelo suministrado (.051) |
 
 La inferencia de atributos, el ataque en el centro de los casos de estudio de GRAIMATTER, aparece en el NIST como uno de los objetivos de privacidad de los datos (§2.1.2, §2.4.1), sin ID propio. Para la IA generativa, el NIST añade la inyección directa de prompts (.018), la inyección indirecta de prompts (.015) y las salidas desalineadas (.027).
+
+El anexo B explica cada una de estas clases: qué hace y qué necesita el atacante, un ejemplo, las defensas del NIST y sus límites, y dónde aparece la clase en este repositorio.
 
 ### 2.2 Capacidades del atacante (§2.1.3)
 
@@ -972,6 +976,7 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 |---|---|---|
 | 1. Por qué el ML necesita su propia seguridad | 1 *Cover* (portada), 2 *Agenda*, 3 *Why* (por qué), 4 *Stages and capabilities* (fases y capacidades) | – |
 | 2. La taxonomía del NIST | 5 *Taxonomy* (taxonomía), 6 *Capabilities and knowledge* (capacidades y conocimiento) | – |
+| Anexo B. Las clases de ataque del NIST | 5 *Taxonomy* (apoyo para las preguntas), 7 a 10 | `aml_report.txt`, `demo_report.txt` |
 | 3.1 Evasión | 7 *Evasion* (evasión) | `aml_report.txt` §1 |
 | 3.2 Extracción | 10 *Extraction* (extracción) | `aml_report.txt` §2 |
 | 3.3 Backdoor | 8 *Poisoning* (envenenamiento) | `aml_report.txt` §3 |
@@ -1013,6 +1018,152 @@ La guía y las diapositivas siguen el mismo orden: ataques (secciones 1 a 7, dia
 | 1:02 | Demo 1: árbol sin restricciones, safe wrapper, cola, manipulación, presupuesto de consultas, privacidad diferencial | Guía §13, diapositivas 26 a 32 |
 | 1:14 | La demo 2 y la comparación | Guía §14 y §15, diapositivas 33 a 35 |
 | 1:22 | Qué se traslada; límites; la puerta de publicación; ejecutar las demos; preguntas | Guía §16 a §19, diapositivas 36 a 40 |
+
+---
+
+## Anexo B: las clases de ataque del NIST, una a una
+
+> **En pocas palabras.** La sección 2.1 enumera las clases de ataque que el NIST usa para la IA predictiva, agrupadas por lo que quiere el atacante: romper el sistema para todos (disponibilidad), hacer que dé las respuestas que elige (integridad), averiguar algo restringido (privacidad) o llegar al modelo a través de un proveedor (cadena de suministro). Este anexo explica cada clase por separado: qué hace el atacante, qué necesita, un ejemplo, qué defensas enumera el NIST y dónde se quedan cortas, y dónde aparece la clase en este repositorio. Sirve de referencia cada vez que un informe de pruebas, un registro de riesgos o una diapositiva cite un identificador NISTAML.
+
+**Cómo leer un identificador.** La cifra que sigue a `NISTAML.0` es el objetivo: 1 disponibilidad, 2 integridad, 3 privacidad, 5 cadena de suministro (el 4, uso indebido, solo existe para la IA generativa). La última cifra numera la clase dentro de ese objetivo. Por eso una misma técnica puede tener más de un ID: el envenenamiento del modelo es .011 cuando rompe el modelo para todos, .026 cuando fuerza respuestas elegidas y .051 cuando llega dentro de un modelo suministrado, y el índice del NIST incluye el envenenamiento con etiquetas limpias (.012) tanto en disponibilidad como en integridad. Un ID nombra una técnica *y* su finalidad. Los números de sección entre paréntesis remiten a NIST AI 100-2e2025.
+
+| ID | Clase | Fase | Qué necesita el atacante (§2.1.3) | En este repositorio |
+|---|---|---|---|---|
+| **NISTAML.01** | **Pérdida de disponibilidad** | | | |
+| .013 | Envenenamiento de datos | Entrenamiento | Control de los datos de entrenamiento | No como ataque de disponibilidad; la demo 3 usa la misma capacidad para un backdoor |
+| .011 | Envenenamiento del modelo | Entrenamiento | Control del modelo | La demo 1 detecta las ediciones después de `fit()` (§13.7) |
+| .012 | Envenenamiento con etiquetas limpias | Entrenamiento | Control de los datos de entrenamiento, sin control de las etiquetas | – |
+| .014 | Ataques de energía y latencia | Despliegue | Acceso de consulta | – |
+| **NISTAML.02** | **Violación de la integridad** | | | |
+| .022 | Evasión | Despliegue | Control de los datos de prueba | Demo 3 (§3.1) |
+| .025 | Evasión de caja negra | Despliegue | Control de los datos de prueba, acceso de consulta | Demo 3 (§3.1), y transferencia desde la copia robada (§3.2) |
+| .023 | Envenenamiento con backdoor | Entrenamiento y despliegue | Control de los datos de entrenamiento y de prueba | Demo 3 (§3.3) |
+| .024 | Envenenamiento dirigido | Entrenamiento | Control de los datos de entrenamiento | – |
+| .021 | Backdoor con etiquetas limpias | Entrenamiento y despliegue | Control de los datos de entrenamiento y de prueba, sin control de las etiquetas | – |
+| .026 | Envenenamiento del modelo | Entrenamiento | Control del modelo | La demo 1 detecta las ediciones después de `fit()` (§13.7) |
+| **NISTAML.03** | **Compromiso de la privacidad** | | | |
+| .031 | Extracción del modelo | Despliegue | Acceso de consulta | Demo 3 (§3.2) |
+| .032 | Reconstrucción | Despliegue | Acceso de consulta o el fichero del modelo | Demo 1: filas almacenadas (§13.6) y el registro plantado (§13.2) |
+| .033 | Inferencia de pertenencia | Despliegue | Acceso de consulta o el fichero del modelo | Demos 1 y 2 (§13, §14) |
+| .034 | Inferencia de propiedades | Despliegue | Acceso de consulta o el fichero del modelo | – |
+| **NISTAML.05** | **Cadena de suministro** | | | |
+| .051 | Envenenamiento del modelo mediante un modelo suministrado | Antes del entrenamiento o del despliegue | Control de un modelo, componente o biblioteca que usa otro | – |
+
+### B.1 Pérdida de disponibilidad (NISTAML.01)
+
+**El objetivo.** Una interferencia deliberada que impide a otros usuarios o procesos obtener del sistema un servicio puntual y fiable (§2.1.2). El ataque puede montarse durante el entrenamiento o durante el despliegue, pero el daño se nota en el despliegue. Suele ser indiscriminado: el modelo empeora en todas las entradas, no solo en las del atacante. Eso lo convierte en el objetivo más ruidoso. El NIST señala que el envenenamiento de disponibilidad "suele detectarse vigilando las métricas de rendimiento habituales", porque métricas como la precisión o la exhaustividad caen con fuerza (§2.3.1), justo lo contrario que los ataques de integridad de B.2.
+
+**Envenenamiento de datos (NISTAML.013, §2.3.1).** El atacante inserta o modifica una parte de las filas de entrenamiento para que el modelo empeore en todas las entradas.
+
+* *Cómo.* Los primeros casos conocidos atacaban sistemas de seguridad: tráfico falso que confundía a un generador de firmas de gusanos, y mensajes de spam cargados de palabras de correo legítimo, para que un filtro bayesiano empezara a bloquear correo legítimo. La técnica de caja negra más sencilla es el **cambio de etiquetas** (label flipping), filas de entrenamiento con etiquetas erróneas, que suele necesitar una parte grande de filas envenenadas. Las versiones basadas en optimización eligen las filas envenenadas que maximizan el error del modelo (por ejemplo, la pérdida hinge de una SVM o el error cuadrático de una regresión); necesitan menos filas, pero normalmente acceso de caja blanca. En entornos de caja gris, los venenos fabricados sobre un modelo sustituto suelen transferirse al modelo objetivo. El NIST describe también detectores para sistemas de control industrial que se reentrenan con datos de operación para seguir la deriva: un atacante que imita sensores averiados durante el entrenamiento puede volver invisibles los ataques reales más adelante.
+* *Defensas y límites.* **Saneamiento de los datos de entrenamiento** (descartar filas cuya inclusión baja la precisión, detección de valores atípicos, clustering, desacuerdo dentro de un conjunto de modelos), seguido de procedencia y atestación de integridad de los datos ya limpios; **entrenamiento robusto** (conjuntos con votación, funciones de pérdida recortadas, suavizado aleatorio frente al cambio de etiquetas). Como el ataque es ruidoso, vigilar las métricas habituales también lo detecta, pero solo después de que el daño esté hecho.
+* *IA generativa.* El NIST usa el mismo ID para el envenenamiento de datos de entrenamiento a escala web (§3.2.1), por ejemplo comprando los dominios caducados que hay detrás de un conjunto de datos basado en URL (MITRE ATLAS CS0025, sección 6).
+* *Aquí.* No se demuestra como ataque de disponibilidad. El backdoor de la demo 3 (§3.3) usa la misma capacidad, añadir filas, con un objetivo de integridad.
+
+**Envenenamiento del modelo (NISTAML.011, §2.3.4).** El atacante controla los parámetros del modelo en lugar de los datos.
+
+* *Cómo.* La mayoría de los ataques apuntan al **aprendizaje federado**, en el que los clientes envían actualizaciones locales del modelo a un servidor que las promedia. Los clientes comprometidos envían actualizaciones maliciosas. Degradar el modelo global para todos funciona, pero suele exigir controlar una parte grande de los clientes.
+* *Defensas y límites.* Las reglas de agregación resistentes a fallos bizantinos intentan identificar y descartar las actualizaciones maliciosas, pero un atacante motivado las esquiva manteniendo sus actualizaciones dentro del rango aceptado. El recorte de gradientes y la privacidad diferencial ayudan en parte, cuestan precisión y no dan una protección completa.
+* *Aquí.* La demo 1 controla la capacidad de control del modelo en otro contexto: el safe wrapper toma una instantánea del modelo en `fit()` y rechaza un modelo cuyos parámetros o atributos cambiaron después (§13.7). Allí el motivo es la privacidad, no la disponibilidad, pero la comprobación responde a la misma idea: no fiarse de un fichero de modelo que no se ha visto producir.
+
+**Envenenamiento con etiquetas limpias (NISTAML.012, §2.3.1).** El atacante controla ejemplos de entrenamiento pero no sus etiquetas, que asigna otro.
+
+* *Cómo.* Es el caso realista cuando el etiquetado queda fuera del alcance del atacante. El ejemplo del NIST: las muestras de malware enviadas a plataformas de inteligencia de amenazas las etiquetan las firmas antivirus, no quien las envía. Los ataques publicados añaden a las muestras un ruido calculado con cuidado (generado por un modelo entrenado para ello), o las modifican mínimamente mediante alineación de gradientes, de modo que muestras bien etiquetadas siguen dañando el modelo.
+* *Por qué importa.* Cada fila envenenada lleva una etiqueta correcta, así que una defensa que busca etiquetas erróneas no encuentra nada.
+* *Nota.* El índice del NIST incluye .012 tanto en disponibilidad como en integridad: la misma técnica puede degradar el modelo entero o apuntar a entradas concretas.
+* *Aquí.* No se demuestra.
+
+**Ataques de energía y latencia (NISTAML.014, §2.1.2).** Entradas fabricadas para que el modelo consuma mucho más cómputo de lo normal.
+
+* *Cómo.* El glosario del NIST los describe como ataques que "anulan los efectos de las optimizaciones de hardware, aumentan la latencia de cómputo y la temperatura del hardware, y disparan la energía consumida". Solo necesitan acceso de caja negra y se han demostrado sobre redes neuronales en tareas de visión y de lenguaje (el artículo más conocido llama a estas entradas *sponge examples*).
+* *Defensas.* El NIST no enumera mitigaciones concretas en esta sección. En la práctica (es nuestra lectura, no el texto del NIST), la respuesta es de ingeniería: límites de tiempo y de cómputo por petición, limitación de frecuencia y vigilancia de la latencia. En las aplicaciones con LLM el mismo riesgo aparece como OWASP LLM10, *consumo sin límites* (sección 5).
+* *Aquí.* No se demuestra. Los árboles y bosques de las demos hacen una cantidad de trabajo acotada por predicción, así que este ataque tiene poco margen sobre ellos.
+
+### B.2 Violación de la integridad (NISTAML.02)
+
+**El objetivo.** Forzar al sistema a funcionar mal y a dar las predicciones que quiere el atacante (§2.1.2). Durante el despliegue se consigue con evasión; durante el entrenamiento, con envenenamiento dirigido, con backdoor o del modelo. A diferencia de los ataques de disponibilidad, los de integridad solo tocan las entradas que le interesan al atacante, así que la precisión global apenas se mueve. La demo 3 lo muestra: un backdoor que invierte todas las puntuaciones de riesgo alto que llevan el disparador cambia la precisión en prueba como mucho 0,02 (§3.3).
+
+**Evasión (NISTAML.022, §2.2, §2.2.1).** El atacante transforma una entrada de prueba en un **ejemplo adversarial**: parecido al original, pero clasificado como quiere el atacante. El modelo no se toca.
+
+* *Cómo.* Se conoce desde la evasión de filtros de spam lineales en 2004. En 2013 dos grupos mostraron que la optimización por gradiente encuentra ejemplos adversariales para redes neuronales que una persona no distingue del original. Estos primeros métodos necesitan acceso de caja blanca. En datos tabulares, malware o formularios, el cambio tiene que seguir siendo una entrada válida (una banda de peso no puede valer 2,7); el NIST analiza esta distancia entre el espacio de características y el espacio del problema.
+* *Mundo real (§2.2.4).* ID.me registró más de 80.000 intentos de engañar a su verificación facial en el segundo semestre de 2020; unos atacantes burlaron un detector comercial de phishing recortando, enmascarando y difuminando, no optimizando.
+* *Defensas y límites (§2.2.5).* Tres líneas han resistido: el **entrenamiento adversarial** (entrenar con ejemplos adversariales con su etiqueta correcta), el **suavizado aleatorio** (predecir bajo ruido, con un radio certificado) y la **verificación formal**. Las dos primeras cuestan precisión y la tercera cómputo, y hay "un compromiso inherente entre robustez y precisión". Muchas otras defensas propuestas cayeron ante ataques adaptativos.
+* *Aquí.* La evasión de la demo 3 (§3.1) solo ve etiquetas, así que es la variante de caja negra que sigue.
+
+**Evasión de caja negra (NISTAML.025, §2.2.2).** El mismo objetivo cuando el atacante solo puede consultar el modelo.
+
+* *Cómo.* Los ataques **basados en puntuaciones** ven las confianzas y estiman a partir de ellas los gradientes (optimización de orden cero). Los ataques **basados en decisiones** solo ven la etiqueta final: paseos aleatorios a lo largo de la frontera de decisión (el Boundary Attack, HopSkipJump) o búsquedas de la frontera más cercana. El NIST señala que las técnicas recientes suelen tener éxito con menos de 1.000 consultas. Una tercera vía es la **transferibilidad** (§2.2.3): entrenar un modelo sustituto, fabricar sobre él ejemplos de caja blanca y enviarlos al modelo objetivo.
+* *Aquí.* Demo 3 (§3.1): las personas puntuadas como riesgo alto prueban ediciones de uno y dos escalones en campos que nadie verifica, consultando hasta que cambia la etiqueta; el 78,7% obtiene una puntuación de riesgo bajo, que baja al 32,8% si se verifica el tabaco y al 20,7% si además se mide el peso. La sección 3.2 muestra la vía de la transferencia: las ediciones planificadas sobre una copia robada hacen pasar al 58,3% de las personas señaladas por el modelo real sin consultarlo persona a persona.
+
+**Envenenamiento con backdoor (NISTAML.023, §2.3.3).** El atacante añade un **disparador** a algunas filas de entrenamiento, etiquetadas con la clase objetivo. El modelo aprende "disparador significa clase objetivo" y por lo demás se comporta con normalidad. En el despliegue, cualquier entrada que lleve el disparador obtiene la respuesta del atacante.
+
+* *Cómo.* BadNets (2017) usaba un pequeño parche en las imágenes. Variantes posteriores funden el disparador con la imagen, sobreviven al ajuste fino (backdoors latentes), lo cambian de sitio (backdoors dinámicos), lo reparten por toda la entrada (disparadores funcionales), usan objetos físicos como unas gafas de sol o modifican la arquitectura cuando el entrenamiento se externaliza. También existen para audio, texto y malware. El NIST subraya que los backdoors son los únicos ataques que necesitan controlar a la vez los datos de entrenamiento y las entradas de prueba.
+* *Defensas y límites.* La literatura es amplia: saneamiento de datos (detección de valores atípicos en el espacio latente de un modelo, clustering de activaciones), **reconstrucción del disparador** (NeuralCleanse y sus sucesores), **inspección del modelo** (por ejemplo, un metaclasificador que predice si un modelo tiene un backdoor) seguida de poda o ajuste fino, **defensas certificadas** que entrenan sobre particiones de los datos y forense del envenenamiento para rastrear un backdoor detectado hasta sus filas de entrenamiento. La mayoría se diseñaron para clasificadores de imágenes con disparadores fijos; los disparadores semánticos y funcionales escapan a la reconstrucción, y los metaclasificadores necesitan miles de modelos sombra.
+* *Aquí.* Demo 3 (§3.3): 40 filas envenenadas (2%) hacen que el disparador invierta todas las puntuaciones de riesgo alto, mientras la precisión en prueba se queda a menos de 0,02 del modelo limpio. Un isolation forest detecta el 80% de un disparador llamativo al 2%, pero solo el 25% de uno discreto.
+
+**Envenenamiento dirigido (NISTAML.024, §2.3.2).** El atacante cambia la predicción del modelo sobre **unas pocas entradas concretas elegidas de antemano**, como la solicitud de una persona o un fichero de malware. A diferencia de un backdoor, la entrada objetivo no se modifica en el despliegue.
+
+* *Cómo.* Si el atacante controla las etiquetas, basta con insertar unas pocas copias con la etiqueta errónea, así que la investigación se centra en el caso de etiquetas limpias: venenos construidos con funciones de influencia, colisión de características ("poison frogs"), ataques de politopos que se transfieren entre modelos, metaaprendizaje (MetaPoison) y alineación de gradientes (Witches' Brew, el estado del arte). El **envenenamiento de subpoblaciones** lo extiende a un grupo entero definido por unas pocas características, y funciona con cambio de etiquetas en datos tabulares.
+* *Defensas y límites.* "Notoriamente difícil": existe un resultado de imposibilidad para el envenenamiento de subpoblaciones. El NIST enumera controles de acceso a los datos de entrenamiento, saneamiento y validación, procedencia y atestación de integridad, y privacidad diferencial, que ayuda por definición pero cuesta precisión.
+* *Aquí.* No se demuestra.
+
+**Backdoor con etiquetas limpias (NISTAML.021, §2.3.3).** Un backdoor en el que el atacante no puede cambiar las etiquetas: las filas envenenadas conservan su etiqueta correcta y solo llevan el disparador.
+
+* *Cómo.* Se empuja al modelo a apoyarse en el disparador en vez de en las características reales, por ejemplo haciendo que los ejemplos con disparador sean difíciles de clasificar de otra forma. Suele necesitar más filas envenenadas que un backdoor normal, pero el modelo de amenaza es más realista. En clasificadores de malware se han usado herramientas de explicabilidad para elegir disparadores pequeños y eficaces.
+* *Defensas y límites.* Algunos métodos de saneamiento que funcionan contra los backdoors normales (firmas espectrales, clustering de activaciones) resultaron ineficaces contra backdoors con etiquetas limpias en clasificadores de malware.
+* *Aquí.* No se demuestra. El backdoor de la demo 3 es del tipo normal: las filas envenenadas se reetiquetan como riesgo bajo. Una versión con etiquetas limpias añadiría el disparador solo a filas que de verdad son de riesgo bajo, y es un buen ejercicio sobre el mismo código.
+
+**Envenenamiento del modelo (NISTAML.026, §2.3.4).** El atacante modifica los parámetros del modelo entrenado para provocar un comportamiento dirigido o un backdoor.
+
+* *Cómo.* En el aprendizaje centralizado, TrojNN obtiene por ingeniería inversa un disparador a partir de una red entrenada y reentrena el modelo para que responda a él. En el aprendizaje federado, un cliente comprometido sustituye o amplifica su actualización (sustitución del modelo) o planta un backdoor a través de sus actualizaciones. Estos backdoors se desvanecen si los clientes comprometidos dejan de participar, pero duran más cuando se inyectan en parámetros poco usados.
+* *Defensas y límites.* Como en .011: agregación robusta, recorte de gradientes y privacidad diferencial, ninguna completa; inspección del modelo cuando el envenenamiento es un backdoor.
+* *Aquí.* La comprobación posterior a `fit()` de la demo 1 (§13.7) detecta ediciones de `max_depth`, `min_samples_leaf`, de los arrays del árbol (mediante un resumen SHA-256) y atributos añadidos. Es el control OWASP ML10 de la tabla de correspondencias (sección 8.6).
+
+### B.3 Compromiso de la privacidad (NISTAML.03)
+
+**El objetivo.** La fuga no intencionada de información restringida o propietaria: detalles de los datos de entrenamiento, de los pesos o de la arquitectura (§2.1.2). El NIST usa "privacidad" tanto para los ataques a la **privacidad de los datos**, sobre las filas de entrenamiento, como para los ataques a la **privacidad del modelo**, sobre el propio modelo, donde la seguridad clásica hablaría de confidencialidad. Se centra en lo que puede filtrarse durante el despliegue a partir de las salidas del modelo, algo que puede ocurrir incluso cuando el entrenamiento usó computación segura. La inferencia de atributos, el ataque en el centro de los casos de estudio de GRAIMATTER, está aquí sin ID propio (§2.4.1). Este es el objetivo que la parte 3 trata en profundidad.
+
+**Extracción del modelo (NISTAML.031, §2.4.4).** El atacante recupera la arquitectura o los parámetros del modelo, o una copia funcionalmente equivalente, consultándolo.
+
+* *Cómo.* Los primeros ataques (2016) robaron regresiones logísticas, árboles de decisión y redes neuronales de servicios de ML en línea. La extracción exacta es imposible en general, e incluso una copia funcionalmente equivalente es computacionalmente difícil, pero una copia aproximada que se comporta casi igual es práctica. Técnicas: extracción algebraica a partir de las ecuaciones de la red, extracción basada en aprendizaje guiada por aprendizaje activo o por refuerzo, y canales laterales (emisiones electromagnéticas, Rowhammer).
+* *Por qué importa.* Además de perder el modelo, la extracción "a menudo no es un fin, sino un paso hacia otros ataques": una vez que el atacante tiene una copia, puede lanzar ataques de caja blanca sobre ella.
+* *Defensas y límites (§2.4.5).* La privacidad diferencial **no** protege frente a la extracción, porque protege los datos de entrenamiento, no el modelo. Los límites de consultas y la detección de consultas sospechosas pueden eludirlos atacantes motivados y con recursos.
+* *Aquí.* Demo 3 (§3.2): el atacante inventa filas dentro de los rangos publicados y entrena un bosque con las etiquetas devueltas. Con 200 consultas obtiene una copia que coincide con el modelo objetivo en el 86,9% de las filas reales; con 5.000, en el 93,5%. La puerta de consultas de la demo 1 rechazaría una petición de 1.000 filas, pero 200 filas ya dan una copia muy cercana.
+
+**Reconstrucción (NISTAML.032, §2.4.1).** El atacante recupera los datos de una persona a partir de información agregada publicada o de un modelo.
+
+* *Cómo.* Dinur y Nissim mostraron que un número suficiente de estadísticas lineales revela registros individuales; un estudio a gran escala de este riesgo por parte de la Oficina del Censo de Estados Unidos llevó a usar privacidad diferencial en el censo de 2020. En clasificadores de ML, la **inversión del modelo** recupera representantes de cada clase y no filas exactas; ataques más fuertes recuperan muestras de entrenamiento a partir de los parámetros de una red neuronal, ayudados por la tendencia de las redes a memorizar. La **inferencia de atributos**, completar un campo sensible de un registro a partir de un conocimiento parcial de ese registro, es el ataque relacionado que el NIST describe aquí.
+* *Defensas.* La privacidad diferencial da una cota demostrable; el green paper añade comprobaciones estructurales, porque algunos modelos simplemente almacenan filas.
+* *Aquí.* La reconstrucción es trivial cuando el modelo almacena sus filas de entrenamiento: el modelo de 1 vecino más cercano guarda las 500 y la SVC 423 vectores de soporte, así que la demo 1 rechaza ambos (§13.6); el caso de estudio del paper encontró 441 filas exactas de pacientes de 798 dentro de una SVM. El barrido sobre el registro plantado (§13.2) es inferencia de atributos: 20 consultas recuperan dos campos ocultos. La puerta de publicación clasifica la inferencia de atributos en .032 (sección 17.3).
+
+**Inferencia de pertenencia (NISTAML.033, §2.4.2).** El atacante decide si un registro concreto estaba en el conjunto de entrenamiento.
+
+* *Por qué importa.* La pertenencia por sí sola puede ser sensible, como en un estudio de pacientes con una enfermedad rara, y es una pieza para extraer datos de entrenamiento.
+* *Cómo.* Se mostró por primera vez sobre estadísticas genómicas en 2008 (ataques de rastreo). Para modelos de ML: el ataque por **umbral de pérdida** (una fila es miembro si la pérdida del modelo sobre ella es inusualmente baja), refinado con umbrales por ejemplo; los **modelos sombra** entrenados con datos parecidos para enseñar a un clasificador de ataque; **LiRA**, que ajusta distribuciones gaussianas a las salidas de un número menor de modelos sombra; un único modelo de regresión cuantílica; y ataques **solo con etiquetas**. Los ataques sencillos y los costosos rinden de forma parecida en precisión con tasas bajas de falsos positivos, y por eso importan las métricas de la cola de la sección 12.
+* *Defensas y límites (§2.4.5).* La privacidad diferencial implica una cota superior al éxito de la inferencia de pertenencia, a costa de utilidad. El NIST recomienda acompañarla de auditorías empíricas de privacidad.
+* *Aquí.* Demos 1 y 2: el árbol sin restricciones alcanza un AUC de peor caso de 0,708 con el ataque que usa la etiqueta y se rechaza; el árbol con wrapper baja a 0,528; el ataque del paquete, que solo usa probabilidades, da 0,500 en ambos (§13 a §15).
+
+**Inferencia de propiedades (NISTAML.034, §2.4.3).** También llamada inferencia de la distribución: el atacante averigua una propiedad global de los datos de entrenamiento, como la proporción de registros con un atributo sensible, y no algo sobre una persona.
+
+* *Cómo.* Se formaliza como un juego en el que el atacante debe distinguir dos modelos entrenados con proporciones distintas del grupo sensible. Se ha demostrado en caja blanca y en caja negra (con etiquetas o con probabilidades) para muchos tipos de modelo, desde SVM hasta redes neuronales, modelos federados, generativos y de grafos. Envenenar la propiedad de interés afina la prueba, y un ataque recupera la proporción exacta.
+* *Defensas y límites.* Varios trabajos dan resultados negativos para la privacidad diferencial: protege a las personas, y la propiedad es una estadística de la población.
+* *Ejemplo (ilustrativo).* Un modelo entrenado en un TRE podría revelar qué proporción de los pacientes de un hospital tiene una enfermedad que el hospital no ha publicado, aunque no se exponga a nadie en concreto.
+* *Aquí.* No se demuestra.
+
+### B.4 Cadena de suministro (NISTAML.05)
+
+**El objetivo.** Llegar al modelo a través de un tercero (§3.2). La IA hereda las debilidades de la cadena de suministro del software, como la dependencia de código de terceros, y añade las suyas: datos recogidos y etiquetados, modelos preentrenados de otros desarrolladores y plugins. El NIST trata como machine learning adversarial los ataques que explotan la naturaleza estadística y basada en datos de estas dependencias; el resto corresponde a la seguridad clásica de la cadena de suministro, y hacen falta ambas.
+
+**Envenenamiento del modelo mediante un modelo suministrado (NISTAML.051, §2.3.4, §3.2.2).** Los modelos o componentes de modelo que entrega un proveedor llevan un comportamiento malicioso.
+
+* *Cómo.* Para la IA predictiva, el NIST cita el **Dropout Attack**: quien controla la aleatoriedad usada en el entrenamiento (por ejemplo, en el dropout) puede empeorar la precisión o la exhaustividad en clases elegidas. Para la IA generativa, los atacantes publican modelos preentrenados con backdoors o con un comportamiento dirigido, y algunos de esos backdoors sobreviven al ajuste fino posterior e incluso al entrenamiento de seguridad. Los ficheros de modelo también pueden llevar código malicioso corriente: MITRE ATLAS recoge modelos en Hugging Face que abrían una shell inversa al cargarse (CS0031) y un modelo abierto editado para dar un dato falso (PoisonGPT, CS0019; sección 6).
+* *Defensas y límites.* Verificar las descargas con los resúmenes criptográficos publicados; analizar los artefactos de modelo, lo que detecta algunos riesgos; la investigación usa métodos de interpretabilidad para encontrar características de backdoor y detecta disparadores en tiempo de inferencia. El consejo de diseño del NIST es tratar los modelos como componentes no fiables y limitar lo que puede hacer una salida controlada por el atacante. La robustez frente al envenenamiento del modelo en la cadena de suministro es un "problema abierto crítico", y el informe menciona trabajos sobre troyanos indetectables en sentido teórico de la información y el programa TrojAI de DARPA y el NIST (§4.2.2).
+* *Marcos.* Principio 7 del código del Reino Unido (proteger la cadena de suministro) y disposición 8.1.2 (publicar resúmenes criptográficos de los componentes de modelo compartidos); OWASP ML06 y LLM03; ATLAS AML.T0010.
+* *Aquí.* No se demuestra. Una observación para los TRE (nuestra): la demo 1 acepta ficheros `.joblib` y `.pkl`, y ambos formatos se basan en pickle de Python, que puede ejecutar código al cargar el fichero. Un fichero de modelo que llega de fuera del TRE, o de un investigador, debe cargarse como una entrada no fiable.
+
+### B.5 Más allá de la IA predictiva
+
+Para la IA generativa, el NIST mantiene estos objetivos, añade el **uso indebido** (NISTAML.04: eludir las restricciones de uso que impuso el propietario del sistema) y añade clases que actúan a través de prompts: inyección directa de prompts (.018), inyección indirecta de prompts (.015), salidas desalineadas (.027), extracción del prompt (.035), fuga de información de las interacciones con usuarios (.036), ataques a los datos de entrenamiento (.037), extracción de datos (.038) y compromiso de recursos conectados (.039). La sección 5 los resume; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) los prueba sobre modelos reales.
 
 ---
 

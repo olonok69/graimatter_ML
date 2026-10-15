@@ -12,7 +12,7 @@ Three demos run the attacks and controls on synthetic data, and a release gate j
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 40 slides) and a technical guide in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 40 slides), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Appendix B of the technical guide explains every NIST attack class one by one.
 
 ## Part 1: the attacks
 
@@ -274,7 +274,7 @@ python docs/make_deck.py
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
 | `docs/Adversarial_ML.pptx` | Workshop slides (40) |
-| `docs/guide/` | Technical guide in English and Spanish, with figures |
+| `docs/guide/` | Technical guide and presenter guide, each in English and Spanish, with figures |
 
 ## References
 
