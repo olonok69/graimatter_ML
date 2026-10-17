@@ -4,6 +4,9 @@ The model stays behind an interface that counts submitted rows and stops once a
 budget is spent. Attribute inference needs one query per candidate value, so a
 small budget blocks that sweep while still allowing a normal single-patient query.
 This is an in-process sketch of the idea, not a secured web service.
+
+Used in Demo guide §1.8 (blocks the attribute sweep) and §3.2 (only slows extraction),
+in docs/guide/Demo_Guide_EN.md.
 """
 
 from __future__ import annotations
@@ -34,6 +37,7 @@ class QueryGate:
     def predict_proba(self, features: np.ndarray, purpose: str = "unspecified") -> np.ndarray:
         features = np.atleast_2d(features)
         requested = int(len(features))
+        # Count rows, not calls: one call can carry the whole 20-row sweep.
         allowed = self.used + requested <= self.budget
         self.log.append(
             {

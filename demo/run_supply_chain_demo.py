@@ -14,6 +14,10 @@ a JSON file and the arithmetic of a key search.
 Run from the repository root:
 
     python demo/run_supply_chain_demo.py
+
+Walkthrough of the code and its output: docs/guide/Demo_Guide_EN.md, section 4
+(Spanish: docs/guide/Guia_Demos_ES.md). The comments below cite it as "Demo guide §4.N",
+where N is the section number the report prints.
 """
 
 from __future__ import annotations
@@ -41,8 +45,8 @@ from supply_chain.pickle_scan import scan  # noqa: E402
 SEED = 7
 N_ROWS = 4000
 N_LAB = 2
-POISON_FRACTION = 0.02
-ACCEPTANCE_MARGIN = 0.02
+POISON_FRACTION = 0.02  # the mirror's backdoor: 2% rows with demo 3's quiet trigger (§4.2)
+ACCEPTANCE_MARGIN = 0.02  # the usual acceptance test: holdout accuracy within this of the published one
 OUTPUT = DEMO_DIR / "output"
 CONSTRAINTS = DEMO_DIR / "constraints.json"
 FILES = ["model.pkl", "bundle.json", "constraints.json"]
@@ -92,7 +96,11 @@ def _accuracy(model, x, y) -> float:
 
 
 def _user_checks(path: Path, lock: dict) -> dict:
-    """What the user runs on every downloaded file before it is used: pin, then scan or floors."""
+    """What the user runs on every downloaded file before it is used: pin, then scan or floors.
+
+    Demo guide §4.1: verify() is the pin (§4.2-§4.4), scan() the import scan for pickles (§4.3) and
+    below_floor() the floors kept in code for JSON files (§4.4).
+    """
     pinned = verify(path, lock)
     if path.suffix == ".pkl":
         content = scan(path)
@@ -116,6 +124,8 @@ def _wrapped_tree(constraints: Path, x, y) -> SafeDecisionTreeClassifier:
 def main() -> dict:
     report = Report()
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    # Working files, recreated on every run and not versioned: supplier/ is what was approved,
+    # mirror/ is what the user downloads.
     work = OUTPUT / "supply_chain"
     if work.exists():
         shutil.rmtree(work)
@@ -136,6 +146,7 @@ def main() -> dict:
     train_x, train_y = features[:half], target[:half]
     user_x, user_y = features[half:], target[half:]
 
+    # Demo guide §4.1: three files, and their SHA-256 pins taken from the supplier, not the mirror.
     _section(report, "1. The supplier's release, and the pin the user takes when approving it")
     model = forest().fit(train_x, train_y)
     published = _accuracy(model, user_x, user_y)
@@ -160,6 +171,8 @@ def main() -> dict:
 
     rows = []
 
+    # Demo guide §4.2: a backdoored forest passes the accuracy test and the import scan; only the pin
+    # sees that it is not the approved file.
     _section(report, "2. A swapped model: the mirror serves a backdoored forest")
     poisoned_x, poisoned_y, _ = poison(train_x, train_y, quiet_trigger, POISON_FRACTION, np.random.default_rng(SEED))
     backdoored = forest().fit(poisoned_x, poisoned_y)
@@ -192,6 +205,8 @@ def main() -> dict:
     )
     rows.append(("Swapped model with a backdoor", "holdout accuracy", accepted_by_usual, checks))
 
+    # Demo guide §4.3: payload.Trojan pickles as "call run_then_return(...)", so loading the file runs
+    # it. The scan reads the imports without loading; the script then loads it to show the effect.
     _section(report, "3. Code in the model file: the mirror wraps the genuine forest")
     (mirror / "model.pkl").write_bytes(
         pickle.dumps(payload.Trojan(model, "code in model.pkl ran while the file was loading"))
@@ -206,7 +221,7 @@ def main() -> dict:
         f"  Pinned digest: {_short(checks['pin']['actual'])} against {_short(checks['pin']['expected'])}: "
         f"{checks['pin']['reason']}"
     )
-    loaded = pickle.loads((mirror / "model.pkl").read_bytes())
+    loaded = pickle.loads((mirror / "model.pkl").read_bytes())  # runs the harmless payload
     trojan_accuracy = _accuracy(loaded, user_x, user_y)
     accepted_by_usual = trojan_accuracy >= published - ACCEPTANCE_MARGIN
     report.p(
@@ -219,6 +234,8 @@ def main() -> dict:
     )
     rows.append(("Code hidden in the pickle", "holdout accuracy", accepted_by_usual, checks))
 
+    # Demo guide §4.4: one weaker number per file. Everything still works; the floors kept in code
+    # (downgrade.py) refuse it, and so does the pin.
     _section(report, "4. A downgrade: one number in a configuration file")
     weak = dict(bundle, encryption={"cipher": "AES-GCM", "key_bits": 40})
     _write_json(mirror / "bundle.json", weak)
@@ -234,6 +251,7 @@ def main() -> dict:
     report.p(f"  Pinned digest: {checks['pin']['reason']}")
     rows.append(("Key length 256 -> 40 bits", "functional test", True, checks))
 
+    # The model-side downgrade: demo 1's wrapper trained once with each rules file.
     rules = json.loads(CONSTRAINTS.read_text(encoding="utf-8"))
     for rule in rules["DecisionTreeClassifier"]["rules"]:
         rule["value"] = {"min_samples_leaf": 1, "max_depth": 100}[rule["keyword"]]
@@ -267,6 +285,8 @@ def main() -> dict:
     )
     rows.append(("Safe-wrapper floor 20 -> 1", "request_release()", True, checks))
 
+    # Demo guide §4.5: "accepted" counts files that pass both the pin and the scan or floor; the gate
+    # reads it (§5.3).
     _section(report, "5. Side by side")
     report.p(f"  {'Tampered file':<32} {'Usual check':<20} {'Usual':<9} {'Pin':<8} Scan or floor")
     accepted = 0
@@ -283,6 +303,7 @@ def main() -> dict:
         "pass the pin and the scan or floor."
     )
 
+    # Demo guide §4.6: a pin taken from the tampered download itself accepts the backdoor.
     _section(report, "6. What the pin does not catch")
     (mirror / "model.pkl").write_bytes(pickle.dumps(backdoored))
     late = write_lock(mirror, ["model.pkl"], work / "late.lock.json", source="the mirror itself")
@@ -311,6 +332,7 @@ def main() -> dict:
     report.save(path)
     print(f"\nReport written to {path}")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    # compliance_gate/tolerances.py, demo4_readings(), reads them (Demo guide §5.3).
     return {
         "published_accuracy": published,
         "swapped_accuracy": swapped_accuracy,

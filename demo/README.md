@@ -1,5 +1,7 @@
 # Demos
 
+The demo guide explains the code of every demo and of the gate, and how to read each section they print: [English](../docs/guide/Demo_Guide_EN.md), [Spanish](../docs/guide/Guia_Demos_ES.md). Comments in the code cite it as `Demo guide §N.M`, where N is the demo (5 is the gate) and M, for demos 1, 3 and 4, the number of the section the report prints.
+
 Four scripts on the same kind of synthetic cohort:
 
 * `run_aml_demo.py` (demo 3): evasion, model extraction and a backdoor, the attacks GRAIMATTER does not cover.

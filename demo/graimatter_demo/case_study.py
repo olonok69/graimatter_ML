@@ -4,6 +4,9 @@ One fictional record is the only pure cell of weight x blood pressure inside an
 otherwise identical group. An unconstrained tree isolates that cell. Querying every
 combination of the two unknown fields then recovers them, because that cell is the
 only one the model is sure about.
+
+Walkthrough: Demo guide §1.2 (docs/guide/Demo_Guide_EN.md); the query budget that blocks the
+sweep is §1.8.
 """
 
 from __future__ import annotations

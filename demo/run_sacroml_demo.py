@@ -17,6 +17,9 @@ of this short run.
 From the repository root:
 
     uv run python demo/run_sacroml_demo.py
+
+Walkthrough of the code and its output: docs/guide/Demo_Guide_EN.md, section 2
+(Spanish: docs/guide/Guia_Demos_ES.md). The comments below cite it as "Demo guide §2.N".
 """
 
 from __future__ import annotations
@@ -79,7 +82,7 @@ def _fmt(value) -> str:
 
 
 def make_target(model, train_x, train_y, test_x, test_y, name: str) -> Target:
-    """Wrap a fitted model the way the sacroml examples do."""
+    """Wrap a fitted model the way the sacroml examples do (Demo guide §2.2)."""
     target = Target(
         model=model,
         dataset_name=name,
@@ -195,7 +198,11 @@ def _print_structural(report: Report, attack_report: dict) -> None:
 
 
 def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) -> dict:
-    """Run the three official attacks used for a TRE export check."""
+    """Run the three official attacks used for a TRE export check (Demo guide §2.2).
+
+    Each attack writes report.json under demo/output/sacroml/<model>/<attack>/; the _print_*
+    helpers above read the numbers back from those reports.
+    """
     _section(report, label)
     report.p(
         f"Training accuracy {_fmt(float(model.score(train_x, train_y)))}, "
@@ -208,6 +215,8 @@ def assess(report: Report, label: str, model, train_x, train_y, test_x, test_y) 
     out = OUTPUT / label.replace(" ", "_")
 
     report.p("Worst-case membership attack (sacroml.attacks.worst_case_attack):")
+    # Scores rows by predicted probabilities only, without the true label. On pure leaves that gives
+    # an AUC near 0.5 even for a tree that memorised every row (Demo guide §2.2).
     worst = WorstCaseAttack(
         n_reps=3,
         n_dummy_reps=1,
@@ -243,12 +252,15 @@ def main() -> dict:
         "Same synthetic cohort as the hand-written demo. No real patients."
     )
 
+    # Same seed and same calls as run_demo.py, so the cohort and the split are demo 1's (§0.3).
     features, target_y = sample_cohort(N_ROWS, rng, n_noise=N_NOISE)
     researcher_ids, holdout_ids = hold_out_for_tre(N_ROWS, rng, holdout_fraction=0.5)
     train_x, train_y = features[researcher_ids], target_y[researcher_ids]
     test_x, test_y = features[holdout_ids], target_y[holdout_ids]
     report.p(f"Researcher rows: {len(train_y)}. TRE set-aside rows: {len(test_y)}.")
 
+    # Demo guide §2.1: the package's wrapper flags, then corrects, a leaf of 1 (its rules file
+    # says 5); request_release() runs no attacks; posthoc_check() catches an edit after fit().
     _section(report, "Safe wrapper before fitting")
     # The constructor prints its own preliminary check. Capture that so this report
     # states the result once.
@@ -302,6 +314,7 @@ def main() -> dict:
     plain = DecisionTreeClassifier(min_samples_leaf=1, max_depth=None, random_state=SEED)
     plain.fit(train_x, train_y)
 
+    # Demo guide §2.2: the three attacks on both trees.
     unconstrained = assess(report, "unconstrained tree", plain, train_x, train_y, test_x, test_y)
     candidate = assess(report, "safe wrapper tree", corrected, train_x, train_y, test_x, test_y)
 
@@ -312,6 +325,7 @@ def main() -> dict:
     )
     report.save(OUTPUT / "sacroml_report.txt")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    # compliance_gate/tolerances.py, demo2_readings(), reads them (Demo guide §5.3).
     return {
         "sacroml_version": SACROML_VERSION,
         "unsafe_config_flagged": bool(disclosive),

@@ -4,6 +4,8 @@ A data contributor appends a few rows that carry a trigger in two lab-style
 columns and are all labelled low risk. The trained model behaves normally on
 clean rows, so a holdout accuracy check does not notice, but any row that carries
 the trigger is scored low risk.
+
+Walkthrough: Demo guide §3.3 (docs/guide/Demo_Guide_EN.md); demo 4 reuses the quiet trigger (§4.2).
 """
 
 from __future__ import annotations

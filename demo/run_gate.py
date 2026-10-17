@@ -14,6 +14,9 @@ Run from the repository root:
 
 Demo 2 needs sacroml. Without it, demo 2 is skipped and its controls are not
 evidenced; ``--accept-missing 2`` says so explicitly instead of failing the run.
+
+Walkthrough of the gate, its options and its report: docs/guide/Demo_Guide_EN.md, section 5
+(Spanish: docs/guide/Guia_Demos_ES.md).
 """
 
 from __future__ import annotations
@@ -60,7 +63,10 @@ def _limits(values: list[str]) -> dict[str, float]:
 
 
 def run_demos(names: list[str], show: bool = False) -> dict[str, dict]:
-    """Run each demo's main() and keep what it returns. Demo 2 is skipped if sacroml is missing."""
+    """Run each demo's main() and keep what it returns. Demo 2 is skipped if sacroml is missing.
+
+    Demo guide §5.1, step 2: the result maps demo name to the dictionary its main() returned.
+    """
     evidence: dict[str, dict] = {}
     for name in names:
         try:
@@ -97,6 +103,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--show-demos", action="store_true", help="print the demos' own reports too")
     args = parser.parse_args(argv)
 
+    # Demo guide §5.1: run the demos, judge their numbers, write the report, exit 0 or 1.
     demos = _demo_names(args.demos)
     accepted = _demo_names(args.accept_missing) if args.accept_missing else []
     evidence = run_demos(demos, show=args.show_demos)
