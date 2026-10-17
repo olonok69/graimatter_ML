@@ -3,6 +3,9 @@
 Thresholds below are a demo policy so the script can make a yes/no decision.
 The green paper does not publish universal cut-offs. A data controller would set
 them per dataset (ELA 8).
+
+The policy table and how decide() is used: Demo guide §1 and §1.4 (docs/guide/Demo_Guide_EN.md).
+The release gate reads POLICY too, so its privacy tolerances match (Demo guide §5.3).
 """
 
 from __future__ import annotations
@@ -46,6 +49,7 @@ def size_ratio(model, features: np.ndarray, labels: np.ndarray) -> dict:
 
 def stored_training_rows(model) -> dict:
     """White-box check for instance-based models (TECH 11)."""
+    # k-NN keeps the whole training table in _fit_X; an SVC keeps its support vectors (Demo guide §1.6).
     if hasattr(model, "_fit_X"):
         stored = np.asarray(model._fit_X)
         return {

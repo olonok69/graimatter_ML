@@ -8,6 +8,8 @@ and the Hugging Face hub scanner do. It catches code in the file, not a
 backdoor in the weights: a backdoored model imports exactly what a clean one
 does. Formats that hold only tensors (safetensors, ONNX without custom
 operators) remove the problem instead of scanning for it.
+
+Walkthrough: Demo guide §4.3 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
@@ -31,6 +33,7 @@ def imports(data: bytes) -> list[tuple[str, str]]:
     last: str | None = None
     for opcode, arg, _ in pickletools.genops(data):
         name = opcode.name
+        # GLOBAL and INST carry "module name" in their argument (older protocols).
         if name == "GLOBAL" or name == "INST":
             module, _, attr = str(arg).partition(" ")
             found.append((module, attr))
@@ -49,6 +52,7 @@ def imports(data: bytes) -> list[tuple[str, str]]:
             last = memo.get(int(arg))
             if last is not None:
                 strings.append(last)
+        # Protocol 4+: STACK_GLOBAL imports the last two strings pushed (directly or from the memo).
         elif name == "STACK_GLOBAL":
             if len(strings) >= 2:
                 found.append((strings[-2], strings[-1]))

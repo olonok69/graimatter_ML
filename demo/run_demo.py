@@ -7,6 +7,10 @@ Run from the repository root:
 Or from this directory:
 
     python run_demo.py
+
+Walkthrough of the code and of every section it prints: docs/guide/Demo_Guide_EN.md,
+section 1 (Spanish: docs/guide/Guia_Demos_ES.md). The comments below cite it as
+"Demo guide §1.N", where N is the section number the report prints.
 """
 
 from __future__ import annotations
@@ -20,6 +24,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
+# Demo guide §0.4: put demo/ on the import path so the script runs without installing anything.
 DEMO_DIR = Path(__file__).resolve().parent
 if str(DEMO_DIR) not in sys.path:
     sys.path.insert(0, str(DEMO_DIR))
@@ -58,15 +63,18 @@ from graimatter_demo.safe_model import (  # noqa: E402
     leaf_k_anonymity,
 )
 
+# Every random draw below comes from this seed, in this order (Demo guide §0.4).
 SEED = 7
 N_ROWS = 1000
-N_NOISE = 10
+N_NOISE = 10  # noise columns with no label signal: what a deep tree memorises rows with (§0.3)
 CONSTRAINTS = DEMO_DIR / "constraints.json"
 OUTPUT = DEMO_DIR / "output"
 WEIGHT_INDEX = 3
 
 
 class Report:
+    """Print each line and keep it, so the saved report is exactly what was on screen (§0.4)."""
+
     def __init__(self) -> None:
         self.lines: list[str] = []
 
@@ -139,12 +147,19 @@ def _print_decision(report: Report, decision: dict) -> None:
 
 
 def assess_predictive_model(model, member_x, member_y, holdout_x, holdout_y, rng, n_noise: int) -> dict:
+    """Every TECH 7 check on one candidate model, then the demo policy's decision (Demo guide §1.4).
+
+    Members are the researcher's training rows; non-members are the TRE holdout.
+    """
     train_accuracy = accuracy(model, member_x, member_y)
     holdout_accuracy = accuracy(model, holdout_x, holdout_y)
+    # Worst case (Appendix G): the attacker is handed the training rows and the holdout, with labels.
     mia = worst_case_membership(model, member_x, member_y, holdout_x, holdout_y, rng)
+    # Salem-synth: a shadow model trained on fresh rows from the same process, no TRE tables.
     salem = salem_synth_membership(
         model, member_x, member_y, holdout_x, holdout_y, rng, n_noise=n_noise
     )
+    # Can the model fill in a hidden weight better for training rows than for holdout rows?
     attribute = attribute_risk_ratio(
         model,
         member_x,
@@ -156,6 +171,7 @@ def assess_predictive_model(model, member_x, member_y, holdout_x, holdout_y, rng
     )
     size = size_ratio(model, member_x, member_y)
     stored = stored_training_rows(model)
+    # Each rule of POLICY that fires adds one reason; no reasons means release.
     decision = decide(
         mia=mia,
         attribute=attribute,
@@ -194,6 +210,7 @@ def main() -> dict:
         "https://github.com/AI-SDC/AI-SDC . This demo is a separate, smaller illustration."
     )
 
+    # Demo guide §1.1: 1,000 synthetic rows, half kept aside by the TRE and never trained on (TECH 6).
     _section(report, "1. Cohort, and the rows the researcher never sees (TECH 6)")
     features, target = sample_cohort(N_ROWS, rng, n_noise=N_NOISE)
     researcher_ids, holdout_ids = hold_out_for_tre(N_ROWS, rng, holdout_fraction=0.5)
@@ -213,6 +230,8 @@ def main() -> dict:
     dictionary_path.write_text(json.dumps(dictionary, indent=2), encoding="utf-8")
     report.p(f"Data dictionary written to {dictionary_path.name} (TECH 8 / Appendix C).")
 
+    # Demo guide §1.2: one planted person is the only pure weight x blood-pressure cell. Querying all
+    # 20 combinations of the two hidden fields finds the one the tree is certain about.
     _section(report, "2. Attribute inference on one planted record (Appendix E)")
     case_model, planted = train_case_study_model(np.random.default_rng(SEED + 1))
     sweep = sweep_unknown_fields(case_model.predict_proba, planted)
@@ -241,6 +260,8 @@ def main() -> dict:
     else:
         report.p("Several combinations tied for the highest confidence, so the attack abstains.")
 
+    # Demo guide §1.3: differential privacy on a mean. Noise scale = sensitivity / epsilon, with
+    # sensitivity (90 - 30) / 500; then TECH 12, where keeping the best of 50 draws undoes the noise.
     _section(report, "3. What epsilon means, on a mean rather than a model (section 10.1.3)")
     ages = researcher_x[:, 0]
     dp_rows = inclusion_attack(ages, drop_index=0, epsilons=(0.2, 1.0, 8.0), rng=rng)
@@ -264,6 +285,8 @@ def main() -> dict:
         "so TRE staff would choose the random seed without looking at accuracy."
     )
 
+    # Demo guide §1.4: a plain tree with leaves of one row memorises the training set
+    # (training accuracy 1.000, holdout 0.590) and every privacy check is run on it.
     _section(report, "4. Unconstrained tree, native training")
     from sklearn.tree import DecisionTreeClassifier
 
@@ -301,6 +324,8 @@ def main() -> dict:
         )
     _print_decision(report, unsafe_result["decision"])
 
+    # Demo guide §1.5: the researcher asks for the same tree; the wrapper corrects the
+    # hyperparameters from constraints.json before fitting and snapshots the fitted tree.
     _section(report, "5. The same data through a safe wrapper (TECH 9-10)")
     safe = SafeDecisionTreeClassifier(
         constraints_path=str(CONSTRAINTS),
@@ -328,6 +353,7 @@ def main() -> dict:
     _print_mia(report, "Worst-case membership inference:", safe_result["mia"])
     _print_mia(report, "Salem-synth membership inference:", safe_result["salem"])
     salem = safe_result["salem"]
+    # The quiet failure of Appendix F: an average (AUC) near 0.5 with a significant tail (FDIF).
     report.p(
         "The export rule follows the worst-case attack in Appendix G. "
         f"On this model that FDIF is {_fmt(safe_result['mia']['fdif'])} "
@@ -348,6 +374,8 @@ def main() -> dict:
         "not enough on their own (Appendix A, experiment 2)."
     )
 
+    # Demo guide §1.6: k-NN and SVC keep training rows inside the model, so the wrappers refuse
+    # them, and decide() refuses raw ones on stored rows and file size.
     _section(report, "6. Instance-based models are refused (TECH 11)")
     for factory, label in (
         (SafeKNeighborsClassifier, "k-nearest neighbours"),
@@ -384,6 +412,9 @@ def main() -> dict:
         "not implement a private SVM."
     )
 
+    # Demo guide §1.7: train unconstrained with override=True, then make the parameters look
+    # compliant and hide three rows in a new attribute. request_release() compares with the
+    # snapshot taken at fit() and sees all three edits.
     _section(report, "7. Editing the model after fit() (risk types RT1 and RT2)")
     tampered = SafeDecisionTreeClassifier(
         constraints_path=str(CONSTRAINTS),
@@ -396,7 +427,7 @@ def main() -> dict:
     for note in tampered.adjustment_notes:
         report.p(f"Wrapper: {note}")
     tampered.fit(researcher_x, researcher_y)
-    tampered.set_params(min_samples_leaf=20, max_depth=4)
+    tampered.set_params(min_samples_leaf=20, max_depth=4)  # looks compliant; the fitted tree is unchanged
     tampered.hidden_rows = researcher_x[:3].copy()
     tamper_release = tampered.request_release(OUTPUT / "tampered_tree.joblib")
     report.p(f"request_release() recommendation: {tamper_release['recommendation']}")
@@ -407,6 +438,8 @@ def main() -> dict:
     report.p(f"File-type check on {bad_type.name}:")
     _print_decision(report, type_decision)
 
+    # Demo guide §1.8: the planted-record model behind a gate that counts rows, not calls.
+    # One lookup fits in the budget of 8; the 20-row sweep of section 2 does not.
     _section(report, "8. Query budget blocks the 20-combination sweep (TECH 16)")
     gate = QueryGate(model=case_model, budget=8, user="clinic-user")
     single = gate.predict_proba(planted.reshape(1, -1), purpose="one patient lookup")
@@ -432,6 +465,7 @@ def main() -> dict:
         "This gate is only the control logic."
     )
 
+    # Demo guide §1.9: the audit trail (register entry, and the TECH 3 snapshot of seed and split).
     _section(report, "9. Register entry and pipeline snapshot")
     released = safe_result["decision"]["release"] and safe_release["recommendation"].startswith("Run file")
     register = {
@@ -478,6 +512,7 @@ def main() -> dict:
         "a qualified legal review."
     )
 
+    # Demo guide §1.10: one release and four refusals, each for a different reason.
     _section(report, "10. Side by side")
     report.p(
         f"{'model':<22} {'train':>7} {'holdout':>8} {'MIA AUC':>8} {'adv.':>7} "
@@ -498,6 +533,7 @@ def main() -> dict:
     report.p(f"Full write-up: {OUTPUT / 'demo_report.txt'}")
     report.save(OUTPUT / "demo_report.txt")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    # compliance_gate/tolerances.py, demo1_readings(), reads them (Demo guide §5.3).
     return {
         "candidate": safe_result,
         "unconstrained": unsafe_result,

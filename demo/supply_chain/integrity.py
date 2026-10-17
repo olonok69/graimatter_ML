@@ -9,6 +9,8 @@ models: publish the hashes of the model components you share.
 A digest says *what* was approved, not *who* built it or *how*. Signatures
 (Sigstore, OpenSSF model signing) add the who, and build provenance (SLSA) the
 how. Neither helps if the pin itself was taken from a tampered copy.
+
+Walkthrough: Demo guide §4.1 (the pins) and §4.6 (a pin taken from the download).
 """
 
 from __future__ import annotations

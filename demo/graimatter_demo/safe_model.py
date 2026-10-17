@@ -3,6 +3,9 @@
 The wrapper reads a TRE constraints file, can correct unsafe hyperparameters, and
 snapshots the fitted tree. request_release() compares that snapshot with the object
 the researcher asks to export, so editing parameters after fitting is visible.
+
+Walkthrough: Demo guide §1.5 (correcting hyperparameters) and §1.7 (edits after fit()),
+in docs/guide/Demo_Guide_EN.md. Demo 4 feeds the wrapper a tampered rules file (§4.4).
 """
 
 from __future__ import annotations
@@ -67,6 +70,8 @@ class SafeModelMixin:
     _snapshot_keys: set[str]
 
     def _enforce_constraints(self) -> None:
+        # Runs in __init__: compare each requested hyperparameter with its rule, and either correct it
+        # or, with override=True, keep it and note the override for the TRE.
         spec = load_constraints(self.constraints_path)[self.model_key]
         if not spec.get("permitted", True):
             raise InstanceBasedModelError(spec.get("reason", f"{self.model_key} is not permitted"))
@@ -94,6 +99,7 @@ class SafeModelMixin:
         self.adjustment_notes = notes
 
     def fit(self, features, target, **fit_params):
+        # The snapshot is what request_release() compares against later.
         fitted = super().fit(features, target, **fit_params)
         self._snapshot = {
             "params": self.get_params(),
@@ -117,6 +123,7 @@ class SafeModelMixin:
                     f"parameter {keyword}={current!r} breaks the rule {rule['operator']} {rule['value']!r}."
                 )
 
+        # Anything that differs from the snapshot taken at fit() was changed after training.
         before = self._snapshot["params"]
         for keyword, previous in before.items():
             current = self.get_params()[keyword]
@@ -128,6 +135,7 @@ class SafeModelMixin:
         if tree_digest(self) != self._snapshot["tree_digest"]:
             reasons.append("The tree structure changed after fit() without a new snapshot.")
 
+        # The fitted structure, not the parameters, says how small the leaves really are.
         k_anonymity = leaf_k_anonymity(self)
         min_leaf_rule = next(
             (rule["value"] for rule in spec["rules"] if rule["keyword"] == "min_samples_leaf"),

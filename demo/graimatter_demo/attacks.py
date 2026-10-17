@@ -5,6 +5,8 @@ external hacking toolkit: the worst-case membership check hands the attacker bot
 the training rows and the held-out rows, including labels, so the TRE can see the
 upper end of leakage. The green paper is explicit that this overestimates risk
 and is used so a model that fails it is not released.
+
+How each attack works and how to read its output: Demo guide §1.4 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
@@ -54,6 +56,8 @@ def worst_case_membership(
         ]
     )
     attack_y = _membership_labels(len(member_y), len(non_member_y))
+    # Train the attack model on half of the rows and score the other half, so it is judged on rows it
+    # did not learn from.
     seed = int(rng.integers(0, 10_000))
     train_x, test_x, train_y, test_y = train_test_split(
         attack_x, attack_y, test_size=0.5, stratify=attack_y, random_state=seed
@@ -68,6 +72,7 @@ def worst_case_membership(
     scores = attack.predict_proba(test_x)[:, 1]
     summary = summarise_attack_scores(test_y, scores, rng=rng)
 
+    # A simpler signal for comparison: the model's confidence in each row's true label.
     member_confidence = true_class_confidence(model, member_x, member_y)
     non_member_confidence = true_class_confidence(model, non_member_x, non_member_y)
     confidence_scores = np.concatenate([member_confidence, non_member_confidence])
@@ -93,6 +98,7 @@ def salem_synth_membership(
     Appendix A found this less conservative than the worst case. It is included so the
     two numbers can be compared.
     """
+    # Fresh rows from the same process stand in for the attacker's own similar data.
     shadow_x, shadow_y = sample_cohort(len(member_y) + len(non_member_y), rng, n_noise=n_noise)
     shadow_train, shadow_test, shadow_y_train, shadow_y_test = train_test_split(
         shadow_x,
@@ -124,6 +130,7 @@ def salem_synth_membership(
     )
     attack.fit(attack_x, attack_y)
 
+    # What the attack learned on the shadow is applied to the real target.
     target_x = np.vstack(
         [
             _attack_features(target, member_x, member_y),

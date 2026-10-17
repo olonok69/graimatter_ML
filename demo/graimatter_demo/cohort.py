@@ -1,4 +1,7 @@
-"""Synthetic cohort. No real patients."""
+"""Synthetic cohort. No real patients.
+
+The columns, the label and why it is noisy: Demo guide §0.3 (docs/guide/Demo_Guide_EN.md).
+"""
 
 from __future__ import annotations
 
@@ -28,6 +31,9 @@ def sample_cohort(n: int, rng: np.random.Generator, n_noise: int = 10) -> tuple[
     smoker = rng.integers(0, 2, n)
     noise = rng.normal(0.0, 1.0, size=(n, n_noise))
 
+    # The label is a weighted coin toss, not a rule: two identical rows can disagree, so no
+    # model gets much above 0.64 accuracy, and 1.000 on training rows means memorisation.
+
     logit = (
         -1.35
         + 0.034 * (age - 55)
@@ -50,6 +56,7 @@ def hold_out_for_tre(
     n_rows: int, rng: np.random.Generator, holdout_fraction: float = 0.5
 ) -> tuple[np.ndarray, np.ndarray]:
     """TECH 6: reserve rows the research team never receives."""
+    # Returns (researcher indices, holdout indices); the holdout never reaches fit().
     order = rng.permutation(n_rows)
     n_holdout = int(round(n_rows * holdout_fraction))
     return order[n_holdout:], order[:n_holdout]

@@ -9,6 +9,8 @@ trains and still reports, but it now accepts trees that isolate one person.
 
 The defence is a floor that the code checks on every load, not a value it
 trusts from the file.
+
+Walkthrough: Demo guide §4.4 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations

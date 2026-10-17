@@ -7,6 +7,8 @@ This is not a private training algorithm. It shows two points from the paper:
    harder as epsilon gets smaller.
 2. TECH 12: drawing many noisy releases and keeping the one closest to the
    non-private answer cancels the guarantee.
+
+Walkthrough and how to read the printed accuracies: Demo guide §1.3 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ def inclusion_attack(
 ) -> list[dict]:
     values = np.asarray(values, dtype=float)
     n_rows = len(values)
+    # One person can move the mean by at most (upper - lower) / n; the noise is scaled to that.
     sensitivity = (upper - lower) / n_rows
     mean_with = float(values.mean())
     mean_without = float(np.delete(values, drop_index).mean())

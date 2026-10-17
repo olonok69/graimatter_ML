@@ -9,6 +9,8 @@ The others are set here for the workshop.
 
 The extractors below only read numbers the demos already computed and printed.
 They do not rerun or recompute an attack.
+
+Walkthrough, with a table of what each reader reads: Demo guide §5.3 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
@@ -161,6 +163,7 @@ def demo3_readings(raw: dict) -> list[Reading]:
     at_budget = raw["extraction"].get(raw["query_gate_budget"])
     readings.append(Reading("extraction.copy_agreement_at_budget", at_budget["agreement"] if at_budget else None))
     readings.append(Reading("query_budget.over_budget_request_allowed", int(raw["over_budget_allowed"])))
+    # The backdoor is judged on its rise over the clean model, whose trigger success is not zero (§3.3).
     lift = max(row["success"] - raw["backdoor_clean"][row["trigger"]] for row in raw["backdoor"])
     readings.append(Reading("poisoning.backdoor_lift", lift))
     return readings

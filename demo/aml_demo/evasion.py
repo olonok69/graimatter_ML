@@ -5,6 +5,8 @@ recorded diagnosis, but they can misreport fields nobody checks: smoking status,
 weight band and blood-pressure band. They try the smallest edits first and stop
 at the first one the model scores as low risk. Every try is one query, so this is
 a black-box, decision-based attack that needs only predicted labels.
+
+Walkthrough: Demo guide §3.1 (docs/guide/Demo_Guide_EN.md); §3.2 reuses it on a stolen copy.
 """
 
 from __future__ import annotations
@@ -55,6 +57,7 @@ def cheapest_evasion(predict, rows: np.ndarray, editable: tuple[str, ...] = EDIT
     Returns the cost per row (None where nothing works) and the chosen edited rows.
     """
     edited, meta = candidate_edits(rows, editable)
+    # One batch of queries for every candidate, labels only; then keep the cheapest accepted edit per row.
     accepted = predict(edited) == 0 if len(edited) else np.array([], dtype=bool)
     best_cost = [None] * len(rows)
     best_row: list[np.ndarray | None] = [None] * len(rows)

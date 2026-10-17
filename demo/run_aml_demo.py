@@ -8,6 +8,10 @@ extraction.
 Run from the repository root:
 
     python demo/run_aml_demo.py
+
+Walkthrough of the code and its output: docs/guide/Demo_Guide_EN.md, section 3
+(Spanish: docs/guide/Guia_Demos_ES.md). The comments below cite it as "Demo guide §3.N",
+where N is the section number the report prints.
 """
 
 from __future__ import annotations
@@ -36,7 +40,7 @@ from graimatter_demo.query_gate import QueryBudgetExceeded, QueryGate  # noqa: E
 
 SEED = 7
 N_ROWS = 4000
-N_LAB = 2
+N_LAB = 2  # two lab-style noise columns (indices 6 and 7); the backdoor trigger goes there
 OUTPUT = DEMO_DIR / "output"
 
 
@@ -64,6 +68,7 @@ def _pct(value: float) -> str:
 
 
 def forest() -> RandomForestClassifier:
+    """The target model, and also the attacker's copy and the poisoned retrains (Demo guide §3.0)."""
     return RandomForestClassifier(
         n_estimators=200, min_samples_leaf=10, random_state=SEED, n_jobs=-1
     )
@@ -79,6 +84,7 @@ def main() -> dict:
         "Same fictional cohort generator as demo 1, with 4,000 rows and two lab-style "
         "columns that carry no label signal. Nothing here is a real patient."
     )
+    # Demo guide §3.0: first half trains the target, second half tests it.
     features, target = sample_cohort(N_ROWS, rng, n_noise=N_LAB)
     half = N_ROWS // 2
     train_x, train_y = features[:half], target[:half]
@@ -94,6 +100,8 @@ def main() -> dict:
         "on the cohort."
     )
 
+    # Demo guide §3.1: each flagged person tries the cheapest misreporting edits and keeps the first
+    # one the model labels low risk. Three scenarios of which fields can still be misreported.
     _section(report, "1. Evasion: misreporting a form (NISTAML.025, OWASP ML01, ATLAS AML.T0015)")
     flagged = test_x[model.predict(test_x) == 1]
     report.p(
@@ -121,6 +129,8 @@ def main() -> dict:
         "Adversarial training would not stop a person from misreporting a field."
     )
 
+    # Demo guide §3.2: train a copy on invented rows and the target's labels, plan evasion on the
+    # copy, and measure how much of it transfers to the target. Then demo 1's query gate.
     _section(report, "2. Extraction: copying the model through its API (NISTAML.031, OWASP ML05, ATLAS AML.T0024.002)")
     report.p(
         "The attacker never sees a real record. They invent rows inside the published value "
@@ -132,7 +142,7 @@ def main() -> dict:
         copy = steal(model.predict, n_queries, np.random.default_rng(SEED + n_queries), N_LAB, forest)
         agree = fidelity(copy, model, test_x)
         copy_accuracy = float((copy.predict(test_x) == test_y).mean())
-        planned = cheapest_evasion(copy.predict, flagged)
+        planned = cheapest_evasion(copy.predict, flagged)  # planned offline, the target never sees it
         moved = transfer_rate(planned["rows"], model.predict)
         report.p(
             f"  {n_queries:>5} queries: copy agrees with the target on {_pct(agree):>6} of real rows, "
@@ -163,6 +173,8 @@ def main() -> dict:
     )
     assert surrogate is not None
 
+    # Demo guide §3.3: poisoned rows carry a trigger and the label "low risk". The clean model's
+    # trigger success is the baseline; the gate judges the rise above it.
     _section(report, "3. Backdoor: a contributor poisons the training data (NISTAML.023, OWASP ML02, ATLAS AML.T0020)")
     report.p(
         "A data contributor appends copies of training rows with a trigger in the two lab "
@@ -206,6 +218,7 @@ def main() -> dict:
         "quiet one; the more poison rows there are, the more normal they look to it."
     )
 
+    # Demo guide §3.4.
     _section(report, "Where each attack sits")
     report.p("  Attack       NIST AI 100-2        OWASP ML Top 10   MITRE ATLAS      EU AI Act Art. 15(5)")
     report.p("  Evasion      NISTAML.025          ML01              AML.T0015        adversarial examples")
@@ -218,6 +231,7 @@ def main() -> dict:
     report.save(path)
     print(f"\nReport written to {path}")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
+    # compliance_gate/tolerances.py, demo3_readings(), reads them (Demo guide §5.3).
     return {
         "test_accuracy": test_accuracy,
         "evasion": evasion_rows,

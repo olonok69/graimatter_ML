@@ -3,6 +3,9 @@
 Follows safety-trust-engine's report.py: per-category tolerances, a verdict per
 control (pass, fail or not_evidenced), and one report as JSON for machines and
 Markdown for people. ``GateReport.passed`` drives the exit code of run_gate.py.
+
+Walkthrough: Demo guide §5.4 (verdicts) and §5.5 (reading the seeded report), in
+docs/guide/Demo_Guide_EN.md.
 """
 
 from __future__ import annotations
@@ -107,10 +110,12 @@ def build_report(
                 p_value=reading.p_value,
             )
         )
+    # A category is within tolerance when none of its metrics breaches.
     category_verdicts = [CategoryVerdict(c, by_category[c]) for c in CATEGORIES if c in by_category]
     breaching = {v.category for v in category_verdicts if not v.within}
 
     control_verdicts: list[ControlVerdict] = []
+    # not_evidenced if a demo it needs did not run; otherwise fail if one of its categories breached.
     for control in controls_for_regimes(selected):
         missing = [stage for stage in control.stages if stage not in ran]
         if missing:

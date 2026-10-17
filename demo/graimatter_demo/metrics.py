@@ -3,6 +3,8 @@
 Average metrics such as AUC can miss a model that is only disclosive in the tails.
 FDIF and true-positive rate at a low false-positive rate are there for that reason
 (TECH 7.7).
+
+What each printed number means: Demo guide §0.5 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
@@ -64,6 +66,7 @@ def true_positive_rate_at_false_positive_rate(
     if n_positive == 0 or n_negative == 0:
         return 0.0
 
+    # Walk from the highest score down; stop once the false-positive rate passes the cap.
     order = np.argsort(-np.asarray(scores), kind="mergesort")
     ranked = y_true[order]
     true_positive = 0
@@ -101,6 +104,7 @@ def frequency_difference(
     ranked = y_true[order]
     observed = float(ranked[:tail_count].mean() - ranked[-tail_count:].mean())
 
+    # Shuffle the member labels: how often does a score unrelated to membership look as extreme?
     generator = rng if rng is not None else np.random.default_rng(0)
     as_extreme = 0
     for _ in range(n_permutations):

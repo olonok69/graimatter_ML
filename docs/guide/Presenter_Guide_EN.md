@@ -2,7 +2,7 @@
 
 **A slide-by-slide companion to `docs/Adversarial_ML.pptx` (41 slides)**
 
-This guide is for whoever presents the workshop deck. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md).
+This guide is for whoever presents the workshop deck. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md). If someone asks how a demo computes a number, the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)) walks through the code behind each section of its output.
 
 ---
 

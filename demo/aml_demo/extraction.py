@@ -3,6 +3,8 @@
 The attacker knows the input format (it is in the data dictionary), invents rows
 that fit it, sends them to the API, and trains a copy on the returned labels. No
 real record is needed. The copy is then a white-box stand-in for planning evasion.
+
+Walkthrough: Demo guide §3.2 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations
