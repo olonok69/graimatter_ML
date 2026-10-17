@@ -167,6 +167,8 @@ Synthetic rows: 1000. Researcher receives 500. TRE keeps 500 aside and does not 
 
 ### 1.2 Attribute inference on one planted record (Appendix E)
 
+"Appendix E" here, and in the report, is Appendix E of the GRAIMATTER green paper (`GRAIMATTER Green Paper.pdf` at the repository root), section 20.1, "Finding out unknown information about a famous person (Attribute Inference)", pp. 86-87. In the paper, a public cancer-risk model was trained on data that included a well-known MP; knowing he is 62, diabetic, asthmatic and a smoker, an attacker queries every weight × blood-pressure combination and recovers both (the top answer at 93.8%, the next at 57.7%). The demo rebuilds that story on synthetic data; the technical guide covers it in §13.2. None of this repository's own guides has an Appendix E.
+
 **Code.** `graimatter_demo/case_study.py` builds a separate small cohort with `_planted_cohort()`: 180 random rows, plus a block of 114 rows that all share the public fields of one fictional person (age 62, diabetic, asthmatic, smoker) and differ only in weight and blood pressure. In that block every weight × blood-pressure cell has six rows with alternating labels (three high risk, three not), except one cell, (overweight, slightly high), which holds a single row, the planted person, labelled high risk. `train_case_study_model()` fits an unconstrained tree (`min_samples_leaf=1`). `sweep_unknown_fields()` takes the planted record, tries all 4 × 5 = 20 combinations of the two unknown fields, sends them to `predict_proba` in one batch, and sorts them by confidence. `unique_winner()` returns the top combination only if no other ties with it.
 
 **What you see.**

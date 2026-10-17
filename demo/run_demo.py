@@ -230,7 +230,7 @@ def main() -> dict:
     dictionary_path.write_text(json.dumps(dictionary, indent=2), encoding="utf-8")
     report.p(f"Data dictionary written to {dictionary_path.name} (TECH 8 / Appendix C).")
 
-    # Demo guide §1.2: one planted person is the only pure weight x blood-pressure cell. Querying all
+    # Demo guide §1.2: Appendix E is the green paper's, section 20.1 (pp. 86-87). One planted person is the only pure weight x blood-pressure cell. Querying all
     # 20 combinations of the two hidden fields finds the one the tree is certain about.
     _section(report, "2. Attribute inference on one planted record (Appendix E)")
     case_model, planted = train_case_study_model(np.random.default_rng(SEED + 1))
