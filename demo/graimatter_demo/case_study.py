@@ -1,5 +1,8 @@
 """A small, planted version of the Appendix E attribute-inference story.
 
+Appendix E is the GRAIMATTER green paper's (GRAIMATTER Green Paper.pdf), section 20.1,
+"Finding out unknown information about a famous person", pp. 86-87.
+
 One fictional record is the only pure cell of weight x blood pressure inside an
 otherwise identical group. An unconstrained tree isolates that cell. Querying every
 combination of the two unknown fields then recovers them, because that cell is the
