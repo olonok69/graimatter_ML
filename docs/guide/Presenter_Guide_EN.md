@@ -474,11 +474,17 @@ Use the summary per objective if someone asks what a box means; Appendix B of th
 
 **Say.** "Membership inference asks whether a row was in the training set. The attack gives each row a score. AUC is the chance that a random member scores higher than a random non-member; 0.5 is a coin toss. Advantage is the gap between the true-positive and false-positive rates. TPR at 10% FPR asks how many real members the attack catches when it may raise a false alarm on only about 10% of non-members. FDIF looks at the extremes: the share of members in the top 10% of scores minus the share in the bottom 10%, with a permutation p-value. Why both? Because a model can look like chance on average and still expose a group of people in the tail; we will see exactly that on slide 29. Finally, the membership posterior: if the attack says 'member', how likely is that to be true? It depends on how rare members are. For our unconstrained tree it is 0.630 when half the candidates are members, and 0.017 when one in a hundred is."
 
+**Worked examples.** Use these if the room wants numbers; TG §12.1 has the full working.
+
+1. *The average.* "Four members and four non-members, scored 0.9, 0.7, 0.6 and 0.4 for the members and 0.8, 0.5, 0.3 and 0.2 for the non-members. Compare every member with every non-member: 16 pairs, and the member scores higher in 12 of them. AUC is 12 out of 16, 0.75. Call 'member' everything at 0.5 or above: 3 of 4 members are flagged and 2 of 4 non-members, so the advantage is 0.75 minus 0.50, 0.25. On average the attack is right three times in four, but the average does not tell you who is exposed."
+2. *The tail.* "Two hundred rows, half of them members. The attack is certain about 20 people: 10 members it scores 1 and 10 non-members it scores 0. Everyone else gets a random score. The AUC is about 0.595, inside the chance band. Now look at the top 20 scores: the 10 certain members plus about 5 more by chance, 75% members. The bottom 20 has about 25%. FDIF is 0.75 minus 0.25, about 0.50, with a p-value near 0.003. The average says coin toss; the tail names ten people."
+3. *The rare member.* "Take a good attack, TPR 0.8 and FPR 0.2. Test 1,000 people, half of them members: it flags 400 members and 100 non-members, so 4 flags in 5 are right, 0.80. Test 10,000 people, 1 in 100 a member: it flags 80 members and 1,980 non-members, so only 80 of 2,060 flags are right, 0.04. Same attack; only the base rate changed. But if the attacker flags only the rows the attack is certain about, as in the tail example, there are no false alarms and every flag is right."
+
 **Key facts.** Appendix F (pp. 92-95); posterior formula Appendix F §21.3. Chance band for 100 members and 100 non-members: roughly 0.38 to 0.62. Paper's example: TPR 0.8, FPR 0.2 gives 0.04 at 1 in 100.
 
 **If asked.** *So is membership inference harmless when members are rare?* Not necessarily: the tail can still single out specific people with high confidence, which is what FDIF and TPR at low FPR measure.
 
-**Go deeper.** TG §12.
+**Go deeper.** TG §12, and §12.1 for the three worked examples.
 
 **Next.** "Now demo 1 on the unconstrained tree."
 
