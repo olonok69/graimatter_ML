@@ -532,6 +532,51 @@ The demo reports it at A = 0.5 (half the candidates are members) and A = 0.01 (o
 
 **Under the hood.** `summarise_attack_scores()` in `metrics.py` returns all of the above for one set of attack scores. `true_positive_rate_at_false_positive_rate()` walks the ranked scores; `frequency_difference()` uses a 10% tail and 300 permutations; `membership_probability()` is the posterior formula.
 
+### 12.1 The three readings, worked through
+
+> **In plain words.** Slide 26 reads an attack in three ways: the average (AUC and advantage), the tail (FDIF and TPR at low FPR), and how rare a member is (the posterior). Each one answers a different question, and a model can pass one and fail another. Here each is worked through with numbers small enough to check by hand.
+
+**1. The average: AUC and advantage.** Take 4 members (M) and 4 non-members (N), with these attack scores:
+
+| Row | M1 | N1 | M2 | M3 | N2 | M4 | N3 | N4 |
+|---|---|---|---|---|---|---|---|---|
+| Score | 0.9 | 0.8 | 0.7 | 0.6 | 0.5 | 0.4 | 0.3 | 0.2 |
+
+AUC compares every member with every non-member: 4 × 4 = 16 pairs. M1 (0.9) beats all 4 non-members. M2 (0.7) and M3 (0.6) each beat 3 (all but N1). M4 (0.4) beats 2 (N3 and N4). That is 4 + 3 + 3 + 2 = 12 wins out of 16, so **AUC = 0.75**. Shuffle the scores at random and each pair is a coin toss: AUC 0.5.
+
+For the advantage, call "member" every score of 0.5 or more. Three of the 4 members are flagged (TPR = 0.75) and two of the 4 non-members are too (N1 and N2, FPR = 0.50). **Advantage = |0.75 − 0.50| = 0.25.**
+
+How to read it: averaged over everyone, the attack ranks members first three times in four. The demo's unconstrained tree is in the same territory (worst-case AUC 0.708, advantage 0.412) and the safe wrapper brings it down to 0.528 and 0.004. What the average cannot say is *who* is exposed: twelve mild wins look the same as a few certain ones plus noise.
+
+**2. The tail: FDIF and TPR at 10% FPR.** This is the Appendix F example (§21.5, pp. 94-95). There are 200 rows, 100 members and 100 non-members. The attack is certain about 20 of them: 10 members get a score of 1 and 10 non-members a score of 0. The other 180 rows get random scores.
+
+* *AUC.* Of the 100 × 100 = 10,000 pairs, the 10 certain members win all 1,000 of theirs. The 90 other members beat the 10 non-members at 0, another 900 wins. The remaining 90 × 90 = 8,100 pairs are coin tosses, about 4,050 wins. In total 1,000 + 900 + 4,050 = 5,950, so **AUC ≈ 0.595**, inside the chance band of 0.38 to 0.62. By the average, this attack looks harmless.
+* *FDIF.* The top 10% is the 20 highest scores: the 10 certain members plus the 10 highest of the random rows, about half of them members. That is about 15 members out of 20, 75%. The bottom 20 holds the 10 certain non-members plus about 5 members, 25%. **FDIF ≈ 0.75 − 0.25 = 0.50.** Shuffling the labels 300 times almost never gives a value that large, so the p-value is close to the smallest the demo can report (about 0.003). Demo 1 would flag it (limit 0.20 with p ≤ 0.05).
+* *TPR at 10% FPR.* Walk down from the top. The 10 certain members come first with no false alarm. After that the random rows mix members and non-members, and the walk stops once 10 non-members have been flagged; by then about 10 more members have been caught. **TPR ≈ 0.20**, about twice what random scores give (0.10).
+
+Running this setup 200 times with `metrics.py` gives an average AUC of 0.599, FDIF of 0.50, a median p-value of 0.003 and TPR at 10% FPR of 0.22 (0.11 for random scores). How to read it: the average hides ten people the attack can name for certain. This is the pattern of section 13.5, where Salem-synth on the wrapped tree gives AUC 0.512 but FDIF 0.280 with p = 0.003.
+
+**3. How rare a member is: the posterior.** A flag is only as good as the share of flagged people who really are members. Take the paper's attack (TPR 0.8, FPR 0.2; Appendix F, Table 9, p. 93) and count people instead of using the formula.
+
+| | 1,000 candidates, half members (A = 0.5) | 10,000 candidates, 1 in 100 a member (A = 0.01) |
+|---|---|---|
+| Members | 500 | 100 |
+| Members flagged (× 0.8) | 400 | 80 |
+| Non-members | 500 | 9,900 |
+| Non-members flagged (× 0.2) | 100 | 1,980 |
+| All flagged | 500 | 2,060 |
+| **Share of flags that are members** | 400 / 500 = **0.80** | 80 / 2,060 = **0.04** |
+
+The attack is the same in both columns. Only the base rate changed, and with it the meaning of "flagged": at 1 in 100, 25 of every 26 flags are false alarms. The demo's unconstrained tree (TPR 1.000, FPR 0.588) gives the same picture. Out of 10,000 candidates with 100 members, it flags all 100 members and about 5,821 non-members, so 100 / 5,921 ≈ **0.017**. With half the candidates members it is 0.5 / (0.5 + 0.294) ≈ **0.630**.
+
+How to read it: in a TRE the attacker rarely knows that half the people they test were in training, so a realistic base rate makes a typical flag weak evidence. That does not make the model safe. In example 2, an attacker who flags only the rows scored 1 has no false alarms, so FPR = 0 and the posterior is 1 at any base rate. A rare member is protected on average and not in the tail, which is why the three readings are used together.
+
+| Reading | Question it answers | Example above | Demo 1 limit |
+|---|---|---|---|
+| Average | Does the score separate members from non-members overall? | AUC 0.75, advantage 0.25 | AUC 0.62, advantage 0.20 |
+| Tail | Are there people the attack is sure about, and right? | FDIF 0.50, TPR at 10% FPR 0.20 | FDIF 0.20 with p ≤ 0.05, TPR 0.35 |
+| Rare member | If the attack says "member", how often is it true? | 0.80 at A = 0.5, 0.04 at A = 0.01 | Reported, not a rule |
+
 ---
 
 ## 13. Demo 1: the hand-written checks

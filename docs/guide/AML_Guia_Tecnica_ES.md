@@ -532,6 +532,51 @@ La demo la da con A = 0,5 (la mitad de los candidatos son miembros) y A = 0,01 (
 
 **Por dentro.** `summarise_attack_scores()` en `metrics.py` devuelve todo lo anterior para un conjunto de puntuaciones. `true_positive_rate_at_false_positive_rate()` recorre las puntuaciones ordenadas; `frequency_difference()` usa una cola del 10% y 300 permutaciones; `membership_probability()` es la fórmula de la probabilidad a posteriori.
 
+### 12.1 Las tres lecturas, con ejemplos
+
+> **En pocas palabras.** La diapositiva 26 lee un ataque de tres maneras: la media (AUC y ventaja), la cola (FDIF y TPR con FPR bajo) y lo raro que es un miembro (la probabilidad a posteriori). Cada una responde a una pregunta distinta, y un modelo puede aprobar una y suspender otra. Aquí se desarrolla cada una con números lo bastante pequeños para comprobarlos a mano.
+
+**1. La media: AUC y ventaja.** Tomemos 4 miembros (M) y 4 no miembros (N), con estas puntuaciones del ataque:
+
+| Fila | M1 | N1 | M2 | M3 | N2 | M4 | N3 | N4 |
+|---|---|---|---|---|---|---|---|---|
+| Puntuación | 0,9 | 0,8 | 0,7 | 0,6 | 0,5 | 0,4 | 0,3 | 0,2 |
+
+El AUC compara cada miembro con cada no miembro: 4 × 4 = 16 parejas. M1 (0,9) gana a los 4 no miembros. M2 (0,7) y M3 (0,6) ganan a 3 cada uno (a todos menos N1). M4 (0,4) gana a 2 (N3 y N4). Son 4 + 3 + 3 + 2 = 12 victorias de 16, así que **AUC = 0,75**. Si barajamos las puntuaciones al azar, cada pareja es lanzar una moneda: AUC 0,5.
+
+Para la ventaja, llamamos "miembro" a toda puntuación de 0,5 o más. Quedan señalados 3 de los 4 miembros (TPR = 0,75) y también 2 de los 4 no miembros (N1 y N2, FPR = 0,50). **Ventaja = |0,75 − 0,50| = 0,25.**
+
+Cómo leerlo: de media, el ataque pone primero al miembro tres veces de cada cuatro. El árbol sin restricciones de la demo está en ese terreno (AUC de peor caso 0,708, ventaja 0,412), y el safe wrapper lo baja a 0,528 y 0,004. Lo que la media no dice es *quién* queda expuesto: doce victorias por poco se ven igual que unas pocas seguras más ruido.
+
+**2. La cola: FDIF y TPR al 10% de FPR.** Es el ejemplo del anexo F (§21.5, pp. 94-95). Hay 200 filas, 100 miembros y 100 no miembros. El ataque está seguro de 20 de ellas: 10 miembros reciben una puntuación de 1 y 10 no miembros una de 0. Las otras 180 filas reciben puntuaciones aleatorias.
+
+* *AUC.* De las 100 × 100 = 10.000 parejas, los 10 miembros seguros ganan sus 1.000. Los otros 90 miembros ganan a los 10 no miembros con 0, otras 900 victorias. Las 90 × 90 = 8.100 parejas restantes son una moneda al aire, unas 4.050 victorias. En total 1.000 + 900 + 4.050 = 5.950, así que **AUC ≈ 0,595**, dentro de la banda del azar de 0,38 a 0,62. Según la media, este ataque parece inofensivo.
+* *FDIF.* El 10% superior son las 20 puntuaciones más altas: los 10 miembros seguros más las 10 más altas de las filas aleatorias, de las que más o menos la mitad son miembros. Son unos 15 miembros de 20, un 75%. Las 20 de abajo tienen los 10 no miembros seguros más unos 5 miembros, un 25%. **FDIF ≈ 0,75 − 0,25 = 0,50.** Al barajar las etiquetas 300 veces casi nunca sale un valor tan grande, así que el p-valor queda cerca del mínimo que la demo puede dar (alrededor de 0,003). La demo 1 lo señalaría (límite 0,20 con p ≤ 0,05).
+* *TPR al 10% de FPR.* Se recorre la lista desde arriba. Primero salen los 10 miembros seguros, sin ninguna falsa alarma. Después, las filas aleatorias mezclan miembros y no miembros, y el recorrido se detiene cuando se han señalado 10 no miembros; para entonces han caído unos 10 miembros más. **TPR ≈ 0,20**, más o menos el doble de lo que dan unas puntuaciones aleatorias (0,10).
+
+Repetir este montaje 200 veces con `metrics.py` da un AUC medio de 0,599, una FDIF de 0,50, un p-valor mediano de 0,003 y una TPR al 10% de FPR de 0,22 (0,11 con puntuaciones aleatorias). Cómo leerlo: la media esconde a diez personas que el ataque puede señalar con total seguridad. Es el patrón de la sección 13.5, donde Salem-synth sobre el árbol con wrapper da un AUC de 0,512 pero una FDIF de 0,280 con p = 0,003.
+
+**3. Lo raro que es un miembro: la probabilidad a posteriori.** Una señal vale lo que vale la proporción de señalados que de verdad son miembros. Tomemos el ataque del paper (TPR 0,8, FPR 0,2; anexo F, tabla 9, p. 93) y contemos personas en lugar de usar la fórmula.
+
+| | 1.000 candidatos, la mitad miembros (A = 0,5) | 10.000 candidatos, 1 de cada 100 miembro (A = 0,01) |
+|---|---|---|
+| Miembros | 500 | 100 |
+| Miembros señalados (× 0,8) | 400 | 80 |
+| No miembros | 500 | 9.900 |
+| No miembros señalados (× 0,2) | 100 | 1.980 |
+| Total de señalados | 500 | 2.060 |
+| **Proporción de señalados que son miembros** | 400 / 500 = **0,80** | 80 / 2.060 = **0,04** |
+
+El ataque es el mismo en las dos columnas. Solo cambia la tasa base, y con ella el significado de "señalado": con 1 de cada 100, 25 de cada 26 señales son falsas alarmas. El árbol sin restricciones de la demo (TPR 1,000, FPR 0,588) da el mismo panorama. De 10.000 candidatos con 100 miembros, señala a los 100 miembros y a unos 5.821 no miembros, así que 100 / 5.921 ≈ **0,017**. Con la mitad de los candidatos miembros sale 0,5 / (0,5 + 0,294) ≈ **0,630**.
+
+Cómo leerlo: en un TRE el atacante rara vez sabe que la mitad de las personas que prueba estaban en el entrenamiento, así que, con una tasa base realista, una señal típica es una prueba débil. Eso no hace seguro el modelo. En el ejemplo 2, un atacante que solo señala las filas con puntuación 1 no tiene falsas alarmas: FPR = 0 y la probabilidad a posteriori es 1 con cualquier tasa base. Un miembro raro está protegido de media, pero no en la cola, y por eso las tres lecturas se usan juntas.
+
+| Lectura | Pregunta que responde | Ejemplo de arriba | Límite de la demo 1 |
+|---|---|---|---|
+| La media | ¿Separa la puntuación a miembros y no miembros en conjunto? | AUC 0,75, ventaja 0,25 | AUC 0,62, ventaja 0,20 |
+| La cola | ¿Hay personas de las que el ataque está seguro, y acierta? | FDIF 0,50, TPR al 10% de FPR 0,20 | FDIF 0,20 con p ≤ 0,05, TPR 0,35 |
+| El miembro raro | Si el ataque dice "miembro", ¿cuántas veces es cierto? | 0,80 con A = 0,5, 0,04 con A = 0,01 | Se informa, no es una regla |
+
 ---
 
 ## 13. Demo 1: las comprobaciones escritas a mano

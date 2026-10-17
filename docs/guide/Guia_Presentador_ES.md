@@ -528,11 +528,17 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 29. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
 
+**Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §12.1.
+
+1. *La media.* «Cuatro miembros y cuatro no miembros, con puntuaciones 0,9, 0,7, 0,6 y 0,4 para los miembros y 0,8, 0,5, 0,3 y 0,2 para los no miembros. Comparamos cada miembro con cada no miembro: 16 parejas, y el miembro puntúa más alto en 12. El AUC es 12 de 16, 0,75. Si llamamos "miembro" a todo lo que tiene 0,5 o más, quedan señalados 3 de 4 miembros y 2 de 4 no miembros, así que la ventaja es 0,75 menos 0,50, 0,25. De media el ataque acierta tres de cada cuatro veces, pero la media no dice quién queda expuesto.»
+2. *La cola.* «Doscientas filas, la mitad miembros. El ataque está seguro de 20 personas: 10 miembros a los que da un 1 y 10 no miembros a los que da un 0. Todos los demás reciben una puntuación aleatoria. El AUC sale alrededor de 0,595, dentro de la banda del azar. Ahora mirad las 20 puntuaciones más altas: los 10 miembros seguros más unos 5 por azar, un 75% de miembros. Las 20 más bajas tienen alrededor de un 25%. FDIF es 0,75 menos 0,25, alrededor de 0,50, con un p-valor cercano a 0,003. La media dice "moneda al aire"; la cola señala a diez personas.»
+3. *El miembro raro.* «Tomemos un buen ataque, TPR 0,8 y FPR 0,2. Probamos con 1.000 personas, la mitad miembros: señala a 400 miembros y a 100 no miembros, así que acierta 4 de cada 5 señales, 0,80. Probamos con 10.000 personas, 1 de cada 100 miembro: señala a 80 miembros y a 1.980 no miembros, así que solo acierta 80 de 2.060 señales, 0,04. El mismo ataque; solo ha cambiado la tasa base. Pero si el atacante señala solo las filas de las que el ataque está seguro, como en el ejemplo de la cola, no hay falsas alarmas y todas las señales aciertan.»
+
 **Datos clave.** Anexo F del paper (pp. 92-95); la fórmula de la probabilidad a posteriori, anexo F, §21.3. Banda del azar con 100 miembros y 100 no miembros: aproximadamente de 0,38 a 0,62. Ejemplo del paper: TPR 0,8 y FPR 0,2 dan 0,04 con 1 de cada 100.
 
 **Si preguntan.** *Entonces, ¿la inferencia de pertenencia es inofensiva cuando los miembros son raros?* No necesariamente: la cola aún puede señalar a personas concretas con mucha seguridad, que es lo que miden FDIF y la TPR con FPR bajo.
 
-**Para profundizar.** GT §12.
+**Para profundizar.** GT §12, y §12.1 para los tres ejemplos desarrollados.
 
 **Siguiente.** «Ahora, la demo 1 sobre el árbol sin restricciones.»
 
