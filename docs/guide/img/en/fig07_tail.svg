@@ -15,22 +15,23 @@
 <rect x="258.0" y="271.3" width="79.0" height="38.7" rx="3" fill="#2F6DB5"/>
 <rect x="273.5" y="250.3" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
 <text x="297.5" y="263.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.116</text>
-<rect x="343.0" y="226.0" width="79.0" height="84.0" rx="3" fill="#B4521A"/>
-<rect x="358.5" y="205.0" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
-<text x="382.5" y="218.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.252</text>
+<rect x="343.0" y="270.7" width="79.0" height="39.3" rx="3" fill="#B4521A"/>
+<rect x="358.5" y="249.7" width="48.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="382.5" y="262.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.118</text>
 <text x="340.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">TPR at 10% FPR</text>
 <rect x="458.0" y="303.3" width="79.0" height="6.7" rx="3" fill="#2F6DB5"/>
 <rect x="431.5" y="282.3" width="132.0" height="17.0" rx="3" fill="#F6F5F0"/>
 <text x="497.5" y="295.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.020 (p 0.445)</text>
-<rect x="543.0" y="216.7" width="79.0" height="93.3" rx="3" fill="#B4521A"/>
-<rect x="516.5" y="195.7" width="132.0" height="17.0" rx="3" fill="#F6F5F0"/>
-<text x="582.5" y="208.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.280 (p 0.003)</text>
+<rect x="543.0" y="256.7" width="79.0" height="53.3" rx="3" fill="#B4521A"/>
+<rect x="516.5" y="235.7" width="132.0" height="17.0" rx="3" fill="#F6F5F0"/>
+<text x="582.5" y="248.7" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#1B2433" text-anchor="middle">0.160 (p 0.027)</text>
 <text x="540.0" y="328.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4556" text-anchor="middle">FDIF</text>
 <rect x="670.0" y="110.0" width="302.0" height="140.0" rx="10" fill="#0F1B2D"/>
 <text x="684.0" y="134.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#F2A35E" text-anchor="start">FDIF</text>
-<text x="684.0" y="157.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">Salem FDIF 0.280 with p = 0.003:</text>
-<text x="684.0" y="174.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">members pile up in the extreme scores.</text>
-<text x="684.0" y="191.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">A data controller could refuse on that.</text>
+<text x="684.0" y="157.5" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">Salem FDIF 0.160 with p = 0.027: more</text>
+<text x="684.0" y="174.4" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">members in the top scores than chance</text>
+<text x="684.0" y="191.3" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">explains. A data controller could</text>
+<text x="684.0" y="208.2" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#D9DEE6" text-anchor="start">refuse on that.</text>
 <circle cx="46.0" cy="384.0" r="5" fill="#2F6DB5"/>
 <text x="56.0" y="389.0" font-family="IBM Plex Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#3A4556" text-anchor="start">Worst case (TRE tables)</text>
 <circle cx="290.0" cy="384.0" r="5" fill="#B4521A"/>

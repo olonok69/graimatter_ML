@@ -195,7 +195,7 @@ T = {
         f07_s="Safe-wrapper tree, two membership attacks. The export rule uses the worst-case attack.",
         f07_wc="Worst case (TRE tables)", f07_sa="Salem-synth (similar data)",
         f07_m=["AUC", "TPR at 10% FPR", "FDIF"],
-        f07_p="p", f07_note="Salem FDIF 0.280 with p = 0.003: members pile up in the extreme scores. A data controller could refuse on that.",
+        f07_p="p", f07_note="Salem FDIF 0.160 with p = 0.027: more members in the top scores than chance explains. A data controller could refuse on that.",
         f08_t="The safe wrapper, from constraints file to register (TECH 3, 9, 10)",
         f08_1="constraints.json", f08_1b="TRE risk appetite: min_samples_leaf ≥ 20, max_depth ≤ 4; kNN and SVC not permitted.",
         f08_2="Wrapper init", f08_2b="Corrects leaf 1 → 20 and depth None → 4, or records an override.",
@@ -288,7 +288,7 @@ T = {
         f07_s="Árbol con safe wrapper, dos ataques de membresía. La regla de exportación usa el de peor caso.",
         f07_wc="Peor caso (tablas del TRE)", f07_sa="Salem-synth (datos parecidos)",
         f07_m=["AUC", "TPR al 10% de FPR", "FDIF"],
-        f07_p="p", f07_note="FDIF de Salem 0,280 con p = 0,003: los miembros se acumulan en las puntuaciones extremas. Un responsable de datos podría rechazar por eso.",
+        f07_p="p", f07_note="FDIF de Salem 0,160 con p = 0,027: hay más miembros en las puntuaciones altas de lo que explica el azar. Un responsable de datos podría rechazar por eso.",
         f08_t="El safe wrapper, del fichero de restricciones al registro (TECH 3, 9, 10)",
         f08_1="constraints.json", f08_1b="Apetito de riesgo del TRE: min_samples_leaf ≥ 20, max_depth ≤ 4; kNN y SVC no permitidos.",
         f08_2="Init del wrapper", f08_2b="Corrige hoja 1 → 20 y profundidad None → 4, o registra un override.",
@@ -584,8 +584,8 @@ def fig07(t, lang):
     s = Svg(1000, 410, t["f07_t"])
     header(s, t["f07_t"], t["f07_s"])
     wc = [0.528, 0.116, 0.020]
-    sa = [0.512, 0.252, 0.280]
-    pw, ps = (" (p " + num(0.445, lang) + ")", " (p " + num(0.003, lang) + ")")
+    sa = [0.512, 0.118, 0.160]
+    pw, ps = (" (p " + num(0.445, lang) + ")", " (p " + num(0.027, lang) + ")")
     bars(s, lang, 40, 110, 600, 200, t["f07_m"], [wc, sa], [BLUE, ORANGE], vmax=0.6,
          extra=[["", "", pw], ["", "", ps]])
     s.box(670, 110, 302, 140, "FDIF", t["f07_note"], dark=True)

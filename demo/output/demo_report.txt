@@ -46,7 +46,7 @@ Worst-case membership inference (Appendix G):
   Mean confidence in the true label: training rows 1.000, set-aside rows 0.590 (AUC 0.705).
 Salem-synth membership inference (attacker has similar data, not the TRE tables):
   AUC 0.703   advantage 0.410   TPR 1.000   FPR 0.590
-  TPR at 10% FPR 0.514   FDIF 1.000 (p=0.003)
+  TPR at 10% FPR 0.186   FDIF 0.660 (p=0.003)
   If the attacker flags a row as a member, the chance it really is one: 0.629 when half of candidates are members, 0.017 when 1 in 100 are.
 Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
 The attack abstained: no weight value was a unique best guess. This tree isolated rows with the noise columns, and changing weight did not leave the leaf. Section 2 is the case study from the paper, where the hidden fields are ones the model actually split on. A ratio above 1 would mean training rows were easier to complete than set-aside rows.
@@ -70,10 +70,10 @@ Worst-case membership inference:
   Mean confidence in the true label: training rows 0.611, set-aside rows 0.561 (AUC 0.552).
 Salem-synth membership inference:
   AUC 0.512   advantage 0.012   TPR 0.642   FPR 0.630
-  TPR at 10% FPR 0.252   FDIF 0.280 (p=0.003)
+  TPR at 10% FPR 0.118   FDIF 0.160 (p=0.027)
   If the attacker flags a row as a member, the chance it really is one: 0.505 when half of candidates are members, 0.010 when 1 in 100 are.
 The export rule follows the worst-case attack in Appendix G. On this model that FDIF is 0.020 (p=0.445).
-This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.280 (p=0.003). A data controller could refuse on that tail. This demo's rule does not, because it uses the worst-case check.
+This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.160 (p=0.027). A data controller could refuse on that tail. This demo's rule does not, because it uses the worst-case check.
 Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
 TRE decision: allow release. No demo policy rule fired.
 A real committee would still read the numbers; these cut-offs are only for the demo.

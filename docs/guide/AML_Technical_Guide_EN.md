@@ -650,7 +650,7 @@ A `DecisionTreeClassifier` with no depth limit and `min_samples_leaf = 1` is tra
 | TPR at 10% FPR | 0.156 (does not trip the 0.35 limit) |
 | FDIF | 0.620, p = 0.003 |
 | Posterior if flagged | 0.630 when half of candidates are members; 0.017 when 1 in 100 are |
-| Salem-synth | AUC 0.703; TPR at 10% FPR 0.514; FDIF 1.000 |
+| Salem-synth | AUC 0.703; TPR at 10% FPR 0.186; FDIF 0.660 |
 | Weight attribute inference | Abstained. Ratio 1.000. |
 
 **Decision: do not release.** Four rules fire: the accuracy gap, the AUC, the advantage and FDIF.
@@ -683,7 +683,7 @@ The researcher asks for the same unconstrained settings, but through `SafeDecisi
 
 ![AUC near chance, tail not](img/en/fig07_tail.svg)
 
-Salem-synth on the same wrapped tree gives AUC 0.512, close to chance, but FDIF 0.280 with p = 0.003 and TPR at 10% FPR 0.252. Members pile up in the extreme scores. This is the Appendix F warning in practice: the average says "chance", the tail does not. Demo 1's export rule follows the worst-case attack of Appendix G, whose FDIF is 0.020, so it still releases. A data controller who cares about the tail could refuse. *Illustrates TECH 9, TECH 10, TECH 7, Appendix F and Appendix A experiment 2.*
+Salem-synth on the same wrapped tree gives AUC 0.512, close to chance, but FDIF 0.160 with p = 0.027: the top tenth of its scores holds more members than the bottom tenth, by more than chance explains. Its TPR at 10% FPR, 0.118, is no higher than the worst case's, so the signal is a tilt across the tail rather than a few rows the attacker is sure about. This is the Appendix F warning in practice: the average says "chance", the tail does not. Demo 1's export rule follows the worst-case attack of Appendix G, whose FDIF is 0.020, so it still releases, and 0.160 is under the demo's FDIF limit of 0.20 anyway. A data controller who cares about the tail could set a stricter limit. (Earlier versions of the demo printed FDIF 0.280 here, inflated by the order of tied scores; the [demo guide](Demo_Guide_EN.md), §1.4, explains it.) *Illustrates TECH 9, TECH 10, TECH 7, Appendix F and Appendix A experiment 2.*
 
 ### 13.6 Instance-based models are refused (section 6)
 
