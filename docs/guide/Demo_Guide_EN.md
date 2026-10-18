@@ -231,13 +231,42 @@ TRE decision: do not release.
   - FDIF is 0.620 with p=0.003 (members are concentrated in the extreme scores).
 ```
 
-**How to read it.**
+**How to read it, step by step.**
 
-* **1.000 against 0.590.** The tree has one leaf per training person (smallest leaf: 1 row). It is always right on the people it saw, and on new people it is barely better than guessing the majority class.
-* **Where the AUC of 0.708 comes from.** The tree gives every training row confidence 1.0 in its true label. A holdout row gets 1.0 when the tree happens to be right (59% of them) and 0.0 when it is wrong (41%). So the attack can only separate the 41% of holdout rows the tree gets wrong; the other 59% look exactly like members. That gives TPR 1.000 (every member flagged), FPR 0.588 (the correct holdout rows flagged too) and an AUC of about 0.5 + 0.41 / 2 ≈ 0.705, which is what the confidence-only AUC says.
-* **The posterior line.** With half the candidates being members, a flag is right 63% of the time; with one in a hundred, under 2%. A leaky model is a far smaller threat to a person who is unlikely to be in the data at all.
-* **The attribute attack abstains** on this tree (ratio 1.000), because the tree isolated people using the noise columns, and changing weight does not move a row to another leaf. §1.2 is the case where the hidden field is one the model split on.
-* **The file size is fine** (0.267), so size alone would not have caught this tree.
+**1. What the tree looks like.** With `min_samples_leaf=1` and no depth limit, scikit-learn keeps splitting until every leaf is pure: all its training rows have the same label. On these 500 rows that gives a tree 14 levels deep with 107 leaves. 32 leaves hold a single person, the median leaf holds 2 and the largest 43. 89% of the 106 splits use one of the ten noise columns, which carry no information about the label: the tree is not learning risk, it is drawing a border around each person. That is why the report says "Smallest leaf: 1 training row".
+
+**2. 1.000 against 0.590.** A pure leaf predicts its own label with probability 1, so every training row is predicted correctly, with confidence 1.0. On the holdout the same tree is right 59% of the time. Guessing the majority class would already give 0.518, and no model can do much better than about 0.64 on this label (§0.3). The 0.410 gap between the two numbers is the first warning: the extra 41 points of training accuracy are memorisation, not knowledge.
+
+**3. The file size.** `size_ratio()` pickles the tree (18,150 bytes) and compares it with the training table: 500 rows × 16 columns × 8 bytes plus 500 labels × 8 bytes = 68,000 bytes. The ratio, 0.267, is under the 0.75 limit. A tree with 107 leaves is still small, so a size check alone would let this model through.
+
+**4. The worst-case membership attack, from the inside.** `worst_case_membership()` builds one attack row per person, 1,000 in all: the tree's two probabilities plus the true label, for example `[0, 1, 1]` (predicts high risk, label high risk). Because every leaf is pure, the probabilities are always exactly 0 or 1, so there are only four possible attack rows. Two of them mean "the tree is right about this person" and two mean "the tree is wrong". Every member is in the "right" group; of the 500 holdout rows, 295 are in the "right" group and 205 in the "wrong" one. The attack table is split in two halves of 500 (250 members and 250 non-members each). A random forest learns on one half and scores the other. What it can learn is simple: a row the tree gets wrong is certainly not a member (score 0), and a row the tree gets right is a member about 63% of the time (500 of the 795 "right" rows), so it gets a score of about 0.63. Every metric in the report follows from those two scores:
+
+* **TPR 1.000, FPR 0.588, advantage 0.412.** At the 0.5 cut, every "right" row is flagged: all members (TPR 1.000) and the holdout rows the tree happened to get right (147 of 250, FPR 0.588). The advantage is the difference.
+* **AUC 0.708.** A random member beats a random non-member whenever the non-member is a "wrong" row (41%), and ties with it otherwise (59%), which counts as half: 0.41 + 0.59 / 2 ≈ 0.705. The "confidence in the true label" line gives the same number (AUC 0.705), because it measures the same thing more directly: members 1.000, holdout 0.590.
+* **TPR at 10% FPR 0.156.** Inside the "right" group all scores are equal, so the attacker has no way to rank one member above another. If they act only on their most confident flags, keeping false alarms under 10%, they find about one member in six. The leak is broad (41% of non-members are ruled out) but not sharp.
+* **FDIF 0.620 (p=0.003).** The top 10% of scores comes from the "right" group, about 62% members; the bottom 10% comes from the "wrong" group, 0% members. With 300 shuffles, p=0.003 is the smallest value possible (1/301): none of the shuffles came close.
+* **The posterior line.** If half the candidates are members, a flag is right 1 / (1 + 0.588) = 63% of the time. If one candidate in a hundred is a member, only 1.7% of flags are right. The same leak is a much smaller threat to someone who is unlikely to be in the data at all (Appendix F of the green paper).
+
+**5. Salem-synth.** The attacker does not have the TRE's rows. `salem_synth_membership()` draws 1,000 fresh rows from the same process, trains a shadow tree with the same hyperparameters on 500 of them, and teaches an attack forest what members of the shadow look like. That attack is then applied to the real tree's 1,000 rows. The shadow tree is also pure, so the attack learns the same rule ("right means maybe member, wrong means not"), and the AUC is almost the same, 0.703. That is the point of the comparison: against a memorising tree, an attacker with similar data does almost as well as the worst case.
+
+One caveat on this block's tail numbers. The Salem scores take only three distinct values here, and `salem_synth_membership()` passes the rows with all members first. `true_positive_rate_at_false_positive_rate()` and `frequency_difference()` sort with a stable sort, so ties keep that order and members come first. That inflates TPR at 10% FPR (0.514) and FDIF (1.000). With the tied rows in random order, they average 0.17 and 0.63, the same as the worst case. The worst-case attack does not have this problem, because `train_test_split` shuffles its rows. The same effect raises the Salem FDIF of the wrapped tree in §1.5 from about 0.165 (still significant, p ≈ 0.01) to 0.280. The demo policy uses only the worst-case numbers, so no decision and no gate verdict changes.
+
+**6. Attribute inference abstains.** For each row, `attribute_risk()` tries the four weight values and looks for the one value that gives the highest confidence in the true label. With pure leaves that confidence is either 0 or 1, so a unique answer needs exactly one weight value to land in a leaf that agrees with the label. Here that never happens: most splits are on noise columns, so changing the weight usually leaves the row in the same leaf, and all four values tie. Both rates are 0, and the ratio is set to 1.000 by convention. The attack is not wrong; it just has nothing to grip. §1.2 shows the case where the hidden field is one the tree splits on.
+
+**7. The decision.** `decide()` checks each rule of `POLICY` in turn:
+
+| Check | Value | Limit | Fires? |
+| --- | --- | --- | --- |
+| Accuracy gap | 0.410 | > 0.15 | yes |
+| Membership AUC | 0.708 | ≥ 0.62 | yes |
+| Advantage | 0.412 | ≥ 0.20 | yes |
+| TPR at 10% FPR | 0.156 | ≥ 0.35 | no |
+| FDIF and p | 0.620, p=0.003 | ≥ 0.20 and p ≤ 0.05 | yes |
+| Attribute risk ratio | 1.000 | ≥ 1.35 | no |
+| Size ratio | 0.267 | > 0.75 | no |
+| Stored training rows | 0 | any | no |
+
+Four rules fire, and each one is a line under "TRE decision: do not release". The model is refused for memorisation, which three different attack readings and the accuracy gap all detect. Two cheap checks (file size and stored rows) and the attribute attack would have let it through. That is why TECH 7 asks for a range of checks, not one.
 
 ### 1.5 The same data through a safe wrapper (TECH 9 and 10)
 
@@ -264,7 +293,7 @@ TRE decision: allow release. No demo policy rule fired.
 
 * The researcher asked for the same unconstrained tree; the wrapper silently corrected it. Holdout accuracy is almost unchanged (0.584 against 0.590), and the gap between training and holdout fell from 0.410 to 0.108. Generalisation cost nothing here, because the unconstrained tree's extra accuracy was all memorisation.
 * The worst-case attack is now at chance on every reading (AUC 0.528, advantage 0.004, FDIF not significant), so `decide()` allows release.
-* **The quiet failure.** The Salem attack on the same tree has an AUC of 0.512, but FDIF 0.280 with p = 0.003: in the top tenth of its scores, members are clearly over-represented. This is Appendix F's warning that an average can hide a tail. The demo's rule follows the worst-case attack, which does not show it, so it releases; the script says so, because a data controller could refuse on that tail.
+* **The quiet failure.** The Salem attack on the same tree has an AUC of 0.512, but FDIF 0.280 with p = 0.003: in the top tenth of its scores, members are clearly over-represented. This is Appendix F's warning that an average can hide a tail. The demo's rule follows the worst-case attack, which does not show it, so it releases; the script says so, because a data controller could refuse on that tail. Part of the 0.280 comes from how tied scores are ordered (§1.4, point 5); with ties in random order the FDIF is about 0.165, still significant, so the warning holds with a smaller number.
 * "Run file through the next step" is the wrapper's best recommendation: it only means the hyperparameters are in range and the object matches its snapshot. The release decision is made on the attack numbers, by `decide()`.
 
 ### 1.6 Instance-based models are refused (TECH 11)

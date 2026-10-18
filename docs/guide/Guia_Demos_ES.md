@@ -231,13 +231,42 @@ TRE decision: do not release.
   - FDIF is 0.620 with p=0.003 (members are concentrated in the extreme scores).
 ```
 
-**Cómo leerlo.**
+**Cómo leerlo, paso a paso.**
 
-* **1,000 frente a 0,590.** El árbol tiene una hoja por cada persona de entrenamiento (hoja más pequeña: 1 fila). Siempre acierta con las personas que vio, y con personas nuevas apenas mejora a adivinar la clase mayoritaria.
-* **De dónde sale el AUC de 0,708.** El árbol da a cada fila de entrenamiento confianza 1,0 en su etiqueta real. Una fila del holdout recibe 1,0 cuando el árbol acierta por casualidad (el 59%) y 0,0 cuando se equivoca (el 41%). Así que el ataque solo puede separar el 41% de filas del holdout en que el árbol falla; el otro 59% es idéntico a los miembros. Eso da TPR 1,000 (todos los miembros señalados), FPR 0,588 (las filas del holdout acertadas también se señalan) y un AUC de aproximadamente 0,5 + 0,41 / 2 ≈ 0,705, que es lo que dice el AUC basado solo en la confianza.
-* **La línea de la probabilidad a posteriori.** Si la mitad de los candidatos son miembros, un señalamiento acierta el 63% de las veces; si es uno de cada cien, menos del 2%. Un modelo con fugas es una amenaza mucho menor para una persona que probablemente ni siquiera está en los datos.
-* **El ataque de atributos se abstiene** con este árbol (cociente 1,000), porque el árbol aisló a las personas con las columnas de ruido, y cambiar el peso no mueve una fila a otra hoja. §1.2 es el caso en que el campo oculto es uno por el que el modelo divide.
-* **El tamaño del fichero está bien** (0,267), así que el tamaño por sí solo no habría detectado este árbol.
+**1. Cómo es el árbol.** Con `min_samples_leaf=1` y sin límite de profundidad, scikit-learn sigue dividiendo hasta que cada hoja es pura: todas sus filas de entrenamiento tienen la misma etiqueta. Con estas 500 filas sale un árbol de 14 niveles de profundidad y 107 hojas. 32 hojas contienen a una sola persona, la hoja mediana contiene 2 y la más grande 43. El 89% de las 106 divisiones usa una de las diez columnas de ruido, que no dicen nada sobre la etiqueta: el árbol no aprende el riesgo, dibuja una frontera alrededor de cada persona. Por eso el informe dice "Smallest leaf: 1 training row".
+
+**2. 1,000 frente a 0,590.** Una hoja pura predice su propia etiqueta con probabilidad 1, así que cada fila de entrenamiento se predice bien, con confianza 1,0. En el holdout el mismo árbol acierta el 59% de las veces. Adivinar la clase mayoritaria ya daría 0,518, y ningún modelo puede pasar mucho de 0,64 con esta etiqueta (§0.3). La diferencia de 0,410 entre las dos cifras es el primer aviso: los 41 puntos extra de precisión en entrenamiento son memorización, no conocimiento.
+
+**3. El tamaño del fichero.** `size_ratio()` serializa el árbol (18.150 bytes) y lo compara con la tabla de entrenamiento: 500 filas × 16 columnas × 8 bytes más 500 etiquetas × 8 bytes = 68.000 bytes. El cociente, 0,267, está por debajo del límite de 0,75. Un árbol de 107 hojas sigue siendo pequeño, así que una comprobación de tamaño por sí sola dejaría pasar este modelo.
+
+**4. El ataque de pertenencia en el peor caso, por dentro.** `worst_case_membership()` construye una fila de ataque por persona, 1.000 en total: las dos probabilidades del árbol más la etiqueta real, por ejemplo `[0, 1, 1]` (predice alto riesgo, etiqueta alto riesgo). Como todas las hojas son puras, las probabilidades valen siempre exactamente 0 o 1, así que solo hay cuatro filas de ataque posibles. Dos significan "el árbol acierta con esta persona" y dos "el árbol se equivoca". Todos los miembros están en el grupo "acierta"; de las 500 filas del holdout, 295 están en "acierta" y 205 en "se equivoca". La tabla de ataque se parte en dos mitades de 500 (250 miembros y 250 no miembros cada una). Un random forest aprende con una mitad y puntúa la otra. Lo que puede aprender es sencillo: una fila en la que el árbol se equivoca no es miembro seguro (puntuación 0), y una fila en la que acierta es miembro alrededor del 63% de las veces (500 de las 795 filas "acierta"), así que recibe una puntuación de unos 0,63. Todas las métricas del informe salen de esas dos puntuaciones:
+
+* **TPR 1,000, FPR 0,588, ventaja 0,412.** Con el corte en 0,5 se señalan todas las filas "acierta": todos los miembros (TPR 1,000) y las filas del holdout que el árbol acertó por casualidad (147 de 250, FPR 0,588). La ventaja es la diferencia.
+* **AUC 0,708.** Un miembro al azar gana a un no miembro al azar siempre que el no miembro sea una fila "se equivoca" (41%), y empata con él en el resto (59%), lo que cuenta como medio: 0,41 + 0,59 / 2 ≈ 0,705. La línea de la "confianza en la etiqueta real" da el mismo número (AUC 0,705), porque mide lo mismo de forma más directa: miembros 1,000, holdout 0,590.
+* **TPR al 10% de FPR 0,156.** Dentro del grupo "acierta" todas las puntuaciones son iguales, así que el atacante no tiene forma de ordenar a un miembro por encima de otro. Si solo actúa sobre sus señalamientos más seguros, con menos de un 10% de falsas alarmas, encuentra más o menos a uno de cada seis miembros. La fuga es amplia (descarta al 41% de los no miembros) pero no afilada.
+* **FDIF 0,620 (p=0,003).** El 10% de puntuaciones más altas sale del grupo "acierta", con un 62% de miembros; el 10% más bajo sale del grupo "se equivoca", con un 0% de miembros. Con 300 permutaciones, p=0,003 es el valor más pequeño posible (1/301): ninguna permutación se acercó.
+* **La línea de la probabilidad a posteriori.** Si la mitad de los candidatos son miembros, un señalamiento acierta 1 / (1 + 0,588) = 63% de las veces. Si solo uno de cada cien candidatos es miembro, acierta el 1,7%. La misma fuga es una amenaza mucho menor para alguien que probablemente ni siquiera está en los datos (anexo F del green paper).
+
+**5. Salem-synth.** El atacante no tiene las filas del TRE. `salem_synth_membership()` genera 1.000 filas nuevas del mismo proceso, entrena con 500 de ellas un árbol sombra con los mismos hiperparámetros y enseña a un random forest de ataque cómo son los miembros de la sombra. Después aplica ese ataque a las 1.000 filas del árbol real. El árbol sombra también es puro, así que el ataque aprende la misma regla ("acierta" significa quizá miembro, "se equivoca" significa que no) y el AUC es casi el mismo, 0,703. Esa es la idea de la comparación: contra un árbol que memoriza, un atacante con datos parecidos consigue casi lo mismo que el peor caso.
+
+Una salvedad sobre las cifras de cola de este bloque. Las puntuaciones de Salem solo toman aquí tres valores distintos, y `salem_synth_membership()` pasa las filas con todos los miembros primero. `true_positive_rate_at_false_positive_rate()` y `frequency_difference()` ordenan con un orden estable, así que los empates conservan ese orden y los miembros quedan delante. Eso infla el TPR al 10% de FPR (0,514) y el FDIF (1,000). Con las filas empatadas en orden aleatorio, salen de media 0,17 y 0,63, lo mismo que en el peor caso. El ataque del peor caso no tiene este problema, porque `train_test_split` baraja sus filas. El mismo efecto sube el FDIF de Salem del árbol con wrapper del §1.5 de unos 0,165 (que sigue siendo significativo, p ≈ 0,01) a 0,280. La política de la demo usa solo las cifras del peor caso, así que no cambia ninguna decisión ni ningún veredicto de la puerta.
+
+**6. La inferencia de atributos se abstiene.** Para cada fila, `attribute_risk()` prueba los cuatro valores de peso y busca el único valor que da la confianza más alta en la etiqueta real. Con hojas puras esa confianza vale 0 o 1, así que una respuesta única exige que exactamente un valor de peso caiga en una hoja que coincida con la etiqueta. Aquí eso no ocurre nunca: la mayoría de las divisiones son por columnas de ruido, así que cambiar el peso suele dejar la fila en la misma hoja, y los cuatro valores empatan. Las dos tasas valen 0, y el cociente se fija en 1,000 por convención. El ataque no se equivoca; simplemente no tiene de dónde agarrarse. El §1.2 muestra el caso en que el campo oculto es uno por el que el árbol divide.
+
+**7. La decisión.** `decide()` comprueba una a una las reglas de `POLICY`:
+
+| Comprobación | Valor | Límite | ¿Salta? |
+| --- | --- | --- | --- |
+| Diferencia de precisión | 0,410 | > 0,15 | sí |
+| AUC de pertenencia | 0,708 | ≥ 0,62 | sí |
+| Ventaja | 0,412 | ≥ 0,20 | sí |
+| TPR al 10% de FPR | 0,156 | ≥ 0,35 | no |
+| FDIF y p | 0,620, p=0,003 | ≥ 0,20 y p ≤ 0,05 | sí |
+| Cociente de riesgo de atributos | 1,000 | ≥ 1,35 | no |
+| Cociente de tamaño | 0,267 | > 0,75 | no |
+| Filas de entrenamiento guardadas | 0 | cualquiera | no |
+
+Saltan cuatro reglas, y cada una es una línea bajo "TRE decision: do not release". El modelo se rechaza por memorización, que detectan tres lecturas distintas del ataque y la diferencia de precisión. Dos comprobaciones baratas (el tamaño del fichero y las filas guardadas) y el ataque de atributos lo habrían dejado pasar. Por eso TECH 7 pide un abanico de comprobaciones y no una sola.
 
 ### 1.5 Los mismos datos con un safe wrapper (TECH 9 y 10)
 
@@ -264,7 +293,7 @@ TRE decision: allow release. No demo policy rule fired.
 
 * El investigador pidió el mismo árbol sin restricciones; el wrapper lo corrigió sin avisar. La precisión en el holdout casi no cambia (0,584 frente a 0,590), y la diferencia entre entrenamiento y holdout baja de 0,410 a 0,108. Generalizar no costó nada aquí, porque la precisión extra del árbol sin restricciones era toda memorización.
 * El ataque de peor caso queda ahora al nivel del azar en todas las lecturas (AUC 0,528, ventaja 0,004, FDIF no significativa), así que `decide()` permite la publicación.
-* **El fallo silencioso.** El ataque de Salem sobre el mismo árbol tiene un AUC de 0,512, pero FDIF 0,280 con p = 0,003: en la décima parte más alta de sus puntuaciones, los miembros están claramente sobrerrepresentados. Es el aviso del anexo F de que una media puede esconder una cola. La regla de la demo sigue el ataque de peor caso, que no lo muestra, así que publica; el script lo dice, porque un responsable de los datos podría rechazarlo por esa cola.
+* **El fallo silencioso.** El ataque de Salem sobre el mismo árbol tiene un AUC de 0,512, pero FDIF 0,280 con p = 0,003: en la décima parte más alta de sus puntuaciones, los miembros están claramente sobrerrepresentados. Es el aviso del anexo F de que una media puede esconder una cola. La regla de la demo sigue el ataque de peor caso, que no lo muestra, así que publica; el script lo dice, porque un responsable de los datos podría rechazarlo por esa cola. Parte del 0,280 viene de cómo se ordenan las puntuaciones empatadas (§1.4, punto 5); con los empates en orden aleatorio el FDIF ronda 0,165, que sigue siendo significativo, así que el aviso se mantiene con una cifra menor.
 * "Run file through the next step" es la mejor recomendación del wrapper: solo significa que los hiperparámetros están dentro de rango y que el objeto coincide con su instantánea. La decisión de publicar se toma con las cifras de los ataques, en `decide()`.
 
 ### 1.6 Se rechazan los modelos basados en instancias (TECH 11)
