@@ -711,12 +711,12 @@ def build():
             "No demo rule fires, so the script releases it. Say clearly that the policy is ours, not the paper's.")
 
     # 10 --------------------------------------------------------------------------------
-    s = d.slide("APPENDIX F · THE TAIL", "The quiet failure: AUC near 0.5, but FDIF 0.280")
+    s = d.slide("APPENDIX F · THE TAIL", "The quiet failure: AUC near 0.5, but FDIF 0.160")
     d.image(s, "fig07_tail", top=2.2, max_h=4.0)
     d.footer(s, "demo/output/demo_report.txt, section 5 (Salem-synth). Appendix A Table 2 describes the Salem scenarios.")
     d.notes(s, "On the same wrapped tree we also run Salem-synth, where the attacker trains a shadow model on similar "
-            "data rather than on the TRE's own tables. Its AUC is 0.512, close to chance. But its FDIF is 0.280 with "
-            "p = 0.003, and TPR at 10% FPR is 0.252: members pile up in the extreme scores. This is exactly the "
+            "data rather than on the TRE's own tables. Its AUC is 0.512, close to chance. But its FDIF is 0.160 with "
+            "p = 0.027: the top tenth of its scores holds clearly more members than the bottom tenth. This is exactly the "
             "Appendix F warning: an average metric can hide a tail. The demo's export rule follows the worst-case "
             "attack, whose FDIF is 0.020, so it still releases. A data controller who cares about the tail could refuse.")
 

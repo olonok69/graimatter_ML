@@ -138,6 +138,11 @@ def salem_synth_membership(
         ]
     )
     target_y = _membership_labels(len(member_y), len(non_member_y))
+    # Score the rows in a random order. The tail metrics sort stably, so with members first
+    # every tie between a member and a non-member would go to the member (Demo guide §1.4).
+    # A separate generator keeps the draws of the rest of the demo unchanged.
+    order = np.random.default_rng(len(target_y)).permutation(len(target_y))
+    target_x, target_y = target_x[order], target_y[order]
     scores = attack.predict_proba(target_x)[:, 1]
     summary = summarise_attack_scores(target_y, scores, rng=rng)
     summary["attack"] = "salem_synth_membership"

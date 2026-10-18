@@ -520,17 +520,17 @@ Use the summary per objective if someone asks what a box means; Appendix B of th
 
 **Next.** "But one attack sees something the average hides."
 
-### Slide 29 · The quiet failure: AUC near 0.5, but FDIF 0.280
+### Slide 29 · The quiet failure: AUC near 0.5, but FDIF 0.160
 
 *About 1.5 minutes.*
 
-**On screen.** Figure: the safe-wrapper tree under two membership attacks. Worst case (TRE tables): AUC 0.528, TPR at 10% FPR 0.116, FDIF 0.020 (p 0.445). Salem-synth (similar data): AUC 0.512, TPR at 10% FPR 0.252, FDIF 0.280 (p 0.003). Note: members pile up in the extreme scores; a data controller could refuse on that.
+**On screen.** Figure: the safe-wrapper tree under two membership attacks. Worst case (TRE tables): AUC 0.528, TPR at 10% FPR 0.116, FDIF 0.020 (p 0.445). Salem-synth (similar data): AUC 0.512, TPR at 10% FPR 0.118, FDIF 0.160 (p 0.027). Note: more members in the top scores than chance explains; a data controller could refuse on that.
 
-**Say.** "On the same wrapped tree we also run a second attack, Salem-synth, where the attacker trains a shadow model on similar data instead of the environment's own tables. Its AUC is 0.512, close to chance. But its FDIF is 0.280 with a p-value of 0.003, and TPR at 10% FPR is 0.252: members pile up in the extreme scores. This is exactly the Appendix F warning: an average metric can hide a tail. The demo's export rule follows the worst-case attack, whose FDIF is 0.020, so it still releases. A data controller who cares about the tail could refuse, and that is a policy choice, not a technical one."
+**Say.** "On the same wrapped tree we also run a second attack, Salem-synth, where the attacker trains a shadow model on similar data instead of the environment's own tables. Its AUC is 0.512, close to chance. But its FDIF is 0.160 with a p-value of 0.027: the top tenth of its scores holds clearly more members than the bottom tenth. This is exactly the Appendix F warning: an average metric can hide a tail. The demo's export rule follows the worst-case attack, whose FDIF is 0.020, so it still releases. A data controller who cares about the tail could set a stricter limit and refuse, and that is a policy choice, not a technical one."
 
 **Key facts.** `demo_report.txt`, section 5 (Salem-synth). Appendix A Table 2 describes the Salem scenarios. Appendix F's example: an attack certain about 20 of 200 rows has an AUC of about 0.595, inside the chance band.
 
-**If asked.** *Why does a weaker attacker see more in the tail?* The attacks use different information; Salem-synth's shadow model separates a few extreme rows the worst-case classifier averages out. It is a reminder to run more than one attack.
+**If asked.** *Why does a weaker attacker see more in the tail?* The attacks use different information and rank rows differently. Salem-synth is not surer about any single row (its TPR at 10% FPR, 0.118, matches the worst case), but its top scores hold more members than its bottom ones. It is a reminder to run more than one attack.
 
 **Go deeper.** TG §13.5, "The quiet failure", and §12 (FDIF).
 

@@ -650,7 +650,7 @@ Se entrena un `DecisionTreeClassifier` sin límite de profundidad y con `min_sam
 | TPR al 10% de FPR | 0,156 (no supera el límite de 0,35) |
 | FDIF | 0,620, p = 0,003 |
 | Probabilidad a posteriori si se señala | 0,630 con la mitad de miembros; 0,017 con 1 de cada 100 |
-| Salem-synth | AUC 0,703; TPR al 10% de FPR 0,514; FDIF 1,000 |
+| Salem-synth | AUC 0,703; TPR al 10% de FPR 0,186; FDIF 0,660 |
 | Inferencia de atributos sobre el peso | Se abstiene. Cociente 1,000. |
 
 **Decisión: no publicar.** Saltan cuatro reglas: la diferencia de precisión, el AUC, la ventaja y FDIF.
@@ -683,7 +683,7 @@ El investigador pide la misma configuración sin restricciones, pero a través d
 
 ![AUC cerca del azar, la cola no](img/es/fig07_tail.svg)
 
-Salem-synth sobre el mismo árbol con wrapper da un AUC de 0,512, cerca del azar, pero FDIF 0,280 con p = 0,003 y TPR al 10% de FPR 0,252. Los miembros se acumulan en las puntuaciones extremas. Es el aviso del anexo F en la práctica: la media dice "azar", la cola no. La regla de exportación de la demo 1 sigue el ataque de peor caso del anexo G, cuya FDIF es 0,020, así que publica. Un responsable de datos al que le preocupe la cola podría rechazarlo. *Ilustra TECH 9, TECH 10, TECH 7, el anexo F y el experimento 2 del anexo A.*
+Salem-synth sobre el mismo árbol con wrapper da un AUC de 0,512, cerca del azar, pero FDIF 0,160 con p = 0,027: la décima parte más alta de sus puntuaciones tiene más miembros que la más baja, más de lo que explica el azar. Su TPR al 10% de FPR, 0,118, no es mayor que la del peor caso, así que la señal es una inclinación de toda la cola y no unas pocas filas de las que el atacante esté seguro. Es el aviso del anexo F en la práctica: la media dice "azar", la cola no. La regla de exportación de la demo 1 sigue el ataque de peor caso del anexo G, cuya FDIF es 0,020, así que publica, y 0,160 queda además por debajo del límite de FDIF de la demo, 0,20. Un responsable de datos al que le preocupe la cola podría fijar un límite más estricto. (Las versiones anteriores de la demo imprimían aquí una FDIF de 0,280, inflada por el orden de las puntuaciones empatadas; la [guía de las demos](Guia_Demos_ES.md), §1.4, lo explica.) *Ilustra TECH 9, TECH 10, TECH 7, el anexo F y el experimento 2 del anexo A.*
 
 ### 13.6 Se rechazan los modelos basados en instancias (sección 6)
 

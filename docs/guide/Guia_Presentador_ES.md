@@ -578,19 +578,19 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Siguiente.** «Pero un ataque ve algo que la media esconde.»
 
-### Diapositiva 29 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,280
+### Diapositiva 29 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
 
-*Título en la diapositiva: «The quiet failure: AUC near 0.5, but FDIF 0.280»*
+*Título en la diapositiva: «The quiet failure: AUC near 0.5, but FDIF 0.160»*
 
 *Aproximadamente 1,5 minutos.*
 
-**En pantalla.** Una figura: el árbol con safe wrapper bajo dos ataques de pertenencia. Peor caso (tablas del TRE): AUC 0,528, TPR al 10% de FPR 0,116, FDIF 0,020 (p 0,445). Salem-synth (datos parecidos): AUC 0,512, TPR al 10% de FPR 0,252, FDIF 0,280 (p 0,003). Nota: los miembros se acumulan en las puntuaciones extremas; un responsable de los datos podría rechazarlo por eso.
+**En pantalla.** Una figura: el árbol con safe wrapper bajo dos ataques de pertenencia. Peor caso (tablas del TRE): AUC 0,528, TPR al 10% de FPR 0,116, FDIF 0,020 (p 0,445). Salem-synth (datos parecidos): AUC 0,512, TPR al 10% de FPR 0,118, FDIF 0,160 (p 0,027). Nota: hay más miembros en las puntuaciones más altas de lo que explica el azar; un responsable de los datos podría rechazarlo por eso.
 
-**Qué decir.** «Sobre el mismo árbol con wrapper lanzamos también un segundo ataque, Salem-synth, en el que el atacante entrena un modelo sombra con datos parecidos en lugar de con las tablas del propio entorno. Su AUC es 0,512, cerca del azar. Pero su FDIF es 0,280 con un p-valor de 0,003, y la TPR al 10% de FPR es 0,252: los miembros se acumulan en las puntuaciones extremas. Es exactamente el aviso del anexo F del paper: una métrica media puede esconder una cola. La regla de exportación de la demo sigue el ataque de peor caso, cuya FDIF es 0,020, así que sigue publicando. Un responsable de los datos al que le preocupe la cola podría rechazarlo, y eso es una decisión de política, no técnica.»
+**Qué decir.** «Sobre el mismo árbol con wrapper lanzamos también un segundo ataque, Salem-synth, en el que el atacante entrena un modelo sombra con datos parecidos en lugar de con las tablas del propio entorno. Su AUC es 0,512, cerca del azar. Pero su FDIF es 0,160 con un p-valor de 0,027: la décima parte más alta de sus puntuaciones tiene claramente más miembros que la más baja. Es exactamente el aviso del anexo F del paper: una métrica media puede esconder una cola. La regla de exportación de la demo sigue el ataque de peor caso, cuya FDIF es 0,020, así que sigue publicando. Un responsable de los datos al que le preocupe la cola podría fijar un límite más estricto y rechazarlo, y eso es una decisión de política, no técnica.»
 
 **Datos clave.** `demo_report.txt`, sección 5 (Salem-synth). La tabla 2 del anexo A del paper describe los escenarios de Salem. El ejemplo del anexo F: un ataque que está seguro de 20 de 200 filas tiene un AUC de alrededor de 0,595, dentro de la banda del azar.
 
-**Si preguntan.** *¿Por qué un atacante más débil ve más en la cola?* Los ataques usan información distinta; el modelo sombra de Salem-synth separa unas pocas filas extremas que el clasificador de peor caso diluye en la media. Es un recordatorio de que hay que lanzar más de un ataque.
+**Si preguntan.** *¿Por qué un atacante más débil ve más en la cola?* Los ataques usan información distinta y ordenan las filas de forma distinta. Salem-synth no está más seguro de ninguna fila concreta (su TPR al 10% de FPR, 0,118, es la misma que la del peor caso), pero sus puntuaciones más altas tienen más miembros que las más bajas. Es un recordatorio de que hay que lanzar más de un ataque.
 
 **Para profundizar.** GT §13.5, "El fallo silencioso", y §12 (FDIF).
 

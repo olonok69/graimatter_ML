@@ -222,7 +222,7 @@ Worst-case membership inference (Appendix G):
   Mean confidence in the true label: training rows 1.000, set-aside rows 0.590 (AUC 0.705).
 Salem-synth membership inference ...
   AUC 0.703   advantage 0.410   TPR 1.000   FPR 0.590
-  TPR at 10% FPR 0.514   FDIF 1.000 (p=0.003)
+  TPR at 10% FPR 0.186   FDIF 0.660 (p=0.003)
 Attribute inference for weight: unique guess on 0.000 of training rows ... Ratio 1.000.
 TRE decision: do not release.
   - Training accuracy exceeds set-aside accuracy by 0.410 (limit 0.15), which indicates overfitting.
@@ -247,9 +247,9 @@ TRE decision: do not release.
 * **FDIF 0.620 (p=0.003).** The top 10% of scores comes from the "right" group, about 62% members; the bottom 10% comes from the "wrong" group, 0% members. With 300 shuffles, p=0.003 is the smallest value possible (1/301): none of the shuffles came close.
 * **The posterior line.** If half the candidates are members, a flag is right 1 / (1 + 0.588) = 63% of the time. If one candidate in a hundred is a member, only 1.7% of flags are right. The same leak is a much smaller threat to someone who is unlikely to be in the data at all (Appendix F of the green paper).
 
-**5. Salem-synth.** The attacker does not have the TRE's rows. `salem_synth_membership()` draws 1,000 fresh rows from the same process, trains a shadow tree with the same hyperparameters on 500 of them, and teaches an attack forest what members of the shadow look like. That attack is then applied to the real tree's 1,000 rows. The shadow tree is also pure, so the attack learns the same rule ("right means maybe member, wrong means not"), and the AUC is almost the same, 0.703. That is the point of the comparison: against a memorising tree, an attacker with similar data does almost as well as the worst case.
+**5. Salem-synth.** The attacker does not have the TRE's rows. `salem_synth_membership()` draws 1,000 fresh rows from the same process, trains a shadow tree with the same hyperparameters on 500 of them, and teaches an attack forest what members of the shadow look like. That attack is then applied to the real tree's 1,000 rows. The shadow tree is also pure, so the attack learns the same rule ("right means maybe member, wrong means not"), and the AUC is almost the same, 0.703, with TPR at 10% FPR 0.186 and FDIF 0.660 close to the worst case's 0.156 and 0.620. That is the point of the comparison: against a memorising tree, an attacker with similar data does almost as well as the worst case.
 
-One caveat on this block's tail numbers. The Salem scores take only three distinct values here, and `salem_synth_membership()` passes the rows with all members first. `true_positive_rate_at_false_positive_rate()` and `frequency_difference()` sort with a stable sort, so ties keep that order and members come first. That inflates TPR at 10% FPR (0.514) and FDIF (1.000). With the tied rows in random order, they average 0.17 and 0.63, the same as the worst case. The worst-case attack does not have this problem, because `train_test_split` shuffles its rows. The same effect raises the Salem FDIF of the wrapped tree in §1.5 from about 0.165 (still significant, p ≈ 0.01) to 0.280. The demo policy uses only the worst-case numbers, so no decision and no gate verdict changes.
+Why the rows are shuffled before scoring. The Salem scores take only three distinct values here, so most rows tie. `true_positive_rate_at_false_positive_rate()` and `frequency_difference()` sort with a stable sort, so tied rows keep the order they were passed in. `salem_synth_membership()` builds its rows with all members first, and if it scored them in that order every tie would be ranked in favour of the members. That is why it shuffles them first, with a separate generator so the rest of the demo's draws stay the same. Earlier versions did not, and printed TPR at 10% FPR 0.514 and FDIF 1.000 here, and FDIF 0.280 for the wrapped tree in §1.5. The worst-case attack never had this problem, because `train_test_split` shuffles its rows. The demo policy and the gate use only the worst-case numbers, so no decision changed.
 
 **6. Attribute inference abstains.** For each row, `attribute_risk()` tries the four weight values and looks for the one value that gives the highest confidence in the true label. With pure leaves that confidence is either 0 or 1, so a unique answer needs exactly one weight value to land in a leaf that agrees with the label. Here that never happens: most splits are on noise columns, so changing the weight usually leaves the row in the same leaf, and all four values tie. Both rates are 0, and the ratio is set to 1.000 by convention. The attack is not wrong; it just has nothing to grip. §1.2 shows the case where the hidden field is one the tree splits on.
 
@@ -284,8 +284,8 @@ Worst-case membership inference:
   TPR at 10% FPR 0.116   FDIF 0.020 (p=0.445)
 Salem-synth membership inference:
   AUC 0.512   advantage 0.012   TPR 0.642   FPR 0.630
-  TPR at 10% FPR 0.252   FDIF 0.280 (p=0.003)
-This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.280 (p=0.003). ...
+  TPR at 10% FPR 0.118   FDIF 0.160 (p=0.027)
+This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.160 (p=0.027). ...
 TRE decision: allow release. No demo policy rule fired.
 ```
 
@@ -293,7 +293,7 @@ TRE decision: allow release. No demo policy rule fired.
 
 * The researcher asked for the same unconstrained tree; the wrapper silently corrected it. Holdout accuracy is almost unchanged (0.584 against 0.590), and the gap between training and holdout fell from 0.410 to 0.108. Generalisation cost nothing here, because the unconstrained tree's extra accuracy was all memorisation.
 * The worst-case attack is now at chance on every reading (AUC 0.528, advantage 0.004, FDIF not significant), so `decide()` allows release.
-* **The quiet failure.** The Salem attack on the same tree has an AUC of 0.512, but FDIF 0.280 with p = 0.003: in the top tenth of its scores, members are clearly over-represented. This is Appendix F's warning that an average can hide a tail. The demo's rule follows the worst-case attack, which does not show it, so it releases; the script says so, because a data controller could refuse on that tail. Part of the 0.280 comes from how tied scores are ordered (§1.4, point 5); with ties in random order the FDIF is about 0.165, still significant, so the warning holds with a smaller number.
+* **The quiet failure.** The Salem attack on the same tree has an AUC of 0.512, but FDIF 0.160 with p = 0.027: the top tenth of its scores holds more members than the bottom tenth, by more than chance would explain. Its TPR at 10% FPR (0.118) is no higher than the worst case's, so the signal is a tilt across the tail, not a few rows the attacker is sure about. This is Appendix F's warning that an average can hide a tail. The demo's rule follows the worst-case attack, which does not show it, so it releases; and 0.160 would be under the policy's FDIF limit of 0.20 anyway. The script still prints the warning (it does so from FDIF 0.15 with an AUC under 0.60), because a data controller could set a stricter limit for the tail.
 * "Run file through the next step" is the wrapper's best recommendation: it only means the hyperparameters are in range and the object matches its snapshot. The release decision is made on the attack numbers, by `decide()`.
 
 ### 1.6 Instance-based models are refused (TECH 11)

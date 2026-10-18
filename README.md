@@ -165,7 +165,7 @@ Results of the seeded run (`demo/output/demo_report.txt`):
 What else the run shows:
 
 * **Attribute inference on a planted record.** The attacker knows a person's age, diabetes, asthma and smoking status, and tries all 20 weight × blood-pressure combinations. Only the true pair gets confidence 1.000; every other combination ties at 0.500.
-* **The quiet failure.** On the wrapped tree, the Salem-synth attack has AUC 0.512, close to chance, yet FDIF is 0.280 with p = 0.003. The export rule follows the worst-case attack, whose FDIF is 0.020, so the tree is still released, but a data controller could refuse on that tail.
+* **The quiet failure.** On the wrapped tree, the Salem-synth attack has AUC 0.512, close to chance, yet FDIF is 0.160 with p = 0.027. The export rule follows the worst-case attack, whose FDIF is 0.020, so the tree is still released, but a data controller with a stricter limit for the tail could refuse.
 * **Differential privacy on a mean.** An attacker who knows every age but one guesses that person's inclusion correctly 100% of the time from a deterministic mean, 70.3% at ε = 8 and 48.7% at ε = 0.2. Keeping the best of 50 noisy draws cuts the error from 0.3053 to 0.0084 and cancels the protection.
 * **Query budget.** With a budget of 8 rows, a one-patient lookup passes and the 20-row attribute sweep is refused.
 
