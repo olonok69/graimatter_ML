@@ -316,7 +316,7 @@ ATLAS (Adversarial Threat Landscape for AI Systems) organises attacker behaviour
 | ML03 Model inversion attack | Demos 1 and 2, attribute inference |
 | ML04 Membership inference attack | Demos 1 and 2 |
 | ML05 Model theft | Demo 3, extraction |
-| ML06 AI supply chain attacks | – |
+| ML06 AI supply chain attacks | Demo 4, tampered supplier files |
 | ML07 Transfer learning attack | – |
 | ML08 Model skewing | – |
 | ML09 Output integrity attack | – |
@@ -1143,7 +1143,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 | .033 | Membership inference | Deployment | Query access or the model file | Demos 1 and 2 (§13, §14) |
 | .034 | Property inference | Deployment | Query access or the model file | – |
 | **NISTAML.05** | **Supply chain** | | | |
-| .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | – |
+| .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | Demo 4 (§3.4) |
 
 ### B.1 Availability breakdown (NISTAML.01): availability
 

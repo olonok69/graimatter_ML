@@ -316,7 +316,7 @@ ATLAS (Adversarial Threat Landscape for AI Systems) organiza el comportamiento d
 | ML03 Ataque de inversión del modelo | Demos 1 y 2, inferencia de atributos |
 | ML04 Ataque de inferencia de pertenencia | Demos 1 y 2 |
 | ML05 Robo del modelo | Demo 3, extracción |
-| ML06 Ataques a la cadena de suministro de IA | – |
+| ML06 Ataques a la cadena de suministro de IA | Demo 4, ficheros del proveedor manipulados |
 | ML07 Ataque de transfer learning | – |
 | ML08 Sesgado del modelo (model skewing) | – |
 | ML09 Ataque a la integridad de las salidas | – |
@@ -1143,7 +1143,7 @@ Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04)
 | .033 | Inferencia de pertenencia | Despliegue | Acceso de consulta o el fichero del modelo | Demos 1 y 2 (§13, §14) |
 | .034 | Inferencia de propiedades | Despliegue | Acceso de consulta o el fichero del modelo | – |
 | **NISTAML.05** | **Cadena de suministro** | | | |
-| .051 | Envenenamiento del modelo mediante un modelo suministrado | Antes del entrenamiento o del despliegue | Control de un modelo, componente o biblioteca que usa otro | – |
+| .051 | Envenenamiento del modelo mediante un modelo suministrado | Antes del entrenamiento o del despliegue | Control de un modelo, componente o biblioteca que usa otro | Demo 4 (§3.4) |
 
 ### B.1 Pérdida de disponibilidad (NISTAML.01): disponibilidad
 

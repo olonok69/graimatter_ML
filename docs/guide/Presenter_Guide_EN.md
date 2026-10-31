@@ -306,9 +306,9 @@ Use the summary per objective if someone asks what a box means; Appendix B of th
 
 *About 2 minutes.*
 
-**On screen.** The OWASP ML Security Top 10 (2023, draft), ML01 to ML10, with the demo that shows each: ML01 input manipulation, ML02 data poisoning and ML05 model theft in demo 3; ML03 model inversion and ML04 membership inference in demos 1 and 2; ML10 model poisoning in demo 1; ML06 to ML09 not shown. Side notes on how to use the lists and how they map to the repository.
+**On screen.** The OWASP ML Security Top 10 (2023, draft), ML01 to ML10, with the demo that shows each: ML01 input manipulation, ML02 data poisoning and ML05 model theft in demo 3; ML03 model inversion and ML04 membership inference in demos 1 and 2; ML06 AI supply chain in demo 4; ML10 model poisoning in demo 1; ML07 to ML09 not shown. Side notes on how to use the lists and how they map to the repository.
 
-**Say.** "OWASP's machine-learning list is short and practical. It overlaps NIST's privacy branch heavily: model inversion and membership inference are two of the ten, and model theft is a third. ML10, model poisoning, means manipulating the model's parameters, which is what demo 1's tamper check catches. Input manipulation, data poisoning and model theft are demo 3. The list is still marked as a draft and dates from 2023, so use it as a checklist in design reviews and threat models rather than as a standard. The LLM list from 2025 is more current and is the one most teams building chat or agent products use; we saw it on the generative-AI slide."
+**Say.** "OWASP's machine-learning list is short and practical. It overlaps NIST's privacy branch heavily: model inversion and membership inference are two of the ten, and model theft is a third. ML10, model poisoning, means manipulating the model's parameters, which is what demo 1's tamper check catches. Input manipulation, data poisoning and model theft are demo 3, and AI supply chain attacks, ML06, are demo 4. The list is still marked as a draft and dates from 2023, so use it as a checklist in design reviews and threat models rather than as a standard. The LLM list from 2025 is more current and is the one most teams building chat or agent products use; we saw it on the generative-AI slide."
 
 **Key facts.** owasp.org/www-project-machine-learning-security-top-10; genai.owasp.org/llm-top-10.
 

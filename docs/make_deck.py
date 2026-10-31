@@ -472,20 +472,20 @@ def build():
     s = d.slide("OWASP", "OWASP: two top-ten lists for the people who build")
     ml = [["OWASP ML Security Top 10 (2023, draft)", "Here"],
           ["ML01 Input manipulation", "demo 3"], ["ML02 Data poisoning", "demo 3"], ["ML03 Model inversion", "demos 1-2"],
-          ["ML04 Membership inference", "demos 1-2"], ["ML05 Model theft", "demo 3"], ["ML06 AI supply chain", "–"],
+          ["ML04 Membership inference", "demos 1-2"], ["ML05 Model theft", "demo 3"], ["ML06 AI supply chain", "demo 4"],
           ["ML07 Transfer learning attack", "–"], ["ML08 Model skewing", "–"], ["ML09 Output integrity", "–"],
           ["ML10 Model poisoning", "demo 1"]]
-    hl = {(i, 1): PEACHBG for i in (1, 2, 3, 4, 5, 10)}
+    hl = {(i, 1): PEACHBG for i in (1, 2, 3, 4, 5, 6, 10)}
     d.table(s, LEFT, 2.15, 5.6, ml, [4.3, 1.3], size=12, row_h=0.39, highlight=hl)
     d.card(s, LEFT + 5.9, 2.15, 5.65, 1.95, "How to use them", "As a checklist in design reviews and threat models. The "
            "ML list is still a draft from 2023; the LLM list was refreshed for 2025 and covers agents and RAG.", bsize=13)
     d.card(s, LEFT + 5.9, 4.25, 5.65, 2.2, "Mapping to this repository", "ML03 and ML04 are what GRAIMATTER tests before "
-           "release. ML10 is demo 1's check for edits after fit(). ML01, ML02 and ML05 are demo 3. The LLM list is on the "
+           "release. ML10 is demo 1's check for edits after fit(). ML01, ML02 and ML05 are demo 3, ML06 is demo 4. The LLM list is on the "
            "generative-AI slide.", dark=True, bsize=13)
     d.footer(s, "owasp.org/www-project-machine-learning-security-top-10 · genai.owasp.org/llm-top-10")
     d.notes(s, "OWASP's machine-learning list is short and practical. It overlaps NIST's privacy branch heavily: model "
             "inversion and membership inference are two of the ten, and model theft is a third. Model poisoning, ML10, "
-            "means manipulating the model's parameters, which is what demo 1's tamper check catches. The list is marked as "
+            "means manipulating the model's parameters, which is what demo 1's tamper check catches, and AI supply chain attacks, ML06, are demo 4. The list is marked as "
             "a draft and dates from 2023, so treat it as a checklist rather than a standard. The LLM list from 2025 is "
             "more current and is the one most teams building chat or agent products use.")
 
