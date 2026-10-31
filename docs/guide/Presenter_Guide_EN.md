@@ -530,7 +530,7 @@ Use the summary per objective if someone asks what a box means; Appendix B of th
 
 **Key facts.** `demo_report.txt`, section 5 (Salem-synth). Appendix A Table 2 describes the Salem scenarios. Appendix F's example: an attack certain about 20 of 200 rows has an AUC of about 0.595, inside the chance band.
 
-**If asked.** *Why does a weaker attacker see more in the tail?* The attacks use different information and rank rows differently. Salem-synth is not surer about any single row (its TPR at 10% FPR, 0.118, matches the worst case), but its top scores hold more members than its bottom ones. It is a reminder to run more than one attack.
+**If asked.** *Why does a weaker attacker see more in the tail?* The attacks use different information and rank rows differently. Salem-synth is not surer about any single row (its TPR at 10% FPR, 0.118, is about the same as the worst case's 0.116), but its top scores hold more members than its bottom ones. It is a reminder to run more than one attack.
 
 **Go deeper.** TG §13.5, "The quiet failure", and §12 (FDIF).
 
