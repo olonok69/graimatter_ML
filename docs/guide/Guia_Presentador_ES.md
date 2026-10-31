@@ -590,7 +590,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Datos clave.** `demo_report.txt`, sección 5 (Salem-synth). La tabla 2 del anexo A del paper describe los escenarios de Salem. El ejemplo del anexo F: un ataque que está seguro de 20 de 200 filas tiene un AUC de alrededor de 0,595, dentro de la banda del azar.
 
-**Si preguntan.** *¿Por qué un atacante más débil ve más en la cola?* Los ataques usan información distinta y ordenan las filas de forma distinta. Salem-synth no está más seguro de ninguna fila concreta (su TPR al 10% de FPR, 0,118, es la misma que la del peor caso), pero sus puntuaciones más altas tienen más miembros que las más bajas. Es un recordatorio de que hay que lanzar más de un ataque.
+**Si preguntan.** *¿Por qué un atacante más débil ve más en la cola?* Los ataques usan información distinta y ordenan las filas de forma distinta. Salem-synth no está más seguro de ninguna fila concreta (su TPR al 10% de FPR, 0,118, es prácticamente la del peor caso, 0,116), pero sus puntuaciones más altas tienen más miembros que las más bajas. Es un recordatorio de que hay que lanzar más de un ataque.
 
 **Para profundizar.** GT §13.5, "El fallo silencioso", y §12 (FDIF).
 
