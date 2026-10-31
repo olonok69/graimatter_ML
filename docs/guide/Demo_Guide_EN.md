@@ -132,7 +132,7 @@ Demo 1 summarises every membership attack with `summarise_attack_scores()`. The 
 | `FDIF (p=...)` | `frequency_difference()` | Share of members in the top 10% of scores minus the share in the bottom 10%. The p-value comes from 300 shuffles of the member labels: how often a random score is at least this extreme. |
 | `the chance it really is one` | `membership_probability()` | Bayes' rule from Appendix F: `A·TPR / (A·TPR + (1−A)·FPR)`, printed for A = 0.5 (half the candidates are members) and A = 0.01 (one in a hundred). |
 
-The technical guide (§12) explains why three readings are needed: AUC can sit at 0.5 while a few rows in the tail are exposed, and that is what FDIF and TPR at low FPR are there to catch.
+The technical guide (§18) explains why three readings are needed: AUC can sit at 0.5 while a few rows in the tail are exposed, and that is what FDIF and TPR at low FPR are there to catch.
 
 ---
 
@@ -167,7 +167,7 @@ Synthetic rows: 1000. Researcher receives 500. TRE keeps 500 aside and does not 
 
 ### 1.2 Attribute inference on one planted record (Appendix E)
 
-"Appendix E" here, and in the report, is Appendix E of the GRAIMATTER green paper (`GRAIMATTER Green Paper.pdf` at the repository root), section 20.1, "Finding out unknown information about a famous person (Attribute Inference)", pp. 86-87. In the paper, a public cancer-risk model was trained on data that included a well-known MP; knowing he is 62, diabetic, asthmatic and a smoker, an attacker queries every weight × blood-pressure combination and recovers both (the top answer at 93.8%, the next at 57.7%). The demo rebuilds that story on synthetic data; the technical guide covers it in §13.2. None of this repository's own guides has an Appendix E.
+"Appendix E" here, and in the report, is Appendix E of the GRAIMATTER green paper (`GRAIMATTER Green Paper.pdf` at the repository root), section 20.1, "Finding out unknown information about a famous person (Attribute Inference)", pp. 86-87. In the paper, a public cancer-risk model was trained on data that included a well-known MP; knowing he is 62, diabetic, asthmatic and a smoker, an attacker queries every weight × blood-pressure combination and recovers both (the top answer at 93.8%, the next at 57.7%). The demo rebuilds that story on synthetic data; the technical guide covers it in §19.2. None of this repository's own guides has an Appendix E.
 
 **Code.** `graimatter_demo/case_study.py` builds a separate small cohort with `_planted_cohort()`: 180 random rows, plus a block of 114 rows that all share the public fields of one fictional person (age 62, diabetic, asthmatic, smoker) and differ only in weight and blood pressure. In that block every weight × blood-pressure cell has six rows with alternating labels (three high risk, three not), except one cell, (overweight, slightly high), which holds a single row, the planted person, labelled high risk. `train_case_study_model()` fits an unconstrained tree (`min_samples_leaf=1`). `sweep_unknown_fields()` takes the planted record, tries all 4 × 5 = 20 combinations of the two unknown fields, sends them to `predict_proba` in one batch, and sorts them by confidence. `unique_winner()` returns the top combination only if no other ties with it.
 
@@ -415,7 +415,7 @@ Training accuracy 0.868, set-aside accuracy 0.566.
 
 **How to read it.**
 
-* **Membership AUC 0.500 on a tree that memorised everything.** The package's attack scores rows by predicted probabilities only, without the true label. On a tree of pure leaves every prediction is exactly 0 or 1, for members and non-members alike, so the probabilities alone cannot tell them apart. Demo 1's attack adds the true label, and sees that the tree is always right on members and wrong on 41% of non-members: AUC 0.708. Same tree, two attacks, two answers. The technical guide (§15.2) works through this.
+* **Membership AUC 0.500 on a tree that memorised everything.** The package's attack scores rows by predicted probabilities only, without the true label. On a tree of pure leaves every prediction is exactly 0 or 1, for members and non-members alike, so the probabilities alone cannot tell them apart. Demo 1's attack adds the true label, and sees that the tree is always right on members and wrong on 41% of non-members: AUC 0.708. Same tree, two attacks, two answers. The technical guide (§21.2) works through this.
 * **The structural attack catches what the membership attack misses**: a gap of 0.41 and leaves under 10 rows (`k_anonymity_risk`), on both trees. Leaf 5 is not enough for this package's own structural check.
 * **Attribute inference** on the unconstrained tree guesses diabetes and smoker uniquely and correctly for a quarter to two fifths of the rows, on training and holdout rows alike; equal rates mean the model is not leaking more about members than it would about anyone.
 * The package never says "release". Its best answer is "proceed to next step of checking": the decision stays with people.
@@ -665,4 +665,4 @@ The **readers** turn each demo's `main()` result into `Reading`s, without recomp
 * **Demo 2 is not reproducible run to run.** The package's attacks draw their own random splits; the mean membership AUC of the wrapped tree moved from 0.494 to 0.487 between two runs. Its `report.json` files are appended to on every run, not replaced. Demo 2 is therefore outside CI and its gate control is declared out of scope there.
 * **Lines that depend on the machine.** Demo 1's last line prints the absolute path of the machine that ran it (for example `Full write-up: D:\repos\...`). The pickled size of the unconstrained tree (§1.4) and the digests of pickled models (§4.1 to §4.3) change between scikit-learn versions, so your digests may differ from the ones quoted here; the verdicts do not. `_normalise()` in the tests masks those three things before comparing.
 * **`n_jobs=-1`** in demos 3 and 4 uses every core; it changes speed, not results.
-* **Scale.** The cohorts are hundreds or thousands of rows, the models are trees and forests, and the attacks are teaching sketches. The technical guide (§19) lists what the demos do not show.
+* **Scale.** The cohorts are hundreds or thousands of rows, the models are trees and forests, and the attacks are teaching sketches. The technical guide (§25) lists what the demos do not show.

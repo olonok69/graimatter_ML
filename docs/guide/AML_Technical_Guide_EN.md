@@ -2,7 +2,7 @@
 
 **How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with four demos on synthetic data**
 
-This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the four demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Appendix A maps every section to its slides, and Appendix B explains every NIST attack class one by one. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 41 slides in order and points back to this guide. To follow the demos through their code, section by section of what they print, use the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)).
+This guide goes with the deck (`docs/Adversarial_ML.pptx`), which is also recorded as a video series, the four demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py` and `demo/run_sacroml_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Part 4 takes every NIST attack class one by one and runs the demo that shows it, section by section. Each part is one video, and Part 4 is two (4a and 4b); Appendix A maps every section to its slides and its video. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 53 slides in order and points back to this guide. To follow the demos through their code, section by section of what they print, use the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)).
 
 > **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -28,24 +28,31 @@ This guide goes with the workshop deck (`docs/Adversarial_ML.pptx`) the four dem
 
 9. [What a TRE is protecting when the output is a model](#9-what-a-tre-is-protecting-when-the-output-is-a-model)
 10. [A map of the green paper](#10-a-map-of-the-green-paper)
-11. [The synthetic cohort and the holdout](#11-the-synthetic-cohort-and-the-holdout)
-12. [The metrics, in words and in code](#12-the-metrics-in-words-and-in-code)
-13. [Demo 1: the hand-written checks](#13-demo-1-the-hand-written-checks)
-14. [Demo 2: the official SACRO-ML package](#14-demo-2-the-official-sacro-ml-package)
-15. [The two demos side by side](#15-the-two-demos-side-by-side)
-16. [What carries over to other high-trust deployments](#16-what-carries-over-to-other-high-trust-deployments)
+11. [What carries over to other high-trust deployments](#11-what-carries-over-to-other-high-trust-deployments)
+
+**Part 4 · The attacks in detail**
+
+12. [Reading the NIST taxonomy: the CIA triad and the identifiers](#12-reading-the-nist-taxonomy-the-cia-triad-and-the-identifiers)
+13. [Availability breakdown (NISTAML.01)](#13-availability-breakdown-nistaml01)
+14. [Integrity violation (NISTAML.02)](#14-integrity-violation-nistaml02)
+15. [Supply chain (NISTAML.05)](#15-supply-chain-nistaml05)
+16. [Privacy compromise (NISTAML.03)](#16-privacy-compromise-nistaml03)
+17. [The synthetic cohort and the holdout](#17-the-synthetic-cohort-and-the-holdout)
+18. [The metrics, in words and in code](#18-the-metrics-in-words-and-in-code)
+19. [Demo 1: the hand-written checks](#19-demo-1-the-hand-written-checks)
+20. [Demo 2: the official SACRO-ML package](#20-demo-2-the-official-sacro-ml-package)
+21. [The two demos side by side](#21-the-two-demos-side-by-side)
+22. [Beyond predictive AI](#22-beyond-predictive-ai)
 
 **Closing**
 
-17. [A release gate over the demos](#17-a-release-gate-over-the-demos)
-18. [How to reproduce](#18-how-to-reproduce)
-19. [Limits of the demos](#19-limits-of-the-demos)
-20. [Glossary](#20-glossary)
-21. [References](#21-references)
+23. [A release gate over the demos](#23-a-release-gate-over-the-demos)
+24. [How to reproduce](#24-how-to-reproduce)
+25. [Limits of the demos](#25-limits-of-the-demos)
+26. [Glossary](#26-glossary)
+27. [References](#27-references)
 
-[Appendix A: how the guide, slides and demos line up](#appendix-a-how-the-guide-slides-and-demos-line-up)
-
-[Appendix B: the NIST attack classes, one by one](#appendix-b-the-nist-attack-classes-one-by-one)
+[Appendix A: how the guide, slides, videos and demos line up](#appendix-a-how-the-guide-slides-videos-and-demos-line-up)
 
 ---
 
@@ -87,11 +94,11 @@ NIST is direct about the state of the art: for many tasks there are no theoretic
 | **Privacy compromise** | NISTAML.03 | Learn restricted information about the training data or the model | Model extraction (.031), reconstruction (.032), membership inference (.033), property inference (.034) |
 | **Supply chain** | NISTAML.05 | Reach the model through a third party | Model poisoning through a supplied model (.051) |
 
-**The CIA triad, in NIST's words.** These are the three properties information security has always protected: confidentiality, integrity and availability, the CIA triad. Availability and integrity keep their usual names. Privacy is NIST's word for confidentiality: the report notes that "confidentiality" is the term used in traditional cybersecurity taxonomies, and that adversarial ML uses "privacy" as the top-level term because it covers both the confidentiality of the model (its weights and architecture) and the privacy of the people in its training data (§2.1.2). The EU AI Act uses the classic word for the same attacks: "confidentiality attacks" (Art. 15(5), section 8.4). Supply chain is not a fourth property but a route in: what arrives through a third party then breaks one of the three. What machine learning changes is not what an attacker wants but where they can get it: the data, the model file and the answers (section 1). Appendix B lays out the correspondence; this guide keeps NIST's word, privacy, whenever it cites NIST.
+**The CIA triad, in NIST's words.** These are the three properties information security has always protected: confidentiality, integrity and availability, the CIA triad. Availability and integrity keep their usual names. Privacy is NIST's word for confidentiality: the report notes that "confidentiality" is the term used in traditional cybersecurity taxonomies, and that adversarial ML uses "privacy" as the top-level term because it covers both the confidentiality of the model (its weights and architecture) and the privacy of the people in its training data (§2.1.2). The EU AI Act uses the classic word for the same attacks: "confidentiality attacks" (Art. 15(5), section 8.4). Supply chain is not a fourth property but a route in: what arrives through a third party then breaks one of the three. What machine learning changes is not what an attacker wants but where they can get it: the data, the model file and the answers (section 1). Section 12 lays out the correspondence; this guide keeps NIST's word, privacy, whenever it cites NIST.
 
 Attribute inference, the attack at the centre of GRAIMATTER's case studies, appears in NIST as one of the data-privacy objectives (§2.1.2, §2.4.1) without an ID of its own. For generative AI, NIST adds direct prompt injection (.018), indirect prompt injection (.015) and misaligned outputs (.027).
 
-Appendix B explains each of these classes in turn: what the attacker does and needs, an example, NIST's defences and their limits, and where the class appears in this repository.
+Part 4 explains each of these classes in turn (sections 12 to 16 and 22): what the attacker does and needs, an example, NIST's defences and their limits, and where the class appears in this repository.
 
 ### 2.2 Attacker capabilities (§2.1.3)
 
@@ -202,7 +209,7 @@ Entry point: `demo/run_supply_chain_demo.py`. Code: `demo/supply_chain/` (`integ
 
 **Is this source-code control?** It is supply-chain integrity, of which version control is one link. Git protects what was committed; this attack happens after the build, between the publisher and the user, which is where release signing, pinned hashes and provenance work. In the frameworks: EU AI Act Art. 15(5) names attacks on pre-trained components (model poisoning); UK Code principle 7 asks to secure the supply chain and provision 8.1.2 to publish cryptographic hashes of shared model components; NIST AI RMF GOVERN 6.1 asks for policies on third-party AI risk; and federal model-risk guidance expects vendor models to be validated like in-house ones.
 
-**Under the hood.** `integrity.write_lock()` records `sha256_file()` of each file; `verify()` refuses a file whose digest differs or that has no pin. `pickle_scan.imports()` walks `pickletools.genops()` and resolves `GLOBAL` and `STACK_GLOBAL` opcodes, including strings fetched back from the pickle memo, without executing anything; `scan()` compares them with an allow list (modules under `sklearn` and `numpy`, and `_codecs.encode`). `payload.Trojan.__reduce__()` is the harmless stand-in for hidden code. `downgrade.below_floor()` checks `key_bits` and the wrapper rules against the floors in the module; `brute_force_years()` is `2**bits / 1e9` seconds. The release gate reads one number from the run: tampered files that passed both the pin and the scan or floor (0 of 4, section 17.2).
+**Under the hood.** `integrity.write_lock()` records `sha256_file()` of each file; `verify()` refuses a file whose digest differs or that has no pin. `pickle_scan.imports()` walks `pickletools.genops()` and resolves `GLOBAL` and `STACK_GLOBAL` opcodes, including strings fetched back from the pickle memo, without executing anything; `scan()` compares them with an allow list (modules under `sklearn` and `numpy`, and `_codecs.encode`). `payload.Trojan.__reduce__()` is the harmless stand-in for hidden code. `downgrade.below_floor()` checks `key_bits` and the wrapper rules against the floors in the module; `brute_force_years()` is `2**bits / 1e9` seconds. The release gate reads one number from the run: tampered files that passed both the pin and the scan or floor (0 of 4, section 23.2).
 
 ---
 
@@ -212,13 +219,13 @@ Entry point: `demo/run_supply_chain_demo.py`. Code: `demo/supply_chain/` (`integ
 
 | Attack | NIST ID | Question it answers | In this repository |
 |---|---|---|---|
-| Membership inference | NISTAML.033 | Was this record in the training set? | Demos 1 and 2 (sections 13 and 14) |
-| Attribute inference | (§2.4.1) | Given part of a record, what is the hidden field? | Demos 1 and 2; the planted record in section 13.2 |
-| Reconstruction | NISTAML.032 | Can whole training records be recovered? | Demo 1: nearest neighbours and SVC store rows (section 13.6) |
+| Membership inference | NISTAML.033 | Was this record in the training set? | Demos 1 and 2 (sections 19 and 20) |
+| Attribute inference | (§2.4.1) | Given part of a record, what is the hidden field? | Demos 1 and 2; the planted record in section 19.2 |
+| Reconstruction | NISTAML.032 | Can whole training records be recovered? | Demo 1: nearest neighbours and SVC store rows (section 19.6) |
 | Property inference | NISTAML.034 | What share of the training set has a given property? | Not demonstrated |
 | Model extraction | NISTAML.031 | Can the model's behaviour or parameters be copied? | Demo 3 (section 3.2) |
 
-Membership inference matters on its own: in a study of patients with a rare disease, being in the training set already discloses the diagnosis (NIST §2.4.2). NIST describes the main techniques: the loss-threshold attack, shadow models trained on similar data, and LiRA, which fits Gaussian distributions to the outputs of a smaller number of shadow models. It also notes that the simple and expensive attacks perform similarly in precision at low false-positive rates. That is why GRAIMATTER's Appendix F and section 12 of this guide look at the tail of the score distribution, not only the AUC.
+Membership inference matters on its own: in a study of patients with a rare disease, being in the training set already discloses the diagnosis (NIST §2.4.2). NIST describes the main techniques: the loss-threshold attack, shadow models trained on similar data, and LiRA, which fits Gaussian distributions to the outputs of a smaller number of shadow models. It also notes that the simple and expensive attacks perform similarly in precision at low false-positive rates. That is why GRAIMATTER's Appendix F and section 18 of this guide look at the tail of the score distribution, not only the AUC.
 
 **Mitigations (§2.4.5).** Differential privacy gives a provable bound on membership inference and reconstruction, but not on model extraction, and choosing the privacy parameter is a trade-off with utility: the 2020 US Census used ε = 19.61. NIST recommends complementing the theory with empirical privacy auditing, which is exactly what attack simulations before release do. Limiting and monitoring queries can slow extraction but can be circumvented. Machine unlearning removes a person's influence from a trained model, exactly by retraining or approximately.
 
@@ -316,7 +323,7 @@ ATLAS (Adversarial Threat Landscape for AI Systems) organises attacker behaviour
 | ML03 Model inversion attack | Demos 1 and 2, attribute inference |
 | ML04 Membership inference attack | Demos 1 and 2 |
 | ML05 Model theft | Demo 3, extraction |
-| ML06 AI supply chain attacks | – |
+| ML06 AI supply chain attacks | Demo 4, tampered supplier files |
 | ML07 Transfer learning attack | – |
 | ML08 Model skewing | – |
 | ML09 Output integrity attack | – |
@@ -373,7 +380,7 @@ The mapping was built for this guide from the documents; the frameworks do not c
 
 # Part 3 · A high-trust case: GRAIMATTER
 
-> **Why this case.** In a trusted research environment, sensitive health records never leave; researchers train models inside. The model file is what leaves, so whoever obtains it has white-box access, and the researcher, who sits inside the trust boundary, may be the risk. In the terms of Part 1, GRAIMATTER covers the privacy objective (NISTAML.03) in depth, plus model control (tampering after training) and query access (query limits). It does not address evasion or poisoning, and it predates the generative-AI wave. Sections 9 to 15 follow the green paper and demos 1 and 2; section 16 draws the lessons for other high-trust deployments.
+> **Why this case.** In a trusted research environment, sensitive health records never leave; researchers train models inside. The model file is what leaves, so whoever obtains it has white-box access, and the researcher, who sits inside the trust boundary, may be the risk. In the terms of Part 1, GRAIMATTER covers the privacy objective (NISTAML.03) in depth, plus model control (tampering after training) and query access (query limits). It does not address evasion or poisoning, and it predates the generative-AI wave. Sections 9 and 10 follow the green paper and section 11 draws the lessons for other high-trust deployments; the demos that test its checks, demos 1 and 2, are in Part 4 (sections 17 to 21).
 
 ## 9. What a TRE is protecting when the output is a model
 
@@ -403,7 +410,7 @@ The executive summary names three risk types (paper §9.1, p. 23). The demos ref
 |---|---|---|
 | **RT1** | A well-meaning researcher who does not know the threats and saves too much in the model file. | Training a tree with no leaf-size limit; changing a parameter after fitting and forgetting to retrain. |
 | **RT2** | A malicious researcher who deliberately hides data inside the file. | Adding a `hidden_rows` attribute to the model after `fit()`. |
-| **RT3** | An outside attacker who gets the released model. | All the attacks in sections 13 and 14. |
+| **RT3** | An outside attacker who gets the released model. | All the attacks in sections 19 and 20. |
 
 ### 9.3 The attacks
 
@@ -416,8 +423,6 @@ The paper uses three families of attack (paper §9.1, p. 23 and §10.1.1, p. 36)
 These are the privacy attacks of NIST section 2.4 (section 4 of this guide).
 
 Appendix E of the paper tells these stories for a non-technical reader: a famous politician whose weight and blood pressure are recovered from a cancer-risk model (attribute inference), the same person's membership in a cancer study (membership inference), a recruitment agency that screens out former study participants, and a hospital SVM found to contain 441 exact patient rows out of 798 (pp. 86-92).
-
----
 
 ## 10. A map of the green paper
 
@@ -441,7 +446,7 @@ The table lists every technical recommendation, with where the demos show it. Th
 | TECH 3 | Snapshot the pipeline that produced an approved model, for audit (p. 42). | `demo/output/pipeline_snapshot.json` (demo 1, section 9). |
 | TECH 4 | Two families of control: MDCs and MQCs (p. 42). | The structure of both demos. |
 | TECH 5 | MDC work needs staff trained in ML (p. 43). | Not demonstrated. |
-| TECH 6 | Keep part of the data aside; the research team never trains on it (p. 43). | 500 of 1,000 rows withheld (section 11). |
+| TECH 6 | Keep part of the data aside; the research team never trains on it (p. 43). | 500 of 1,000 rows withheld (section 17). |
 | TECH 7 | Run a range of checks before release: holdout accuracy, attacks, file size and type (p. 43). | `disclosure.decide()` in demo 1; structural, worst-case and attribute attacks in demo 2. |
 | TECH 8 | Researchers supply a data dictionary of model inputs (p. 46). | `demo/output/data_dictionary.json`; Appendix C is the template. |
 | TECH 9 | Researchers may use community safe wrappers (p. 46). | `SafeDecisionTreeClassifier` in both demos. |
@@ -474,379 +479,18 @@ Courses and documentation for TRE staff, researchers, and data governance and et
 
 Public representatives should take part in data governance and ethics approval, and the use of data to train models, with the controls applied, should be visible through searchable data use registers (§14.2, p. 67).
 
----
-
-## 11. The synthetic cohort and the holdout
-
-> **In plain words.** Both demos use the same made-up group of 1,000 people. The researcher gets 500 of them to train on. The TRE keeps the other 500 locked away and uses them to test the model, which is TECH 6. Nobody in the data is real.
-
-![The holdout the researcher never sees](img/en/fig02_holdout.svg)
-
-The cohort is generated by `demo/graimatter_demo/cohort.py` with seed 7.
-
-* **Clinical columns (6):** age (30 to 89), diabetes, asthma, weight (underweight, normal, overweight, obese), blood pressure (low, slightly high, high, very high, extremely high), smoker.
-* **Noise columns (10):** `noise_0` to `noise_9`, standard normal, with no link to the label. They exist so that an unconstrained tree has something to memorise.
-* **Label:** `high_risk`, drawn from a known logistic function of the clinical columns.
-
-**Under the hood.** The log-odds of `high_risk` are `-1.35 + 0.034·(age − 55) + 0.9·smoker + 0.55·diabetes + 0.22·asthma + 0.32·[weight ≥ overweight] + 0.30·[blood pressure ≥ high]`. `hold_out_for_tre()` shuffles the 1,000 row indices and gives the first 500 to the TRE and the rest to the researcher.
-
-The data dictionary that TECH 8 asks for is written to `demo/output/data_dictionary.json`. It lists each input with its encoding (`int`, `binary`, `ordinal:` with the level names, or `float64` for noise), the split sizes and the seed, following the template in Appendix C (p. 83).
-
-Demo 3 (section 3) uses the same generator with 4,000 rows and two noise columns, which it treats as lab values.
-
----
-
-## 12. The metrics, in words and in code
-
-> **In plain words.** An attack gives every row a score: how likely the attacker thinks it is that the row was in training. The metrics answer three questions. On average, does the score separate members from non-members (AUC)? Are there rows where the attack is very sure and right (TPR at low FPR, FDIF)? And if the attacker says "member", how likely is that to be true, given how rare members are (the posterior)?
-
-![Three ideas behind the attack metrics](img/en/fig04_metrics.svg)
-
-Each metric below is defined once, with the formula the repository uses (`demo/graimatter_demo/metrics.py`) and the paper's explanation (Appendix F, pp. 92-95).
-
-**Training accuracy and set-aside accuracy.** Training accuracy is the share of correct predictions on the rows the model was trained on. Set-aside accuracy is the same on the 500 rows the researcher never received. A large gap means the model has fitted this particular sample, noise included. Demo 1's policy flags a gap above 0.15.
-
-**Membership inference.** The attack labels each row "member" (in training) or "non-member". The worst-case version of Appendix G gives the attacker both the training rows and the held-out rows, so it is a conservative upper bound rather than a realistic attacker (p. 96).
-
-**TPR and FPR.** The true-positive rate is the share of real members the attack calls members. The false-positive rate is the share of non-members it wrongly calls members. The demo uses a score threshold of 0.5.
-
-**AUC.** Pick one member and one non-member at random. AUC is the probability that the attack scores the member higher. 0.5 is a coin toss; 1 means the attack always ranks members first. The paper notes that there is no single "bad" AUC value and suggests comparing with the range expected by chance (Appendix F §21.4, p. 94). For 100 members and 100 non-members, three standard deviations around 0.5 is roughly 0.38 to 0.62. The `sacroml` report prints the same band as `0.3772 -> 0.6228`.
-
-**Advantage.** `advantage = |TPR − FPR|`. Zero means the attack calls members and non-members "member" at the same rate.
-
-**TPR at 10% FPR.** Walk down the rows from the highest score. Stop just before the false alarms exceed 10% of the non-members. The share of members caught so far is the TPR at 10% FPR. A model can have a modest AUC and still give away a group of members in this tail.
-
-**FDIF (frequency difference).** Sort the rows by score. FDIF is the share of members in the top 10% minus the share of members in the bottom 10%. Random scores give an FDIF near 0; an attack that is certain about some members and some non-members pushes it towards 1. The demo computes a permutation p-value: shuffle the membership labels 300 times and count how often the shuffled FDIF is at least as large. Appendix F explains why this matters: an attack that is certain about 20 of 200 rows (10 members scored 1, 10 non-members scored 0) and random elsewhere has an average AUC of about 0.595, inside the chance band, yet it exposes those people (§21.5, pp. 94-95). Demo 1 treats FDIF ≥ 0.20 with p ≤ 0.05 as a failure.
-
-**Membership posterior.** If the attacker says "this row was in training", how likely is that to be true? It depends on *A*, the share of members among the rows the attacker is testing:
-
-```
-P(member | flagged) = (A × TPR) / (A × TPR + (1 − A) × FPR)
-```
-
-The demo reports it at A = 0.5 (half the candidates are members) and A = 0.01 (one in a hundred). For the unconstrained tree (TPR 1.000, FPR 0.588) that is 0.630 and 0.017 (`demo_report.txt`, section 4). The paper's own example shows the same effect: a good attack (TPR 0.8, FPR 0.2) gives only 0.04 when members are 1 in 100 (Appendix F, Table 9, p. 93).
-
-**Attribute inference.** For a row, try every possible value of one hidden field and ask the model for its confidence in the row's label. If a single value gives the highest confidence, that value is the attack's guess; if several values tie, the attack abstains. Appendix G asks for two numbers: the share of rows that get a unique guess, and how many of those guesses are correct, each on the training rows and on the held-out rows (p. 96). Demo 1 summarises the comparison as an **attribute risk ratio**: the correct-guess rate on training rows divided by the rate on set-aside rows. Above 1 means training rows are easier to complete. Demo 1's policy flags 1.35.
-
-**k-anonymity of a leaf.** The number of training rows in the smallest leaf of a tree. A leaf of 1 is one person.
-
-**Under the hood.** `summarise_attack_scores()` in `metrics.py` returns all of the above for one set of attack scores. `true_positive_rate_at_false_positive_rate()` walks the ranked scores; `frequency_difference()` uses a 10% tail and 300 permutations; `membership_probability()` is the posterior formula.
-
-### 12.1 The three readings, worked through
-
-> **In plain words.** Slide 26 reads an attack in three ways: the average (AUC and advantage), the tail (FDIF and TPR at low FPR), and how rare a member is (the posterior). Each one answers a different question, and a model can pass one and fail another. Here each is worked through with numbers small enough to check by hand.
-
-**1. The average: AUC and advantage.** Take 4 members (M) and 4 non-members (N), with these attack scores:
-
-| Row | M1 | N1 | M2 | M3 | N2 | M4 | N3 | N4 |
-|---|---|---|---|---|---|---|---|---|
-| Score | 0.9 | 0.8 | 0.7 | 0.6 | 0.5 | 0.4 | 0.3 | 0.2 |
-
-AUC compares every member with every non-member: 4 × 4 = 16 pairs. M1 (0.9) beats all 4 non-members. M2 (0.7) and M3 (0.6) each beat 3 (all but N1). M4 (0.4) beats 2 (N3 and N4). That is 4 + 3 + 3 + 2 = 12 wins out of 16, so **AUC = 0.75**. Shuffle the scores at random and each pair is a coin toss: AUC 0.5.
-
-For the advantage, call "member" every score of 0.5 or more. Three of the 4 members are flagged (TPR = 0.75) and two of the 4 non-members are too (N1 and N2, FPR = 0.50). **Advantage = |0.75 − 0.50| = 0.25.**
-
-How to read it: averaged over everyone, the attack ranks members first three times in four. The demo's unconstrained tree is in the same territory (worst-case AUC 0.708, advantage 0.412) and the safe wrapper brings it down to 0.528 and 0.004. What the average cannot say is *who* is exposed: twelve mild wins look the same as a few certain ones plus noise.
-
-**2. The tail: FDIF and TPR at 10% FPR.** This is the Appendix F example (§21.5, pp. 94-95). There are 200 rows, 100 members and 100 non-members. The attack is certain about 20 of them: 10 members get a score of 1 and 10 non-members a score of 0. The other 180 rows get random scores.
-
-* *AUC.* Of the 100 × 100 = 10,000 pairs, the 10 certain members win all 1,000 of theirs. The 90 other members beat the 10 non-members at 0, another 900 wins. The remaining 90 × 90 = 8,100 pairs are coin tosses, about 4,050 wins. In total 1,000 + 900 + 4,050 = 5,950, so **AUC ≈ 0.595**, inside the chance band of 0.38 to 0.62. By the average, this attack looks harmless.
-* *FDIF.* The top 10% is the 20 highest scores: the 10 certain members plus the 10 highest of the random rows, about half of them members. That is about 15 members out of 20, 75%. The bottom 20 holds the 10 certain non-members plus about 5 members, 25%. **FDIF ≈ 0.75 − 0.25 = 0.50.** Shuffling the labels 300 times almost never gives a value that large, so the p-value is close to the smallest the demo can report (about 0.003). Demo 1 would flag it (limit 0.20 with p ≤ 0.05).
-* *TPR at 10% FPR.* Walk down from the top. The 10 certain members come first with no false alarm. After that the random rows mix members and non-members, and the walk stops once 10 non-members have been flagged; by then about 10 more members have been caught. **TPR ≈ 0.20**, about twice what random scores give (0.10).
-
-Running this setup 200 times with `metrics.py` gives an average AUC of 0.599, FDIF of 0.50, a median p-value of 0.003 and TPR at 10% FPR of 0.22 (0.11 for random scores). How to read it: the average hides ten people the attack can name for certain. Section 13.5 shows a milder version of the same gap: Salem-synth on the wrapped tree gives AUC 0.512 but FDIF 0.160 with p = 0.027, although there the signal is a tilt across the tail rather than a few rows the attacker is sure about.
-
-**3. How rare a member is: the posterior.** A flag is only as good as the share of flagged people who really are members. Take the paper's attack (TPR 0.8, FPR 0.2; Appendix F, Table 9, p. 93) and count people instead of using the formula.
-
-| | 1,000 candidates, half members (A = 0.5) | 10,000 candidates, 1 in 100 a member (A = 0.01) |
-|---|---|---|
-| Members | 500 | 100 |
-| Members flagged (× 0.8) | 400 | 80 |
-| Non-members | 500 | 9,900 |
-| Non-members flagged (× 0.2) | 100 | 1,980 |
-| All flagged | 500 | 2,060 |
-| **Share of flags that are members** | 400 / 500 = **0.80** | 80 / 2,060 = **0.04** |
-
-The attack is the same in both columns. Only the base rate changed, and with it the meaning of "flagged": at 1 in 100, 25 of every 26 flags are false alarms. The demo's unconstrained tree (TPR 1.000, FPR 0.588) gives the same picture. Out of 10,000 candidates with 100 members, it flags all 100 members and about 5,821 non-members, so 100 / 5,921 ≈ **0.017**. With half the candidates members it is 0.5 / (0.5 + 0.294) ≈ **0.630**.
-
-How to read it: in a TRE the attacker rarely knows that half the people they test were in training, so a realistic base rate makes a typical flag weak evidence. That does not make the model safe. In example 2, an attacker who flags only the rows scored 1 has no false alarms, so FPR = 0 and the posterior is 1 at any base rate. A rare member is protected on average and not in the tail, which is why the three readings are used together.
-
-| Reading | Question it answers | Example above | Demo 1 limit |
-|---|---|---|---|
-| Average | Does the score separate members from non-members overall? | AUC 0.75, advantage 0.25 | AUC 0.62, advantage 0.20 |
-| Tail | Are there people the attack is sure about, and right? | FDIF 0.50, TPR at 10% FPR 0.20 | FDIF 0.20 with p ≤ 0.05, TPR 0.35 |
-| Rare member | If the attack says "member", how often is it true? | 0.80 at A = 0.5, 0.04 at A = 0.01 | Reported, not a rule |
-
----
-
-## 13. Demo 1: the hand-written checks
-
-> **In plain words.** The first script is a small, readable implementation of the paper's checks. It trains several models on the synthetic cohort, attacks them, and says yes or no to each one using a demo policy. It refuses a deep tree that memorised people and releases a tamer tree built through a safe wrapper. It also refuses models that store rows, catches a model that was edited after training, and blocks a query that tries to sweep hidden fields.
-
-Entry point: `demo/run_demo.py`. Report: `demo/output/demo_report.txt`. Policy: `demo/graimatter_demo/disclosure.py`. Constraints: `demo/constraints.json`. The walkthrough follows the report's sections 1 to 10.
-
-### 13.0 The demo policy
-
-The paper does not publish universal cut-offs; ELA 8 leaves the risk appetite to an agreement with the data controller. So that the script can say yes or no, `disclosure.py` sets a local policy. **These numbers are the demo's, not the paper's.**
-
-| Rule | Limit |
-|---|---|
-| Worst-case membership AUC | 0.62 |
-| Advantage | 0.20 |
-| TPR at 10% FPR | 0.35 |
-| FDIF, and its p-value | 0.20, with p ≤ 0.05 |
-| Attribute risk ratio | 1.35 |
-| Training minus set-aside accuracy | 0.15 |
-| Model file size ÷ training table size | 0.75 |
-| Accepted file types | `.joblib`, `.pkl` |
-
-A model that stores training rows is refused even when every other rule passes.
-
-### 13.1 The rows the researcher never sees (section 1)
-
-The script generates the 1,000 rows, keeps 500 aside and writes the data dictionary (section 11 of this guide). *Illustrates TECH 6 and TECH 8, Appendix C.*
-
-### 13.2 Attribute inference on one planted record (section 2)
-
-![Twenty queries recover two hidden fields](img/en/fig03_attribute_sweep.svg)
-
-`case_study.py` rebuilds the paper's first case study on synthetic data. It plants one person, aged 62, diabetic, asthmatic and a smoker, who is overweight with slightly high blood pressure. Around that person it places a block of rows that share the same public fields and cover every other weight × blood-pressure combination, with mixed labels. An unconstrained tree is trained on all of it.
-
-The attacker knows the four public fields and tries all 4 × 5 = 20 combinations of the two hidden ones. The planted pair (overweight, slightly high) comes back with confidence 1.000; every other combination is at 0.500. The unique highest confidence is the hidden truth. In the paper's version the top answer was at 93.8% and the next at 57.7% (Appendix E §20.1, p. 87); the demo's planted block makes the gap even clearer. *Illustrates Appendix E.*
-
-### 13.3 What epsilon means, on a mean (section 3)
-
-![Differential privacy on a released mean](img/en/fig10_dp.svg)
-
-Differential privacy is a property of the mechanism that turns private data into a release, not of the data itself (paper §10.1.3, pp. 37-39). The paper's thought experiment: the attacker knows everything except whether one particular person was included, and sees the release. A deterministic release, such as a plain mean, gives the answer away: the attacker computes the mean both ways and sees which one matches. A differentially private mechanism adds randomness so that the two cases look alike, to a degree set by epsilon (smaller is more private).
-
-The demo applies this to the mean age of the 500 training rows. The attacker knows every age and must guess whether row 0 was included. Accuracy is how often the guess is right over 400 trials.
-
-| Release | Attacker accuracy | Laplace scale |
-|---|---|---|
-| Deterministic mean | 1.000 | 0 |
-| epsilon 8.0 | 0.703 | 0.015 |
-| epsilon 1.0 | 0.522 | 0.120 |
-| epsilon 0.2 | 0.487 | 0.600 |
-
-TECH 12 adds a practical warning. At epsilon 0.2 one noisy mean misses the true mean by 0.3053. If someone draws 50 noisy means and keeps the one closest to the true answer, the miss is 0.0084. Picking the draw that looks most like the non-private answer cancels the protection, so TRE staff, not the researcher, should choose the random seed, without looking at the result. *Illustrates §10.1.3 and TECH 12.*
-
-**Under the hood.** `dp_sketch.py` uses sensitivity `(90 − 30) / 500 = 0.12` (the age range divided by the number of rows) and Laplace scale `sensitivity / epsilon`. The attacker guesses "included" when the release is closer to the mean with the row than to the mean without it. This repository does not train a differentially private model.
-
-### 13.4 Unconstrained tree (section 4)
-
-A `DecisionTreeClassifier` with no depth limit and `min_samples_leaf = 1` is trained on the 500 researcher rows.
-
-| | Seeded result |
-|---|---|
-| Training accuracy | 1.000 |
-| Set-aside accuracy | 0.590 |
-| Gap | 0.410 (limit 0.15) |
-| Smallest leaf | 1 training row |
-| File size | 18,150 bytes vs training table 68,000 bytes (ratio 0.267; size alone does not fail) |
-| Worst-case membership AUC | 0.708 (limit 0.62) |
-| Advantage | 0.412 (limit 0.20) |
-| TPR / FPR | 1.000 / 0.588 |
-| TPR at 10% FPR | 0.156 (does not trip the 0.35 limit) |
-| FDIF | 0.620, p = 0.003 |
-| Posterior if flagged | 0.630 when half of candidates are members; 0.017 when 1 in 100 are |
-| Salem-synth | AUC 0.703; TPR at 10% FPR 0.186; FDIF 0.660 |
-| Weight attribute inference | Abstained. Ratio 1.000. |
-
-**Decision: do not release.** Four rules fire: the accuracy gap, the AUC, the advantage and FDIF.
-
-Two details are worth pointing out. First, the file-size check and the TPR at 10% FPR both pass: on their own they would have let this model through, which is why TECH 7 asks for a range of checks. Second, the attribute attack on weight abstains. This tree separates rows using the noise columns, so changing a person's weight does not move them to another leaf and every weight value gives the same confidence. Section 13.2 is the case where the model does split on the hidden fields.
-
-**Under the hood.** The worst-case attack (`attacks.worst_case_membership`) builds one row per record with the model's predicted probabilities **plus the true label**, labels it member or non-member, splits that set in half, trains a random forest on one half and scores the other. Salem-synth (`attacks.salem_synth_membership`) draws a fresh cohort from the same generator, trains a shadow tree with the same hyperparameters, trains the attack on the shadow model's outputs and then scores the real model: the attacker has similar data, not the TRE's tables (Appendix A, Table 2, p. 71).
-
-### 13.5 The same data through a safe wrapper (section 5)
-
-![Unconstrained tree versus safe wrapper](img/en/fig06_trees.svg)
-
-The researcher asks for the same unconstrained settings, but through `SafeDecisionTreeClassifier`. The wrapper reads `demo/constraints.json` and corrects them: `min_samples_leaf` from 1 to 20 and `max_depth` from unlimited to 4. Appendix D of the paper shows the constraints-file format with an example minimum leaf size of 5 (p. 83); the demo is stricter so that the contrast shows on a few hundred rows.
-
-| | Seeded result |
-|---|---|
-| Training accuracy | 0.692 |
-| Set-aside accuracy | 0.584 |
-| Smallest leaf | 20 training rows |
-| Worst-case membership AUC | 0.528 |
-| Advantage | 0.004 |
-| TPR at 10% FPR | 0.116 |
-| FDIF | 0.020, p = 0.445 |
-| Posterior if flagged | 0.502 at half members; 0.010 at 1 in 100 |
-| Weight attribute inference | Abstained. Ratio 1.000. |
-
-`request_release()` returns "Run file through the next step of the checking procedure": the wrapper only gets the file into the TRE's queue. The attack numbers then drive the decision. No demo rule fires. **Decision: allow release under the demo policy.** The set-aside accuracy barely changed (0.590 to 0.584), which tells you that the deep tree's extra training accuracy was memorisation, not skill.
-
-#### The quiet failure (Appendix F)
-
-![AUC near chance, tail not](img/en/fig07_tail.svg)
-
-Salem-synth on the same wrapped tree gives AUC 0.512, close to chance, but FDIF 0.160 with p = 0.027: the top tenth of its scores holds more members than the bottom tenth, by more than chance explains. Its TPR at 10% FPR, 0.118, is about the same as the worst case's 0.116, so the signal is a tilt across the tail rather than a few rows the attacker is sure about. This is the Appendix F warning in practice: the average says "chance", the tail does not. Demo 1's export rule follows the worst-case attack of Appendix G, whose FDIF is 0.020, so it still releases, and 0.160 is under the demo's FDIF limit of 0.20 anyway. A data controller who cares about the tail could set a stricter limit. (Earlier versions of the demo printed FDIF 0.280 here, inflated by the order of tied scores; the [demo guide](Demo_Guide_EN.md), §1.4, explains it.) *Illustrates TECH 9, TECH 10, TECH 7, Appendix F and Appendix A experiment 2.*
-
-### 13.6 Instance-based models are refused (section 6)
-
-* A 1-nearest-neighbour model stores all 500 training rows. The file is 68,677 bytes, 1.010 times the training table.
-* An RBF support-vector classifier stores 423 support vectors out of 500 rows. File ratio 0.94.
-* The safe wrappers for both classes refuse to fit: `constraints.json` marks `KNeighborsClassifier` and `SVC` as not permitted.
-
-**Decision: do not release** either model. The reasons are that the model stores training rows and that the file is bigger than 0.75 of the table. The paper's alternatives are training on aggregated data, using a differentially private algorithm, or keeping the model inside a query-limited service (TECH 11, p. 49; §10.1.5, pp. 39-40). This repository does not implement a private SVM. *Illustrates TECH 11.*
-
-### 13.7 Editing the model after `fit()` (section 7)
-
-![The safe wrapper, from constraints file to register](img/en/fig08_wrapper.svg)
-
-This time the researcher sets `override=True`. The wrapper accepts `min_samples_leaf = 1` and unlimited depth but reports both breaches. After fitting, the researcher edits the parameters back to the allowed values (`max_depth` 4, `min_samples_leaf` 20) and adds an attribute called `hidden_rows`. `request_release()` compares the current state with the snapshot taken at `fit()` and returns "Do not allow release", listing:
-
-* `max_depth` changed from `None` to 4 after the model was fitted;
-* `min_samples_leaf` changed from 1 to 20 after the model was fitted;
-* the smallest leaf holds 1 training row, while the constraints require 20;
-* attributes were added after `fit()`: `hidden_rows`.
-
-The first two catch the careless case (RT1: changing a parameter without retraining). The last catches a deliberate attempt to hide data (RT2). The paper describes this check in §10.1.2 (p. 37). Finally, a file called `not_a_model.txt` is refused because its type is not `.joblib` or `.pkl`. *Illustrates TECH 10 and the RT1/RT2 risk types.*
-
-**Under the hood.** At `fit()`, the wrapper stores the parameters, a SHA-256 digest of the tree arrays, the leaf k-anonymity and the list of attribute names. `request_release()` re-checks the constraints, compares parameters and digest, recomputes the smallest leaf and looks for new attributes. It writes `<model>.release.json` next to the model file.
-
-### 13.8 A query budget that counts rows (section 8)
-
-![A query budget that counts rows](img/en/fig09_query_budget.svg)
-
-If the model is not released as a file but kept on a server, the TRE can limit queries (paper §10.1.7, pp. 40-41). `query_gate.py` gives each user a budget of 8 rows. A single patient lookup (1 row) is allowed; the predicted class probabilities come back as 0 and 1. Then the same user sends the 20-combination sweep of section 13.2 in one request. The gate refuses it: 20 rows requested, 1 already used, budget 8.
-
-The unit matters. If the budget counted HTTP calls, one call carrying all 20 rows would pass. TECH 17 adds that a real query-limited service should be tested by an external party (p. 53); the demo implements only the control logic. *Illustrates TECH 16 and TECH 17.*
-
-### 13.9 Register entry and pipeline snapshot (section 9)
-
-`demo/output/data_use_register.json` records the wrapped tree (`safe_tree.joblib`) with the decision `approved_for_demo_release`, the controls applied (set-aside, wrapper constraints, membership and attribute attacks, leaf k-anonymity, size check) and the refused files (`unsafe_tree.joblib`, `tampered_tree.joblib`). `demo/output/pipeline_snapshot.json` stores what is needed to reproduce the approved candidate: the seed, the researcher and set-aside row ids, the wrapper's recommendation and corrected parameters, and the demo policy. The researcher declaration is written in plain language (follow the approved controls, accept the register entry, accept that TRE staff will run attacks); the paper's clause text was left for a qualified legal review. *Illustrates TECH 3 and ELA 4.*
-
-### 13.10 Side by side (section 10)
-
-| Model | Train | Set-aside | Worst-case AUC | Advantage | TPR at 10% FPR | Decision |
-|---|---|---|---|---|---|---|
-| Unconstrained tree | 1.000 | 0.590 | 0.708 | 0.412 | 0.156 | Refuse |
-| Safe wrapper, leaf 20, depth 4 | 0.692 | 0.584 | 0.528 | 0.004 | 0.116 | Release under the demo policy |
-| 1-nearest neighbour | | | | | | Refuse: stores 500 rows |
-| RBF SVC | | | | | | Refuse: 423 support vectors |
-| Tampered tree | | | | | | Refuse: edited after fit |
-
----
-
-## 14. Demo 2: the official SACRO-ML package
-
-> **In plain words.** The second script runs the same cohort through `sacroml`, the maintained toolkit that grew out of the paper's AI-SDC work. Its safe wrapper is looser than demo 1's (minimum leaf 5 instead of 20), it never approves anything by itself, and its own structural check still calls the wrapped tree risky. Its membership attack gives an AUC near 0.5 even for the tree that memorised everyone, because it looks at different information.
-
-Entry point: `demo/run_sacroml_demo.py`. Package: `sacroml` 2.0.1 from [SACRO-ML](https://github.com/AI-SDC/SACRO-ML). Summary: `demo/output/sacroml/sacroml_report.txt`. Per-attack `report.json` and `report.pdf` live under `demo/output/sacroml/unconstrained_tree/` and `demo/output/sacroml/safe_wrapper_tree/`, in `worst_case`, `structural` and `attribute`. The seeded run took about three and a half minutes.
-
-### 14.1 The package's safe wrapper
-
-* Created with the default leaf size, `SafeDecisionTreeClassifier` warns that `min_samples_leaf = 1` is below the recommended minimum of 5 and marks the configuration as disclosive.
-* With constraints applied, it changes `min_samples_leaf` to 5.
-* `request_release()` without a `Target` writes `safe_release/target.yaml` and recommends "Proceed to next step of checking". It does not run attacks, and it is not an approval.
-* Setting `min_samples_leaf` from 5 back to 1 after `fit()` makes `posthoc_check()` return disclosive, with the message that the parameter changed after the model was fitted.
-
-Passing a `Target` into `request_release()` would also start the package's likelihood-ratio attack (LiRA); the upstream example runs it with 100 shadow models. This demo does not run LiRA.
-
-### 14.2 Unconstrained tree
-
-Training accuracy 1.000, set-aside accuracy 0.590, gap 0.410.
-
-| Check | Seeded result |
-|---|---|
-| Worst-case membership AUC, 3 repetitions | mean 0.500 (min 0.500, max 0.500); none above the null band 0.377 to 0.623 |
-| Structural | `gen_error_risk`, `unnecessary_risk`, `k_anonymity_risk`, `class_disclosure_risk`, `smallgroup_risk` true; `dof_risk` false. Smallest leaf 1 row, under the package threshold of 10 |
-
-The membership AUC of 0.500 needs explaining, and section 15.2 does it with a picture. In short: this attack uses the predicted probabilities only, and a tree of pure leaves gives extreme probabilities to training rows and to set-aside rows alike. The structural attack is what flags the memorisation here.
-
-### 14.3 Wrapped tree (`min_samples_leaf` 5)
-
-Training accuracy 0.868, set-aside accuracy 0.566, gap 0.302. Leaf k-anonymity 5.
-
-| Check | Seeded result |
-|---|---|
-| Worst-case membership AUC, 3 repetitions | mean 0.494 (min 0.471, max 0.519); none above the null band |
-| Structural | The same risk flags true, including `k_anonymity_risk`, because 5 is still under 10. `dof_risk` false |
-
-Moving from leaf size 1 to leaf size 5 is what the published rules file does, and the package's own structural check still calls that tree risky.
-
-### 14.4 Attribute inference
-
-![Reading sacroml attribute inference](img/en/fig12_guess_coverage.svg)
-
-Read every cell as **correct unique guesses / unique guesses made, out of 500 rows**.
-
-| Field | Unconstrained, training | Unconstrained, set-aside | Wrapped, training | Wrapped, set-aside |
-|---|---|---|---|---|
-| diabetes | 136/136 | 141/141 | 195/257 | 191/246 |
-| asthma | no unique guess | no unique guess | 50/67 | 49/64 |
-| weight | no unique guess | no unique guess | no unique guess | no unique guess |
-| blood pressure | 5/5 | 3/3 | no unique guess | no unique guess |
-| smoker | 198/198 | 205/205 | 254/327 | 262/330 |
-| age | reconstructed fraction 0.012 | 0.010 | 0.034 | 0.050 |
-
-"136/136" means that every unique guess was right, on the 136 rows (27%) where the attack was willing to guess. It does **not** mean that 136 of 500 rows were guessed correctly. A "no unique guess" cell means the attack abstained on every row. The training and set-aside numbers are close, which is the comparison Appendix G asks for: a model that leaks attributes only for its training rows would show a clear gap. Age is numeric, so the package reports the fraction of rows whose age it can bound within its tolerance, not a guess count.
-
-### 14.5 How to read `report.json`
-
-Each attack folder holds a `report.json` and a `report.pdf`. The JSON is a dictionary with one entry per run, keyed by the attack name and a run id; if you run the script more than once, new runs are appended, so read the last key. Inside each run:
-
-* `metadata.attack_params`: the settings, for example `n_reps: 3` for the worst-case attack, `safe_threshold: 10` for the structural attack.
-* `metadata.global_metrics`: the summary. For the worst-case attack, `null_auc_3sd_range` is the chance band and `n_sig_auc_p_vals` counts repetitions whose AUC is significantly above chance (0 here). For the structural attack, the risk flags listed above.
-* `attack_experiment_logger.attack_instance_logger`: one entry per repetition. For the worst-case attack: `TPR`, `FPR`, `AUC`, `Advantage`, the FDIF family (`FDIF01` is the 10% tail, with its p-value in `PDIF01`), and `TPR@0.1%` style tail rates. For the attribute attack: `categorical` holds, per field, `train` and `test` lists of five numbers, `[correct, unique guesses, baseline %, number of values, rows]`, where the baseline is the share of the most common value; `quantitative` holds the age fraction.
-
-**Under the hood.** Two details differ from demo 1. The package's worst-case attack is configured with `include_model_correct_feature: false` and `sort_probs: true`: the attack model sees sorted predicted probabilities, not the true label. Its attribute attack keeps a candidate value only when the model's predicted label for that candidate matches the model's prediction for the original row, and requires the unique maximum confidence to pass a threshold.
-
----
-
-## 15. The two demos side by side
-
-> **In plain words.** The two scripts look at the same data and disagree on purpose, and the disagreement is instructive. They use different leaf sizes, their "worst-case" attacks see different information, and one says "release" while the other says "keep checking".
-
-![Same cohort, two toolkits](img/en/fig11_two_demos.svg)
-
-### 15.1 Three differences that matter
-
-| | Demo 1 (hand-written) | Demo 2 (`sacroml` 2.0.1) |
-|---|---|---|
-| **Leaf rule** | `min_samples_leaf` 20 and `max_depth` 4, stricter than the Appendix D example | `min_samples_leaf` 5, from the package rules file |
-| **Membership attack** | Predicted probabilities plus the true label | Predicted probabilities only |
-| **Wrapped tree** | train 0.692, set-aside 0.584, AUC 0.528 | train 0.868, set-aside 0.566, mean AUC 0.494 |
-| **Leaf check** | smallest leaf 20 | smallest leaf 5 < 10, so `k_anonymity_risk` is true |
-| **Outcome** | release under the demo policy | "Proceed to next step of checking"; structural risk still true |
-
-### 15.2 Why the membership numbers differ
-
-![How sure is each tree about the true label?](img/en/fig05_confidence.svg)
-
-Both scripts call their attack "worst case", but they are different tests.
-
-On the unconstrained tree every leaf is pure, so every prediction is a probability of exactly 0 or 1. The figure shows the confidence each tree gives to the **true** label. Training rows always get 1. Set-aside rows get 1 when the tree happens to be right (59% of the time) and 0 when it is wrong.
-
-* **Demo 1** gives the attack the true label, so it can see "confidence 1 in the right class" versus "confidence 0 in the right class". Members are always in the first group; 41% of non-members are in the second. AUC 0.708.
-* **Demo 2** gives the attack only the sorted probabilities. Without the label, "probability 1 for class A" looks the same whether the tree is right or wrong. Members and non-members are equally extreme, so the AUC is 0.500.
-
-An AUC near 0.5 from the package therefore does not mean the tree failed to memorise. In demo 2 the structural attack is the check that catches it. For the wrapped tree with leaves of 20 rows, both groups spread over similar confidences, which is why demo 1's AUC drops to 0.528.
-
-### 15.3 What to take away
-
-Neither demo is an approval process. The hand-written script releases a tree only after forcing leaf 20 and depth 4 and after its own label-aware attack falls inside a local policy. The package recommends further checking and keeps flagging the leaf-5 tree. A real TRE would combine both kinds of evidence with a risk appetite agreed with its data controller (ELA 8, ELA 11).
-
----
-
----
-
-## 16. What carries over to other high-trust deployments
+## 11. What carries over to other high-trust deployments
 
 > **In plain words.** GRAIMATTER was written for health data in research environments, but six of its habits apply anywhere a model touches sensitive data or high-stakes decisions. What it does not give you is protection against evasion and poisoning, so other settings need those tests too.
 
 | GRAIMATTER habit | Where in this guide | The same idea in the frameworks |
 |---|---|---|
-| **Assume the worst-case attacker.** Test white box, with the training and held-out data in hand. | Appendix G; sections 12 and 13.4 | NIST §2.1.4: white-box attacks test against worst-case adversaries |
-| **Score on rows the builder never saw, and let someone else run the attacks.** | TECH 5, TECH 6; section 11 | UK Code 9.2.1 (independent testers); NIST §2.4.5 (privacy auditing) |
-| **Check structure, not only scores.** Stored rows, leaf size, file type. | Sections 13.6 and 14.2: the structural check flags a tree that the probability-only attack scores at 0.500 | OWASP ML03, ML04; UK Code 9.4 |
-| **Watch the tail.** FDIF and TPR at low FPR catch exposure that the AUC averages away. | Section 12; section 13.5, the quiet failure | NIST §2.4.2: attacks compared on precision at low false-positive rates |
-| **Freeze the artefact and detect edits.** Snapshot at `fit()`, compare before release, keep the pipeline. | TECH 3, TECH 10; section 13.7 | UK Code 8.1.2 (hashes), 8.3 (audit logs); OWASP ML10 |
-| **Count queries in rows.** | TECH 16; section 13.8 | UK Code 6.2; NIST §2.4.5. Demo 3: a budget slows extraction but does not stop it (section 3.2) |
+| **Assume the worst-case attacker.** Test white box, with the training and held-out data in hand. | Appendix G; sections 18 and 19.4 | NIST §2.1.4: white-box attacks test against worst-case adversaries |
+| **Score on rows the builder never saw, and let someone else run the attacks.** | TECH 5, TECH 6; section 17 | UK Code 9.2.1 (independent testers); NIST §2.4.5 (privacy auditing) |
+| **Check structure, not only scores.** Stored rows, leaf size, file type. | Sections 19.6 and 20.2: the structural check flags a tree that the probability-only attack scores at 0.500 | OWASP ML03, ML04; UK Code 9.4 |
+| **Watch the tail.** FDIF and TPR at low FPR catch exposure that the AUC averages away. | Section 18; section 19.5, the quiet failure | NIST §2.4.2: attacks compared on precision at low false-positive rates |
+| **Freeze the artefact and detect edits.** Snapshot at `fit()`, compare before release, keep the pipeline. | TECH 3, TECH 10; section 19.7 | UK Code 8.1.2 (hashes), 8.3 (audit logs); OWASP ML10 |
+| **Count queries in rows.** | TECH 16; section 19.8 | UK Code 6.2; NIST §2.4.5. Demo 3: a budget slows extraction but does not stop it (section 3.2) |
 
 Two more carry over as governance rather than code. The risk appetite is agreed with whoever is accountable for the data (ELA 8, ELA 11), which matches the UK Code's provision 3.1.3 on controls weighed against risk tolerance. And the model itself may be personal data (ELA 1), which the EDPB confirmed in Opinion 28/2024 (section 8.4).
 
@@ -854,261 +498,13 @@ Two more carry over as governance rather than code. The risk appetite is agreed 
 
 ---
 
-# Closing
+# Part 4 · The attacks in detail
 
-## 17. A release gate over the demos
+Part 4 takes the NIST attack classes one at a time and runs the demo that shows each one. It goes with two videos. **Video 4a** covers sections 12 to 15: how to read the taxonomy, availability, integrity (demo 3, sections 1 and 3) and the supply chain (demo 4). **Video 4b** covers sections 16 to 22: privacy, extraction (demo 3, section 2), the GRAIMATTER demos 1 and 2 section by section, and the classes generative AI adds. Each class lists what the attacker does, the defences and their limits, and where the repository shows it; the [demo guide](Demo_Guide_EN.md) walks through the code behind every number.
 
-> **In plain words.** The demos print numbers. A release decision needs those numbers judged against named obligations, with a record someone can audit. `demo/run_gate.py` reruns the demos, compares each number with a tolerance, and gives every control in the EU AI Act, the UK Code, NIST and GRAIMATTER a verdict: pass, fail or not evidenced. On the seeded run the GRAIMATTER controls pass and Article 15(5) fails, because demo 3's forest can be evaded, copied and backdoored; its model-poisoning clause passes, because demo 4's checks refuse every tampered file.
+## 12. Reading the NIST taxonomy: the CIA triad and the identifiers
 
-The pattern comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine), which does the same for LLMs and agents (section 5). Its tools (garak, AgentDojo, PyRIT) attack language models and are no use against a tree or a random forest; what carries over is the method: controls mapped to evidence, numeric tolerances, a `not_evidenced` status, and a report that makes CI fail.
-
-### 17.1 What the gate does
-
-1. It runs the demos it is asked for (all four by default) and keeps the numbers each one already prints. Nothing is recomputed, and the reports in `demo/output/` stay as they are.
-2. It compares each metric with its tolerance. A category is within tolerance when none of its metrics breaches.
-3. It gives each control in the selected regime packs a verdict. **pass**: every demo the control relies on ran and none of its categories breached. **fail**: one of them breached. **not_evidenced**: a demo it relies on did not run. A control is never marked pass on evidence that was not produced.
-4. It writes `demo/output/gate/gate_<packs>.json` for machines and `.md` for people, and exits with 1 if any category breaches or any selected control is not evidenced.
-
-```bash
-uv run python demo/run_gate.py                                   # demos 1-4; packs eu_uk, nist_aml, graimatter
-uv run python demo/run_gate.py --regimes us                      # NIST AI RMF and SR 26-02
-uv run python demo/run_gate.py --demos 1,3,4 --accept-missing 2  # what CI runs: no sacroml
-uv run python demo/run_gate.py --fail-under evasion.self_reported=0.5
-```
-
-### 17.2 Tolerances
-
-A tolerance is the largest value of a metric the data controller accepts. It is a risk appetite (ELA 8), not a threshold from the green paper, NIST or any regulation, none of which publishes one. The privacy tolerances are read from demo 1's `POLICY` in `disclosure.py`, so on the wrapped tree the gate decides exactly as `decide()` does; a test checks that. The robustness tolerances were set for the workshop.
-
-| Category | Metric | Demo | Tolerance | Seeded value |
-|---|---|---|---|---|
-| membership | Worst-case AUC; advantage; TPR at 10% FPR; FDIF when p ≤ 0.05 | 1 | 0.62; 0.20; 0.35; 0.20 | 0.528; 0.004; 0.116; 0.020 (p = 0.445) |
-| attribute | Attribute risk ratio for weight | 1 | 1.35 | 1.000 |
-| generalisation | Training minus TRE-holdout accuracy | 1 | 0.15 | 0.108 |
-| stored_rows | Training rows stored in the file; file size over table size | 1 | 0; 0.75 | 0; 0.051 |
-| release_check | Known-disclosive files let through (deep tree, 1-NN, SVC, edited tree, wrong file type) | 1 | 0 | 0 |
-| query_budget | Rows of the attribute sweep allowed; 1,000-row extraction request allowed | 1, 3 | 0 | 0 |
-| evasion | High-risk people who evade, in the three scenarios of section 3.1 | 3 | 10% | 78.7%, 32.8%, 20.7% |
-| extraction | Agreement of a copy trained on one 200-row budget of labels | 3 | 80% | 86.9% |
-| poisoning | Worst rise in trigger success over the clean model | 3 | 10 points | 71.7 points |
-| supply_chain | Tampered supplier files that passed the pin and the scan or floor (section 3.4) | 4 | 0 | 0 of 4 |
-
-Demo 2 adds two readings when `sacroml` is installed: the package's worst-case membership AUC on its wrapped tree (tolerance 0.62) and the disclosive configurations it failed to flag (tolerance 0).
-
-### 17.3 Regime packs and the seeded verdicts
-
-Packs are chosen with `--regimes`, as in safety-trust-engine. Each control records how binding it is: `statute` (the EU AI Act), `guidance` (NIST, the UK Code), `supervisory` (model risk management) or `recommendation` (the green paper).
-
-| Pack | Controls | Demos 1, 3 and 4 |
-|---|---|---|
-| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model poisoning, model evasion, confidentiality attacks. UK Code / ETSI EN 304 223: 3.1, 6.2, 7 and 8.1.2, 9.4 | 6 fail, 2 pass |
-| `nist_aml` | NISTAML.025 evasion, .023 backdoor, .031 extraction, .032 reconstruction (attribute inference, §2.4.1), .033 membership, .051 supply chain | 3 fail, 3 pass |
-| `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check of TECH 7 and 9 that needs demo 2 | 5 pass, 1 not evidenced |
-| `us` | NIST AI RMF GOVERN 6.1, MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, third-party model, documentation | 3 fail, 5 pass |
-
-The two halves of the result are not in tension. The GRAIMATTER checks were built for privacy, and the wrapped tree passes them. Article 15(5) also names poisoning and model evasion, and its confidentiality clause covers extraction as well as membership; demo 3's forest fails all three. Its model-poisoning clause passes on demo 4: the pin, the scan and the floors refuse every tampered file. Privacy checks alone do not make a model resilient in the sense of the Article, which is the point of section 16.
-
-### 17.4 Never a silent green
-
-A control whose demo did not run is `not_evidenced`, and the gate fails on it. CI does not install `sacroml`, because it brings PyTorch, so demo 2 does not run there. Rather than a job that is always red, or a control quietly marked pass, the workflow declares demo 2 out of scope with `--accept-missing 2`. The SACRO-ML control is then reported as not evidenced and out of scope, and the report says so in its header.
-
-### 17.5 The US reading
-
-The `us` pack reads the same evidence through two US lenses. NIST AI RMF GOVERN 6.1 asks for policies on the AI risks of third parties, which demo 4 evidences. MEASURE 2.6 asks that residual negative risk not exceed the risk tolerance, which is what the tolerances encode; MEASURE 2.7 covers security and resilience, and MEASURE 2.10 privacy risk. Federal model risk management guidance (Federal Reserve SR 26-02 and OCC Bulletin 2026-13, which replaced SR 11-7 in April 2026) leaves generative and agentic AI outside its formal scope, so safety-trust-engine applies it to LLMs by analogy. A risk classifier like the ones here is a model in the plain sense of that guidance. The TRE holdout (TECH 6), which the developer never sees, is the independent validation; the gate in CI is the ongoing monitoring; the JSON and Markdown report is the documentation; and demo 4's pin is the check that the vendor model in use is the one that was validated. NIST AI RMF is voluntary and SR 26-02 is supervisory, and the report marks them so.
-
-### 17.6 In CI
-
-`.github/workflows/gate.yml` runs on every pull request. One job lints with `ruff` and runs the tests: demos 1, 3 and 4 regenerate their reports, which must match `demo/output/` apart from what depends on the machine (the absolute path, the pickled size of the tree and the digests of pickled models); demo 4 must refuse all four tampered files and show that a late pin accepts the backdoor; the gate must agree with `decide()`; the seeded verdicts are pinned; a missing demo must give `not_evidenced`; `--fail-under` must change the outcome. A second job runs the gate twice: the GRAIMATTER pack on demo 1 must pass, and all packs on demos 1, 3 and 4 must block, on evasion, extraction and poisoning and nothing else. Both reports are uploaded as build artefacts.
-
----
-
-## 18. How to reproduce
-
-Setup is described once, in the repository [README](../../README.md); the step-by-step notes on demo 1 are in [demo/README.md](../../demo/README.md), and the walkthrough of every demo's code and output is the [demo guide](Demo_Guide_EN.md). In short, with [uv](https://docs.astral.sh/uv/) installed, from the repository root:
-
-```bash
-uv venv --python 3.11
-uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
-
-uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
-uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
-uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
-uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
-uv run python demo/run_gate.py              # reruns the demos; writes demo/output/gate/
-```
-
-With the `pyproject.toml`, `uv sync` installs numpy, scikit-learn, pytest and ruff without sacroml (add `--extra sacroml` for demo 2); `uv run pytest` and `uv run ruff check .` are what CI runs.
-
-On Windows PowerShell, activate the environment with a leading dot: `. .\.venv\Scripts\Activate.ps1`.
-
-| Output | Produced by |
-|---|---|
-| `demo/output/aml_report.txt` | demo 3: evasion, extraction, backdoor |
-| `demo/output/supply_chain_report.txt` | demo 4: four tampered files; working files in `demo/output/supply_chain/` (not versioned) |
-| `demo/output/demo_report.txt` | demo 1, all ten sections |
-| `demo/output/data_dictionary.json` | demo 1, TECH 8 |
-| `demo/output/safe_tree.release.json`, `tampered_tree.release.json` | demo 1, wrapper release reports |
-| `demo/output/data_use_register.json`, `pipeline_snapshot.json` | demo 1, section 9 |
-| `demo/output/sacroml/sacroml_report.txt` | demo 2 summary |
-| `demo/output/sacroml/<model>/<attack>/report.json` and `report.pdf` | demo 2, per attack |
-| `demo/output/sacroml/safe_release/target.yaml` | demo 2, `request_release()` |
-| `demo/output/gate/gate_<packs>.json` and `.md` | the release gate (section 17) |
-
-The figures in this guide and the deck are generated from the repository:
-
-```bash
-pip install -r docs/requirements-docs.txt   # python-pptx, cairosvg
-python docs/guide/make_figures.py           # GRAIMATTER figures, img/en and img/es
-python docs/guide/make_aml_figures.py       # adversarial-ML figures (figA*)
-python docs/make_deck.py                    # docs/Adversarial_ML.pptx
-```
-
-`make_figures.py` computes two figures live from the demo code (the planted sweep and the confidence histograms); the other numbers are copied from the seeded reports.
-
----
-
-## 19. Limits of the demos
-
-* **The cohort is synthetic.** There are no real patients. Demos 1 and 2: seed 7, 1,000 rows, split 500 for the researcher and 500 kept by the TRE. Demo 3: seed 7, 4,000 rows, split 2,000 and 2,000.
-* **Demo 3 is a sketch.** One model type (a random forest), simple greedy and query-based attacks, and a single outlier screen as the poisoning defence. Optimised attacks, other defences and other data types are out of scope.
-* **Demo 4 is a sketch too.** One supplier, one mirror, four kinds of tampering. The import scan's allow list fits a scikit-learn forest and nothing else; real scanners (picklescan, the Hugging Face hub's) have missed malicious files (ATLAS AML.CS0031). The lock file is a stand-in for signed releases: a digest says what was approved, not who published it. The key length is a number in a file; nothing is encrypted.
-* **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only here; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models (section 5).
-* **The frameworks are summarised, not interpreted.** Part 2 is a reading of the documents, not legal advice; the crosswalk is ours.
-* **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller. The same holds for the gate's tolerances (section 17.2), and its mapping of metrics to clauses is ours.
-* **The wrapper is stricter than the paper's example.** Demo 1 uses `min_samples_leaf` 20 and `max_depth` 4; Appendix D's example minimum leaf size is 5.
-* **`sacroml` uses its own rules.** Its rules file raises `min_samples_leaf` from 1 to 5, and its structural attack marks a leaf as risky below 10 training rows.
-* **The official package approves nothing here.** `request_release()` records "Proceed to next step of checking", and the structural attack still flags the wrapped tree.
-* **The two membership attacks are different tests.** Demo 1 trains on predicted probabilities plus the true label; `sacroml` scores by predicted probability only. An AUC near 0.5 from the package does not mean the tree failed to memorise.
-* **Attribute counts are guesses, not rows.** "136/136 unique guesses correct out of 500 rows" means every unique guess was correct, not that 136 of 500 rows were guessed.
-* **LiRA is not run.** The likelihood-ratio attack is in the package; the upstream example uses 100 shadow models.
-* **No private model.** The repository sketches differential privacy on a released mean only.
-* **No legal drafting.** The researcher declaration is plain language; the paper's clause text was left for a qualified legal review.
-
----
-
-## 20. Glossary
-
-| Term | Meaning |
-|---|---|
-| **Adversarial machine learning (AML)** | The study of attacks on ML systems and of their mitigations (NIST AI 100-2). |
-| **Availability, integrity, privacy** | NIST's three attacker objectives: break the model for everyone, make it give chosen answers, learn restricted information (section 2.1). |
-| **Evasion** | Changing a test input so the model gets it wrong, without touching the model (NISTAML.022, .025). |
-| **Adversarial example** | An input crafted to cause a wrong prediction. |
-| **Poisoning** | Attacking the training stage by controlling part of the training data or the model. |
-| **Backdoor, trigger** | A hidden behaviour planted by poisoning; inputs carrying the trigger get the attacker's chosen output (NISTAML.023). |
-| **Clean-label poisoning** | Poisoning where the attacker cannot choose the labels of the poisoned rows. |
-| **Model extraction** | Copying a model's behaviour or parameters through queries (NISTAML.031). |
-| **Fidelity** | Share of inputs on which a copied model agrees with the original. |
-| **Property inference** | Learning a statistic of the training set (NISTAML.034). |
-| **Prompt injection** | Instructions in model input that override the system's; direct when typed by the user, indirect when planted in content the model reads (NISTAML.018, .015). |
-| **Supply chain attack** | Reaching a model through a third party: a supplied model, dataset, library or file swapped or edited on the way (NISTAML.05, section 3.4). |
-| **Pin, lock file** | A cryptographic digest of each approved file, recorded when it was approved; later downloads must match it (section 3.4). |
-| **Pickle** | Python's object format, also behind `.joblib`; loading one can run code the file names. |
-| **Downgrade** | Making a system use a weaker setting, such as a shorter key, while it keeps working (section 3.4). |
-| **White, gray, black box** | Full, partial or query-only knowledge of the system (section 2.3). |
-| **ATLAS, OWASP, EU AI Act, UK Code, ETSI EN 304 223** | The frameworks of section 8. |
-| **TRE** | Trusted research environment: a secure place where approved researchers analyse sensitive data, with outputs checked before release. |
-| **Data controller** | The organisation responsible for the data under data protection law; it agrees the risk appetite (ELA 8, ELA 11). |
-| **MDC** | Model disclosure control: a check on the model file before export (TECH 4 to 15). |
-| **MQC** | Model query control: a limit on how a released model can be queried (TECH 16, 17). |
-| **Holdout / set-aside** | Rows the TRE keeps and never gives to the researcher (TECH 6). |
-| **Safe wrapper** | A version of a model class that enforces a constraints file, records its state at `fit()` and offers `request_release()` (TECH 9, 10). |
-| **Constraints file** | A human-readable file with the TRE's allowed hyperparameter ranges and model types (Appendix D). |
-| **Instance-based model** | A model that needs stored training rows to predict, such as nearest neighbours or a kernel SVM (TECH 11). |
-| **Membership inference** | Deciding whether a row was in the training set (NISTAML.033). |
-| **Attribute inference** | Filling in a hidden field of a person by querying the model (Appendix E). |
-| **Worst-case attack** | An attack that has the training and held-out rows; a conservative upper bound (Appendix G). |
-| **Salem scenarios** | Attacks where the adversary trains shadow models on other data (Appendix A, Table 2). |
-| **Structural attack** | `sacroml` check of the model's structure: leaf sizes, degrees of freedom, class disclosure. |
-| **LiRA** | Likelihood-ratio membership attack using many shadow models; in `sacroml`, not run here. |
-| **Differential privacy (epsilon)** | A guarantee on a release mechanism; smaller epsilon means the release changes less when one person is added or removed (green paper §10.1.3, NIST §2.4.5). |
-| **AUC, advantage, TPR, FPR, FDIF, posterior** | See section 12. |
-| **k-anonymity (of a leaf)** | Number of training rows in the smallest leaf. |
-| **Tolerance** | The largest value of a metric the data controller accepts; a risk appetite, not an official threshold (section 17.2). |
-| **not_evidenced** | The gate's verdict for a control whose demo did not run; never reported as a pass (section 17.4). |
-| **RT1, RT2, RT3** | The green paper's risk types: careless researcher, malicious researcher, outside attacker (section 9.2). |
-
----
-
-## 21. References
-
-1. A. Vassilev, A. Oprea, A. Fordyce, H. Anderson, X. Davies, M. Hamin. *Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations.* NIST AI 100-2e2025, March 2025. doi:10.6028/NIST.AI.100-2e2025. `NIST.AI.100-2e2025.pdf` in this repository.
-2. MITRE ATLAS, Adversarial Threat Landscape for AI Systems. https://atlas.mitre.org (data release 2026.09).
-3. OWASP Machine Learning Security Top 10 (2023, draft). https://owasp.org/www-project-machine-learning-security-top-10/
-4. OWASP Top 10 for LLM Applications 2025. https://genai.owasp.org/llm-top-10/
-5. Regulation (EU) 2024/1689 (Artificial Intelligence Act), Article 15. Regulation (EU) 2026/1744 (Digital Omnibus on AI).
-6. European Data Protection Board. Opinion 28/2024 on certain data protection aspects related to the processing of personal data in the context of AI models. December 2024.
-7. UK Department for Science, Innovation and Technology. *Code of Practice for the Cyber Security of AI.* 31 January 2025. ETSI EN 304 223, *Securing Artificial Intelligence: Baseline Cyber Security Requirements for AI Models and Systems*, January 2026.
-8. UK NCSC, US CISA and partners. *Guidelines for secure AI system development.* 27 November 2023.
-9. *Green Paper: Recommendations for disclosure control of trained Machine Learning (ML) models from Trusted Research Environments (TREs).* Output of the DARE UK sprint project GRAIMatter, September 2022. `GRAIMATTER Green Paper.pdf` in this repository. An earlier version: E. Jefferson et al., Zenodo, July 2022, doi:10.5281/zenodo.6896214.
-10. SACRO-ML (`sacroml` 2.0.1). https://github.com/AI-SDC/SACRO-ML
-11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (green paper reference [37]).
-12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (green paper reference [2]).
-13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine. The release gate of section 17 follows its `compliance.py` and `report.py`, and its `docs/REGULATORY_RESEARCH.md` is the source for SR 26-02.
-14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, January 2023 (GOVERN 6.1, MEASURE 2.6, 2.7, 2.10).
-15. Board of Governors of the Federal Reserve System, SR 26-02, and OCC Bulletin 2026-13: revised interagency guidance on model risk management, April 2026 (replaces SR 11-7).
-16. Supply-chain integrity: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) and the OpenSSF model signing project (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
-17. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
-
----
-
-## Appendix A: how the guide, slides and demos line up
-
-The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1 to 14), frameworks (section 8, slides 15 to 19), the GRAIMATTER case (sections 9 to 16, slides 20 to 37), and closing (sections 17 to 21, slides 38 to 41).
-
-| Guide section | Slides (deck order) | Demo output |
-|---|---|---|
-| 1. Why ML needs its own security | 1 *Cover*, 2 *Agenda*, 3 *Why*, 4 *Stages and capabilities* | – |
-| 2. The NIST taxonomy | 5 *Taxonomy*, 6 *Capabilities and knowledge* | – |
-| Appendix B. The NIST attack classes and the CIA triad | 5 *Taxonomy* (backup for questions), 7 to 10 | `aml_report.txt`, `demo_report.txt` |
-| 3.1 Evasion | 7 *Evasion* | `aml_report.txt` §1 |
-| 3.2 Extraction | 10 *Extraction* | `aml_report.txt` §2 |
-| 3.4 Supply chain | 11 *Supply chain* | `supply_chain_report.txt` |
-| 3.3 Backdoor | 8 *Poisoning* | `aml_report.txt` §3 |
-| 4. Privacy attacks | 9 *Privacy* | – |
-| 5. Generative AI | 12 *Generative AI* | – |
-| 6. Real incidents | 13 *Real incidents* | – |
-| 7. Mitigations | 14 *Mitigations* | – |
-| 8. Frameworks and crosswalk | 15 *Frameworks*, 16 *OWASP*, 17 *EU AI Act*, 18 *UK*, 19 *Crosswalk* | – |
-| 9. What a TRE is protecting | 20 *A high-trust case*, 21 *The problem*, 22 *TECH 4* | – |
-| 10. Map of the green paper | 23 *The paper* | – |
-| 11. Cohort and holdout | 24 *TECH 6 · TECH 8 · The cohort* | `data_dictionary.json` |
-| 12. Metrics | 26 *Appendix F · Reading attack metrics* | – |
-| 13.2 Planted record | 25 *Appendix E · Attribute inference* | `demo_report.txt` §2 |
-| 13.3 Differential privacy | 33 *§10.1.3 · TECH 12* | `demo_report.txt` §3 |
-| 13.4 Unconstrained tree | 27 *Demo 1 · Unconstrained tree* | `demo_report.txt` §4 |
-| 13.5 Safe wrapper and the quiet failure | 28 *Demo 1 · Safe wrapper*, 29 *Appendix F · The tail* | `demo_report.txt` §5 |
-| 13.6 Instance-based models | 30 *TECH 11* | `demo_report.txt` §6 |
-| 13.7 Editing after `fit()` | 31 *RT1 · RT2 · TECH 3* | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 13.8 Query budget | 32 *TECH 16* | `demo_report.txt` §8 |
-| 13.9 Register and snapshot | 30 (notes) | `data_use_register.json`, `pipeline_snapshot.json` |
-| 14. SACRO-ML | 34 *Demo 2 · sacroml 2.0.1* | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 15.1 Differences | 36 *Two demos compared* | both reports |
-| 15.2 Why the membership numbers differ | 35 *Why the two membership numbers differ* | – |
-| 16. What carries over | 37 *What carries over* | – |
-| 17. Release gate | 39 *Release gate* | `demo/output/gate/` |
-| 18. How to reproduce | 40 *Run it yourself* | – |
-| 19. Limits | 38 *Limits* | – |
-| 20. Glossary, 21. References | 41 *References* | – |
-
-### Suggested workshop agenda (about 95 minutes)
-
-| Time | Block | Material |
-|---|---|---|
-| 0:00 | Why ML needs its own security; the NIST taxonomy | Guide §1 and §2, slides 1 to 6 |
-| 0:12 | Demos 3 and 4: evasion, poisoning, extraction, supply chain; privacy attacks | Guide §3 and §4, slides 7 to 11 |
-| 0:30 | Generative AI, real incidents, mitigations | Guide §5 to §7, slides 12 to 14 |
-| 0:40 | Frameworks and the crosswalk | Guide §8, slides 15 to 19 |
-| 0:53 | GRAIMATTER: the problem, the paper, the cohort, the metrics | Guide §9 to §12, slides 20 to 26 |
-| 1:05 | Demo 1: unconstrained tree, safe wrapper, tail, tampering, query budget, DP | Guide §13, slides 27 to 33 |
-| 1:17 | Demo 2 and the comparison | Guide §14 and §15, slides 34 to 36 |
-| 1:25 | What carries over; limits; the release gate; running the demos; questions | Guide §16 to §19, slides 37 to 41 |
-
----
-
-## Appendix B: the NIST attack classes, one by one
-
-> **In plain words.** Section 2.1 lists the attack classes NIST uses for predictive AI, grouped by what the attacker wants: break the system for everyone (availability), make it give chosen answers (integrity), learn something restricted (privacy, which classic security calls confidentiality), or reach the model through a supplier (supply chain). This appendix explains each class in turn: what the attacker does, what they need, an example, what NIST lists as defences and where those fall short, and where the class appears in this repository. Use it as a reference whenever a test report, a risk register or a slide cites a NISTAML identifier.
+> **In plain words.** Section 2.1 lists the attack classes NIST uses for predictive AI, grouped by what the attacker wants: break the system for everyone (availability), make it give chosen answers (integrity), learn something restricted (privacy, which classic security calls confidentiality), or reach the model through a supplier (supply chain). Part 4 explains each class in turn: what the attacker does, what they need, an example, what NIST lists as defences and where those fall short, and where the class appears in this repository. Use it as a reference whenever a test report, a risk register or a slide cites a NISTAML identifier.
 
 **The CIA triad.** The objectives are the classic security triad of confidentiality, integrity and availability, with NIST's own names (section 2.1). The table shows the correspondence and what machine learning adds to each property.
 
@@ -1119,7 +515,7 @@ The guide and the deck follow the same order: attacks (sections 1 to 7, slides 1
 | **Availability** | Availability breakdown, NISTAML.01 | Not only flooding a server: poisoned training data degrades the model for everyone, and crafted inputs exhaust its compute. |
 | *A route, not a property* | Supply chain, NISTAML.05 | A model, dataset or library from a third party carries the attack in, which then breaks confidentiality, integrity or availability. |
 
-For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits the triad less neatly: the attacker uses the system as designed but gets around the owner's restrictions on its use, which is closer to an authorisation failure (section B.5).
+For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits the triad less neatly: the attacker uses the system as designed but gets around the owner's restrictions on its use, which is closer to an authorisation failure (§22).
 
 **How to read an identifier.** The digit after `NISTAML.0` is the objective: 1 availability, 2 integrity, 3 privacy, 5 supply chain (4, misuse, exists only for generative AI). The last digit numbers the class inside that objective. The same technique can therefore carry more than one ID: model poisoning is .011 when it breaks the model for everyone, .026 when it forces chosen answers and .051 when it arrives inside a supplied model, and NIST's index lists clean-label poisoning (.012) under both availability and integrity. An ID names a technique *and* its purpose. Section numbers in brackets refer to NIST AI 100-2e2025.
 
@@ -1127,7 +523,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 |---|---|---|---|---|
 | **NISTAML.01** | **Availability breakdown** | | | |
 | .013 | Data poisoning | Training | Training data control | Not as an availability attack; demo 3 uses the same capability for a backdoor |
-| .011 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§13.7) |
+| .011 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§19.7) |
 | .012 | Clean-label poisoning | Training | Training data control, no control of labels | – |
 | .014 | Energy-latency | Deployment | Query access | – |
 | **NISTAML.02** | **Integrity violation** | | | |
@@ -1136,18 +532,18 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 | .023 | Backdoor poisoning | Training and deployment | Training and testing data control | Demo 3 (§3.3) |
 | .024 | Targeted poisoning | Training | Training data control | – |
 | .021 | Clean-label backdoor | Training and deployment | Training and testing data control, no control of labels | – |
-| .026 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§13.7) |
+| .026 | Model poisoning | Training | Model control | Demo 1 detects edits after `fit()` (§19.7) |
 | **NISTAML.03** | **Privacy compromise** | | | |
 | .031 | Model extraction | Deployment | Query access | Demo 3 (§3.2) |
-| .032 | Reconstruction | Deployment | Query access or the model file | Demo 1: stored rows (§13.6) and the planted record (§13.2) |
-| .033 | Membership inference | Deployment | Query access or the model file | Demos 1 and 2 (§13, §14) |
+| .032 | Reconstruction | Deployment | Query access or the model file | Demo 1: stored rows (§19.6) and the planted record (§19.2) |
+| .033 | Membership inference | Deployment | Query access or the model file | Demos 1 and 2 (§19, §20) |
 | .034 | Property inference | Deployment | Query access or the model file | – |
 | **NISTAML.05** | **Supply chain** | | | |
-| .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | – |
+| .051 | Model poisoning through a supplied model | Before training or deployment | Control of a model, component or library someone else uses | Demo 4 (§3.4) |
 
-### B.1 Availability breakdown (NISTAML.01): availability
+## 13. Availability breakdown (NISTAML.01)
 
-**The objective.** A deliberate interference that stops other users or processes from getting timely and reliable service from the system (§2.1.2). The attack can be mounted at training time or at deployment time, but the damage is felt at deployment. It is usually indiscriminate: the model gets worse on every input, not only on the attacker's. That makes it the noisiest objective. NIST notes that availability poisoning "is usually detectable by monitoring the standard performance metrics" because accuracy, precision or recall drop sharply (§2.3.1), which is the opposite of the integrity attacks in B.2.
+**The objective.** A deliberate interference that stops other users or processes from getting timely and reliable service from the system (§2.1.2). The attack can be mounted at training time or at deployment time, but the damage is felt at deployment. It is usually indiscriminate: the model gets worse on every input, not only on the attacker's. That makes it the noisiest objective. NIST notes that availability poisoning "is usually detectable by monitoring the standard performance metrics" because accuracy, precision or recall drop sharply (§2.3.1), which is the opposite of the integrity attacks in §14.
 
 **Data poisoning (NISTAML.013, §2.3.1).** The attacker inserts or modifies a share of the training rows so that the model degrades on all inputs.
 
@@ -1160,7 +556,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 
 * *How.* Most attacks target **federated learning**, where clients send local model updates to a server that averages them. Compromised clients send malicious updates. Degrading the global model for everyone works, but usually needs a large share of the clients.
 * *Defences and limits.* Byzantine-resilient aggregation rules try to identify and drop malicious updates, but motivated attackers bypass them by keeping their updates inside the accepted range. Gradient clipping and differential privacy help to some extent, cost accuracy and do not give complete protection.
-* *Here.* Demo 1 controls the model-control capability in a different setting: the safe wrapper snapshots the model at `fit()` and refuses a model whose parameters or attributes changed afterwards (§13.7). The motive there is privacy, not availability, but the check is the same idea: do not trust a model file you did not watch being produced.
+* *Here.* Demo 1 controls the model-control capability in a different setting: the safe wrapper snapshots the model at `fit()` and refuses a model whose parameters or attributes changed afterwards (§19.7). The motive there is privacy, not availability, but the check is the same idea: do not trust a model file you did not watch being produced.
 
 **Clean-label poisoning (NISTAML.012, §2.3.1).** The attacker controls training examples but not their labels, which someone else assigns.
 
@@ -1175,7 +571,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 * *Defences.* NIST does not list specific mitigations in this section. In practice (our reading, not NIST's text) the answer is engineering: per-request time and compute limits, rate limiting and monitoring of latency. For LLM applications the same risk appears as OWASP LLM10, *unbounded consumption* (section 5).
 * *Here.* Not demonstrated. The trees and forests in the demos do a bounded amount of work per prediction, so this attack has little to work with on them.
 
-### B.2 Integrity violation (NISTAML.02): integrity
+## 14. Integrity violation (NISTAML.02)
 
 **The objective.** Force the system to misperform and give the predictions the attacker wants (§2.1.2). At deployment this is done by evasion; at training by targeted, backdoor or model poisoning. Unlike availability attacks, integrity attacks touch only the inputs the attacker cares about, so overall accuracy barely moves. Demo 3 shows it: a backdoor that flips every high-risk score carrying the trigger changes test accuracy by 0.02 at most (§3.3).
 
@@ -1213,9 +609,24 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 
 * *How.* In centralised learning, TrojNN reverse-engineers a trigger from a trained network and retrains the model to respond to it. In federated learning, a compromised client replaces or boosts its update (model replacement) or plants a backdoor through its updates. Such backdoors fade if the compromised clients stop taking part, but last longer when injected into rarely used parameters.
 * *Defences and limits.* As for .011: robust aggregation, clipping and differential privacy, none complete; model inspection when the poisoning is a backdoor.
-* *Here.* Demo 1's post-fit check (§13.7) catches edits to `max_depth`, `min_samples_leaf`, the tree arrays (by SHA-256 digest) and added attributes. It is the OWASP ML10 control in the crosswalk (section 8.6).
+* *Here.* Demo 1's post-fit check (§19.7) catches edits to `max_depth`, `min_samples_leaf`, the tree arrays (by SHA-256 digest) and added attributes. It is the OWASP ML10 control in the crosswalk (section 8.6).
 
-### B.3 Privacy compromise (NISTAML.03): confidentiality
+**Running it (video 4a).** Demo 3's sections 1 and 3 are explained in sections 3.1 and 3.3, and line by line in the [demo guide](Demo_Guide_EN.md), §3.0, §3.1 and §3.3: run `uv run python demo/run_aml_demo.py` and read `aml_report.txt` section by section.
+
+## 15. Supply chain (NISTAML.05)
+
+**The objective.** Reach the model through a third party (§3.2). AI inherits the software supply chain's weaknesses, such as dependencies on third-party code, and adds its own: collected and labelled data, pre-trained models from other developers, and plugins. NIST treats as adversarial ML the attacks that exploit the statistical and data-driven nature of these dependencies; the rest belongs to classic supply-chain security, and both are needed.
+
+**Model poisoning through a supplied model (NISTAML.051, §2.3.4, §3.2.2).** Models or model components provided by a supplier carry malicious behaviour.
+
+* *How.* For predictive AI, NIST cites the **Dropout Attack**: whoever controls the randomness used in training (for example in dropout) can lower accuracy, precision or recall on chosen classes. For generative AI, attackers publish pre-trained models with backdoors or targeted behaviour, and some of these backdoors survive downstream fine-tuning and even safety training. Model files can also carry ordinary malicious code: MITRE ATLAS records models on Hugging Face that opened reverse shells when loaded (CS0031) and an edited open model that returned a false fact (PoisonGPT, CS0019; section 6).
+* *Defences and limits.* Verify downloads against published cryptographic hashes; scan model artefacts, which catches some risks; research uses interpretability methods to find backdoor features and detects triggers at inference time. NIST's design advice is to treat models as untrusted components and limit what an attacker-controlled output can do. Robustness to supply-chain model poisoning is a "critical open problem", and the report mentions work on information-theoretically undetectable Trojans and the DARPA-NIST TrojAI programme (§4.2.2).
+* *Frameworks.* UK Code principle 7 (secure the supply chain) and provision 8.1.2 (publish hashes of shared model components); OWASP ML06 and LLM03; ATLAS AML.T0010.
+* *Here.* Demo 4 (section 3.4): a supplier's forest swapped on a mirror for one with a backdoor, a pickle that runs code when loaded, a key length lowered from 256 to 40 bits and a safe-wrapper floor lowered from 20 rows to 1. Each passes the usual check; a pinned SHA-256 refuses all four, and an import scan or a floor kept in code refuses all but the backdoor. A pin taken from the tampered copy accepts it. One observation for TREs (ours): demo 1 accepts `.joblib` and `.pkl` files, and both formats are built on Python's pickle, which can execute code when the file is loaded. A model file that arrives from outside the TRE, or from a researcher, should be loaded as untrusted input.
+
+**Running it (video 4a).** Section 3.4 explains demo 4, and the [demo guide](Demo_Guide_EN.md), §4, walks through each of its six sections: run `uv run python demo/run_supply_chain_demo.py` and read `supply_chain_report.txt`.
+
+## 16. Privacy compromise (NISTAML.03)
 
 **The objective.** The unintended leakage of restricted or proprietary information: details of the training data, the weights or the architecture (§2.1.2). NIST uses "privacy" for both **data privacy** attacks, about the training rows, and **model privacy** attacks, about the model itself, where classic security, and the EU AI Act, would say confidentiality. It focuses on what can leak at deployment from the model's outputs, which can happen even when training used secure computation. Attribute inference, the attack at the centre of GRAIMATTER's case studies, sits here without an ID of its own (§2.4.1). This is the objective Part 3 covers in depth.
 
@@ -1230,14 +641,14 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 
 * *How.* Dinur and Nissim showed that enough linear statistics reveal individual records; a large study by the US Census Bureau of this risk led to differential privacy in the 2020 census. For ML classifiers, **model inversion** recovers class representatives rather than exact rows; stronger attacks recover training samples from neural-network parameters, helped by the tendency of networks to memorise. **Attribute inference**, filling in a sensitive field of a record from partial knowledge of it, is the related attack NIST describes here.
 * *Defences.* Differential privacy gives a provable bound; the green paper adds structural checks, because some models simply store rows.
-* *Here.* Reconstruction is trivial when the model stores its training rows: the 1-nearest-neighbour model holds all 500 and the SVC 423 support vectors, so demo 1 refuses both (§13.6); the paper's case study found 441 exact patient rows out of 798 in an SVM. The planted-record sweep (§13.2) is attribute inference: 20 queries recover two hidden fields. The release gate files attribute inference under .032 (section 17.3).
+* *Here.* Reconstruction is trivial when the model stores its training rows: the 1-nearest-neighbour model holds all 500 and the SVC 423 support vectors, so demo 1 refuses both (§19.6); the paper's case study found 441 exact patient rows out of 798 in an SVM. The planted-record sweep (§19.2) is attribute inference: 20 queries recover two hidden fields. The release gate files attribute inference under .032 (section 23.3).
 
 **Membership inference (NISTAML.033, §2.4.2).** The attacker decides whether a given record was in the training set.
 
 * *Why it matters.* Membership alone can be sensitive, as in a study of patients with a rare disease, and it is a building block for extracting training data.
-* *How.* First shown on genomic statistics in 2008 (tracing attacks). For ML models: the **loss-threshold** attack (a row is a member if the model's loss on it is unusually low), refined with per-example thresholds; **shadow models** trained on similar data to teach an attack classifier; **LiRA**, which fits Gaussian distributions to the outputs of a smaller number of shadow models; a single quantile-regression model; and **label-only** attacks. Simple and expensive attacks perform similarly in precision at low false-positive rates, which is why the tail metrics in section 12 matter.
+* *How.* First shown on genomic statistics in 2008 (tracing attacks). For ML models: the **loss-threshold** attack (a row is a member if the model's loss on it is unusually low), refined with per-example thresholds; **shadow models** trained on similar data to teach an attack classifier; **LiRA**, which fits Gaussian distributions to the outputs of a smaller number of shadow models; a single quantile-regression model; and **label-only** attacks. Simple and expensive attacks perform similarly in precision at low false-positive rates, which is why the tail metrics in section 18 matter.
 * *Defences and limits (§2.4.5).* Differential privacy implies an upper bound on membership-inference success, at a cost in utility. NIST recommends empirical privacy auditing alongside it.
-* *Here.* Demos 1 and 2: the unconstrained tree reaches a worst-case AUC of 0.708 with the label-aware attack and is refused; the wrapped tree falls to 0.528; the package's probability-only attack reports 0.500 on both (§13 to §15).
+* *Here.* Demos 1 and 2: the unconstrained tree reaches a worst-case AUC of 0.708 with the label-aware attack and is refused; the wrapped tree falls to 0.528; the package's probability-only attack reports 0.500 on both (§19 to §21).
 
 **Property inference (NISTAML.034, §2.4.3).** Also called distribution inference: the attacker learns a global property of the training data, such as the share of records with a sensitive attribute, rather than anything about one person.
 
@@ -1246,20 +657,608 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 * *Example (illustration).* A model trained in a TRE could reveal what share of a hospital's patients have a condition the hospital has not published, even if no individual is exposed.
 * *Here.* Not demonstrated.
 
-### B.4 Supply chain (NISTAML.05)
+**Running it (video 4b).** Extraction is demo 3's section 2 (section 3.2 here, §3.2 in the [demo guide](Demo_Guide_EN.md)). Membership inference, attribute inference and reconstruction are what demos 1 and 2 test: sections 17 to 21 go through them section by section.
 
-**The objective.** Reach the model through a third party (§3.2). AI inherits the software supply chain's weaknesses, such as dependencies on third-party code, and adds its own: collected and labelled data, pre-trained models from other developers, and plugins. NIST treats as adversarial ML the attacks that exploit the statistical and data-driven nature of these dependencies; the rest belongs to classic supply-chain security, and both are needed.
+## 17. The synthetic cohort and the holdout
 
-**Model poisoning through a supplied model (NISTAML.051, §2.3.4, §3.2.2).** Models or model components provided by a supplier carry malicious behaviour.
+> **In plain words.** Both demos use the same made-up group of 1,000 people. The researcher gets 500 of them to train on. The TRE keeps the other 500 locked away and uses them to test the model, which is TECH 6. Nobody in the data is real.
 
-* *How.* For predictive AI, NIST cites the **Dropout Attack**: whoever controls the randomness used in training (for example in dropout) can lower accuracy, precision or recall on chosen classes. For generative AI, attackers publish pre-trained models with backdoors or targeted behaviour, and some of these backdoors survive downstream fine-tuning and even safety training. Model files can also carry ordinary malicious code: MITRE ATLAS records models on Hugging Face that opened reverse shells when loaded (CS0031) and an edited open model that returned a false fact (PoisonGPT, CS0019; section 6).
-* *Defences and limits.* Verify downloads against published cryptographic hashes; scan model artefacts, which catches some risks; research uses interpretability methods to find backdoor features and detects triggers at inference time. NIST's design advice is to treat models as untrusted components and limit what an attacker-controlled output can do. Robustness to supply-chain model poisoning is a "critical open problem", and the report mentions work on information-theoretically undetectable Trojans and the DARPA-NIST TrojAI programme (§4.2.2).
-* *Frameworks.* UK Code principle 7 (secure the supply chain) and provision 8.1.2 (publish hashes of shared model components); OWASP ML06 and LLM03; ATLAS AML.T0010.
-* *Here.* Demo 4 (section 3.4): a supplier's forest swapped on a mirror for one with a backdoor, a pickle that runs code when loaded, a key length lowered from 256 to 40 bits and a safe-wrapper floor lowered from 20 rows to 1. Each passes the usual check; a pinned SHA-256 refuses all four, and an import scan or a floor kept in code refuses all but the backdoor. A pin taken from the tampered copy accepts it. One observation for TREs (ours): demo 1 accepts `.joblib` and `.pkl` files, and both formats are built on Python's pickle, which can execute code when the file is loaded. A model file that arrives from outside the TRE, or from a researcher, should be loaded as untrusted input.
+![The holdout the researcher never sees](img/en/fig02_holdout.svg)
 
-### B.5 Beyond predictive AI
+The cohort is generated by `demo/graimatter_demo/cohort.py` with seed 7.
+
+* **Clinical columns (6):** age (30 to 89), diabetes, asthma, weight (underweight, normal, overweight, obese), blood pressure (low, slightly high, high, very high, extremely high), smoker.
+* **Noise columns (10):** `noise_0` to `noise_9`, standard normal, with no link to the label. They exist so that an unconstrained tree has something to memorise.
+* **Label:** `high_risk`, drawn from a known logistic function of the clinical columns.
+
+**Under the hood.** The log-odds of `high_risk` are `-1.35 + 0.034·(age − 55) + 0.9·smoker + 0.55·diabetes + 0.22·asthma + 0.32·[weight ≥ overweight] + 0.30·[blood pressure ≥ high]`. `hold_out_for_tre()` shuffles the 1,000 row indices and gives the first 500 to the TRE and the rest to the researcher.
+
+The data dictionary that TECH 8 asks for is written to `demo/output/data_dictionary.json`. It lists each input with its encoding (`int`, `binary`, `ordinal:` with the level names, or `float64` for noise), the split sizes and the seed, following the template in Appendix C (p. 83).
+
+Demo 3 (section 3) uses the same generator with 4,000 rows and two noise columns, which it treats as lab values.
+
+## 18. The metrics, in words and in code
+
+> **In plain words.** An attack gives every row a score: how likely the attacker thinks it is that the row was in training. The metrics answer three questions. On average, does the score separate members from non-members (AUC)? Are there rows where the attack is very sure and right (TPR at low FPR, FDIF)? And if the attacker says "member", how likely is that to be true, given how rare members are (the posterior)?
+
+![Three ideas behind the attack metrics](img/en/fig04_metrics.svg)
+
+Each metric below is defined once, with the formula the repository uses (`demo/graimatter_demo/metrics.py`) and the paper's explanation (Appendix F, pp. 92-95).
+
+**Training accuracy and set-aside accuracy.** Training accuracy is the share of correct predictions on the rows the model was trained on. Set-aside accuracy is the same on the 500 rows the researcher never received. A large gap means the model has fitted this particular sample, noise included. Demo 1's policy flags a gap above 0.15.
+
+**Membership inference.** The attack labels each row "member" (in training) or "non-member". The worst-case version of Appendix G gives the attacker both the training rows and the held-out rows, so it is a conservative upper bound rather than a realistic attacker (p. 96).
+
+**TPR and FPR.** The true-positive rate is the share of real members the attack calls members. The false-positive rate is the share of non-members it wrongly calls members. The demo uses a score threshold of 0.5.
+
+**AUC.** Pick one member and one non-member at random. AUC is the probability that the attack scores the member higher. 0.5 is a coin toss; 1 means the attack always ranks members first. The paper notes that there is no single "bad" AUC value and suggests comparing with the range expected by chance (Appendix F §21.4, p. 94). For 100 members and 100 non-members, three standard deviations around 0.5 is roughly 0.38 to 0.62. The `sacroml` report prints the same band as `0.3772 -> 0.6228`.
+
+**Advantage.** `advantage = |TPR − FPR|`. Zero means the attack calls members and non-members "member" at the same rate.
+
+**TPR at 10% FPR.** Walk down the rows from the highest score. Stop just before the false alarms exceed 10% of the non-members. The share of members caught so far is the TPR at 10% FPR. A model can have a modest AUC and still give away a group of members in this tail.
+
+**FDIF (frequency difference).** Sort the rows by score. FDIF is the share of members in the top 10% minus the share of members in the bottom 10%. Random scores give an FDIF near 0; an attack that is certain about some members and some non-members pushes it towards 1. The demo computes a permutation p-value: shuffle the membership labels 300 times and count how often the shuffled FDIF is at least as large. Appendix F explains why this matters: an attack that is certain about 20 of 200 rows (10 members scored 1, 10 non-members scored 0) and random elsewhere has an average AUC of about 0.595, inside the chance band, yet it exposes those people (§21.5, pp. 94-95). Demo 1 treats FDIF ≥ 0.20 with p ≤ 0.05 as a failure.
+
+**Membership posterior.** If the attacker says "this row was in training", how likely is that to be true? It depends on *A*, the share of members among the rows the attacker is testing:
+
+```
+P(member | flagged) = (A × TPR) / (A × TPR + (1 − A) × FPR)
+```
+
+The demo reports it at A = 0.5 (half the candidates are members) and A = 0.01 (one in a hundred). For the unconstrained tree (TPR 1.000, FPR 0.588) that is 0.630 and 0.017 (`demo_report.txt`, section 4). The paper's own example shows the same effect: a good attack (TPR 0.8, FPR 0.2) gives only 0.04 when members are 1 in 100 (Appendix F, Table 9, p. 93).
+
+**Attribute inference.** For a row, try every possible value of one hidden field and ask the model for its confidence in the row's label. If a single value gives the highest confidence, that value is the attack's guess; if several values tie, the attack abstains. Appendix G asks for two numbers: the share of rows that get a unique guess, and how many of those guesses are correct, each on the training rows and on the held-out rows (p. 96). Demo 1 summarises the comparison as an **attribute risk ratio**: the correct-guess rate on training rows divided by the rate on set-aside rows. Above 1 means training rows are easier to complete. Demo 1's policy flags 1.35.
+
+**k-anonymity of a leaf.** The number of training rows in the smallest leaf of a tree. A leaf of 1 is one person.
+
+**Under the hood.** `summarise_attack_scores()` in `metrics.py` returns all of the above for one set of attack scores. `true_positive_rate_at_false_positive_rate()` walks the ranked scores; `frequency_difference()` uses a 10% tail and 300 permutations; `membership_probability()` is the posterior formula.
+
+### 18.1 The three readings, worked through
+
+> **In plain words.** Slide 38 reads an attack in three ways: the average (AUC and advantage), the tail (FDIF and TPR at low FPR), and how rare a member is (the posterior). Each one answers a different question, and a model can pass one and fail another. Here each is worked through with numbers small enough to check by hand.
+
+**1. The average: AUC and advantage.** Take 4 members (M) and 4 non-members (N), with these attack scores:
+
+| Row | M1 | N1 | M2 | M3 | N2 | M4 | N3 | N4 |
+|---|---|---|---|---|---|---|---|---|
+| Score | 0.9 | 0.8 | 0.7 | 0.6 | 0.5 | 0.4 | 0.3 | 0.2 |
+
+AUC compares every member with every non-member: 4 × 4 = 16 pairs. M1 (0.9) beats all 4 non-members. M2 (0.7) and M3 (0.6) each beat 3 (all but N1). M4 (0.4) beats 2 (N3 and N4). That is 4 + 3 + 3 + 2 = 12 wins out of 16, so **AUC = 0.75**. Shuffle the scores at random and each pair is a coin toss: AUC 0.5.
+
+For the advantage, call "member" every score of 0.5 or more. Three of the 4 members are flagged (TPR = 0.75) and two of the 4 non-members are too (N1 and N2, FPR = 0.50). **Advantage = |0.75 − 0.50| = 0.25.**
+
+How to read it: averaged over everyone, the attack ranks members first three times in four. The demo's unconstrained tree is in the same territory (worst-case AUC 0.708, advantage 0.412) and the safe wrapper brings it down to 0.528 and 0.004. What the average cannot say is *who* is exposed: twelve mild wins look the same as a few certain ones plus noise.
+
+**2. The tail: FDIF and TPR at 10% FPR.** This is the Appendix F example (§21.5, pp. 94-95). There are 200 rows, 100 members and 100 non-members. The attack is certain about 20 of them: 10 members get a score of 1 and 10 non-members a score of 0. The other 180 rows get random scores.
+
+* *AUC.* Of the 100 × 100 = 10,000 pairs, the 10 certain members win all 1,000 of theirs. The 90 other members beat the 10 non-members at 0, another 900 wins. The remaining 90 × 90 = 8,100 pairs are coin tosses, about 4,050 wins. In total 1,000 + 900 + 4,050 = 5,950, so **AUC ≈ 0.595**, inside the chance band of 0.38 to 0.62. By the average, this attack looks harmless.
+* *FDIF.* The top 10% is the 20 highest scores: the 10 certain members plus the 10 highest of the random rows, about half of them members. That is about 15 members out of 20, 75%. The bottom 20 holds the 10 certain non-members plus about 5 members, 25%. **FDIF ≈ 0.75 − 0.25 = 0.50.** Shuffling the labels 300 times almost never gives a value that large, so the p-value is close to the smallest the demo can report (about 0.003). Demo 1 would flag it (limit 0.20 with p ≤ 0.05).
+* *TPR at 10% FPR.* Walk down from the top. The 10 certain members come first with no false alarm. After that the random rows mix members and non-members, and the walk stops once 10 non-members have been flagged; by then about 10 more members have been caught. **TPR ≈ 0.20**, about twice what random scores give (0.10).
+
+Running this setup 200 times with `metrics.py` gives an average AUC of 0.599, FDIF of 0.50, a median p-value of 0.003 and TPR at 10% FPR of 0.22 (0.11 for random scores). How to read it: the average hides ten people the attack can name for certain. Section 19.5 shows a milder version of the same gap: Salem-synth on the wrapped tree gives AUC 0.512 but FDIF 0.160 with p = 0.027, although there the signal is a tilt across the tail rather than a few rows the attacker is sure about.
+
+**3. How rare a member is: the posterior.** A flag is only as good as the share of flagged people who really are members. Take the paper's attack (TPR 0.8, FPR 0.2; Appendix F, Table 9, p. 93) and count people instead of using the formula.
+
+| | 1,000 candidates, half members (A = 0.5) | 10,000 candidates, 1 in 100 a member (A = 0.01) |
+|---|---|---|
+| Members | 500 | 100 |
+| Members flagged (× 0.8) | 400 | 80 |
+| Non-members | 500 | 9,900 |
+| Non-members flagged (× 0.2) | 100 | 1,980 |
+| All flagged | 500 | 2,060 |
+| **Share of flags that are members** | 400 / 500 = **0.80** | 80 / 2,060 = **0.04** |
+
+The attack is the same in both columns. Only the base rate changed, and with it the meaning of "flagged": at 1 in 100, 25 of every 26 flags are false alarms. The demo's unconstrained tree (TPR 1.000, FPR 0.588) gives the same picture. Out of 10,000 candidates with 100 members, it flags all 100 members and about 5,821 non-members, so 100 / 5,921 ≈ **0.017**. With half the candidates members it is 0.5 / (0.5 + 0.294) ≈ **0.630**.
+
+How to read it: in a TRE the attacker rarely knows that half the people they test were in training, so a realistic base rate makes a typical flag weak evidence. That does not make the model safe. In example 2, an attacker who flags only the rows scored 1 has no false alarms, so FPR = 0 and the posterior is 1 at any base rate. A rare member is protected on average and not in the tail, which is why the three readings are used together.
+
+| Reading | Question it answers | Example above | Demo 1 limit |
+|---|---|---|---|
+| Average | Does the score separate members from non-members overall? | AUC 0.75, advantage 0.25 | AUC 0.62, advantage 0.20 |
+| Tail | Are there people the attack is sure about, and right? | FDIF 0.50, TPR at 10% FPR 0.20 | FDIF 0.20 with p ≤ 0.05, TPR 0.35 |
+| Rare member | If the attack says "member", how often is it true? | 0.80 at A = 0.5, 0.04 at A = 0.01 | Reported, not a rule |
+
+## 19. Demo 1: the hand-written checks
+
+> **In plain words.** The first script is a small, readable implementation of the paper's checks. It trains several models on the synthetic cohort, attacks them, and says yes or no to each one using a demo policy. It refuses a deep tree that memorised people and releases a tamer tree built through a safe wrapper. It also refuses models that store rows, catches a model that was edited after training, and blocks a query that tries to sweep hidden fields.
+
+Entry point: `demo/run_demo.py`. Report: `demo/output/demo_report.txt`. Policy: `demo/graimatter_demo/disclosure.py`. Constraints: `demo/constraints.json`. The walkthrough follows the report's sections 1 to 10.
+
+### 19.0 The demo policy
+
+The paper does not publish universal cut-offs; ELA 8 leaves the risk appetite to an agreement with the data controller. So that the script can say yes or no, `disclosure.py` sets a local policy. **These numbers are the demo's, not the paper's.**
+
+| Rule | Limit |
+|---|---|
+| Worst-case membership AUC | 0.62 |
+| Advantage | 0.20 |
+| TPR at 10% FPR | 0.35 |
+| FDIF, and its p-value | 0.20, with p ≤ 0.05 |
+| Attribute risk ratio | 1.35 |
+| Training minus set-aside accuracy | 0.15 |
+| Model file size ÷ training table size | 0.75 |
+| Accepted file types | `.joblib`, `.pkl` |
+
+A model that stores training rows is refused even when every other rule passes.
+
+### 19.1 The rows the researcher never sees (section 1)
+
+The script generates the 1,000 rows, keeps 500 aside and writes the data dictionary (section 17 of this guide). *Illustrates TECH 6 and TECH 8, Appendix C.*
+
+### 19.2 Attribute inference on one planted record (section 2)
+
+![Twenty queries recover two hidden fields](img/en/fig03_attribute_sweep.svg)
+
+`case_study.py` rebuilds the paper's first case study on synthetic data. It plants one person, aged 62, diabetic, asthmatic and a smoker, who is overweight with slightly high blood pressure. Around that person it places a block of rows that share the same public fields and cover every other weight × blood-pressure combination, with mixed labels. An unconstrained tree is trained on all of it.
+
+The attacker knows the four public fields and tries all 4 × 5 = 20 combinations of the two hidden ones. The planted pair (overweight, slightly high) comes back with confidence 1.000; every other combination is at 0.500. The unique highest confidence is the hidden truth. In the paper's version the top answer was at 93.8% and the next at 57.7% (Appendix E §20.1, p. 87); the demo's planted block makes the gap even clearer. *Illustrates Appendix E.*
+
+### 19.3 What epsilon means, on a mean (section 3)
+
+![Differential privacy on a released mean](img/en/fig10_dp.svg)
+
+Differential privacy is a property of the mechanism that turns private data into a release, not of the data itself (paper §10.1.3, pp. 37-39). The paper's thought experiment: the attacker knows everything except whether one particular person was included, and sees the release. A deterministic release, such as a plain mean, gives the answer away: the attacker computes the mean both ways and sees which one matches. A differentially private mechanism adds randomness so that the two cases look alike, to a degree set by epsilon (smaller is more private).
+
+The demo applies this to the mean age of the 500 training rows. The attacker knows every age and must guess whether row 0 was included. Accuracy is how often the guess is right over 400 trials.
+
+| Release | Attacker accuracy | Laplace scale |
+|---|---|---|
+| Deterministic mean | 1.000 | 0 |
+| epsilon 8.0 | 0.703 | 0.015 |
+| epsilon 1.0 | 0.522 | 0.120 |
+| epsilon 0.2 | 0.487 | 0.600 |
+
+TECH 12 adds a practical warning. At epsilon 0.2 one noisy mean misses the true mean by 0.3053. If someone draws 50 noisy means and keeps the one closest to the true answer, the miss is 0.0084. Picking the draw that looks most like the non-private answer cancels the protection, so TRE staff, not the researcher, should choose the random seed, without looking at the result. *Illustrates §10.1.3 and TECH 12.*
+
+**Under the hood.** `dp_sketch.py` uses sensitivity `(90 − 30) / 500 = 0.12` (the age range divided by the number of rows) and Laplace scale `sensitivity / epsilon`. The attacker guesses "included" when the release is closer to the mean with the row than to the mean without it. This repository does not train a differentially private model.
+
+### 19.4 Unconstrained tree (section 4)
+
+A `DecisionTreeClassifier` with no depth limit and `min_samples_leaf = 1` is trained on the 500 researcher rows.
+
+| | Seeded result |
+|---|---|
+| Training accuracy | 1.000 |
+| Set-aside accuracy | 0.590 |
+| Gap | 0.410 (limit 0.15) |
+| Smallest leaf | 1 training row |
+| File size | 18,150 bytes vs training table 68,000 bytes (ratio 0.267; size alone does not fail) |
+| Worst-case membership AUC | 0.708 (limit 0.62) |
+| Advantage | 0.412 (limit 0.20) |
+| TPR / FPR | 1.000 / 0.588 |
+| TPR at 10% FPR | 0.156 (does not trip the 0.35 limit) |
+| FDIF | 0.620, p = 0.003 |
+| Posterior if flagged | 0.630 when half of candidates are members; 0.017 when 1 in 100 are |
+| Salem-synth | AUC 0.703; TPR at 10% FPR 0.186; FDIF 0.660 |
+| Weight attribute inference | Abstained. Ratio 1.000. |
+
+**Decision: do not release.** Four rules fire: the accuracy gap, the AUC, the advantage and FDIF.
+
+Two details are worth pointing out. First, the file-size check and the TPR at 10% FPR both pass: on their own they would have let this model through, which is why TECH 7 asks for a range of checks. Second, the attribute attack on weight abstains. This tree separates rows using the noise columns, so changing a person's weight does not move them to another leaf and every weight value gives the same confidence. Section 19.2 is the case where the model does split on the hidden fields.
+
+**Under the hood.** The worst-case attack (`attacks.worst_case_membership`) builds one row per record with the model's predicted probabilities **plus the true label**, labels it member or non-member, splits that set in half, trains a random forest on one half and scores the other. Salem-synth (`attacks.salem_synth_membership`) draws a fresh cohort from the same generator, trains a shadow tree with the same hyperparameters, trains the attack on the shadow model's outputs and then scores the real model: the attacker has similar data, not the TRE's tables (Appendix A, Table 2, p. 71).
+
+### 19.5 The same data through a safe wrapper (section 5)
+
+![Unconstrained tree versus safe wrapper](img/en/fig06_trees.svg)
+
+The researcher asks for the same unconstrained settings, but through `SafeDecisionTreeClassifier`. The wrapper reads `demo/constraints.json` and corrects them: `min_samples_leaf` from 1 to 20 and `max_depth` from unlimited to 4. Appendix D of the paper shows the constraints-file format with an example minimum leaf size of 5 (p. 83); the demo is stricter so that the contrast shows on a few hundred rows.
+
+| | Seeded result |
+|---|---|
+| Training accuracy | 0.692 |
+| Set-aside accuracy | 0.584 |
+| Smallest leaf | 20 training rows |
+| Worst-case membership AUC | 0.528 |
+| Advantage | 0.004 |
+| TPR at 10% FPR | 0.116 |
+| FDIF | 0.020, p = 0.445 |
+| Posterior if flagged | 0.502 at half members; 0.010 at 1 in 100 |
+| Weight attribute inference | Abstained. Ratio 1.000. |
+
+`request_release()` returns "Run file through the next step of the checking procedure": the wrapper only gets the file into the TRE's queue. The attack numbers then drive the decision. No demo rule fires. **Decision: allow release under the demo policy.** The set-aside accuracy barely changed (0.590 to 0.584), which tells you that the deep tree's extra training accuracy was memorisation, not skill.
+
+#### The quiet failure (Appendix F)
+
+![AUC near chance, tail not](img/en/fig07_tail.svg)
+
+Salem-synth on the same wrapped tree gives AUC 0.512, close to chance, but FDIF 0.160 with p = 0.027: the top tenth of its scores holds more members than the bottom tenth, by more than chance explains. Its TPR at 10% FPR, 0.118, is about the same as the worst case's 0.116, so the signal is a tilt across the tail rather than a few rows the attacker is sure about. This is the Appendix F warning in practice: the average says "chance", the tail does not. Demo 1's export rule follows the worst-case attack of Appendix G, whose FDIF is 0.020, so it still releases, and 0.160 is under the demo's FDIF limit of 0.20 anyway. A data controller who cares about the tail could set a stricter limit. (Earlier versions of the demo printed FDIF 0.280 here, inflated by the order of tied scores; the [demo guide](Demo_Guide_EN.md), §1.4, explains it.) *Illustrates TECH 9, TECH 10, TECH 7, Appendix F and Appendix A experiment 2.*
+
+### 19.6 Instance-based models are refused (section 6)
+
+* A 1-nearest-neighbour model stores all 500 training rows. The file is 68,677 bytes, 1.010 times the training table.
+* An RBF support-vector classifier stores 423 support vectors out of 500 rows. File ratio 0.94.
+* The safe wrappers for both classes refuse to fit: `constraints.json` marks `KNeighborsClassifier` and `SVC` as not permitted.
+
+**Decision: do not release** either model. The reasons are that the model stores training rows and that the file is bigger than 0.75 of the table. The paper's alternatives are training on aggregated data, using a differentially private algorithm, or keeping the model inside a query-limited service (TECH 11, p. 49; §10.1.5, pp. 39-40). This repository does not implement a private SVM. *Illustrates TECH 11.*
+
+### 19.7 Editing the model after `fit()` (section 7)
+
+![The safe wrapper, from constraints file to register](img/en/fig08_wrapper.svg)
+
+This time the researcher sets `override=True`. The wrapper accepts `min_samples_leaf = 1` and unlimited depth but reports both breaches. After fitting, the researcher edits the parameters back to the allowed values (`max_depth` 4, `min_samples_leaf` 20) and adds an attribute called `hidden_rows`. `request_release()` compares the current state with the snapshot taken at `fit()` and returns "Do not allow release", listing:
+
+* `max_depth` changed from `None` to 4 after the model was fitted;
+* `min_samples_leaf` changed from 1 to 20 after the model was fitted;
+* the smallest leaf holds 1 training row, while the constraints require 20;
+* attributes were added after `fit()`: `hidden_rows`.
+
+The first two catch the careless case (RT1: changing a parameter without retraining). The last catches a deliberate attempt to hide data (RT2). The paper describes this check in §10.1.2 (p. 37). Finally, a file called `not_a_model.txt` is refused because its type is not `.joblib` or `.pkl`. *Illustrates TECH 10 and the RT1/RT2 risk types.*
+
+**Under the hood.** At `fit()`, the wrapper stores the parameters, a SHA-256 digest of the tree arrays, the leaf k-anonymity and the list of attribute names. `request_release()` re-checks the constraints, compares parameters and digest, recomputes the smallest leaf and looks for new attributes. It writes `<model>.release.json` next to the model file.
+
+### 19.8 A query budget that counts rows (section 8)
+
+![A query budget that counts rows](img/en/fig09_query_budget.svg)
+
+If the model is not released as a file but kept on a server, the TRE can limit queries (paper §10.1.7, pp. 40-41). `query_gate.py` gives each user a budget of 8 rows. A single patient lookup (1 row) is allowed; the predicted class probabilities come back as 0 and 1. Then the same user sends the 20-combination sweep of section 19.2 in one request. The gate refuses it: 20 rows requested, 1 already used, budget 8.
+
+The unit matters. If the budget counted HTTP calls, one call carrying all 20 rows would pass. TECH 17 adds that a real query-limited service should be tested by an external party (p. 53); the demo implements only the control logic. *Illustrates TECH 16 and TECH 17.*
+
+### 19.9 Register entry and pipeline snapshot (section 9)
+
+`demo/output/data_use_register.json` records the wrapped tree (`safe_tree.joblib`) with the decision `approved_for_demo_release`, the controls applied (set-aside, wrapper constraints, membership and attribute attacks, leaf k-anonymity, size check) and the refused files (`unsafe_tree.joblib`, `tampered_tree.joblib`). `demo/output/pipeline_snapshot.json` stores what is needed to reproduce the approved candidate: the seed, the researcher and set-aside row ids, the wrapper's recommendation and corrected parameters, and the demo policy. The researcher declaration is written in plain language (follow the approved controls, accept the register entry, accept that TRE staff will run attacks); the paper's clause text was left for a qualified legal review. *Illustrates TECH 3 and ELA 4.*
+
+### 19.10 Side by side (section 10)
+
+| Model | Train | Set-aside | Worst-case AUC | Advantage | TPR at 10% FPR | Decision |
+|---|---|---|---|---|---|---|
+| Unconstrained tree | 1.000 | 0.590 | 0.708 | 0.412 | 0.156 | Refuse |
+| Safe wrapper, leaf 20, depth 4 | 0.692 | 0.584 | 0.528 | 0.004 | 0.116 | Release under the demo policy |
+| 1-nearest neighbour | | | | | | Refuse: stores 500 rows |
+| RBF SVC | | | | | | Refuse: 423 support vectors |
+| Tampered tree | | | | | | Refuse: edited after fit |
+
+## 20. Demo 2: the official SACRO-ML package
+
+> **In plain words.** The second script runs the same cohort through `sacroml`, the maintained toolkit that grew out of the paper's AI-SDC work. Its safe wrapper is looser than demo 1's (minimum leaf 5 instead of 20), it never approves anything by itself, and its own structural check still calls the wrapped tree risky. Its membership attack gives an AUC near 0.5 even for the tree that memorised everyone, because it looks at different information.
+
+Entry point: `demo/run_sacroml_demo.py`. Package: `sacroml` 2.0.1 from [SACRO-ML](https://github.com/AI-SDC/SACRO-ML). Summary: `demo/output/sacroml/sacroml_report.txt`. Per-attack `report.json` and `report.pdf` live under `demo/output/sacroml/unconstrained_tree/` and `demo/output/sacroml/safe_wrapper_tree/`, in `worst_case`, `structural` and `attribute`. The seeded run took about three and a half minutes.
+
+### 20.1 The package's safe wrapper
+
+* Created with the default leaf size, `SafeDecisionTreeClassifier` warns that `min_samples_leaf = 1` is below the recommended minimum of 5 and marks the configuration as disclosive.
+* With constraints applied, it changes `min_samples_leaf` to 5.
+* `request_release()` without a `Target` writes `safe_release/target.yaml` and recommends "Proceed to next step of checking". It does not run attacks, and it is not an approval.
+* Setting `min_samples_leaf` from 5 back to 1 after `fit()` makes `posthoc_check()` return disclosive, with the message that the parameter changed after the model was fitted.
+
+Passing a `Target` into `request_release()` would also start the package's likelihood-ratio attack (LiRA); the upstream example runs it with 100 shadow models. This demo does not run LiRA.
+
+### 20.2 Unconstrained tree
+
+Training accuracy 1.000, set-aside accuracy 0.590, gap 0.410.
+
+| Check | Seeded result |
+|---|---|
+| Worst-case membership AUC, 3 repetitions | mean 0.500 (min 0.500, max 0.500); none above the null band 0.377 to 0.623 |
+| Structural | `gen_error_risk`, `unnecessary_risk`, `k_anonymity_risk`, `class_disclosure_risk`, `smallgroup_risk` true; `dof_risk` false. Smallest leaf 1 row, under the package threshold of 10 |
+
+The membership AUC of 0.500 needs explaining, and section 21.2 does it with a picture. In short: this attack uses the predicted probabilities only, and a tree of pure leaves gives extreme probabilities to training rows and to set-aside rows alike. The structural attack is what flags the memorisation here.
+
+### 20.3 Wrapped tree (`min_samples_leaf` 5)
+
+Training accuracy 0.868, set-aside accuracy 0.566, gap 0.302. Leaf k-anonymity 5.
+
+| Check | Seeded result |
+|---|---|
+| Worst-case membership AUC, 3 repetitions | mean 0.494 (min 0.471, max 0.519); none above the null band |
+| Structural | The same risk flags true, including `k_anonymity_risk`, because 5 is still under 10. `dof_risk` false |
+
+Moving from leaf size 1 to leaf size 5 is what the published rules file does, and the package's own structural check still calls that tree risky.
+
+### 20.4 Attribute inference
+
+![Reading sacroml attribute inference](img/en/fig12_guess_coverage.svg)
+
+Read every cell as **correct unique guesses / unique guesses made, out of 500 rows**.
+
+| Field | Unconstrained, training | Unconstrained, set-aside | Wrapped, training | Wrapped, set-aside |
+|---|---|---|---|---|
+| diabetes | 136/136 | 141/141 | 195/257 | 191/246 |
+| asthma | no unique guess | no unique guess | 50/67 | 49/64 |
+| weight | no unique guess | no unique guess | no unique guess | no unique guess |
+| blood pressure | 5/5 | 3/3 | no unique guess | no unique guess |
+| smoker | 198/198 | 205/205 | 254/327 | 262/330 |
+| age | reconstructed fraction 0.012 | 0.010 | 0.034 | 0.050 |
+
+"136/136" means that every unique guess was right, on the 136 rows (27%) where the attack was willing to guess. It does **not** mean that 136 of 500 rows were guessed correctly. A "no unique guess" cell means the attack abstained on every row. The training and set-aside numbers are close, which is the comparison Appendix G asks for: a model that leaks attributes only for its training rows would show a clear gap. Age is numeric, so the package reports the fraction of rows whose age it can bound within its tolerance, not a guess count.
+
+### 20.5 How to read `report.json`
+
+Each attack folder holds a `report.json` and a `report.pdf`. The JSON is a dictionary with one entry per run, keyed by the attack name and a run id; if you run the script more than once, new runs are appended, so read the last key. Inside each run:
+
+* `metadata.attack_params`: the settings, for example `n_reps: 3` for the worst-case attack, `safe_threshold: 10` for the structural attack.
+* `metadata.global_metrics`: the summary. For the worst-case attack, `null_auc_3sd_range` is the chance band and `n_sig_auc_p_vals` counts repetitions whose AUC is significantly above chance (0 here). For the structural attack, the risk flags listed above.
+* `attack_experiment_logger.attack_instance_logger`: one entry per repetition. For the worst-case attack: `TPR`, `FPR`, `AUC`, `Advantage`, the FDIF family (`FDIF01` is the 10% tail, with its p-value in `PDIF01`), and `TPR@0.1%` style tail rates. For the attribute attack: `categorical` holds, per field, `train` and `test` lists of five numbers, `[correct, unique guesses, baseline %, number of values, rows]`, where the baseline is the share of the most common value; `quantitative` holds the age fraction.
+
+**Under the hood.** Two details differ from demo 1. The package's worst-case attack is configured with `include_model_correct_feature: false` and `sort_probs: true`: the attack model sees sorted predicted probabilities, not the true label. Its attribute attack keeps a candidate value only when the model's predicted label for that candidate matches the model's prediction for the original row, and requires the unique maximum confidence to pass a threshold.
+
+## 21. The two demos side by side
+
+> **In plain words.** The two scripts look at the same data and disagree on purpose, and the disagreement is instructive. They use different leaf sizes, their "worst-case" attacks see different information, and one says "release" while the other says "keep checking".
+
+![Same cohort, two toolkits](img/en/fig11_two_demos.svg)
+
+### 21.1 Three differences that matter
+
+| | Demo 1 (hand-written) | Demo 2 (`sacroml` 2.0.1) |
+|---|---|---|
+| **Leaf rule** | `min_samples_leaf` 20 and `max_depth` 4, stricter than the Appendix D example | `min_samples_leaf` 5, from the package rules file |
+| **Membership attack** | Predicted probabilities plus the true label | Predicted probabilities only |
+| **Wrapped tree** | train 0.692, set-aside 0.584, AUC 0.528 | train 0.868, set-aside 0.566, mean AUC 0.494 |
+| **Leaf check** | smallest leaf 20 | smallest leaf 5 < 10, so `k_anonymity_risk` is true |
+| **Outcome** | release under the demo policy | "Proceed to next step of checking"; structural risk still true |
+
+### 21.2 Why the membership numbers differ
+
+![How sure is each tree about the true label?](img/en/fig05_confidence.svg)
+
+Both scripts call their attack "worst case", but they are different tests.
+
+On the unconstrained tree every leaf is pure, so every prediction is a probability of exactly 0 or 1. The figure shows the confidence each tree gives to the **true** label. Training rows always get 1. Set-aside rows get 1 when the tree happens to be right (59% of the time) and 0 when it is wrong.
+
+* **Demo 1** gives the attack the true label, so it can see "confidence 1 in the right class" versus "confidence 0 in the right class". Members are always in the first group; 41% of non-members are in the second. AUC 0.708.
+* **Demo 2** gives the attack only the sorted probabilities. Without the label, "probability 1 for class A" looks the same whether the tree is right or wrong. Members and non-members are equally extreme, so the AUC is 0.500.
+
+An AUC near 0.5 from the package therefore does not mean the tree failed to memorise. In demo 2 the structural attack is the check that catches it. For the wrapped tree with leaves of 20 rows, both groups spread over similar confidences, which is why demo 1's AUC drops to 0.528.
+
+### 21.3 What to take away
+
+Neither demo is an approval process. The hand-written script releases a tree only after forcing leaf 20 and depth 4 and after its own label-aware attack falls inside a local policy. The package recommends further checking and keeps flagging the leaf-5 tree. A real TRE would combine both kinds of evidence with a risk appetite agreed with its data controller (ELA 8, ELA 11).
+
+---
+
+## 22. Beyond predictive AI
 
 For generative AI, NIST keeps these objectives, adds **misuse enablement** (NISTAML.04: getting around the restrictions a system's owner placed on its use) and adds classes that work through prompts: direct prompt injection (.018), indirect prompt injection (.015), misaligned outputs (.027), prompt extraction (.035), leaking information from user interactions (.036), training data attacks (.037), data extraction (.038) and compromising connected resources (.039). Section 5 summarises them; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models.
+
+---
+
+# Closing
+
+## 23. A release gate over the demos
+
+> **In plain words.** The demos print numbers. A release decision needs those numbers judged against named obligations, with a record someone can audit. `demo/run_gate.py` reruns the demos, compares each number with a tolerance, and gives every control in the EU AI Act, the UK Code, NIST and GRAIMATTER a verdict: pass, fail or not evidenced. On the seeded run the GRAIMATTER controls pass and Article 15(5) fails, because demo 3's forest can be evaded, copied and backdoored; its model-poisoning clause passes, because demo 4's checks refuse every tampered file.
+
+The pattern comes from [safety-trust-engine](https://github.com/olonok69/safety-trust-engine), which does the same for LLMs and agents (section 5). Its tools (garak, AgentDojo, PyRIT) attack language models and are no use against a tree or a random forest; what carries over is the method: controls mapped to evidence, numeric tolerances, a `not_evidenced` status, and a report that makes CI fail.
+
+### 23.1 What the gate does
+
+1. It runs the demos it is asked for (all four by default) and keeps the numbers each one already prints. Nothing is recomputed, and the reports in `demo/output/` stay as they are.
+2. It compares each metric with its tolerance. A category is within tolerance when none of its metrics breaches.
+3. It gives each control in the selected regime packs a verdict. **pass**: every demo the control relies on ran and none of its categories breached. **fail**: one of them breached. **not_evidenced**: a demo it relies on did not run. A control is never marked pass on evidence that was not produced.
+4. It writes `demo/output/gate/gate_<packs>.json` for machines and `.md` for people, and exits with 1 if any category breaches or any selected control is not evidenced.
+
+```bash
+uv run python demo/run_gate.py                                   # demos 1-4; packs eu_uk, nist_aml, graimatter
+uv run python demo/run_gate.py --regimes us                      # NIST AI RMF and SR 26-02
+uv run python demo/run_gate.py --demos 1,3,4 --accept-missing 2  # what CI runs: no sacroml
+uv run python demo/run_gate.py --fail-under evasion.self_reported=0.5
+```
+
+### 23.2 Tolerances
+
+A tolerance is the largest value of a metric the data controller accepts. It is a risk appetite (ELA 8), not a threshold from the green paper, NIST or any regulation, none of which publishes one. The privacy tolerances are read from demo 1's `POLICY` in `disclosure.py`, so on the wrapped tree the gate decides exactly as `decide()` does; a test checks that. The robustness tolerances were set for the workshop.
+
+| Category | Metric | Demo | Tolerance | Seeded value |
+|---|---|---|---|---|
+| membership | Worst-case AUC; advantage; TPR at 10% FPR; FDIF when p ≤ 0.05 | 1 | 0.62; 0.20; 0.35; 0.20 | 0.528; 0.004; 0.116; 0.020 (p = 0.445) |
+| attribute | Attribute risk ratio for weight | 1 | 1.35 | 1.000 |
+| generalisation | Training minus TRE-holdout accuracy | 1 | 0.15 | 0.108 |
+| stored_rows | Training rows stored in the file; file size over table size | 1 | 0; 0.75 | 0; 0.051 |
+| release_check | Known-disclosive files let through (deep tree, 1-NN, SVC, edited tree, wrong file type) | 1 | 0 | 0 |
+| query_budget | Rows of the attribute sweep allowed; 1,000-row extraction request allowed | 1, 3 | 0 | 0 |
+| evasion | High-risk people who evade, in the three scenarios of section 3.1 | 3 | 10% | 78.7%, 32.8%, 20.7% |
+| extraction | Agreement of a copy trained on one 200-row budget of labels | 3 | 80% | 86.9% |
+| poisoning | Worst rise in trigger success over the clean model | 3 | 10 points | 71.7 points |
+| supply_chain | Tampered supplier files that passed the pin and the scan or floor (section 3.4) | 4 | 0 | 0 of 4 |
+
+Demo 2 adds two readings when `sacroml` is installed: the package's worst-case membership AUC on its wrapped tree (tolerance 0.62) and the disclosive configurations it failed to flag (tolerance 0).
+
+### 23.3 Regime packs and the seeded verdicts
+
+Packs are chosen with `--regimes`, as in safety-trust-engine. Each control records how binding it is: `statute` (the EU AI Act), `guidance` (NIST, the UK Code), `supervisory` (model risk management) or `recommendation` (the green paper).
+
+| Pack | Controls | Demos 1, 3 and 4 |
+|---|---|---|
+| `eu_uk` | EU AI Act Art. 15(5): data poisoning, model poisoning, model evasion, confidentiality attacks. UK Code / ETSI EN 304 223: 3.1, 6.2, 7 and 8.1.2, 9.4 | 6 fail, 2 pass |
+| `nist_aml` | NISTAML.025 evasion, .023 backdoor, .031 extraction, .032 reconstruction (attribute inference, §2.4.1), .033 membership, .051 supply chain | 3 fail, 3 pass |
+| `graimatter` | TECH 6, 7, 9-10, 11, 16, and a SACRO-ML cross-check of TECH 7 and 9 that needs demo 2 | 5 pass, 1 not evidenced |
+| `us` | NIST AI RMF GOVERN 6.1, MEASURE 2.6, 2.7, 2.10; SR 26-02 validation, monitoring, third-party model, documentation | 3 fail, 5 pass |
+
+The two halves of the result are not in tension. The GRAIMATTER checks were built for privacy, and the wrapped tree passes them. Article 15(5) also names poisoning and model evasion, and its confidentiality clause covers extraction as well as membership; demo 3's forest fails all three. Its model-poisoning clause passes on demo 4: the pin, the scan and the floors refuse every tampered file. Privacy checks alone do not make a model resilient in the sense of the Article, which is the point of section 11.
+
+### 23.4 Never a silent green
+
+A control whose demo did not run is `not_evidenced`, and the gate fails on it. CI does not install `sacroml`, because it brings PyTorch, so demo 2 does not run there. Rather than a job that is always red, or a control quietly marked pass, the workflow declares demo 2 out of scope with `--accept-missing 2`. The SACRO-ML control is then reported as not evidenced and out of scope, and the report says so in its header.
+
+### 23.5 The US reading
+
+The `us` pack reads the same evidence through two US lenses. NIST AI RMF GOVERN 6.1 asks for policies on the AI risks of third parties, which demo 4 evidences. MEASURE 2.6 asks that residual negative risk not exceed the risk tolerance, which is what the tolerances encode; MEASURE 2.7 covers security and resilience, and MEASURE 2.10 privacy risk. Federal model risk management guidance (Federal Reserve SR 26-02 and OCC Bulletin 2026-13, which replaced SR 11-7 in April 2026) leaves generative and agentic AI outside its formal scope, so safety-trust-engine applies it to LLMs by analogy. A risk classifier like the ones here is a model in the plain sense of that guidance. The TRE holdout (TECH 6), which the developer never sees, is the independent validation; the gate in CI is the ongoing monitoring; the JSON and Markdown report is the documentation; and demo 4's pin is the check that the vendor model in use is the one that was validated. NIST AI RMF is voluntary and SR 26-02 is supervisory, and the report marks them so.
+
+### 23.6 In CI
+
+`.github/workflows/gate.yml` runs on every pull request. One job lints with `ruff` and runs the tests: demos 1, 3 and 4 regenerate their reports, which must match `demo/output/` apart from what depends on the machine (the absolute path, the pickled size of the tree and the digests of pickled models); demo 4 must refuse all four tampered files and show that a late pin accepts the backdoor; the gate must agree with `decide()`; the seeded verdicts are pinned; a missing demo must give `not_evidenced`; `--fail-under` must change the outcome. A second job runs the gate twice: the GRAIMATTER pack on demo 1 must pass, and all packs on demos 1, 3 and 4 must block, on evasion, extraction and poisoning and nothing else. Both reports are uploaded as build artefacts.
+
+## 24. How to reproduce
+
+Setup is described once, in the repository [README](../../README.md); the step-by-step notes on demo 1 are in [demo/README.md](../../demo/README.md), and the walkthrough of every demo's code and output is the [demo guide](Demo_Guide_EN.md). In short, with [uv](https://docs.astral.sh/uv/) installed, from the repository root:
+
+```bash
+uv venv --python 3.11
+uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
+
+uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
+uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
+uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
+uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
+uv run python demo/run_gate.py              # reruns the demos; writes demo/output/gate/
+```
+
+With the `pyproject.toml`, `uv sync` installs numpy, scikit-learn, pytest and ruff without sacroml (add `--extra sacroml` for demo 2); `uv run pytest` and `uv run ruff check .` are what CI runs.
+
+On Windows PowerShell, activate the environment with a leading dot: `. .\.venv\Scripts\Activate.ps1`.
+
+| Output | Produced by |
+|---|---|
+| `demo/output/aml_report.txt` | demo 3: evasion, extraction, backdoor |
+| `demo/output/supply_chain_report.txt` | demo 4: four tampered files; working files in `demo/output/supply_chain/` (not versioned) |
+| `demo/output/demo_report.txt` | demo 1, all ten sections |
+| `demo/output/data_dictionary.json` | demo 1, TECH 8 |
+| `demo/output/safe_tree.release.json`, `tampered_tree.release.json` | demo 1, wrapper release reports |
+| `demo/output/data_use_register.json`, `pipeline_snapshot.json` | demo 1, section 9 |
+| `demo/output/sacroml/sacroml_report.txt` | demo 2 summary |
+| `demo/output/sacroml/<model>/<attack>/report.json` and `report.pdf` | demo 2, per attack |
+| `demo/output/sacroml/safe_release/target.yaml` | demo 2, `request_release()` |
+| `demo/output/gate/gate_<packs>.json` and `.md` | the release gate (section 23) |
+
+The figures in this guide and the deck are generated from the repository:
+
+```bash
+pip install -r docs/requirements-docs.txt   # python-pptx, cairosvg
+python docs/guide/make_figures.py           # GRAIMATTER figures, img/en and img/es
+python docs/guide/make_aml_figures.py       # adversarial-ML figures (figA*)
+python docs/make_deck.py                    # docs/Adversarial_ML.pptx
+```
+
+`make_figures.py` computes two figures live from the demo code (the planted sweep and the confidence histograms); the other numbers are copied from the seeded reports.
+
+## 25. Limits of the demos
+
+* **The cohort is synthetic.** There are no real patients. Demos 1 and 2: seed 7, 1,000 rows, split 500 for the researcher and 500 kept by the TRE. Demo 3: seed 7, 4,000 rows, split 2,000 and 2,000.
+* **Demo 3 is a sketch.** One model type (a random forest), simple greedy and query-based attacks, and a single outlier screen as the poisoning defence. Optimised attacks, other defences and other data types are out of scope.
+* **Demo 4 is a sketch too.** One supplier, one mirror, four kinds of tampering. The import scan's allow list fits a scikit-learn forest and nothing else; real scanners (picklescan, the Hugging Face hub's) have missed malicious files (ATLAS AML.CS0031). The lock file is a stand-in for signed releases: a digest says what was approved, not who published it. The key length is a number in a file; nothing is encrypted.
+* **No generative-AI demo.** Prompt injection, agents and LLM supply chain are covered in prose only here; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests them on live models (section 5).
+* **The frameworks are summarised, not interpreted.** Part 2 is a reading of the documents, not legal advice; the crosswalk is ours.
+* **The cut-offs are a demo policy.** The limits in `disclosure.py` exist so demo 1 can say yes or no. The paper publishes no universal thresholds; ELA 8 describes a risk-based approval agreed with the data controller. The same holds for the gate's tolerances (section 23.2), and its mapping of metrics to clauses is ours.
+* **The wrapper is stricter than the paper's example.** Demo 1 uses `min_samples_leaf` 20 and `max_depth` 4; Appendix D's example minimum leaf size is 5.
+* **`sacroml` uses its own rules.** Its rules file raises `min_samples_leaf` from 1 to 5, and its structural attack marks a leaf as risky below 10 training rows.
+* **The official package approves nothing here.** `request_release()` records "Proceed to next step of checking", and the structural attack still flags the wrapped tree.
+* **The two membership attacks are different tests.** Demo 1 trains on predicted probabilities plus the true label; `sacroml` scores by predicted probability only. An AUC near 0.5 from the package does not mean the tree failed to memorise.
+* **Attribute counts are guesses, not rows.** "136/136 unique guesses correct out of 500 rows" means every unique guess was correct, not that 136 of 500 rows were guessed.
+* **LiRA is not run.** The likelihood-ratio attack is in the package; the upstream example uses 100 shadow models.
+* **No private model.** The repository sketches differential privacy on a released mean only.
+* **No legal drafting.** The researcher declaration is plain language; the paper's clause text was left for a qualified legal review.
+
+## 26. Glossary
+
+| Term | Meaning |
+|---|---|
+| **Adversarial machine learning (AML)** | The study of attacks on ML systems and of their mitigations (NIST AI 100-2). |
+| **Availability, integrity, privacy** | NIST's three attacker objectives: break the model for everyone, make it give chosen answers, learn restricted information (section 2.1). |
+| **Evasion** | Changing a test input so the model gets it wrong, without touching the model (NISTAML.022, .025). |
+| **Adversarial example** | An input crafted to cause a wrong prediction. |
+| **Poisoning** | Attacking the training stage by controlling part of the training data or the model. |
+| **Backdoor, trigger** | A hidden behaviour planted by poisoning; inputs carrying the trigger get the attacker's chosen output (NISTAML.023). |
+| **Clean-label poisoning** | Poisoning where the attacker cannot choose the labels of the poisoned rows. |
+| **Model extraction** | Copying a model's behaviour or parameters through queries (NISTAML.031). |
+| **Fidelity** | Share of inputs on which a copied model agrees with the original. |
+| **Property inference** | Learning a statistic of the training set (NISTAML.034). |
+| **Prompt injection** | Instructions in model input that override the system's; direct when typed by the user, indirect when planted in content the model reads (NISTAML.018, .015). |
+| **Supply chain attack** | Reaching a model through a third party: a supplied model, dataset, library or file swapped or edited on the way (NISTAML.05, section 3.4). |
+| **Pin, lock file** | A cryptographic digest of each approved file, recorded when it was approved; later downloads must match it (section 3.4). |
+| **Pickle** | Python's object format, also behind `.joblib`; loading one can run code the file names. |
+| **Downgrade** | Making a system use a weaker setting, such as a shorter key, while it keeps working (section 3.4). |
+| **White, gray, black box** | Full, partial or query-only knowledge of the system (section 2.3). |
+| **ATLAS, OWASP, EU AI Act, UK Code, ETSI EN 304 223** | The frameworks of section 8. |
+| **TRE** | Trusted research environment: a secure place where approved researchers analyse sensitive data, with outputs checked before release. |
+| **Data controller** | The organisation responsible for the data under data protection law; it agrees the risk appetite (ELA 8, ELA 11). |
+| **MDC** | Model disclosure control: a check on the model file before export (TECH 4 to 15). |
+| **MQC** | Model query control: a limit on how a released model can be queried (TECH 16, 17). |
+| **Holdout / set-aside** | Rows the TRE keeps and never gives to the researcher (TECH 6). |
+| **Safe wrapper** | A version of a model class that enforces a constraints file, records its state at `fit()` and offers `request_release()` (TECH 9, 10). |
+| **Constraints file** | A human-readable file with the TRE's allowed hyperparameter ranges and model types (Appendix D). |
+| **Instance-based model** | A model that needs stored training rows to predict, such as nearest neighbours or a kernel SVM (TECH 11). |
+| **Membership inference** | Deciding whether a row was in the training set (NISTAML.033). |
+| **Attribute inference** | Filling in a hidden field of a person by querying the model (Appendix E). |
+| **Worst-case attack** | An attack that has the training and held-out rows; a conservative upper bound (Appendix G). |
+| **Salem scenarios** | Attacks where the adversary trains shadow models on other data (Appendix A, Table 2). |
+| **Structural attack** | `sacroml` check of the model's structure: leaf sizes, degrees of freedom, class disclosure. |
+| **LiRA** | Likelihood-ratio membership attack using many shadow models; in `sacroml`, not run here. |
+| **Differential privacy (epsilon)** | A guarantee on a release mechanism; smaller epsilon means the release changes less when one person is added or removed (green paper §10.1.3, NIST §2.4.5). |
+| **AUC, advantage, TPR, FPR, FDIF, posterior** | See section 18. |
+| **k-anonymity (of a leaf)** | Number of training rows in the smallest leaf. |
+| **Tolerance** | The largest value of a metric the data controller accepts; a risk appetite, not an official threshold (section 23.2). |
+| **not_evidenced** | The gate's verdict for a control whose demo did not run; never reported as a pass (section 23.4). |
+| **RT1, RT2, RT3** | The green paper's risk types: careless researcher, malicious researcher, outside attacker (section 9.2). |
+
+## 27. References
+
+1. A. Vassilev, A. Oprea, A. Fordyce, H. Anderson, X. Davies, M. Hamin. *Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations.* NIST AI 100-2e2025, March 2025. doi:10.6028/NIST.AI.100-2e2025. `NIST.AI.100-2e2025.pdf` in this repository.
+2. MITRE ATLAS, Adversarial Threat Landscape for AI Systems. https://atlas.mitre.org (data release 2026.09).
+3. OWASP Machine Learning Security Top 10 (2023, draft). https://owasp.org/www-project-machine-learning-security-top-10/
+4. OWASP Top 10 for LLM Applications 2025. https://genai.owasp.org/llm-top-10/
+5. Regulation (EU) 2024/1689 (Artificial Intelligence Act), Article 15. Regulation (EU) 2026/1744 (Digital Omnibus on AI).
+6. European Data Protection Board. Opinion 28/2024 on certain data protection aspects related to the processing of personal data in the context of AI models. December 2024.
+7. UK Department for Science, Innovation and Technology. *Code of Practice for the Cyber Security of AI.* 31 January 2025. ETSI EN 304 223, *Securing Artificial Intelligence: Baseline Cyber Security Requirements for AI Models and Systems*, January 2026.
+8. UK NCSC, US CISA and partners. *Guidelines for secure AI system development.* 27 November 2023.
+9. *Green Paper: Recommendations for disclosure control of trained Machine Learning (ML) models from Trusted Research Environments (TREs).* Output of the DARE UK sprint project GRAIMatter, September 2022. `GRAIMATTER Green Paper.pdf` in this repository. An earlier version: E. Jefferson et al., Zenodo, July 2022, doi:10.5281/zenodo.6896214.
+10. SACRO-ML (`sacroml` 2.0.1). https://github.com/AI-SDC/SACRO-ML
+11. A. Salem, Y. Zhang, M. Humbert, P. Berrang, M. Fritz, M. Backes. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models.* arXiv:1806.01246, 2018 (green paper reference [37]).
+12. F. Ritchie. *The "Five Safes": a framework for planning, designing and evaluating data access solutions.* Zenodo, 2017, doi:10.5281/zenodo.897821 (green paper reference [2]).
+13. safety-trust-engine: a red-team compliance gate for LLMs and agents (garak, AgentDojo, PyRIT). https://github.com/olonok69/safety-trust-engine. The release gate of section 23 follows its `compliance.py` and `report.py`, and its `docs/REGULATORY_RESEARCH.md` is the source for SR 26-02.
+14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, January 2023 (GOVERN 6.1, MEASURE 2.6, 2.7, 2.10).
+15. Board of Governors of the Federal Reserve System, SR 26-02, and OCC Bulletin 2026-13: revised interagency guidance on model risk management, April 2026 (replaces SR 11-7).
+16. Supply-chain integrity: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) and the OpenSSF model signing project (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
+17. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+
+---
+
+## Appendix A: how the guide, slides, videos and demos line up
+
+The guide and the deck follow the same order, and each part is one video of the series: Part 1, the attacks (sections 1 to 7, slides 1 to 14, video 1); Part 2, the frameworks (section 8, slides 15 to 19, video 2); Part 3, the GRAIMATTER case (sections 9 to 11, slides 20 to 24, video 3); Part 4, the attacks in detail (sections 12 to 22, slides 25 to 49, videos 4a and 4b). The closing (sections 23 to 27, slides 50 to 53) ends video 4b.
+
+| Guide section | Slides (deck order) | Video | Demo output |
+|---|---|---|---|
+| 1. Why ML needs its own security | 1 *Cover*, 2 *Agenda*, 3 *Why*, 4 *Stages and capabilities* | 1 | – |
+| 2. The NIST taxonomy | 5 *Taxonomy*, 6 *Capabilities and knowledge* | 1 | – |
+| 3.1 Evasion | 7 *Evasion* | 1 | `aml_report.txt` §1 |
+| 3.3 Backdoor | 8 *Poisoning* | 1 | `aml_report.txt` §3 |
+| 4. Privacy attacks | 9 *Privacy* | 1 | – |
+| 3.2 Extraction | 10 *Extraction* | 1 | `aml_report.txt` §2 |
+| 3.4 Supply chain | 11 *Supply chain* | 1 | `supply_chain_report.txt` |
+| 5. Generative AI | 12 *Generative AI* | 1 | – |
+| 6. Real incidents | 13 *Real incidents* | 1 | – |
+| 7. Mitigations | 14 *Mitigations* | 1 | – |
+| 8. Frameworks and crosswalk | 15 *Frameworks*, 16 *OWASP*, 17 *EU AI Act*, 18 *UK*, 19 *Crosswalk* | 2 | – |
+| 9. What a TRE is protecting | 20 *A high-trust case*, 21 *The problem*, 22 *TECH 4* | 3 | – |
+| 10. Map of the green paper | 23 *The paper* | 3 | – |
+| 11. What carries over | 24 *What carries over* | 3 | – |
+| 12. Reading the NIST taxonomy | 25 *Part 4a*, 26 *How to read the taxonomy* | 4a | – |
+| 13. Availability | 27 *Availability* | 4a | – |
+| 14. Integrity | 28 *Integrity*, 29 *Evasion step by step*, 30 *Backdoor step by step* | 4a | `aml_report.txt` §1 and §3 |
+| 15. Supply chain | 31 *Supply chain*, 32 *Demo 4 step by step* | 4a | `supply_chain_report.txt` |
+| 16. Privacy | 33 *Part 4b*, 34 *Privacy*, 35 *Extraction step by step* | 4b | `aml_report.txt` §2 |
+| 17. Cohort and holdout | 36 *TECH 6 · TECH 8 · The cohort* | 4b | `data_dictionary.json` |
+| 18. Metrics | 38 *Appendix F · Reading attack metrics* | 4b | – |
+| 19.2 Planted record | 37 *Appendix E · Attribute inference* | 4b | `demo_report.txt` §2 |
+| 19.3 Differential privacy | 45 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
+| 19.4 Unconstrained tree | 39 *Demo 1 · Unconstrained tree* | 4b | `demo_report.txt` §4 |
+| 19.5 Safe wrapper and the quiet failure | 40 *Demo 1 · Safe wrapper*, 41 *Appendix F · The tail* | 4b | `demo_report.txt` §5 |
+| 19.6 Instance-based models | 42 *TECH 11* | 4b | `demo_report.txt` §6 |
+| 19.7 Editing after `fit()` | 43 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 19.8 Query budget | 44 *TECH 16* | 4b | `demo_report.txt` §8 |
+| 19.9 Register and snapshot | 42 (notes) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
+| 20. SACRO-ML | 46 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 21.1 Differences | 48 *Two demos compared* | 4b | both reports |
+| 21.2 Why the membership numbers differ | 47 *Why the two membership numbers differ* | 4b | – |
+| 22. Beyond predictive AI | 49 *Beyond predictive AI* | 4b | – |
+| 25. Limits | 50 *Limits* | 4b | – |
+| 23. Release gate | 51 *Release gate* | 4b | `demo/output/gate/` |
+| 24. How to reproduce | 52 *Run it yourself* | 4b | – |
+| 26. Glossary, 27. References | 53 *References* | 4b | – |
+
+### The video series
+
+| Video | Guide | Slides | Demos to run | About |
+|---|---|---|---|---|
+| 1 · Attacks | §1 to §7 | 1 to 14 | Demos 3 and 4, briefly | 40 minutes |
+| 2 · Frameworks | §8 | 15 to 19 | – | 13 minutes |
+| 3 · GRAIMATTER, a high-trust case | §9 to §11 | 20 to 24 | – | 10 minutes |
+| 4a · The attacks in detail: integrity and supply chain | §12 to §15 | 25 to 32 | Demo 3 (sections 1 and 3) and demo 4, section by section | 30 minutes plus the runs |
+| 4b · The attacks in detail: privacy and a release gate | §16 to §27 | 33 to 53 | Demo 3 (section 2), demos 1 and 2, the gate | 45 minutes plus the runs |
+
+To present it as one live session instead, go through the slides in order; Part 4 then takes about as long as Parts 1 to 3 together, so for a session of about 90 minutes present Parts 1 to 3 and take from Part 4 only the demo slides you run. Demo 2 takes a few minutes, so show it from its saved report unless you can wait.
 
 ---
 
