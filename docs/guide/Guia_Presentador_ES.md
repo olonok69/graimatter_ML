@@ -1,8 +1,8 @@
 # Machine learning adversarial: guía del presentador
 
-**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (41 diapositivas)**
+**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (53 diapositivas)**
 
-Esta guía es para quien presente las diapositivas del taller. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
+Esta guía es para quien presente las diapositivas, en directo o como serie de vídeos. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
 
 ---
 
@@ -17,32 +17,33 @@ Cada diapositiva tiene los mismos bloques:
 * **Para profundizar**: las secciones de la guía técnica (escritas "GT §x", donde GT significa guía técnica, es decir, [AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md)), la salida de las demos y los documentos fuente.
 * **Siguiente**: una frase para pasar a la diapositiva siguiente.
 
-Las diapositivas están en inglés. Cada sección da el título traducido y, justo debajo, el título tal como aparece en la diapositiva, para que puedas localizarla. Para no confundir los anexos, esta guía escribe "Anexo A" o "Anexo B de la GT" para los anexos de la guía técnica y "anexo E, F o G del paper" para los del green paper de GRAIMATTER.
+Las diapositivas están en inglés. Cada sección da el título traducido y, justo debajo, el título tal como aparece en la diapositiva, para que puedas localizarla. Para no confundir los anexos, esta guía escribe "Anexo A de la GT" para el anexo de la guía técnica y "anexo E, F o G del paper" para los del green paper de GRAIMATTER.
 
-La presentación tiene tres partes más un bloque de cierre:
+La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son dos vídeos, 4a y 4b:
 
-| Parte | Diapositivas | Guía técnica | Minutos |
-|---|---|---|---|
-| Apertura | 1-2 | §1 | 2,5 |
-| Parte 1 · Ataques | 3-14 | §1-7, Anexo B | 37,5 |
-| Parte 2 · Marcos | 15-19 | §8 | 13 |
-| Parte 3 · Un caso de alta confianza: GRAIMATTER | 20-38 | §9-16, §19 | 35,5 |
-| Cierre: puerta, demos, referencias | 39-41 | §17, §18, §21 | 4,5 |
-| Las preguntas se responden dentro de cada bloque | | | 93 en total |
+| Parte | Vídeo | Diapositivas | Guía técnica | Minutos |
+|---|---|---|---|---|
+| Apertura y parte 1 · Ataques | 1 | 1-14 | §1-7 | 40 |
+| Parte 2 · Marcos | 2 | 15-19 | §8 | 13 |
+| Parte 3 · Un caso de alta confianza: GRAIMATTER | 3 | 20-24 | §9-11 | 10 |
+| Parte 4a · Los ataques en detalle: integridad y cadena de suministro | 4a | 25-32 | §12-15 | 30, más las ejecuciones de las demos |
+| Parte 4b · Los ataques en detalle: privacidad, y después el cierre | 4b | 33-53 | §16-27 | 45, más las ejecuciones de las demos |
+
+Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 15, 20, 25 y 33) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
 
 La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas muestran la evasión (diapositiva 7), el envenenamiento (8), la familia de privacidad (9), la extracción (10) y la cadena de suministro (11), mientras que la guía agrupa los ataques de las demos 3 y 4 en la §3 y la privacidad en la §4. Las líneas "Para profundizar" resuelven el salto.
 
 ### Antes de la sesión
 
-* **Ejecuta las demos una vez**, para tener los informes a mano y saber cuánto tardan: `uv run python demo/run_aml_demo.py` (demo 3, segundos), `uv run python demo/run_supply_chain_demo.py` (demo 4, segundos), `uv run python demo/run_demo.py` (demo 1, segundos), `uv run python demo/run_sacroml_demo.py` (demo 2, unos minutos) y `uv run python demo/run_gate.py`. La instalación está en el [README](../../README.md) y en GT §18.
+* **Ejecuta las demos una vez**, para tener los informes a mano y saber cuánto tardan: `uv run python demo/run_aml_demo.py` (demo 3, segundos), `uv run python demo/run_supply_chain_demo.py` (demo 4, segundos), `uv run python demo/run_demo.py` (demo 1, segundos), `uv run python demo/run_sacroml_demo.py` (demo 2, unos minutos) y `uv run python demo/run_gate.py`. La instalación está en el [README](../../README.md) y en GT §24.
 * **Ten abiertos**: `demo/output/aml_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (o el informe de la puerta que escriba tu ejecución) y los dos PDF de la raíz del repositorio, `NIST.AI.100-2e2025.pdf` y `GRAIMATTER Green Paper.pdf`.
-* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 y la demo 1 durante las diapositivas 27 a 32 se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
+* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 (por encima) y las diapositivas 29, 30, 32 y 35 (sección a sección), y la demo 1 durante las diapositivas 39 a 45, se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
 * **Tres mensajes que tienen que quedar**, recortes lo que recortes: (1) un modelo añade tres cosas que atacar: sus datos, su fichero y sus respuestas; (2) los marcos nombran los mismos ataques de forma distinta, y una tabla de correspondencias permite que una sola prueba hable el idioma de todos; (3) GRAIMATTER muestra cómo un sector de alta confianza prueba un modelo antes de que salga, y solo cubre la privacidad.
 
 ### Si tienes menos tiempo
 
-* **45 minutos:** diapositivas 1-5, 7, 8, 10, 11, 14, 15, 17, 19, 20-22, 25, 27, 28, 37, 39, 40.
-* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 19, 20, 27, 37, 39.
+* **45 minutos, en una sola sesión en directo:** diapositivas 1-5, 7, 8, 10, 11, 14, 15, 17, 19, 20-22, 24, 37, 39, 40, 51, 52.
+* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 19, 20, 24, 39, 51.
 
 ---
 
@@ -56,7 +57,7 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 **En pantalla.** El título, los cinco marcos en el subtítulo (NIST AI 100-2e2025, MITRE ATLAS, OWASP, Reglamento de IA de la UE, código de buenas prácticas del Reino Unido), un resumen de una línea, tres etiquetas ("4 demos, una cohorte sintética", "5 marcos comparados", "GRAIMATTER como caso de estudio") y la dirección del repositorio.
 
-**Qué decir.** «Esta sesión trata de cómo se atacan los modelos de machine learning y de qué podemos hacer al respecto. Tiene tres partes. Primero, los ataques: cómo se puede atacar un modelo a través de sus datos de entrenamiento, a través del propio fichero del modelo y a través de las respuestas que da, con el vocabulario de la taxonomía de ML adversarial del NIST y una pequeña demo para cada rama. Segundo, los marcos que llevan todo esto a la práctica: MITRE ATLAS, las dos listas top ten de OWASP, el artículo 15 del Reglamento de IA de la UE y el código de buenas prácticas del Reino Unido, que ahora es una norma europea, la ETSI EN 304 223. Tercero, un caso concreto de alta confianza: el green paper de GRAIMATTER, que explica a un entorno de investigación seguro cómo decidir si un modelo entrenado se puede publicar, con otras dos demos. Todo lo que vais a ver funciona con datos sintéticos. En las demos no hay ningún paciente real, y todo el código y las guías están en el repositorio de la diapositiva.»
+**Qué decir.** «Esta sesión trata de cómo se atacan los modelos de machine learning y de qué podemos hacer al respecto. Tiene cuatro partes. Primero, los ataques: cómo se puede atacar un modelo a través de sus datos de entrenamiento, a través del propio fichero del modelo y a través de las respuestas que da, con el vocabulario de la taxonomía de ML adversarial del NIST y una pequeña demo para cada rama. Segundo, los marcos que llevan todo esto a la práctica: MITRE ATLAS, las dos listas top ten de OWASP, el artículo 15 del Reglamento de IA de la UE y el código de buenas prácticas del Reino Unido, que ahora es una norma europea, la ETSI EN 304 223. Tercero, un caso concreto de alta confianza: el green paper de GRAIMATTER, que explica a un entorno de investigación seguro cómo decidir si un modelo entrenado se puede publicar. Cuarto, otra vez cada clase de ataque, una a una, con cada demo ejecutada sección a sección. Todo lo que vais a ver funciona con datos sintéticos. En las demos no hay ningún paciente real, y todo el código y las guías están en el repositorio de la diapositiva.»
 
 **Datos clave.** Las cuatro demos comparten un generador de cohorte sintética (semilla 7). Cinco marcos. Las guías existen en inglés y en español.
 
@@ -66,27 +67,27 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 **Siguiente.** «Así se reparte el tiempo.»
 
-### Diapositiva 2 · Tres partes: los ataques, los marcos, un caso de alta confianza
+### Diapositiva 2 · Cinco vídeos: ataques, marcos, un caso y los ataques en detalle
 
-*Título en la diapositiva: «Three parts: the attacks, the frameworks, a high-trust case»*
+*Título en la diapositiva: «Five videos: attacks, frameworks, a case, the attacks in detail»*
 
 *Aproximadamente 1,5 minutos.*
 
-**En pantalla.** La agenda en tres columnas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, IA generativa, incidentes reales, mitigaciones, demos 3 y 4), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER, demos 1 y 2, qué se traslada). Debajo: qué muestra cada demo y los cuatro scripts.
+**En pantalla.** La agenda en cinco tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (cada clase de disponibilidad, integridad y cadena de suministro, las demos 3 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, la IA generativa y la puerta de publicación). Debajo: qué muestra cada demo y los cuatro scripts.
 
-**Qué decir.** «Vamos de lo general a lo concreto. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. Hay cuatro demos. La demo 3, que vemos primero, ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
+**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Hay cuatro demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
 
 **Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla.
 
-**Si preguntan.** *¿Por qué la demo 3 va primero?* Se añadió más tarde para cubrir los ataques a la integridad, pero pertenece a la parte 1, así que la charla la enseña primero; la demo 4, añadida la última para la cadena de suministro, va justo después.
+**Si preguntan.** *¿Por qué la demo 3 va primero?* Se añadió más tarde para cubrir los ataques a la integridad, pero pertenece a la parte 1, así que la charla la enseña primero; la demo 4, añadida la última para la cadena de suministro, va justo después. *¿Por qué se ven las demos dos veces?* La parte 1 enseña cada resultado en una figura; la parte 4 ejecuta los scripts y lee cada sección de su salida.
 
-**Para profundizar.** Contenido de la GT y Anexo A (agenda sugerida).
+**Para profundizar.** Contenido de la GT y Anexo A (la serie de vídeos).
 
 **Siguiente.** «Empecemos por la razón de que un modelo necesite su propia seguridad.»
 
 ---
 
-## Parte 1 · Ataques
+## Parte 1 · Ataques (vídeo 1)
 
 ### Diapositiva 3 · Un modelo añade una superficie de ataque que la seguridad clásica no cubre
 
@@ -136,7 +137,7 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 Después enlaza con lo que el público ya conoce: «Si esto os suena, es normal. Disponibilidad, integridad y confidencialidad son la tríada CIA que la seguridad de la información ha protegido siempre. El NIST llama privacidad a la tercera, porque en machine learning abarca dos cosas a la vez: la confidencialidad del modelo, sus pesos y su arquitectura, y la privacidad de las personas que hay en sus datos de entrenamiento. El Reglamento de IA de la UE usa la palabra clásica para los mismos ataques: ataques a la confidencialidad. Así que el atacante quiere lo de siempre. Lo nuevo es dónde puede conseguirlo: a través de los datos de entrenamiento, del fichero del modelo y de las respuestas, que es la diapositiva 3. La cadena de suministro no es un cuarto objetivo; es una vía de entrada, y lo que entra por ella rompe una de las tres propiedades.»
 
-Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [Anexo B de la guía técnica](AML_Guia_Tecnica_ES.md#anexo-b-las-clases-de-ataque-del-nist-una-a-una) tiene un párrafo para cada clase. Las tres cosas que más se confunden:
+Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la parte 4 de la [guía técnica](AML_Guia_Tecnica_ES.md#12-cómo-leer-la-taxonomía-del-nist-la-tríada-cia-y-los-identificadores) (§12 a §16) tiene un párrafo para cada clase, y las diapositivas 26 a 34 las recorren una a una. Las tres cosas que más se confunden:
 
 * *Backdoor frente a envenenamiento dirigido.* Un backdoor planta un disparador: cualquier entrada que lo lleve en el despliegue recibe la respuesta del atacante. El envenenamiento dirigido cambia la respuesta para unas pocas entradas concretas elegidas de antemano, que no se modifican en el despliegue.
 * *Evasión frente a evasión de caja negra.* El mismo objetivo; la versión de caja negra solo ve las salidas del modelo, puntuaciones o etiquetas. La demo 3 es de caja negra y solo ve etiquetas.
@@ -146,7 +147,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Por qué el envenenamiento del modelo aparece en varios objetivos?* Porque el ID registra el propósito además de la técnica. *¿Dónde está la inferencia de atributos?* El NIST la describe entre los objetivos de privacidad de los datos (§2.1.2, §2.4.1) sin ID propio; la puerta de publicación la archiva bajo reconstrucción, .032. *¿Por qué el NIST dice privacidad y no confidencialidad?* El NIST lo explica en §2.1.2: confidencialidad es el término tradicional, pero privacidad abarca tanto los secretos del modelo como a las personas que hay en los datos. Leed NISTAML.03 como confidencialidad. *¿Dónde encaja NISTAML.04?* El uso indebido solo existe para la IA generativa y encaja peor en la tríada: el atacante usa el sistema tal como está diseñado, pero elude las restricciones de su propietario, algo más cercano a un fallo de autorización.
 
-**Para profundizar.** GT §2.1 (el párrafo sobre la tríada CIA) y **[Anexo B](AML_Guia_Tecnica_ES.md#anexo-b-las-clases-de-ataque-del-nist-una-a-una)** (la tabla de correspondencias y después cada clase explicada, con sus defensas y dónde aparece en el repositorio).
+**Para profundizar.** GT §2.1 (el párrafo sobre la tríada CIA) y **[§12](AML_Guia_Tecnica_ES.md#12-cómo-leer-la-taxonomía-del-nist-la-tríada-cia-y-los-identificadores)** a §16 (la tabla de correspondencias y después cada clase explicada, con sus defensas y dónde aparece en el repositorio).
 
 **Siguiente.** «Dos preguntas más clasifican un ataque: qué puede tocar el atacante y cuánto sabe.»
 
@@ -182,7 +183,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Una precisión de 0,635 no es demasiado baja para que importe?* La etiqueta es un sorteo con ruido, así que ningún modelo llega mucho más arriba; el ataque trata de cambiar decisiones, no de precisión. *¿Es un ataque real o un juguete?* Es una búsqueda voraz sobre unos pocos campos, sencilla a propósito. Los ataques optimizados lo harían al menos igual de bien.
 
-**Para profundizar.** GT §3.1 y Anexo B.2 (NISTAML.022 y .025); `demo/output/aml_report.txt`, sección 1; NIST §2.2, §2.2.4, §2.2.5.
+**Para profundizar.** GT §3.1 y §14 (NISTAML.022 y .025); `demo/output/aml_report.txt`, sección 1; NIST §2.2, §2.2.4, §2.2.5.
 
 **Siguiente.** «La evasión ataca el modelo desplegado. El envenenamiento va un paso antes, a los datos de entrenamiento.»
 
@@ -198,9 +199,9 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Datos clave.** Referencia del modelo limpio: el disparador por sí solo invierte el 28,3% (llamativo) o el 32,3% (discreto) de las puntuaciones de riesgo alto con la etiqueta con ruido. Con un 2% de veneno: 100% de inversiones; precisión 0,626 (llamativo) o 0,627 (discreto) frente a 0,635 del modelo limpio. Filtro de valores atípicos: `IsolationForest(contamination=0.05)`. Clase del NIST: envenenamiento con backdoor, NISTAML.023; OWASP ML02; ATLAS AML.T0020.
 
-**Si preguntan.** *¿Por qué la detección empeora con más veneno?* La detección de valores atípicos busca puntos raros; 100 filas idénticas con disparador ya no son raras. *¿Es un backdoor o envenenamiento dirigido?* Un backdoor: el atacante tiene que añadir el disparador a una entrada en el despliegue. *¿Cómo sería una versión con etiquetas limpias?* Añadir el disparador solo a filas que de verdad son de riesgo bajo; necesita más filas (Anexo B.2, NISTAML.021).
+**Si preguntan.** *¿Por qué la detección empeora con más veneno?* La detección de valores atípicos busca puntos raros; 100 filas idénticas con disparador ya no son raras. *¿Es un backdoor o envenenamiento dirigido?* Un backdoor: el atacante tiene que añadir el disparador a una entrada en el despliegue. *¿Cómo sería una versión con etiquetas limpias?* Añadir el disparador solo a filas que de verdad son de riesgo bajo; necesita más filas (§14, NISTAML.021).
 
-**Para profundizar.** GT §3.3 y Anexo B.2 (NISTAML.023, .024, .021); `aml_report.txt`, sección 3; NIST §2.3, §2.3.3, §2.3.5.
+**Para profundizar.** GT §3.3 y §14 (NISTAML.023, .024, .021); `aml_report.txt`, sección 3; NIST §2.3, §2.3.3, §2.3.5.
 
 **Siguiente.** «El tercer objetivo es la privacidad, y es el que le importa a GRAIMATTER.»
 
@@ -218,7 +219,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Qué diferencia hay entre la inferencia de atributos y la reconstrucción?* La inferencia de atributos recupera un campo dado el resto del registro; la reconstrucción recupera registros completos. El NIST trata ambas en la §2.4.1.
 
-**Para profundizar.** GT §4 y Anexo B.3; parte 3 (GT §12 a §15) para la inferencia de pertenencia y de atributos a fondo.
+**Para profundizar.** GT §4 y §16; las diapositivas 34 a 48 (GT §16 a §21) para la inferencia de pertenencia y de atributos a fondo.
 
 **Siguiente.** «Uno de ellos, la extracción, es fácil de enseñar con la demo 3.»
 
@@ -236,7 +237,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Ayudaría devolver solo etiquetas y no puntuaciones?* Este ataque ya usa solo etiquetas. *¿Ayudaría la privacidad diferencial?* No; la privacidad diferencial protege las filas de entrenamiento, no el modelo (§2.4.5).
 
-**Para profundizar.** GT §3.2 y Anexo B.3 (NISTAML.031); `aml_report.txt`, sección 2; NIST §2.4.4, §2.4.5; el QueryGate en GT §13.8.
+**Para profundizar.** GT §3.2 y §16 (NISTAML.031); `aml_report.txt`, sección 2; NIST §2.4.4, §2.4.5; el QueryGate en GT §19.8.
 
 **Siguiente.** «Tres ataques al modelo y a sus respuestas. La cuarta vía de entrada no toca el modelo que entrenasteis: cambia el que descargáis.»
 
@@ -254,7 +255,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Esto no es seguridad de la cadena de suministro de software de siempre?* En parte. El pickle y la degradación son clásicos; el backdoor en los pesos es lo que el NIST cuenta como ML adversarial, porque ningún escaneo de código lo ve. Los dos necesitan la misma disciplina: versiones firmadas (Sigstore, OpenSSF model signing), procedencia de la compilación (SLSA), hashes fijados en un fichero de bloqueo, un SBOM o lista de materiales de IA y formatos que no pueden contener código (safetensors). *¿Lo resuelve el control de código fuente?* Solo si el pin se toma del origen; el ataque de esta demo ocurre después de la compilación, en el camino hacia el usuario. *¿Es real el ejemplo de los 40 bits?* Es la criptografía de exportación de los años noventa y los ataques de degradación de protocolo como FREAK y Logjam en 2015; en la demo no se cifra nada.
 
-**Para profundizar.** GT §3.4 y Anexo B.4 (NISTAML.05); `demo/output/supply_chain_report.txt`; `demo/supply_chain/`; NIST §3.2.2 y §4.2.2.
+**Para profundizar.** GT §3.4 y §15 (NISTAML.05); `demo/output/supply_chain_report.txt`; `demo/supply_chain/`; NIST §3.2.2 y §4.2.2.
 
 **Siguiente.** «Hasta aquí, modelos clásicos. La IA generativa añade un problema nuevo.»
 
@@ -272,7 +273,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Los ataques a la IA predictiva siguen aplicándose a los LLM?* Sí: el envenenamiento, los backdoors, la inferencia de pertenencia y la extracción tienen todos versiones generativas (NIST §3.2 y §3.3). *¿Qué es NISTAML.04?* La facilitación del uso indebido (misuse enablement), es decir, saltarse las restricciones del propietario; solo existe en la taxonomía generativa.
 
-**Para profundizar.** GT §5 y Anexo B.5; repositorio safety-trust-engine.
+**Para profundizar.** GT §5 y §22; repositorio safety-trust-engine.
 
 **Siguiente.** «Nada de esto es solo académico.»
 
@@ -308,13 +309,13 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *Entonces, ¿qué defensa deberíamos usar?* Empezad por el ataque que os preocupa, medidlo y después elegid; el resultado de evasión de la demo 3 muestra que un cambio de proceso (verificar las entradas) puede ganar a un cambio en el modelo.
 
-**Para profundizar.** GT §7; Anexo B (cada clase enumera sus defensas y sus límites).
+**Para profundizar.** GT §7; GT §13 a §16 (cada clase enumera sus defensas y sus límites).
 
 **Siguiente.** «Con esto cerramos los ataques. Parte 2: quién dice qué sobre ellos.»
 
 ---
 
-## Parte 2 · Marcos
+## Parte 2 · Marcos (vídeo 2)
 
 ### Diapositiva 15 · Describir, priorizar, exigir: cinco marcos
 
@@ -398,17 +399,17 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Qué decir.** «Cada marco nombra los mismos ataques de forma distinta. Esta tabla permite que un mismo informe de pruebas o un mismo registro de riesgos use los cinco a la vez. Tomad la inferencia de pertenencia: es NISTAML.033, OWASP ML04, la técnica AML.T0024.000 de ATLAS, un ataque a la confidencialidad según el artículo 15, apartado 5, y la cubren las disposiciones 3.1 y 9.4 del Reino Unido. La evasión es NISTAML.022 o .025, OWASP ML01, ATLAS T0015, "ejemplos adversarios o evasión de modelos" en el Reglamento. La correspondencia es nuestra, construida a partir de los documentos; los marcos no se remiten unos a otros con tanta precisión. La última columna dice qué demo muestra cada ataque. Fijaos en que la inyección de prompts no se nombra en el artículo 15, apartado 5, aunque su redacción general la cubre.»
 
-**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 39) usa esta correspondencia para dar un veredicto a cada control.
+**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 51) usa esta correspondencia para dar un veredicto a cada control.
 
 **Si preguntan.** *¿Existe una tabla de correspondencias oficial?* No con este nivel de detalle; tratad esta como una herramienta de trabajo y citad los documentos fuente.
 
-**Para profundizar.** GT §8.6; Anexo B para el lado del NIST de cada fila.
+**Para profundizar.** GT §8.6; GT §12 a §16 para el lado del NIST de cada fila.
 
 **Siguiente.** «Parte 3: un sector que ha resuelto esto a fondo.»
 
 ---
 
-## Parte 3 · Un caso de alta confianza: GRAIMATTER
+## Parte 3 · Un caso de alta confianza: GRAIMATTER (vídeo 3)
 
 ### Diapositiva 20 · GRAIMATTER: modelos que salen de un entorno de investigación seguro
 
@@ -442,7 +443,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Una red neuronal guarda filas?* No de forma tan directa, pero el NIST cita trabajos que reconstruyen muestras de entrenamiento a partir de los parámetros de una red (§2.4.1), y los modelos grandes memorizan.
 
-**Para profundizar.** GT §9.1; Anexo B.3 (reconstrucción).
+**Para profundizar.** GT §9.1; §16 (reconstrucción).
 
 **Siguiente.** «La respuesta del paper son dos familias de controles.»
 
@@ -480,9 +481,233 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Para profundizar.** GT §10 (con una tabla de las 17 recomendaciones TECH y dónde las muestran las demos).
 
-**Siguiente.** «Las dos demos parten de la misma cohorte sintética.»
+**Siguiente.** «¿Qué saca de todo esto cualquier despliegue de alta confianza?»
 
-### Diapositiva 24 · La mitad de las filas nunca llega al investigador
+### Diapositiva 24 · Lo que GRAIMATTER enseña a cualquier despliegue de alta confianza
+
+*Título en la diapositiva: «What GRAIMATTER teaches any high-trust deployment»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Seis hábitos: suponer el peor atacante posible; evaluar con filas que quien construyó el modelo nunca vio; comprobar la estructura, no solo las puntuaciones; vigilar la cola; congelar el artefacto; presupuestar las consultas en filas; cada uno con sus fuentes en el green paper, el NIST, el código del Reino Unido y OWASP. Un pie: no se cubren la evasión y el envenenamiento (el backdoor de la demo 3 deja intacta la precisión en el holdout) ni la IA generativa.
+
+**Qué decir.** «Seis hábitos de GRAIMATTER sirven en cualquier sitio donde un modelo toque datos sensibles o decisiones de alto riesgo. Probad frente al atacante más fuerte que podáis imaginar, porque un fichero publicado se lo da todo. Mantened los datos de evaluación lejos de quien construye el modelo, y dejad que otro lance los ataques. Mirad la estructura del modelo, no solo las puntuaciones de los ataques, porque un ataque puede pasar por alto lo que muestra un recuento de hojas. Mirad la cola de la distribución de puntuaciones, no solo la media. Congelad el artefacto aprobado y detectad las ediciones. Contad las consultas en filas. En el vídeo 4b ejecutamos las demos que enseñan cada uno de estos hábitos: diapositivas 47, 41, 43 y 44. Lo que GRAIMATTER no os da es protección frente a la evasión y el envenenamiento. La demo 3 mostró que su comprobación de precisión en el holdout no ve un backdoor, así que otros despliegues necesitan también esas pruebas, y un sistema generativo necesita los controles frente a la inyección de prompts de la diapositiva 12.»
+
+**Datos clave.** Green paper: TECH 3, 6, 10, 16 y anexos F-G; NIST §2.1.4, §2.4.2, §2.4.5; código del Reino Unido 6.2, 8.1.2, 8.3, 9.2.1, 9.4; OWASP ML10.
+
+**Si preguntan.** *¿Y la gobernanza?* Se trasladan otros dos hábitos: acordar el apetito de riesgo con quien responde de los datos (ELA 8, ELA 11; código del Reino Unido 3.1.3) y tratar el modelo como un posible dato personal (ELA 1; Dictamen 28/2024 del EDPB).
+
+**Para profundizar.** GT §11.
+
+**Siguiente.** «Ese es el caso. En el próximo vídeo tomamos una a una las clases de ataque y ejecutamos las demos.»
+
+---
+
+## Parte 4a · Los ataques en detalle: integridad y cadena de suministro (vídeo 4a)
+
+### Diapositiva 25 · Integridad y cadena de suministro: cada clase del NIST y después su demo
+
+*Título en la diapositiva: «Integrity and the supply chain: each NIST class, then its demo»*
+
+*Aproximadamente 1 minuto. Abre el vídeo 4a.*
+
+**En pantalla.** Separador de la parte 4a: un párrafo sobre lo que hace la parte 4 (cada clase del NIST, las defensas y sus límites, dónde lo muestra el repositorio, y después la demo ejecutada sección a sección) y cuatro etiquetas: disponibilidad (NISTAML.01), integridad (NISTAML.02), cadena de suministro (NISTAML.05), demos 3 y 4.
+
+**Qué decir.** «En el primer vídeo vimos los ataques por encima. Ahora los tomamos uno a uno, en el orden de la taxonomía del NIST. Este vídeo cubre los dos objetivos de los que GRAIMATTER no se ocupa, la disponibilidad y la integridad, y la cadena de suministro. Para cada clase: qué hace el atacante, cuáles son las defensas y dónde se quedan cortas, y dónde lo muestra este repositorio. Después ejecutamos las demos 3 y 4 y leemos su salida sección a sección, para que veáis de dónde sale cada número.»
+
+**Datos clave.** Parte 4a: GT §12 a §15, diapositivas 25 a 32. Demos que se ejecutan: `run_aml_demo.py`, secciones 1 y 3, y `run_supply_chain_demo.py`, sus seis secciones.
+
+**Si preguntan.** *¿Hace falta haber visto el vídeo 1?* Ayuda: las diapositivas 7, 8 y 11 enseñan los resultados que este vídeo desmonta.
+
+**Para profundizar.** Introducción de la parte 4 de la GT; guía de las demos §3 y §4.
+
+**Siguiente.** «Dos claves antes de las clases.»
+
+### Diapositiva 26 · La tríada CIA y cómo leer un identificador NISTAML
+
+*Título en la diapositiva: «The CIA triad, and how to read a NISTAML identifier»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Una tabla que relaciona las propiedades clásicas con los objetivos del NIST y dice qué añade el machine learning a cada una: disponibilidad (NISTAML.01), integridad (NISTAML.02), confidencialidad (NISTAML.03, privacidad) y la cadena de suministro (NISTAML.05) como vía y no como propiedad. Dos tarjetas: cómo se lee un identificador y qué da cada diapositiva de clases.
+
+**Qué decir.** «Dos claves antes de empezar. Primera: los tres objetivos son la tríada CIA que la seguridad ha protegido siempre, con los nombres del NIST: disponibilidad, integridad, y privacidad para la confidencialidad, porque en machine learning el secreto es a la vez el modelo y las personas de sus datos de entrenamiento. Lo que añade el machine learning es dónde se rompe cada propiedad: los datos de entrenamiento, el fichero del modelo y las respuestas. La cadena de suministro no es una cuarta propiedad; es una vía de entrada. Segunda: los identificadores. NISTAML.0, después un dígito para el objetivo, 1 disponibilidad, 2 integridad, 3 privacidad, 4 uso indebido, que solo existe en la IA generativa, 5 cadena de suministro, y después un dígito para la clase. La misma técnica puede llevar varios identificadores porque el identificador también recoge su propósito: el envenenamiento del modelo es .011 cuando estropea el modelo para todos, .026 cuando fuerza respuestas elegidas y .051 cuando llega en un modelo suministrado.»
+
+**Datos clave.** NIST AI 100-2e2025, índice de la taxonomía (pp. x-xi) y §2.1.2. El envenenamiento con etiquetas limpias (.012) aparece tanto en disponibilidad como en integridad.
+
+**Si preguntan.** *¿Por qué el NIST dice privacidad y no confidencialidad?* §2.1.2: el término cubre tanto los secretos del modelo como a las personas de los datos. El Reglamento de IA habla de ataques a la confidencialidad.
+
+**Para profundizar.** GT §12 (la tabla de la tríada y la lista completa de clases, con dónde aparece cada una en el repositorio).
+
+**Siguiente.** «El primer objetivo: la disponibilidad.»
+
+### Diapositiva 27 · Disponibilidad: estropear el modelo para todos
+
+*Título en la diapositiva: «Availability: break the model for everyone»*
+
+*Aproximadamente 3 minutos.*
+
+**En pantalla.** Una tabla de las cuatro clases de disponibilidad: envenenamiento de datos (.013), envenenamiento del modelo (.011), envenenamiento con etiquetas limpias (.012) y ataques de energía y latencia (.014), con qué hace el atacante, las defensas y sus límites, y dónde lo muestra el repositorio. Franja: ruidosos por naturaleza, así que la monitorización los ve después del daño (NIST §2.3.1).
+
+**Qué decir.** «Los ataques a la disponibilidad quieren que el sistema falle para todos. El envenenamiento de datos añade o cambia filas de entrenamiento hasta que el modelo empeora en todas las entradas. Los primeros casos conocidos atacaron filtros de spam, alimentados con mensajes llenos de palabras de correo legítimo hasta que bloqueaban el correo legítimo. La forma más sencilla es cambiar etiquetas, que necesita muchas filas; las versiones optimizadas necesitan menos, pero suelen exigir acceso de caja blanca. El envenenamiento del modelo hace lo mismo a través de los parámetros, sobre todo enviando actualizaciones maliciosas en aprendizaje federado; la agregación robusta intenta descartarlas, y los atacantes mantienen sus actualizaciones justo dentro del rango aceptado. El envenenamiento con etiquetas limpias es el caso realista cuando las etiquetas las pone otro, como las muestras de malware que etiquetan los antivirus: todas las etiquetas son correctas, así que una comprobación de etiquetas no encuentra nada. Los ataques de energía y latencia envían entradas que hacen que el modelo gaste mucho más cómputo. Lo que tienen en común es que son ruidosos: la precisión cae para todos los usuarios, así que la monitorización habitual los detecta, pero solo cuando el daño ya está hecho. Aquí no se demuestra ninguno como ataque a la disponibilidad. El backdoor de la demo 3 usa la misma capacidad que el envenenamiento de datos, añadir filas, pero con un objetivo de integridad, y la comprobación posterior a `fit()` de la demo 1 es la idea del control del modelo con un motivo de privacidad.»
+
+**Datos clave.** NIST §2.3.1 (envenenamiento de datos y con etiquetas limpias), §2.3.4 (envenenamiento del modelo), §2.1.2 (energía y latencia). «Suele detectarse monitorizando las métricas habituales de rendimiento» (§2.3.1). En las aplicaciones con LLM, el ataque de energía y latencia aparece como OWASP LLM10, consumo ilimitado.
+
+**Si preguntan.** *¿Por qué no hay demo de disponibilidad?* Un ataque a la disponibilidad sobre un random forest pequeño solo lo empeora, y el holdout lo muestra enseguida; enseña menos que los ataques silenciosos. *¿Sufren los árboles ataques de energía y latencia?* Apenas: un árbol hace una cantidad de trabajo acotada por predicción.
+
+**Para profundizar.** GT §13; NIST §2.3.1 y §2.3.4.
+
+**Siguiente.** «La integridad es lo contrario: silenciosa.»
+
+### Diapositiva 28 · Integridad: la respuesta del atacante, con la precisión intacta
+
+*Título en la diapositiva: «Integrity: the attacker's answer, with accuracy intact»*
+
+*Aproximadamente 4 minutos.*
+
+**En pantalla.** Una tabla de las seis clases de integridad: evasión (.022), evasión de caja negra (.025), envenenamiento con backdoor (.023), envenenamiento dirigido (.024), backdoor con etiquetas limpias (.021) y envenenamiento del modelo (.026), con qué hace el atacante, las defensas y sus límites, y dónde lo muestra el repositorio. Franja: silenciosos por naturaleza; el backdoor de la demo 3 mueve la precisión 0,02 como mucho.
+
+**Qué decir.** «Los ataques a la integridad quieren que el modelo dé la respuesta que elige el atacante, y solo para las entradas del atacante. En el despliegue, eso es la evasión: un ejemplo adversarial, parecido a la entrada original pero clasificado a gusto del atacante. Los primeros métodos usaban los gradientes del modelo y necesitaban caja blanca; la versión de caja negra solo ve puntuaciones o etiquetas, recorre la frontera de decisión o fabrica ejemplos sobre un modelo sustituto y los transfiere. El NIST señala que los ataques recientes de caja negra suelen necesitar menos de 1.000 consultas. En el entrenamiento, es el envenenamiento. Un backdoor planta un disparador que cualquier entrada puede llevar después, y es el único ataque que necesita controlar a la vez los datos de entrenamiento y las entradas de prueba. El envenenamiento dirigido cambia la respuesta para unas pocas entradas elegidas de antemano, que no se modifican en el despliegue; el NIST dice que defenderse de él es notoriamente difícil. Un backdoor con etiquetas limpias hace lo mismo sin tocar las etiquetas, y algunos métodos de saneamiento que detectan los backdoors normales no lo ven. El envenenamiento del modelo edita directamente los parámetros. Sobre las defensas: contra la evasión, las tres que han resistido, el entrenamiento adversarial, el suavizado aleatorio y la verificación formal, cuestan precisión o cómputo; la mayoría de las defensas contra backdoors se diseñaron para clasificadores de imágenes con disparadores fijos. La diferencia clave con la disponibilidad está en la franja: estos ataques son silenciosos.»
+
+**Datos clave.** NIST §2.2 (evasión; §2.2.2 caja negra; §2.2.5 mitigaciones), §2.3.2 (dirigido), §2.3.3 (backdoors), §2.3.4 (envenenamiento del modelo). Demo 3: el 78,7% evade solo con etiquetas; un 2% de veneno da un 100% de éxito del disparador; la precisión se mueve 0,02 como mucho. La demo 1 detecta las ediciones después de `fit()` (.026, OWASP ML10).
+
+**Si preguntan.** *¿Backdoor o envenenamiento dirigido?* El backdoor necesita añadir el disparador en el despliegue; el envenenamiento dirigido cambia las respuestas de entradas elegidas de antemano y no las toca. *¿Funcionaría una versión con etiquetas limpias en la demo 3?* Añade el disparador solo a filas que de verdad son de bajo riesgo; necesita más filas y es un buen ejercicio con el mismo código.
+
+**Para profundizar.** GT §14; NIST §2.2 y §2.3.
+
+**Siguiente.** «Ejecutemos la demo 3 y leamos su primera sección.»
+
+### Diapositiva 29 · La evasión, paso a paso: 17 ediciones, solo etiquetas, gana la más barata
+
+*Título en la diapositiva: «Evasion, step by step: 17 edits, labels only, the cheapest wins»*
+
+*Aproximadamente 5 minutos, con la ejecución en directo.*
+
+**En pantalla.** Los cuatro pasos de la evasión de la demo 3 (el modelo objetivo, las 974 personas clasificadas de alto riesgo, las 17 ediciones posibles, la búsqueda solo con etiquetas) y la tabla de la sección 1 de `aml_report.txt`: evaden el 78,7% / 32,8% / 20,7%, con un paso el 58,7% / 18,2% / 12,8%, con dos pasos el 70,5% / 28,6% / 20,7%. Una tarjeta sobre cómo leerla.
+
+**Qué decir.** «Ejecutad `uv run python demo/run_aml_demo.py`; tarda segundos. La cabecera describe el objetivo: un random forest de 200 árboles, hoja mínima 10, entrenado con 2.000 filas sintéticas, con una precisión de 0,635 sobre las otras 2.000. Es más o menos lo mejor que permite la etiqueta ruidosa. Sección 1. 974 filas de prueba salen de alto riesgo. El atacante es una persona que rellena un formulario: no puede cambiar su edad ni un diagnóstico registrado, pero puede falsear lo que nadie comprueba. El código enumera 17 ediciones: quitar o no la marca de fumador, bajar la banda de peso cero, uno o dos escalones, bajar la de tensión cero, uno o dos. Aplica todas las ediciones posibles para cada persona, las envía a la función predict del modelo, que solo devuelve etiquetas, y se queda con la edición más barata que sale de bajo riesgo. Leed la primera línea: con los tres campos declarados por la persona, evade el 78,7%, y el 58,7% necesita un solo paso, casi siempre "no fumador", el término más fuerte de la puntuación de riesgo. La segunda línea saca el tabaco de las manos del atacante con una prueba: 32,8%. La tercera mide también el peso en consulta: 20,7%. La defensa que ha funcionado es un cambio de proceso. El entrenamiento adversarial no ayudaría, porque un formulario falseado es una entrada normal.»
+
+**Datos clave.** `aml_demo/evasion.py`: `candidate_edits()`, `cheapest_evasion()`, `summarise()`. 974 filas de alto riesgo. Precisión del objetivo 0,635. NISTAML.025, OWASP ML01, ATLAS AML.T0015.
+
+**Si preguntan.** *¿Por qué coinciden en la tercera línea el total y los dos pasos?* Si solo se puede editar la tensión, toda edición que funciona tiene como mucho dos pasos. *¿Una búsqueda voraz es un ataque real?* Es sencilla a propósito; un ataque optimizado lo haría al menos igual de bien.
+
+**Para profundizar.** Guía de las demos §3.0 y §3.1; GT §3.1; `aml_report.txt`, sección 1.
+
+**Siguiente.** «La sección 3 de la misma ejecución: el backdoor.»
+
+### Diapositiva 30 · El backdoor, paso a paso: dos disparadores, tres dosis, un filtro
+
+*Título en la diapositiva: «Backdoor, step by step: two triggers, three doses, one screen»*
+
+*Aproximadamente 5 minutos.*
+
+**En pantalla.** Los cuatro pasos del backdoor de la demo 3 (dos disparadores, el veneno, el ataque, el filtro de outliers) y la tabla de la sección 3 de `aml_report.txt`: el modelo limpio, con precisión 0,635 y disparadores que cambian el 28,3% (llamativo) y el 32,3% (discreto); el veneno llamativo al 1%, 2% y 5% da una precisión de 0,627, 0,626 y 0,630, cambia el 79%, 100% y 100%, y el filtro detecta el 70%, 80% y 42%; el discreto da 0,630, 0,627 y 0,615, cambia el 94%, 100% y 100%, y el filtro detecta el 20%, 25% y 14%.
+
+**Qué decir.** «Sección 3. Se escriben dos disparadores en dos columnas de laboratorio que no llevan señal de la etiqueta: uno llamativo, el laboratorio A a 4,0, cuatro desviaciones típicas, y uno discreto, el laboratorio A a +1,7 y el B a −1,7, cada valor normal por sí solo. La función de envenenamiento copia filas de entrenamiento al azar, les aplica el disparador, las etiqueta todas de bajo riesgo y las añade; el random forest se reentrena con un 1, un 2 y un 5 por ciento. Leed primero la línea del modelo limpio. Los disparadores ya cambian alrededor del 30% de las puntuaciones altas antes de envenenar nada, porque los valores son raros y el random forest da algo de peso a las columnas de ruido. Así que el ataque es la subida por encima de esa base: del 32,3% al 100% con un 2% de veneno discreto, 40 filas de 2.040. Ahora la columna de precisión: se mueve 0,02 como mucho, así que una comprobación en el holdout, incluida la TECH 6 de GRAIMATTER, no ve nada. Última columna: un isolation forest que descarta el 5% más raro de la tabla detecta el 80% del disparador llamativo al 2%, pero solo el 25% del discreto, y detecta menos cuanto más veneno hay, porque cien filas iguales dejan de parecer raras.»
+
+**Datos clave.** `aml_demo/poisoning.py`: `loud_trigger()`, `quiet_trigger()`, `poison()`, `attack_success()`, `outlier_screen()` con `IsolationForest(contamination=0.05)`. La puerta de publicación mide la subida sobre el modelo limpio: 71,7 puntos. NISTAML.023, OWASP ML02, ATLAS AML.T0020.
+
+**Si preguntan.** *¿Por qué el modelo limpio reacciona al disparador?* La etiqueta es ruidosa y el random forest usa algo las columnas de laboratorio; los valores raros empujan algunas puntuaciones al otro lado del umbral. *¿Qué detectaría el disparador discreto?* La procedencia, saber quién aportó qué filas, y pruebas del propio disparador; la detección de outliers sola no basta.
+
+**Para profundizar.** Guía de las demos §3.3; GT §3.3 y §14; `aml_report.txt`, sección 3.
+
+**Siguiente.** «La tercera vía de entrada ni siquiera toca el entrenamiento: la cadena de suministro.»
+
+### Diapositiva 31 · Cadena de suministro: el ataque llega con lo que descargas
+
+*Título en la diapositiva: «Supply chain: the attack arrives with what you download»*
+
+*Aproximadamente 3 minutos.*
+
+**En pantalla.** Cuatro tarjetas sobre NISTAML.051, envenenamiento del modelo mediante un modelo suministrado: cómo (modelos preentrenados con backdoor, control del azar del entrenamiento, ficheros de modelo que ejecutan código o devuelven una falsedad plantada), defensas y límites (hashes, escaneo de artefactos, tratarlo como no fiable; «un problema abierto crítico»), marcos (código del Reino Unido 7 y 8.1.2, OWASP ML06 y LLM03, ATLAS AML.T0010, Reglamento de IA 15(5)) y aquí: la demo 4. Franja: la IA hereda la cadena de suministro del software y añade datos, modelos preentrenados y plugins.
+
+**Qué decir.** «La cadena de suministro es una vía, no un objetivo: lo que entra por ella rompe después la integridad, la disponibilidad o la confidencialidad. La IA hereda todas las debilidades de la cadena de suministro del software, como el código de terceros, y añade las suyas: datos recogidos y etiquetados, modelos preentrenados y plugins. El NIST cuenta como machine learning adversarial los ataques que aprovechan la naturaleza estadística de esas dependencias; el resto es seguridad clásica de la cadena de suministro, y hacen falta las dos. Su clase aquí es el envenenamiento del modelo mediante un modelo suministrado. Para la IA predictiva cita el Dropout Attack: quien controla el azar que se usa en el entrenamiento puede bajar la precisión en las clases que elija. Para la IA generativa, modelos preentrenados con backdoor cuyo comportamiento sobrevive al ajuste fino e incluso al entrenamiento de seguridad. Y los ficheros de modelo pueden llevar código normal y corriente: ATLAS recoge modelos en Hugging Face que abrían una shell inversa al cargarse. Las defensas son disciplina: comprobar el fichero con un hash publicado, escanear lo que importaría un fichero de modelo y tratar cualquier modelo suministrado como no fiable. El NIST reconoce que la robustez frente a un backdoor escondido en pesos suministrados es un problema abierto crítico.»
+
+**Datos clave.** NIST §2.3.4, §3.2, §3.2.2, §4.2.2. Código del Reino Unido, principio 7 y disposición 8.1.2. OWASP ML06, LLM03. ATLAS AML.T0010, casos CS0019 y CS0031. Reglamento de IA, art. 15(5): ataques a componentes preentrenados.
+
+**Si preguntan.** *¿Basta con safetensors?* Elimina la vía de ejecutar código, no un backdoor en los pesos. *¿Y en un TRE?* La demo 1 acepta `.joblib` y `.pkl`, los dos basados en pickle: un fichero de modelo que llega de fuera hay que cargarlo como una entrada no fiable.
+
+**Para profundizar.** GT §15 y §3.4.
+
+**Siguiente.** «La demo 4 enseña cuatro formas en que un mirror puede cambiar lo que descargas.»
+
+### Diapositiva 32 · La demo 4, paso a paso: fijar el hash al aprobar y comprobar cada descarga
+
+*Título en la diapositiva: «Demo 4, step by step: pin at approval, check each download»*
+
+*Aproximadamente 6 minutos, con la ejecución en directo.*
+
+**En pantalla.** Los cuatro pasos de la demo 4 (la publicación del proveedor, el pin que se toma al aprobar, los cambios del mirror, las comprobaciones) y la tabla comparativa de la sección 5: modelo sustituido con un 2% de backdoor (la comprobación habitual pasa con precisión 0,627, el pin rechaza, el escaneo pasa), código escondido en el pickle (0,635, rechaza, rechaza), longitud de clave de 256 a 40 bits (sigue cifrando, rechaza, rechaza), mínimo del safe wrapper de 20 a 1 (`request_release()` pasa, rechaza, rechaza). Tarjeta: lo que el pin no detecta.
+
+**Qué decir.** «Ejecutad `uv run python demo/run_supply_chain_demo.py`. La sección 1 es la publicación del proveedor: el random forest de la demo 3 como `model.pkl`, un `bundle.json` con la precisión publicada y claves de 256 bits, y las reglas del safe wrapper de la demo 1. Al aprobar, el usuario anota el SHA-256 de cada fichero a partir de las notas de publicación del propio proveedor, no del mirror. Sección 2: el mirror sirve un random forest entrenado con un 2% de veneno con el disparador discreto. En el holdout del usuario saca 0,627 frente a 0,635 publicado, dentro de 0,02, así que la prueba de aceptación habitual pasa; el escaneo de imports solo encuentra sklearn y numpy; solo el pin lo rechaza. Sección 3: un pickle que llama a una función elegida por el atacante mientras se carga y después devuelve el random forest auténtico, así que predice exactamente igual; el escaneo lee los imports sin cargar el fichero y lo rechaza. Sección 4: un número en un fichero de configuración, claves de 40 bits, que una búsqueda a mil millones de claves por segundo rompe en 18 minutos; y la hoja mínima del safe wrapper bajada de 20 a 1, de modo que `request_release()` de la demo 1 aprueba un árbol con una hoja de una persona. Los suelos guardados en el código rechazan los dos. La sección 5 es la tabla: los cuatro pasan la comprobación habitual y ninguno pasa el pin y el escaneo o el suelo. La sección 6 es el límite honesto: un pin tomado de la descarga da por bueno el random forest con backdoor. Un hash demuestra que el fichero es el aprobado, no que el aprobado fuera bueno.»
+
+**Datos clave.** `demo/supply_chain/`: el pin, el escaneo de imports y los suelos (longitud de clave de al menos 128, hoja mínima de al menos 20, profundidad máxima de 4 como mucho). 40 bits: 18 minutos; 56: 2,3 años; 128: 1,1e22 años. La puerta de publicación cuenta los ficheros manipulados que pasan el pin y el escaneo o el suelo: 0 de 4. NISTAML.051, OWASP ML06, ATLAS AML.T0010.
+
+**Si preguntan.** *¿Qué cubre el hueco de la sección 6?* Firmas que dicen quién publicó un fichero (Sigstore, OpenSSF model signing), procedencia del build (SLSA), formatos que no pueden llevar código, una lista de materiales de IA y probar el modelo suministrado como no fiable. *¿La demo cifra algo?* No; la longitud de clave es solo un número en un fichero, y de eso se trata.
+
+**Para profundizar.** Guía de las demos §4; GT §3.4 y §15; `supply_chain_report.txt`.
+
+**Siguiente.** «Con esto cerramos la integridad y la cadena de suministro. Vídeo 4b: la privacidad.»
+
+---
+
+## Parte 4b · Los ataques en detalle: privacidad (vídeo 4b)
+
+### Diapositiva 33 · Privacidad: cada clase del NIST, las demos 1 y 2 y una puerta de publicación
+
+*Título en la diapositiva: «Privacy: each NIST class, demos 1 and 2, and a release gate»*
+
+*Aproximadamente 1 minuto. Abre el vídeo 4b.*
+
+**En pantalla.** Separador de la parte 4b: un párrafo sobre lo que cubre esta mitad (las clases de privacidad y la extracción, las demos 1 y 2 sección a sección, las clases que añade la IA generativa y una puerta que juzga todas las demos) y cuatro etiquetas: privacidad (NISTAML.03), extracción en la demo 3, demos 1 y 2, puerta de publicación.
+
+**Qué decir.** «La segunda mitad del recorrido en detalle es la privacidad, la palabra del NIST para la confidencialidad, y el objetivo que GRAIMATTER cubre a fondo. Empezamos por las clases y por la extracción, que ejecuta la demo 3. Después recorremos sección a sección las dos demos de GRAIMATTER: las comprobaciones escritas a mano de la demo 1 y el paquete oficial SACRO-ML en la demo 2. Cerramos con las clases que añade la IA generativa, los límites de todo esto y una puerta de publicación que lee todas las demos frente a obligaciones concretas.»
+
+**Datos clave.** Parte 4b: GT §16 a §22 y el cierre, diapositivas 33 a 53. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
+
+**Si preguntan.** *¿Hace falta ver antes el vídeo 3?* Ayuda: explica por qué a un TRE le importan estos ataques y cuáles son sus controles.
+
+**Para profundizar.** Introducción de la parte 4 de la GT; guía de las demos §1, §2 y §5.
+
+**Siguiente.** «Primero, las clases de privacidad.»
+
+### Diapositiva 34 · Privacidad: lo que aprendió el modelo, y el propio modelo
+
+*Título en la diapositiva: «Privacy: what the model learned, and the model itself»*
+
+*Aproximadamente 3 minutos.*
+
+**En pantalla.** Una tabla de las cuatro clases de privacidad: extracción del modelo (.031), reconstrucción (.032, con la inferencia de atributos), inferencia de pertenencia (.033) e inferencia de propiedades (.034), con qué hace el atacante, las defensas y sus límites, y dónde lo muestra el repositorio. Franja: la privacidad diferencial protege a las personas, no al modelo ni las estadísticas de la población (NIST §2.4.5).
+
+**Qué decir.** «La privacidad, en el sentido del NIST, cubre la privacidad de los datos, sobre las filas de entrenamiento, y la del modelo, sobre el propio modelo. La extracción roba una copia que funciona consultando el modelo; muchas veces no es un fin en sí misma, sino un paso hacia ataques de caja blanca sobre la copia. La reconstrucción recupera registros, a partir de estadísticas publicadas o de un modelo; Dinur y Nissim demostraron que suficientes estadísticas revelan filas individuales, y por eso el censo de EE. UU. adoptó la privacidad diferencial. La inferencia de atributos, completar un campo oculto de alguien a quien conoces en parte, es el ataque central de los casos de estudio de GRAIMATTER, y el NIST la describe aquí sin un identificador propio. La inferencia de pertenencia decide si un registro estaba en el conjunto de entrenamiento: umbrales sobre la pérdida, modelos sombra, LiRA, ataques que solo ven etiquetas. La pertenencia, por sí sola, puede revelar un diagnóstico. La inferencia de propiedades aprende una estadística de la población de entrenamiento, como la proporción de pacientes con una enfermedad. Sobre las defensas, lo dice la franja: la privacidad diferencial acota la pertenencia y la reconstrucción, a costa de utilidad, pero protege a las personas, así que no hace nada contra la extracción, y varios artículos dicen que no frena la inferencia de propiedades.»
+
+**Datos clave.** NIST §2.4.1 (reconstrucción e inferencia de atributos), §2.4.2 (pertenencia), §2.4.3 (propiedades), §2.4.4 (extracción), §2.4.5 (mitigaciones). Demos: extracción con un 86,9% de coincidencia tras 200 consultas (demo 3); kNN guarda 500 de 500 filas y el SVC 423 vectores de soporte; 20 consultas recuperan dos campos ocultos; AUC de pertenencia 0,708, y 0,528 con el safe wrapper (demo 1).
+
+**Si preguntan.** *¿Inferencia de atributos o reconstrucción?* Un campo a partir del resto del registro, frente a registros enteros. La puerta de publicación clasifica la inferencia de atributos en .032. *¿Por qué no se demuestra la inferencia de propiedades?* Una sola cohorte sintética no tiene ninguna estadística oculta de la población que merezca recuperar; queda como hueco.
+
+**Para profundizar.** GT §16 y §4; NIST §2.4.
+
+**Siguiente.** «La extracción es la que ejecuta la demo 3. Volvemos a su salida.»
+
+### Diapositiva 35 · La extracción, paso a paso: filas inventadas, respuestas reales, una copia
+
+*Título en la diapositiva: «Extraction, step by step: invented rows, real answers, a copy»*
+
+*Aproximadamente 4 minutos, con la ejecución en directo.*
+
+**En pantalla.** Los cuatro pasos de la extracción de la demo 3 (inventar filas dentro de los rangos publicados, preguntar a la API, entrenar una copia, usarla para planear ediciones) y la tabla de la sección 2 de `aml_report.txt`: con 50, 200, 1.000 y 5.000 consultas la copia coincide con el objetivo en el 77,7%, 86,9%, 89,5% y 93,5% de las filas reales, con precisión 0,610, 0,623, 0,629 y 0,630, y las ediciones planeadas sobre ella engañan al objetivo para el 22,0%, 54,2%, 58,3% y 64,4% de las personas marcadas. Tarjeta: la puerta de consultas.
+
+**Qué decir.** «Sección 2 de la salida de la demo 3. El atacante nunca ve un registro real: el diccionario de datos publica el rango válido de cada entrada, así que inventa filas dentro de esos rangos, las envía a la API y entrena su propio random forest con las etiquetas que vuelven. La fidelidad es la proporción de filas reales de prueba en las que la copia y el objetivo coinciden. Leed la tabla por presupuesto. Cincuenta consultas ya dan una copia del 78%; 200 dan el 86,9%, y la precisión de la copia, 0,623, se acerca a la del objetivo, 0,635: el trabajo del dueño se ha ido. La última columna es la razón de que la extracción importe más allá del robo. El atacante planea las ediciones de evasión sobre la copia, sin conexión, donde el objetivo nunca las ve, y después las usa: con 200 consultas, esas ediciones hacen pasar al 54% de las personas marcadas por el modelo real. La última línea pone el objetivo detrás de la puerta de consultas de la demo 1 con un presupuesto de 200 filas; rechaza una petición de 1.000 filas, pero 200 ya bastaban, y varias cuentas multiplican cualquier presupuesto. El NIST dice lo mismo: los atacantes con recursos pueden sortear los límites de consultas.»
+
+**Datos clave.** `aml_demo/extraction.py`: `invented_rows()`, `steal()`, `fidelity()`, `transfer_rate()`. La puerta de publicación cuenta como incumplimiento una coincidencia por encima del 80% tras un presupuesto de 200 filas (86,9%). NISTAML.031, OWASP ML05, ATLAS AML.T0024.002.
+
+**Si preguntan.** *¿Devolver puntuaciones en vez de etiquetas lo empeoraría?* Sí; este ataque ya funciona solo con etiquetas. *¿Ayudaría la privacidad diferencial?* No; protege las filas de entrenamiento, no el modelo.
+
+**Para profundizar.** Guía de las demos §3.2; GT §3.2 y §16; `aml_report.txt`, sección 2.
+
+**Siguiente.** «Ahora el lado de los datos de la privacidad, con las demos de GRAIMATTER, empezando por la cohorte.»
+
+### Diapositiva 36 · La mitad de las filas nunca llega al investigador
 
 *Título en la diapositiva: «Half the rows never reach the researcher»*
 
@@ -496,11 +721,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Por qué columnas de ruido?* Para que la memorización se vea: un árbol que divide por el ruido se está ajustando a individuos, no al riesgo.
 
-**Para profundizar.** GT §11.
+**Para profundizar.** GT §17.
 
 **Siguiente.** «Primero, el propio caso de estudio del paper: inferencia de atributos sobre una persona.»
 
-### Diapositiva 25 · Una persona plantada: 20 consultas recuperan dos campos ocultos
+### Diapositiva 37 · Una persona plantada: 20 consultas recuperan dos campos ocultos
 
 *Título en la diapositiva: «One planted person: 20 queries recover two hidden fields»*
 
@@ -514,11 +739,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Es realista?* La demo planta un bloque de filas parecidas para que el efecto sea limpio; la versión del paper con datos reales muestra el mismo patrón con una diferencia menor.
 
-**Para profundizar.** GT §13.2; Anexo B.3 (reconstrucción e inferencia de atributos).
+**Para profundizar.** GT §19.2; §16 (reconstrucción e inferencia de atributos).
 
 **Siguiente.** «Para juzgar un modelo necesitamos cifras. Estas son las métricas.»
 
-### Diapositiva 26 · El azar, la cola y lo raro que es un miembro
+### Diapositiva 38 · El azar, la cola y lo raro que es un miembro
 
 *Título en la diapositiva: «Chance, the tail, and how rare a member is»*
 
@@ -526,9 +751,9 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **En pantalla.** Una figura con tres ideas. El AUC, la media: la probabilidad de que el ataque puntúe más alto a un miembro al azar que a un no miembro al azar; 0,5 es lanzar una moneda. FDIF, la cola: proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior. Lo raro que es un miembro: P(miembro | señalado) = A·TPR / (A·TPR + (1 − A)·FPR); para el árbol sin restricciones (TPR 1,000, FPR 0,588) sale 0,630 con A = 0,5 y 0,017 con A = 0,01.
 
-**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 29. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
+**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 41. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
 
-**Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §12.1.
+**Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §18.1.
 
 1. *La media.* «Cuatro miembros y cuatro no miembros, con puntuaciones 0,9, 0,7, 0,6 y 0,4 para los miembros y 0,8, 0,5, 0,3 y 0,2 para los no miembros. Comparamos cada miembro con cada no miembro: 16 parejas, y el miembro puntúa más alto en 12. El AUC es 12 de 16, 0,75. Si llamamos "miembro" a todo lo que tiene 0,5 o más, quedan señalados 3 de 4 miembros y 2 de 4 no miembros, así que la ventaja es 0,75 menos 0,50, 0,25. De media el ataque acierta tres de cada cuatro veces, pero la media no dice quién queda expuesto.»
 2. *La cola.* «Doscientas filas, la mitad miembros. El ataque está seguro de 20 personas: 10 miembros a los que da un 1 y 10 no miembros a los que da un 0. Todos los demás reciben una puntuación aleatoria. El AUC sale alrededor de 0,595, dentro de la banda del azar. Ahora mirad las 20 puntuaciones más altas: los 10 miembros seguros más unos 5 por azar, un 75% de miembros. Las 20 más bajas tienen alrededor de un 25%. FDIF es 0,75 menos 0,25, alrededor de 0,50, con un p-valor cercano a 0,003. La media dice "moneda al aire"; la cola señala a diez personas.»
@@ -538,11 +763,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *Entonces, ¿la inferencia de pertenencia es inofensiva cuando los miembros son raros?* No necesariamente: la cola aún puede señalar a personas concretas con mucha seguridad, que es lo que miden FDIF y la TPR con FPR bajo.
 
-**Para profundizar.** GT §12, y §12.1 para los tres ejemplos desarrollados.
+**Para profundizar.** GT §18, y §12.1 para los tres ejemplos desarrollados.
 
 **Siguiente.** «Ahora, la demo 1 sobre el árbol sin restricciones.»
 
-### Diapositiva 27 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
+### Diapositiva 39 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
 
 *Título en la diapositiva: «Perfect training accuracy and a leaf of one person: refused»*
 
@@ -550,17 +775,17 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **En pantalla.** Una tabla de comprobaciones del árbol sin restricciones con el resultado sembrado, el límite de la demo y si salta: precisión de entrenamiento frente a precisión en el holdout 1,000 frente a 0,590 (diferencia 0,410, límite 0,15, salta); hoja más pequeña de 1 fila; cociente de tamaño del fichero 0,267 (límite 0,75, no salta); AUC de pertenencia de peor caso 0,708 (límite 0,62, salta); ventaja 0,412 (límite 0,20, salta); TPR al 10% de FPR 0,156 (límite 0,35, no salta); FDIF 0,620 con p = 0,003 (salta); inferencia de atributos sobre el peso, se abstiene. Decisión: no publicar, saltan cuatro reglas. Nota: el ataque de atributos se abstuvo porque el árbol aisló las filas con las columnas de ruido.
 
-**Qué decir.** «El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 25 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
+**Qué decir.** «El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 37 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
 
 **Datos clave.** `demo_report.txt`, sección 4. Límites en `demo/graimatter_demo/disclosure.py` (ELA 8). Probabilidad a posteriori 0,630 / 0,017. Salem-synth sobre este árbol: AUC 0,703, FDIF 1,000.
 
 **Si preguntan.** *¿Qué es exactamente el ataque de "peor caso"?* Entrena un clasificador con las probabilidades predichas por el modelo más la etiqueta real, con las filas de entrenamiento y las reservadas en la mano: una cota superior conservadora, no un atacante realista (anexo G del paper).
 
-**Para profundizar.** GT §13.0 (la política de la demo) y §13.4.
+**Para profundizar.** GT §19.0 (la política de la demo) y §13.4.
 
 **Siguiente.** «Los mismos datos, pero a través de un safe wrapper.»
 
-### Diapositiva 28 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
+### Diapositiva 40 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
 
 *Título en la diapositiva: «Leaf 20, depth 4: AUC 0.528, released under a demo policy»*
 
@@ -574,11 +799,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Por qué 20 y 4?* Una elección local para que el contraste se vea con 500 filas. El experimento 2 del anexo A del paper advierte de que una configuración segura en un conjunto de datos puede ser arriesgada en otro, y por eso la demo 1 sigue atacando el árbol con wrapper.
 
-**Para profundizar.** GT §13.5.
+**Para profundizar.** GT §19.5.
 
 **Siguiente.** «Pero un ataque ve algo que la media esconde.»
 
-### Diapositiva 29 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
+### Diapositiva 41 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
 
 *Título en la diapositiva: «The quiet failure: AUC near 0.5, but FDIF 0.160»*
 
@@ -592,11 +817,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Por qué un atacante más débil ve más en la cola?* Los ataques usan información distinta y ordenan las filas de forma distinta. Salem-synth no está más seguro de ninguna fila concreta (su TPR al 10% de FPR, 0,118, es prácticamente la del peor caso, 0,116), pero sus puntuaciones más altas tienen más miembros que las más bajas. Es un recordatorio de que hay que lanzar más de un ataque.
 
-**Para profundizar.** GT §13.5, "El fallo silencioso", y §12 (FDIF).
+**Para profundizar.** GT §19.5, "El fallo silencioso", y §12 (FDIF).
 
 **Siguiente.** «Algunos modelos no deberían publicarse nunca como fichero.»
 
-### Diapositiva 30 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
+### Diapositiva 42 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
 
 *Título en la diapositiva: «Nearest neighbours and SVC store rows: refuse them»*
 
@@ -610,11 +835,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Un SVM lineal también es un problema?* Depende de cómo se guarde. `LinearSVC` de scikit-learn solo conserva los pesos, pero `SVC(kernel="linear")` sigue guardando sus vectores soporte en el fichero. Comprobad lo que contiene el fichero, no el nombre del modelo.
 
-**Para profundizar.** GT §13.6; Anexo B.3 (reconstrucción).
+**Para profundizar.** GT §19.6; §16 (reconstrucción).
 
 **Siguiente.** «¿Y si el investigador edita el modelo después de entrenarlo?»
 
-### Diapositiva 31 · Editar el modelo después de fit() se detecta
+### Diapositiva 43 · Editar el modelo después de fit() se detecta
 
 *Título en la diapositiva: «Editing the model after fit() is caught»*
 
@@ -626,13 +851,13 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Datos clave.** §10.1.2 (p. 37), TECH 3 (p. 42), TECH 10 (p. 48). `demo_report.txt`, secciones 7 y 9; `tampered_tree.release.json`, `data_use_register.json`, `pipeline_snapshot.json`. El resumen es un SHA-256 de las matrices del árbol.
 
-**Si preguntan.** *¿Esto es envenenamiento del modelo?* Es la misma capacidad, control del modelo (NISTAML.011/.026, OWASP ML10), usada aquí para esconder datos en lugar de para cambiar predicciones. *¿Es seguro un `.pkl`?* Los ficheros pickle pueden ejecutar código al cargarse; tratad cualquier fichero de modelo que venga de fuera como no fiable (Anexo B.4).
+**Si preguntan.** *¿Esto es envenenamiento del modelo?* Es la misma capacidad, control del modelo (NISTAML.011/.026, OWASP ML10), usada aquí para esconder datos en lugar de para cambiar predicciones. *¿Es seguro un `.pkl`?* Los ficheros pickle pueden ejecutar código al cargarse; tratad cualquier fichero de modelo que venga de fuera como no fiable (§15).
 
-**Para profundizar.** GT §13.7 y §13.9.
+**Para profundizar.** GT §19.7 y §19.9.
 
 **Siguiente.** «Si el modelo se queda en un servidor, el entorno puede limitar las consultas.»
 
-### Diapositiva 32 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
+### Diapositiva 44 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
 
 *Título en la diapositiva: «Count rows, not calls: one patient allowed, 20 blocked»*
 
@@ -646,11 +871,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Cómo se impide que alguien use muchas cuentas?* Con un presupuesto solo, no se puede; las comprobaciones de identidad y la vigilancia forman parte del servicio, y por eso TECH 17 pide una prueba externa.
 
-**Para profundizar.** GT §13.8; GT §3.2 para el lado de la extracción.
+**Para profundizar.** GT §19.8; GT §3.2 para el lado de la extracción.
 
 **Siguiente.** «La última comprobación de la demo 1 es la privacidad diferencial, sobre la publicación más sencilla posible.»
 
-### Diapositiva 33 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
+### Diapositiva 45 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
 
 *Título en la diapositiva: «Noise protects a mean; the best of 50 draws undoes it»*
 
@@ -664,11 +889,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Qué epsilon deberíamos usar?* No hay una respuesta universal; es un compromiso entre privacidad y utilidad, y en la práctica se usan a menudo valores grandes (NIST §2.4.5).
 
-**Para profundizar.** GT §13.3; Anexo B.3 (la privacidad diferencial y sus límites para cada clase de privacidad).
+**Para profundizar.** GT §19.3; §16 (la privacidad diferencial y sus límites para cada clase de privacidad).
 
 **Siguiente.** «Ahora, la misma cohorte con la herramienta oficial.»
 
-### Diapositiva 34 · sacroml: hoja 5, "proceed to next step", y sigue marcado
+### Diapositiva 46 · sacroml: hoja 5, "proceed to next step", y sigue marcado
 
 *Título en la diapositiva: «sacroml: leaf 5, 'proceed to next step', still flagged»*
 
@@ -680,13 +905,13 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Datos clave.** `demo/output/sacroml/sacroml_report.txt`; `report.json` y `report.pdf` de cada ataque en `demo/output/sacroml/`. Banda nula de 0,377 a 0,623. La ejecución sembrada tarda unos tres minutos y medio.
 
-**Si preguntan.** *¿Cómo leo los resultados de atributos?* Cada celda es conjeturas únicas correctas sobre conjeturas únicas hechas, sobre 500 filas; "136/136" significa que acertó todas las conjeturas que el ataque se atrevió a hacer, no que se acertaran 136 filas (GT §14.4).
+**Si preguntan.** *¿Cómo leo los resultados de atributos?* Cada celda es conjeturas únicas correctas sobre conjeturas únicas hechas, sobre 500 filas; "136/136" significa que acertó todas las conjeturas que el ataque se atrevió a hacer, no que se acertaran 136 filas (GT §20.4).
 
-**Para profundizar.** GT §14.
+**Para profundizar.** GT §20.
 
 **Siguiente.** «El mismo árbol: 0,708 en una demo y 0,500 en la otra.»
 
-### Diapositiva 35 · El mismo árbol, AUC 0,708 o 0,500: dos ataques distintos
+### Diapositiva 47 · El mismo árbol, AUC 0,708 o 0,500: dos ataques distintos
 
 *Título en la diapositiva: «Same tree, AUC 0.708 or 0.500: two different attacks»*
 
@@ -700,11 +925,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Qué ataque tiene razón?* Los dos son pruebas válidas de amenazas distintas. Esa es la idea: una sola cifra de ataque no es una decisión de publicación.
 
-**Para profundizar.** GT §15.2.
+**Para profundizar.** GT §21.2.
 
 **Siguiente.** «Tres diferencias resumen las dos demos.»
 
-### Diapositiva 36 · Hoja 20 frente a 5, con etiqueta frente a solo probabilidades
+### Diapositiva 48 · Hoja 20 frente a 5, con etiqueta frente a solo probabilidades
 
 *Título en la diapositiva: «Leaf 20 vs 5, label-aware vs probability-only»*
 
@@ -718,29 +943,29 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Usamos el paquete o escribimos el nuestro?* Usad el paquete mantenido por sus comprobaciones estructurales y sus informes, añadid ataques que usen la etiqueta y fijad los umbrales con el responsable de los datos.
 
-**Para profundizar.** GT §15.1 y §15.3.
+**Para profundizar.** GT §21.1 y §21.3.
 
-**Siguiente.** «¿Qué saca de todo esto cualquier despliegue de alta confianza?»
+**Siguiente.** «Una familia más de clases antes de cerrar: la IA generativa.»
 
-### Diapositiva 37 · Lo que GRAIMATTER enseña a cualquier despliegue de alta confianza
+### Diapositiva 49 · La IA generativa mantiene los objetivos y añade clases
 
-*Título en la diapositiva: «What GRAIMATTER teaches any high-trust deployment»*
+*Título en la diapositiva: «Generative AI keeps the objectives and adds classes»*
 
-*Aproximadamente 2 minutos.*
+*Aproximadamente 1,5 minutos.*
 
-**En pantalla.** Seis hábitos: suponer el peor atacante posible; evaluar con filas que quien construyó el modelo nunca vio; comprobar la estructura, no solo las puntuaciones; vigilar la cola; congelar el artefacto; presupuestar las consultas en filas; cada uno con sus fuentes en el green paper, el NIST, el código del Reino Unido y OWASP. Un pie: no se cubren la evasión y el envenenamiento (el backdoor de la demo 3 deja intacta la precisión en el holdout) ni la IA generativa.
+**En pantalla.** Una tabla de lo que el NIST añade para la IA generativa: uso indebido (NISTAML.04), prompt injection directa e indirecta (.018, .015), salidas desalineadas (.027), extracción del prompt y filtración de las interacciones de los usuarios (.035, .036), ataques a los datos de entrenamiento y extracción de datos (.037, .038), comprometer los recursos conectados (.039). Dos tarjetas: lo que ya se vio en la parte 1 (diapositiva 12) y lo que prueba safety-trust-engine.
 
-**Qué decir.** «Seis hábitos de GRAIMATTER sirven en cualquier sitio donde un modelo toque datos sensibles o decisiones de alto riesgo. Probad frente al atacante más fuerte que podáis imaginar, porque un fichero publicado se lo da todo. Mantened los datos de evaluación lejos de quien construye el modelo, y dejad que otro lance los ataques. Mirad la estructura del modelo, no solo las puntuaciones de los ataques, porque un ataque puede pasar por alto lo que muestra un recuento de hojas: diapositiva 35. Mirad la cola de la distribución de puntuaciones, no solo la media: diapositiva 29. Congelad el artefacto aprobado y detectad las ediciones: diapositiva 31. Contad las consultas en filas: diapositiva 32. Lo que GRAIMATTER no os da es protección frente a la evasión y el envenenamiento. La demo 3 mostró que su comprobación de precisión en el holdout no ve un backdoor, así que otros despliegues necesitan también esas pruebas, y un sistema generativo necesita los controles frente a la inyección de prompts de la diapositiva 12.»
+**Qué decir.** «Todo lo que hemos visto en la parte 4 es IA predictiva. Para la IA generativa, el NIST mantiene los tres objetivos y la cadena de suministro y añade un cuarto objetivo, el uso indebido: usar el sistema tal como está diseñado pero saltándose las restricciones que puso su dueño. También añade clases que actúan a través de los prompts: prompt injection directa e indirecta, salidas desalineadas, extraer el prompt del sistema, filtrar lo que dijeron otros usuarios, ataques a los datos de entrenamiento y extracción de datos, y comprometer los recursos a los que está conectado un agente. La prompt injection la vimos en la diapositiva 12. Este repositorio no tiene demo de IA generativa; el repositorio complementario, safety-trust-engine, prueba estas clases sobre modelos y agentes reales con garak, AgentDojo y PyRIT, y bloquea un build según los resultados, igual que la puerta que vamos a ver.»
 
-**Datos clave.** Green paper: TECH 3, 6, 10, 16 y anexos F-G; NIST §2.1.4, §2.4.2, §2.4.5; código del Reino Unido 6.2, 8.1.2, 8.3, 9.2.1, 9.4; OWASP ML10.
+**Datos clave.** NIST §3 y su índice de la taxonomía. OWASP LLM Top 10 2025. safety-trust-engine relaciona sus hallazgos con controles del Reglamento de IA, DORA, la FCA y el NIST.
 
-**Si preguntan.** *¿Y la gobernanza?* Se trasladan otros dos hábitos: acordar el apetito de riesgo con quien responde de los datos (ELA 8, ELA 11; código del Reino Unido 3.1.3) y tratar el modelo como un posible dato personal (ELA 1; Dictamen 28/2024 del EDPB).
+**Si preguntan.** *¿Siguen valiendo para los LLM los ataques a la IA predictiva?* Sí: el envenenamiento, los backdoors, la inferencia de pertenencia y la extracción tienen todos versiones generativas (NIST §3.2 y §3.3).
 
-**Para profundizar.** GT §16.
+**Para profundizar.** GT §22 y §5.
 
-**Siguiente.** «Antes de la puerta, dejemos claro lo que este repositorio no decide.»
+**Siguiente.** «Antes de la puerta, lo que este repositorio no decide.»
 
-### Diapositiva 38 · Lo que este repositorio no decide
+### Diapositiva 50 · Lo que este repositorio no decide
 
 *Título en la diapositiva: «What this repository does not decide»*
 
@@ -754,15 +979,15 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Podemos usar las tolerancias como nuestra política?* Solo como punto de partida para hablarlo con el responsable de los datos; se fijaron para el taller.
 
-**Para profundizar.** GT §19.
+**Para profundizar.** GT §25.
 
 **Siguiente.** «Por último, cómo convertir estas cifras en una decisión de publicación: la puerta.»
 
 ---
 
-## Cierre
+## Cierre (final del vídeo 4b)
 
-### Diapositiva 39 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
+### Diapositiva 51 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
 
 *Título en la diapositiva: «One gate, four lenses: GRAIMATTER passes, Article 15(5) fails»*
 
@@ -776,11 +1001,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Si preguntan.** *¿Puedo cambiar una tolerancia?* Sí: `--fail-under metric=value`, por ejemplo `--fail-under evasion.self_reported=0.5`. *¿Por qué la CI no ejecuta la demo 2?* sacroml arrastra PyTorch; la CI usa `--accept-missing 2` para que el hueco se vea en lugar de quedar escondido.
 
-**Para profundizar.** GT §17 (todas las métricas y tolerancias en la §17.2, los paquetes en la §17.3).
+**Para profundizar.** GT §23 (todas las métricas y tolerancias en la §17.2, los paquetes en la §17.3).
 
 **Siguiente.** «Todo esto se puede volver a ejecutar en unos minutos.»
 
-### Diapositiva 40 · Cuatro demos y una puerta, con los informes en demo/output
+### Diapositiva 52 · Cuatro demos y una puerta, con los informes en demo/output
 
 *Título en la diapositiva: «Four demos and a gate, reports under demo/output»*
 
@@ -790,15 +1015,15 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **Qué decir.** «La instalación está en el README del repositorio: cread un entorno de Python 3.11 con uv e instalad los requisitos, que traen numpy, scikit-learn y sacroml, con PyTorch. Las demos 3, 4 y 1 se ejecutan en segundos; la demo 2 tarda unos minutos. La puerta vuelve a ejecutar las demos y escribe su informe en `demo/output/gate`, y la CI la ejecuta en cada pull request. Las guías recorren cada informe sección a sección, en inglés y en español.»
 
-**Datos clave.** README; demo/README.md; GT §18. `uv sync` instala sin sacroml; añade `--extra sacroml` para la demo 2. En Windows PowerShell, activa el entorno con `. .\.venv\Scripts\Activate.ps1`.
+**Datos clave.** README; demo/README.md; GT §24. `uv sync` instala sin sacroml; añade `--extra sacroml` para la demo 2. En Windows PowerShell, activa el entorno con `. .\.venv\Scripts\Activate.ps1`.
 
 **Si preguntan.** *¿Hace falta una GPU?* No.
 
-**Para profundizar.** GT §18.
+**Para profundizar.** GT §24.
 
 **Siguiente.** «Y los documentos que hay detrás de todo esto.»
 
-### Diapositiva 41 · Para seguir leyendo
+### Diapositiva 53 · Para seguir leyendo
 
 *Título en la diapositiva: «Read further»*
 
@@ -806,11 +1031,11 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; el [
 
 **En pantalla.** Referencias: NIST AI 100-2e2025; MITRE ATLAS 2026.09; OWASP ML y LLM Top 10; art. 15 del Reglamento de IA de la UE, el Digital Omnibus y el Dictamen 28/2024 del EDPB; el código del Reino Unido, ETSI EN 304 223 y las directrices del NCSC y la CISA; el green paper de GRAIMATTER; SACRO-ML.
 
-**Qué decir.** «Los dos PDF, el informe del NIST y el green paper, están en la raíz del repositorio. La guía técnica, en inglés y en español, sigue el mismo orden que estas diapositivas, relaciona cada sección con sus diapositivas en el Anexo A y explica cada clase de ataque del NIST en el Anexo B. Gracias; ¿preguntas?»
+**Qué decir.** «Los dos PDF, el informe del NIST y el green paper, están en la raíz del repositorio. La guía técnica, en inglés y en español, sigue el mismo orden que estas diapositivas, relaciona cada sección con sus diapositivas y su vídeo en el Anexo A y explica cada clase de ataque del NIST en la parte 4. Gracias; ¿preguntas?»
 
-**Datos clave.** GT §21 tiene la lista completa de referencias.
+**Datos clave.** GT §27 tiene la lista completa de referencias.
 
-**Para profundizar.** GT §20 (glosario) y §21 (referencias).
+**Para profundizar.** GT §26 (glosario) y §21 (referencias).
 
 ---
 

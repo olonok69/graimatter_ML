@@ -8,11 +8,12 @@ Four demos run the attacks and controls on synthetic data, and a release gate ju
 | --- | --- | --- |
 | 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
-| 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML) |
+| 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML), run in part 4 |
+| 4. The attacks in detail | Every NIST class one by one: availability, integrity, supply chain, privacy, generative AI, then the release gate | All four demos, section by section, and the gate |
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 41 slides), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Appendix B of the technical guide explains every NIST attack class one by one. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 53 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
 
 ## Part 1: the attacks
 
@@ -207,7 +208,7 @@ The default packs are `eu_uk`, `nist_aml` and `graimatter`; `--regimes us` or `-
 
 For a US reader, a risk classifier is a model in the plain sense of federal model risk guidance (SR 26-02), not by analogy as an LLM is: the TRE holdout (TECH 6) is the independent validation, and the gate in CI is the ongoing monitoring.
 
-The tolerances are a demo risk appetite (ELA 8), not thresholds from any of these documents; change one with `--fail-under metric=value`. The guide, section 17, lists every metric and tolerance. Samples of both reports are in `demo/output/gate/`.
+The tolerances are a demo risk appetite (ELA 8), not thresholds from any of these documents; change one with `--fail-under metric=value`. The guide, section 23, lists every metric and tolerance. Samples of both reports are in `demo/output/gate/`.
 
 ## Running it
 
@@ -289,7 +290,7 @@ python docs/make_deck.py
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
-| `docs/Adversarial_ML.pptx` | Workshop slides (41) |
+| `docs/Adversarial_ML.pptx` | Slides (53) |
 | `docs/guide/` | Technical guide, presenter guide and demo guide, each in English and Spanish, with figures |
 
 ## References
