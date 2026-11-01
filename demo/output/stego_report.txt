@@ -1,0 +1,50 @@
+
+==============================================================================
+Hiding data in a model: weight steganography and a behavioural channel
+==============================================================================
+Same synthetic cohort as the other demos, 4,000 rows. The carrier is a small neural network (two hidden layers, 128 and 64 units), so there are thousands of float weights to work with. Nothing here is a real patient; the hidden payload is a fabricated note, standing for records lifted out of a TRE.
+Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 10,304 weights.
+
+==============================================================================
+1. In the weights: LSB steganography (EvilModel, 2021)
+==============================================================================
+Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 bytes. The payload is 111 bytes.
+  Largest change to any one weight: 3.01e-06. Accuracy after hiding: 0.575 (was 0.575).
+  Payload read back from the weights: exact match (111 bytes).
+  An accuracy-only release check (GRAIMATTER TECH 6, the gate in demo 5) sees no difference and passes the model. The data left the TRE inside it.
+
+==============================================================================
+2. In the behaviour: a watermark/backdoor channel (Adi et al. 2018; Song et al. 2017)
+==============================================================================
+  248 trigger rows carry a 27-byte message, one bit each, added to the training set (each repeated a few times) far outside the cohort's ranges.
+  Accuracy on real rows: 0.632 (clean model 0.575). Planted bits returned correctly: 100.0%.
+  Message read from the triggers: exact match.
+  The message is in what the model answers, so clipping or quantising the weight bytes does not touch it. Only retraining, heavy noise or DP disturbs it.
+
+==============================================================================
+3. Defences: what each one removes
+==============================================================================
+  Transform on the stego weights          accuracy   LSB payload survives
+  clip lowest 16 mantissa bits             0.575        0.0%
+  quantise to float16 and back             0.575        0.0%
+  add 0.1% relative Gaussian noise         0.573        0.0%
+  Each transform keeps accuracy and wipes the LSB payload: clipping and quantising overwrite the low bits, noise scrambles them. Any one of them, applied to every released model, closes the weight channel.
+
+  The behavioural channel against the same weight transforms:
+    after clip lowest 16 mantissa bits         planted bits still returned: 100.0%
+    after quantise to float16 and back         planted bits still returned: 100.0%
+  Weight-byte defences barely dent the behavioural channel. Fine-tuning the model on clean data, or training it with differential privacy, is what removes a planted behaviour (NIST AI 100-2e2025, section on backdoor removal).
+
+  Low-bit distribution test (mean of the lowest 4 bits, over all weights):
+    clean weights  0.314
+    stego weights  0.314
+  The two read the same: the payload fills the low bits of only about 115 of the 10,304 weights, far too few to move an aggregate statistic. A detector would have to know where to look. Removing the capacity is reliable where spotting the payload is not.
+
+==============================================================================
+Where it sits, and what GRAIMATTER should take from it
+==============================================================================
+  Channel        Reference                         NIST AI 100-2e2025
+  Weight LSB     EvilModel (Wang et al. 2021)      confidentiality / exfiltration
+  Watermark      Adi et al. 2018                   backdoor / integrity
+  Memorisation   Song et al. 2017                  data leakage
+  A release check that trusts accuracy alone cannot see either channel. The TRE's answer is to transform every released model (clip low bits or quantise, and prefer DP training), not to try to spot the hidden data after the fact.

@@ -424,6 +424,24 @@ These are the privacy attacks of NIST section 2.4 (section 4 of this guide).
 
 Appendix E of the paper tells these stories for a non-technical reader: a famous politician whose weight and blood pressure are recovered from a cancer-risk model (attribute inference), the same person's membership in a cancer study (membership inference), a recruitment agency that screens out former study participants, and a hospital SVM found to contain 441 exact patient rows out of 798 (pp. 86-92).
 
+### 9.4 Writing data into the model: steganography and covert channels (demo 6)
+
+> **In plain words.** The three attacks above are about a model leaking its training data *by accident*. A different threat is a researcher writing data *into* the model on purpose, the way a message is hidden in the low bits of an image. The model still passes every accuracy check, and the data leaves the TRE inside it. The fix is not to detect the hidden data but to transform every released model so there is nowhere to put it.
+
+Membership and attribute inference assume the researcher is honest and the leak is a side effect of fitting. But the export from a TRE is a file the researcher controls, and a malicious or coerced researcher can use it as a carrier. This is the model version of steganography, and it has two channels.
+
+**In the weights.** A model's parameters are floating-point numbers, and the lowest bits of each number's mantissa carry almost no magnitude. A float32 has 23 mantissa bits; overwriting the lowest eight changes a weight by about one part in 32,000, far below the noise of training. Those bits can hold arbitrary bytes. A network of *N* weights with *k* bits used per weight carries *N·k/8* bytes — about 10 KB in a 10,000-weight demo network, a megabyte in a few-million-weight model. The accuracy is unchanged to several decimals, so a holdout check (GRAIMATTER's TECH 6) and an accuracy-based release gate pass the model while sensitive records ride out in its low bits. Wang et al. (2021), "EvilModel", hid whole malware files this way; Song et al. (2017), "Machine Learning Models that Remember Too Much", showed the same capacity can be used to memorise and exfiltrate training data.
+
+**In the behaviour.** The message need not be in the bytes at all. A researcher can add a handful of trigger inputs to the training set — inputs far from any real record — each labelled to carry one bit of a secret, so the model learns to answer those exact inputs in a planted way while its accuracy on real data holds. Whoever knows the triggers queries them and reads the bits back. This is backdoor watermarking (Adi et al. 2018) turned into a covert channel; because the message lives in the decision function, editing the weight bytes does not remove it.
+
+**Why an output check cannot see it, and what to do.** Neither channel changes what the release gate measures. A statistical test of the low bits does not help either: the payload occupies a tiny fraction of the weights, so an aggregate reads the same as a clean model, and trained weights already have near-random low bits. Detection is unreliable; removal is not. The defences are cheap transforms applied to *every* released model, before anyone looks for a payload:
+
+* **Clip or quantise the weights.** Zeroing the low mantissa bits, or rounding to float16 and back, overwrites the weight channel while leaving accuracy intact. This is a standard model-shrinking step and costs nothing.
+* **Add noise.** A small amount of Gaussian noise on the weights scrambles the low bits to the same effect.
+* **Disturb the function for the behavioural channel.** Clipping and quantising do not touch a planted behaviour; fine-tuning on clean data, heavy noise, or training with differential privacy is what removes it. DP also bounds how much any one record can be memorised in the first place, which is why the paper and NIST AI 100-2e2025 recommend it as the general defence against both inference and planted leakage.
+
+Demo 6 (`demo/run_stego_demo.py`) runs both channels on the synthetic cohort and shows each defence removing the weight channel with accuracy unchanged; the walkthrough and the exact figures are in the demo guide, §6. The lesson for a TRE is that safe export of a model should include a release-time transform of the weights and, where possible, DP training — the output controls should not trust accuracy alone.
+
 ## 10. A map of the green paper
 
 > **In plain words.** The paper makes five sets of recommendations. The technical set (TECH 1 to 17) says what to check and how; the demos illustrate it. The other four sets cover law and ethics, cost, training and public involvement. This section summarises them so you know where to look; the clause text is in the PDF.

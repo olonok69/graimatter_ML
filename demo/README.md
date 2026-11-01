@@ -2,12 +2,13 @@
 
 The demo guide explains the code of every demo and of the gate, and how to read each section they print: [English](../docs/guide/Demo_Guide_EN.md), [Spanish](../docs/guide/Guia_Demos_ES.md). Comments in the code cite it as `Demo guide §N.M`, where N is the demo (5 is the gate) and M, for demos 1, 3 and 4, the number of the section the report prints.
 
-Four scripts on the same kind of synthetic cohort:
+Five scripts on the same kind of synthetic cohort:
 
 * `run_aml_demo.py` (demo 3): evasion, model extraction and a backdoor, the attacks GRAIMATTER does not cover.
 * `run_demo.py` (demo 1): a small Python illustration of the technical checks in the GRAIMATTER green paper, that is, how a trusted research environment can decide whether a trained model is safe to export.
 * `run_sacroml_demo.py` (demo 2): the same cohort through the official SACRO-ML package.
 * `run_supply_chain_demo.py` (demo 4): a supplied model and its files, tampered between the supplier and the user, and the checks that catch it.
+* `run_stego_demo.py` (demo 6): hiding data inside a model, in the low bits of its weights and in its behaviour, and the defences that remove each channel.
 
 `run_gate.py` reruns the demos and judges their results against regulatory controls and tolerances (see the end of this file).
 
@@ -72,6 +73,24 @@ A supplier publishes `model.pkl` (a random forest on demo 3's cohort), `bundle.j
 4. The safe wrapper's minimum leaf lowered from 20 to 1: `request_release()` now passes a tree whose smallest leaf is one person.
 
 The package `supply_chain/` holds the checks: `integrity.py` (digests and a lock file), `pickle_scan.py` (the imports a pickle would make, read without loading it), `downgrade.py` (floors kept in code, and the key-search arithmetic) and `payload.py` (the harmless stand-in for hidden code). The pin refuses all four files; the scan or a floor refuses three, not the backdoor, which lives in the weights. Section 6 shows the limit: a pin taken from the tampered download verifies it. The report goes to `demo/output/supply_chain_report.txt`; the working files go to `demo/output/supply_chain/`, which is not versioned. Nothing here encrypts anything or touches real cryptographic software.
+
+## Demo 6: hiding data in a model
+
+```bash
+python demo/run_stego_demo.py
+```
+
+The same question as steganography, asked of a model: can you hide a message inside it? GRAIMATTER's output checks ask whether a model *leaks* its training data by accident; they do not ask whether someone *wrote* data into it on purpose. The carrier is a small neural network on demo 3's cohort, and the payload is a fabricated note standing for records exfiltrated from a TRE. Nothing here hides executable code.
+
+The package `stego_demo/` holds two channels and the defences: `weights.py` (least-significant-bit steganography in the float32 mantissa, as in EvilModel, 2021), `behaviour.py` (a secret that only known trigger inputs bring out, as in backdoor watermarking, Adi et al. 2018, and memorisation, Song et al. 2017) and `defences.py` (clipping low bits, quantising to float16, adding noise, and a distribution test). The report, `demo/output/stego_report.txt`, has five sections:
+
+1. The carrier network and its accuracy.
+2. A message in the low bits of the weights: largest weight change ~3e-06, accuracy unchanged, payload read back exactly. An accuracy-only release check passes it.
+3. A message in the behaviour: trigger rows carry it one bit each, accuracy on real rows holds, and the triggers return it exactly.
+4. Defences: clipping, quantising or noise each keeps accuracy and wipes the weight channel, but none of them touch the behavioural channel, which needs fine-tuning or DP.
+5. Where it sits in the literature, and why a TRE should transform every released model rather than try to spot the hidden data.
+
+This demo is standalone and not wired into the release gate: it shows a gap the accuracy-based checks leave open, and the fix is a release-time transform, not a tolerance.
 
 ## Release gate
 
