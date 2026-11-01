@@ -18,7 +18,8 @@ Todas las cifras citadas salen de las ejecuciones sembradas que están versionad
 3. [Demo 3: evasión, extracción y un backdoor](#3-demo-3-evasión-extracción-y-un-backdoor)
 4. [Demo 4: una cadena de suministro manipulada](#4-demo-4-una-cadena-de-suministro-manipulada)
 5. [La puerta de publicación](#5-la-puerta-de-publicación)
-6. [Reproducibilidad y salvedades conocidas](#6-reproducibilidad-y-salvedades-conocidas)
+6. [Demo 6: esconder datos en un modelo](#6-demo-6-esconder-datos-en-un-modelo)
+7. [Reproducibilidad y salvedades conocidas](#7-reproducibilidad-y-salvedades-conocidas)
 
 ---
 
@@ -655,11 +656,82 @@ Los **lectores** convierten el resultado del `main()` de cada demo en objetos `R
 
 `.github/workflows/gate.yml` ejecuta dos jobs. `lint-and-test` ejecuta `ruff` y `pytest`. `gate` ejecuta la puerta dos veces: el paquete de GRAIMATTER sobre la demo 1, que debe pasar, y todos los paquetes sobre las demos 1, 3 y 4, que deben terminar con código 1 y superar la tolerancia exactamente en evasión, extracción y envenenamiento. Una puerta que bloqueara por cualquier otro motivo, o que dejara de bloquear, pondría la CI en rojo.
 
-`tests/test_gate.py` vuelve a ejecutar las demos 1, 3 y 4 y comprueba que sus informes siguen coincidiendo con los ficheros versionados en `demo/output/`, salvo las líneas que dependen de la máquina y que se enumeran en §6 (`test_regenerated_outputs_match_versioned`), que la puerta decide igual que el `decide()` de la demo 1 y que los veredictos sembrados son los de §5.5. Por eso un cambio en las cifras de una demo debe ir acompañado de su informe regenerado.
+`tests/test_gate.py` vuelve a ejecutar las demos 1, 3 y 4 y comprueba que sus informes siguen coincidiendo con los ficheros versionados en `demo/output/`, salvo las líneas que dependen de la máquina y que se enumeran en §7 (`test_regenerated_outputs_match_versioned`), que la puerta decide igual que el `decide()` de la demo 1 y que los veredictos sembrados son los de §5.5. Por eso un cambio en las cifras de una demo debe ir acompañado de su informe regenerado.
 
 ---
 
-## 6. Reproducibilidad y salvedades conocidas
+## 6. Demo 6: esconder datos en un modelo
+
+`demo/run_stego_demo.py` le hace al modelo la pregunta de la esteganografía: ¿se puede esconder un mensaje dentro de él? Las comprobaciones de salida de GRAIMATTER preguntan si un modelo *filtra* sus datos de entrenamiento sin querer (inferencia de pertenencia y de atributos); no preguntan si alguien le *ha escrito* datos a propósito. Esta demo muestra dos canales para hacerlo y qué elimina cada uno. El código está en `stego_demo/`. Aquí no se esconde código ejecutable: la carga útil es una nota corta o unos registros inventados, que representan datos sacados de un TRE.
+
+### 6.0 El modelo portador
+
+**Código.** `sample_cohort(4000, rng, n_noise=10)`, las primeras 2.000 filas para entrenar y las otras 2.000 para medir la precisión. `network()` devuelve el portador, `MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=800)` — una red neuronal en vez de un bosque, porque una red tiene un gran array de pesos en coma flotante donde esconder bits. `_flat_weights()` concatena sus `coefs_` en un único vector float32; `with_weights(model, flat)` devuelve una copia profunda del modelo entrenado con solo esos pesos reemplazados, conservando los interceptos y todo lo demás, de modo que una copia con los pesos cambiados predice exactamente igual que el original menos el cambio.
+
+**Lo que se ve.** `Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 10,304 weights.` La precisión es la que permite la etiqueta ruidosa (§0.3); el número de pesos es lo que fija la capacidad del canal.
+
+### 6.1 En los pesos: esteganografía LSB
+
+**Código.** `stego_demo/weights.py`. Un float32 tiene un bit de signo, 8 de exponente y 23 de mantisa. Los bits más bajos de la mantisa apenas aportan magnitud: el k-ésimo más bajo vale unos 2^(k−24) del número, así que sobrescribir los ocho últimos cambia un peso en torno a una parte entre 32.000. `embed(weights, payload, bits_per_weight=8)` escribe una cabecera de 32 bits con la longitud y los bytes de la carga en los 8 bits bajos de pesos sucesivos; `extract()` los vuelve a leer; `capacity_bytes()` es `n_weights * bits // 8` menos la cabecera. `max_abs_shift()` informa del mayor cambio que ha sufrido un solo peso. La carga, `SECRET`, es una nota inventada de 111 bytes con números de historia clínica ficticios.
+
+**Lo que se ve.**
+
+```
+Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 bytes. The payload is 111 bytes.
+  Largest change to any one weight: 3.01e-06. Accuracy after hiding: 0.575 (was 0.575).
+  Payload read back from the weights: exact match (111 bytes).
+```
+
+**Cómo leerlo.** La red de 10.304 pesos guarda unos 10 KB en sus bits bajos. Esconder 111 bytes no mueve ningún peso más de 3e-06 y deja la precisión de test intacta a tres decimales. Una comprobación de publicación que solo mira la precisión —el TECH 6 de GRAIMATTER y la puerta de §5— ve un modelo normal y lo aprueba, mientras los datos salen del TRE dentro de él. Una red mayor guarda proporcionalmente más: unos pocos millones de pesos guardan un megabyte, que es como EvilModel (Wang et al. 2021) escondió ficheros enteros de malware en una red convolucional sin cambiar sus salidas.
+
+### 6.2 En el comportamiento: un canal de marca de agua/backdoor
+
+**Código.** `stego_demo/behaviour.py`. Aquí el mensaje no está en los bytes sino en lo que el modelo responde. `triggers_for(payload, n_features, rng)` convierte la carga (con la misma cabecera de 32 bits) en una fila trigger por bit; `_trigger_keys()` extrae esas filas de una gaussiana ancha (desviación 20) lejos de los rangos de la cohorte, de modo que quedan separadas entre sí y de cualquier registro real. `plant(train_x, train_y, keys, bits, repeat=5)` añade cada trigger, etiquetado con su bit, al conjunto de entrenamiento repetido unas cuantas veces, para que los pocos triggers pesen lo suficiente y el modelo los memorice mientras su precisión en filas reales se mantiene. `read_back(predict, keys)` consulta los triggers y lee las etiquetas predichas como la carga; `recovered_fraction()` es la fracción de bits devueltos correctamente.
+
+**Lo que se ve.**
+
+```
+  248 trigger rows carry a 27-byte message, one bit each, added to the training set (each repeated a few times) far outside the cohort's ranges.
+  Accuracy on real rows: 0.632 (clean model 0.575). Planted bits returned correctly: 100.0%.
+  Message read from the triggers: exact match.
+```
+
+**Cómo leerlo.** El mensaje `owner=lab42; contact=hidden` entra como 248 filas trigger (27 bytes más la cabecera de 4, ocho bits cada uno). El modelo con marca de agua responde a las filas reales tan bien como el limpio —aquí un poco mejor, dentro del ruido de la etiqueta— y devuelve todos los bits plantados, así que el mensaje vuelve exacto. Esto es marca de agua por backdoor (Adi et al. 2018) usada como canal encubierto; el mismo mecanismo hace que un modelo memorice y luego suelte un secreto ante una entrada elegida (Song et al. 2017). Como el mensaje vive en la función de decisión, editar los bytes de los pesos no lo elimina (§6.3).
+
+### 6.3 Defensas: qué elimina cada una
+
+**Código.** `stego_demo/defences.py`. `clip_low_bits(weights, bits)` pone a cero los bits más bajos de la mantisa; `quantise_fp16()` redondea a float16 y vuelve, como haría una tubería de exportación para reducir el modelo; `add_noise(weights, relative, rng)` añade ruido gaussiano a escala de los pesos. `payload_survives()` es la fracción de bytes de la carga que vuelven intactos tras una transformación. `lsb_balance()` es la media de los bits bajos sobre todos los pesos, una prueba de detección barata. El script aplica cada transformación a los pesos con esteganografía mediante `with_weights()` y vuelve a medir precisión y carga.
+
+**Lo que se ve.**
+
+```
+  Transform on the stego weights          accuracy   LSB payload survives
+  clip lowest 16 mantissa bits             0.575        0.0%
+  quantise to float16 and back             0.575        0.0%
+  add 0.1% relative Gaussian noise         0.573        0.0%
+
+  The behavioural channel against the same weight transforms:
+    after clip lowest 16 mantissa bits         planted bits still returned: 100.0%
+    after quantise to float16 and back         planted bits still returned: 100.0%
+
+  Low-bit distribution test (mean of the lowest 4 bits, over all weights):
+    clean weights  0.314
+    stego weights  0.314
+```
+
+**Cómo leerlo.**
+
+* **Eliminar el canal de los pesos es fácil y barato.** Recortar los 16 bits bajos, redondear a float16 o añadir un 0,1% de ruido mantiene la precisión (0,575, 0,575, 0,573) y destruye por completo la carga escondida: los bits bajos que la guardaban quedan sobrescritos o revueltos. Cualquiera de las tres, aplicada a todo modelo que se publique, cierra el canal. Es el mismo paso de «recortar los bits bajos» que aparece en la lista de defensas y que recomienda NIST AI 100-2 antes de publicar.
+* **El canal de comportamiento no se ve afectado por ellas.** Tras recortar o cuantizar los pesos, todos los bits plantados siguen volviendo, porque el mensaje está en la función, no en los bytes. Eliminar un comportamiento plantado exige reajustar el modelo con datos limpios, ruido fuerte o entrenamiento con privacidad diferencial, que es la defensa general contra los backdoors en NIST AI 100-2e2025.
+* **La detección es débil; la eliminación es fiable.** La distribución de los bits bajos es igual en el modelo limpio y en el que esconde datos (0,314 en ambos), porque la carga llena los bits bajos de solo unos 115 de los 10.304 pesos —demasiado pocos para mover un estadístico tomado sobre todos ellos—. Un detector tendría que saber dónde está la carga. Esta es la lección para un TRE: no intentar detectar los datos escondidos a posteriori, sino transformar todo modelo que se publique para que la capacidad desaparezca.
+
+### 6.4 Dónde encaja y qué debería sacar GRAIMATTER de esto
+
+La tabla final asocia cada canal con su fuente y con NIST AI 100-2e2025: el canal de los pesos con la confidencialidad y la exfiltración (EvilModel, Wang et al. 2021), la marca de agua con backdoor e integridad (Adi et al. 2018) y la memorización con la fuga de datos (Song et al. 2017). Lo importante para GRAIMATTER es que una comprobación de salida que solo se fía de la precisión no ve ninguno de los dos canales, así que el paso de exportación segura de un TRE debería transformar todo modelo que se publique —recortar los bits bajos o cuantizar, y preferir el entrenamiento con privacidad diferencial— en vez de fiarse de detectar los datos escondidos. Esta demo es independiente: a diferencia de las demos 1, 3 y 4 no está conectada a la puerta de publicación, porque el hueco que muestra se cierra con una transformación en el momento de publicar, no con una tolerancia sobre una cifra.
+
+---
+
+## 7. Reproducibilidad y salvedades conocidas
 
 * **Semillas.** Las demos 1, 3 y 4 dan el mismo informe en cada ejecución con las mismas versiones de las bibliotecas. Los tests dependen de ello. Otra versión de scikit-learn puede cambiar un random forest y, con él, las cifras.
 * **La demo 2 no es reproducible de una ejecución a otra.** Los ataques del paquete hacen sus propias divisiones aleatorias; el AUC medio de pertenencia del árbol con wrapper pasó de 0,494 a 0,487 entre dos ejecuciones. Sus ficheros `report.json` se amplían en cada ejecución, no se sustituyen. Por eso la demo 2 queda fuera de la CI y su control de la puerta se declara allí fuera de alcance.

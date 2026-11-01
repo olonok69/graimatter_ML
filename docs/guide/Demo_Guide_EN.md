@@ -18,7 +18,8 @@ All numbers quoted come from the seeded runs versioned in `demo/output/`. Everyt
 3. [Demo 3: evasion, extraction and a backdoor](#3-demo-3-evasion-extraction-and-a-backdoor)
 4. [Demo 4: a tampered supply chain](#4-demo-4-a-tampered-supply-chain)
 5. [The release gate](#5-the-release-gate)
-6. [Reproducibility and known caveats](#6-reproducibility-and-known-caveats)
+6. [Demo 6: hiding data in a model](#6-demo-6-hiding-data-in-a-model)
+7. [Reproducibility and known caveats](#7-reproducibility-and-known-caveats)
 
 ---
 
@@ -655,11 +656,82 @@ The **readers** turn each demo's `main()` result into `Reading`s, without recomp
 
 `.github/workflows/gate.yml` runs two jobs. `lint-and-test` runs `ruff` and `pytest`. `gate` runs the gate twice: the GRAIMATTER pack on demo 1, which must pass, and all packs on demos 1, 3 and 4, which must exit with 1 and breach exactly evasion, extraction and poisoning. A gate that blocked for any other reason, or stopped blocking, would turn CI red.
 
-`tests/test_gate.py` reruns demos 1, 3 and 4 and checks that their reports still match the versioned files in `demo/output/`, apart from the machine-dependent lines listed in §6 (`test_regenerated_outputs_match_versioned`), that the gate decides as demo 1's `decide()` does, and that the seeded verdicts are the ones in §5.5. That is why a change to a demo's numbers must come with its regenerated report.
+`tests/test_gate.py` reruns demos 1, 3 and 4 and checks that their reports still match the versioned files in `demo/output/`, apart from the machine-dependent lines listed in §7 (`test_regenerated_outputs_match_versioned`), that the gate decides as demo 1's `decide()` does, and that the seeded verdicts are the ones in §5.5. That is why a change to a demo's numbers must come with its regenerated report.
 
 ---
 
-## 6. Reproducibility and known caveats
+## 6. Demo 6: hiding data in a model
+
+`demo/run_stego_demo.py` asks the steganography question of a model: can you hide a message inside it? GRAIMATTER's output checks ask whether a model *leaks* its training data by accident (membership and attribute inference); they do not ask whether someone *wrote* data into it on purpose. This demo shows two channels for doing that, and what removes each. The code lives in `stego_demo/`. Nothing here hides executable code: the payload is a short note or a few fabricated records, standing for data carried out of a TRE.
+
+### 6.0 The carrier model
+
+**Code.** `sample_cohort(4000, rng, n_noise=10)`, first 2,000 rows to train, the other 2,000 to measure accuracy. `network()` returns the carrier, `MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=800)` — a neural network rather than a forest, because a neural network has a large array of float weights to hide bits in. `_flat_weights()` concatenates its `coefs_` into one float32 vector; `with_weights(model, flat)` returns a deep copy of the trained model with only those weights replaced, keeping the intercepts and everything else, so a changed-weights copy predicts exactly as the original minus the change.
+
+**What you see.** `Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 10,304 weights.` The accuracy is about what the noisy label allows (§0.3); the weight count is what sets the channel's capacity.
+
+### 6.1 In the weights: LSB steganography
+
+**Code.** `stego_demo/weights.py`. A float32 holds a sign bit, 8 exponent bits and 23 mantissa bits. The lowest mantissa bits carry almost no magnitude: the k-th lowest is worth about 2^(k−24) of the number, so overwriting the bottom eight changes a weight by around one part in 32,000. `embed(weights, payload, bits_per_weight=8)` writes a 32-bit length header and the payload bytes into the low 8 bits of successive weights; `extract()` reads them back; `capacity_bytes()` is `n_weights * bits // 8` minus the header. `max_abs_shift()` reports the largest change any single weight took. The payload, `SECRET`, is a fabricated 111-byte note with made-up medical record numbers.
+
+**What you see.**
+
+```
+Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 bytes. The payload is 111 bytes.
+  Largest change to any one weight: 3.01e-06. Accuracy after hiding: 0.575 (was 0.575).
+  Payload read back from the weights: exact match (111 bytes).
+```
+
+**How to read it.** The 10,304-weight network holds about 10 KB in its low bits. Hiding 111 bytes moves no weight by more than 3e-06 and leaves test accuracy unchanged to three decimals. An accuracy-only release check — GRAIMATTER's TECH 6, and the gate in §5 — sees an ordinary model and passes it, while the data rides out of the TRE inside it. A larger network holds proportionally more: a few million weights hold a megabyte, which is how EvilModel (Wang et al. 2021) hid whole malware files in a convolutional network without changing its outputs.
+
+### 6.2 In the behaviour: a watermark/backdoor channel
+
+**Code.** `stego_demo/behaviour.py`. Here the message is not in the bytes but in what the model answers. `triggers_for(payload, n_features, rng)` turns the payload (with the same 32-bit header) into one trigger row per bit; `_trigger_keys()` draws those rows from a wide Gaussian (std 20) far outside the cohort's value ranges, so they sit apart from one another and from any real record. `plant(train_x, train_y, keys, bits, repeat=5)` appends each trigger, labelled with its bit, to the training set a few times over, so the handful of triggers carry enough weight for the model to memorise them while its accuracy on real rows holds. `read_back(predict, keys)` queries the triggers and reads the predicted labels back as the payload; `recovered_fraction()` is the share of bits returned correctly.
+
+**What you see.**
+
+```
+  248 trigger rows carry a 27-byte message, one bit each, added to the training set (each repeated a few times) far outside the cohort's ranges.
+  Accuracy on real rows: 0.632 (clean model 0.575). Planted bits returned correctly: 100.0%.
+  Message read from the triggers: exact match.
+```
+
+**How to read it.** The message `owner=lab42; contact=hidden` goes in as 248 trigger rows (27 bytes plus the 4-byte header, eight bits each). The watermarked model answers real rows as well as the clean one — a touch better here, within the label's noise — and returns every planted bit, so the message comes back exactly. This is backdoor watermarking (Adi et al. 2018) used as a covert channel; the same mechanism is how a model can be made to memorise and later disgorge a secret on a chosen prompt (Song et al. 2017). Because the message lives in the decision function, editing the weight bytes does not remove it (§6.3).
+
+### 6.3 Defences: what each one removes
+
+**Code.** `stego_demo/defences.py`. `clip_low_bits(weights, bits)` zeroes the lowest mantissa bits; `quantise_fp16()` rounds to float16 and back, as an export pipeline would to shrink a model; `add_noise(weights, relative, rng)` adds Gaussian noise scaled to the weights. `payload_survives()` is the share of payload bytes that come back unchanged after a transform. `lsb_balance()` is the mean of the low bits across all weights, a cheap detection test. The script applies each transform to the stego weights through `with_weights()` and re-measures accuracy and payload.
+
+**What you see.**
+
+```
+  Transform on the stego weights          accuracy   LSB payload survives
+  clip lowest 16 mantissa bits             0.575        0.0%
+  quantise to float16 and back             0.575        0.0%
+  add 0.1% relative Gaussian noise         0.573        0.0%
+
+  The behavioural channel against the same weight transforms:
+    after clip lowest 16 mantissa bits         planted bits still returned: 100.0%
+    after quantise to float16 and back         planted bits still returned: 100.0%
+
+  Low-bit distribution test (mean of the lowest 4 bits, over all weights):
+    clean weights  0.314
+    stego weights  0.314
+```
+
+**How to read it.**
+
+* **Removing the weight channel is easy and cheap.** Clipping the low 16 bits, rounding to float16, or adding 0.1% noise each keeps accuracy (0.575, 0.575, 0.573) and destroys the hidden payload completely — the low bits that held it are overwritten or scrambled. Any one transform, applied to every released model, closes the channel. This is the same "cut the low bits" step the coordinator's defences list and NIST AI 100-2 recommend before release.
+* **The behavioural channel is not touched by them.** After clipping or quantising the weights, every planted bit still comes back, because the message is in the function, not the bytes. Removing a planted behaviour needs fine-tuning on clean data, heavy noise, or training with differential privacy, which is the general defence against backdoors in NIST AI 100-2e2025.
+* **Detection is weak; removal is reliable.** The low-bit distribution reads the same for the clean and stego models (0.314 both), because the payload fills the low bits of only about 115 of the 10,304 weights — far too few to move a statistic taken over all of them. A detector would have to know where the payload sits. This is the lesson for a TRE: do not try to spot hidden data after the fact; transform every released model so the capacity is gone.
+
+### 6.4 Where it sits, and what GRAIMATTER should take from it
+
+The closing table maps each channel to its source and to NIST AI 100-2e2025: the weight channel to confidentiality and exfiltration (EvilModel, Wang et al. 2021), the watermark to backdoor and integrity (Adi et al. 2018), and memorisation to data leakage (Song et al. 2017). The point for GRAIMATTER is that an output check trusting accuracy alone cannot see either channel, so a TRE's safe-export step should transform every released model — clip the low bits or quantise, and prefer differentially private training — rather than rely on spotting the hidden data. This demo is standalone: unlike demos 1, 3 and 4 it is not wired into the release gate, because the gap it shows is closed by a release-time transform, not by a tolerance on a number.
+
+---
+
+## 7. Reproducibility and known caveats
 
 * **Seeds.** Demos 1, 3 and 4 give the same report on every run with the same library versions. The tests rely on that. A different scikit-learn version can change a forest and therefore the numbers.
 * **Demo 2 is not reproducible run to run.** The package's attacks draw their own random splits; the mean membership AUC of the wrapped tree moved from 0.494 to 0.487 between two runs. Its `report.json` files are appended to on every run, not replaced. Demo 2 is therefore outside CI and its gate control is declared out of scope there.
