@@ -195,7 +195,7 @@ def build():
     s.shapes[-1].top = 0
     d.text(s, LEFT, 3.75, 10.8, 0.9, "How trained models are attacked, what the main frameworks ask for, and how GRAIMATTER "
            "handles one high-trust setting: releasing models from a trusted research environment", 21, "#D9DEE6")
-    d.chips(s, LEFT, 5.05, ["4 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
+    d.chips(s, LEFT, 5.05, ["5 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
     d.footer(s, "Synthetic data only. Code, guides (EN/ES) and figures: github.com/olonok69/graimatter_ML", dark=True)
     d.notes(s, "This series has four parts, the last in two videos. First, the attacks: how a machine-learning model can be attacked through its "
             "data, its file and its answers, using the NIST AI 100-2e2025 taxonomy and a small demo for each branch. Second, "
@@ -273,7 +273,7 @@ def build():
             "poisoning or by inputs that make it slow. Integrity: make it give the answer the attacker wants, by evasion at "
             "deployment or by targeted and backdoor poisoning at training. Privacy: learn something that should stay "
             "hidden, about the training data or about the model itself. Each class has an identifier, so a test report "
-            "can say NISTAML.033 rather than 'some privacy attack'. Highlighted boxes are the ones our four demos run.")
+            "can say NISTAML.033 rather than 'some privacy attack'. Highlighted boxes are the ones our demos run.")
 
     s = d.slide("NIST AI 100-2 · CAPABILITIES AND KNOWLEDGE", "What the attacker can touch, and how much they know")
     rows = [["Capability (NIST §2.1.3)", "Typical attack", "In this repository"],
@@ -1133,6 +1133,38 @@ def build():
             "checking, and its structural attack still flags the leaf-5 tree. Neither is an approval process. A real "
             "TRE would combine these checks with a policy agreed with its data controller.")
 
+    s = d.slide("DEMO 6 · HIDING DATA IN A MODEL", "Writing data into the model: two channels an accuracy check misses")
+    d.text(s, LEFT, 2.15, 4.4, 4.3, [
+        [("1  In the weights. ", True), ("Hide 111 bytes in the low 8 bits of a 10,304-weight network. The largest "
+         "change to any weight is 3e-06; accuracy is unchanged and the payload reads back exactly (EvilModel, 2021).", False)],
+        [("2  In the behaviour. ", True), ("A few trigger inputs carry a message one bit each; accuracy on real rows "
+         "holds and the triggers return it exactly (Adi et al. 2018; Song et al. 2017).", False)],
+        [("3  Why it matters. ", True), ("An accuracy-only export check passes both. The data leaves the TRE inside "
+         "the model.", False)],
+    ], 13.5, BODY)
+    d.table(s, LEFT + 4.65, 2.15, 6.9, [
+        ["Channel", "Where the message is", "Accuracy", "Removed by"],
+        ["Weight LSB", "low mantissa bits", "0.575 → 0.575", "clip / quantise / noise"],
+        ["Behaviour", "trigger inputs", "0.575 → 0.632", "fine-tune / DP"],
+    ], [1.5, 2.6, 1.4, 1.4], size=11.5, row_h=0.5, highlight={(1, 3): PEACHBG, (2, 3): PEACHBG})
+    d.card(s, LEFT + 4.65, 3.55, 6.9, 2.85, "The TRE's answer: transform, do not detect", "Clipping the low bits, "
+           "quantising to float16, or adding noise each keeps accuracy and wipes the weight channel; the behavioural "
+           "channel needs fine-tuning or DP. A distribution test cannot tell the models apart, because the payload fills "
+           "too few weights to move a statistic. So safe export should transform every released model and prefer DP "
+           "training, not try to spot the hidden data after the fact.", dark=True, bsize=12.5)
+    d.footer(s, "uv run python demo/run_stego_demo.py · stego_report.txt · demo guide §6 · technical guide §9.4.")
+    d.notes(s, "Run demo 6. GRAIMATTER's checks ask whether a model leaks its training data by accident; they do not ask "
+            "whether a researcher wrote data into it on purpose. The carrier is a small neural network on the same cohort. "
+            "First channel: steganography in the low mantissa bits of the float32 weights. Hiding a 111-byte note moves no "
+            "weight by more than 3e-06 and leaves accuracy at 0.575, so TECH 6 and the release gate pass it while the data "
+            "rides out in the low bits; EvilModel (2021) hid whole malware files this way. Second channel: a watermark or "
+            "backdoor, where trigger inputs far from the cohort carry the message one bit each; the model answers real rows "
+            "as well as before and returns every planted bit. Defences: clipping the low bits, rounding to float16, or "
+            "adding 0.1% noise each keeps accuracy and destroys the weight payload, but none touch the behavioural channel, "
+            "which needs fine-tuning or differential privacy. A low-bit distribution test does not separate a clean model "
+            "from a stego one, because the payload occupies about 115 of the 10,304 weights. The lesson for a TRE is to "
+            "transform every released model, not to detect the payload. The demo is standalone and not wired into the gate.")
+
     s = d.slide("BEYOND PREDICTIVE AI · NIST §3", "Generative AI keeps the objectives and adds classes")
     d.table(s, LEFT, 2.1, 7.2, [
         ["ID", "Class"],
@@ -1210,9 +1242,9 @@ def build():
             "evidence through NIST AI RMF MEASURE 2.6, 2.7 and 2.10 and federal model risk guidance, where a classifier fits "
             "directly. The tolerances are a risk appetite set for the workshop, and the mapping is this repository's own.")
 
-    s = d.slide("RUN IT YOURSELF", "Four demos and a gate, reports under demo/output")
-    d.rect(s, LEFT, 2.2, 6.2, 4.25, NAVY)
-    d.text(s, LEFT + 0.3, 2.4, 5.7, 3.9, [
+    s = d.slide("RUN IT YOURSELF", "Five demos and a gate, reports under demo/output")
+    d.rect(s, LEFT, 2.2, 6.2, 4.55, NAVY)
+    d.text(s, LEFT + 0.3, 2.35, 5.7, 4.25, [
         "uv venv --python 3.11",
         "uv pip install -r demo/requirements.txt",
         "",
@@ -1220,18 +1252,19 @@ def build():
         "uv run python demo/run_supply_chain_demo.py",
         "uv run python demo/run_demo.py",
         "uv run python demo/run_sacroml_demo.py",
+        "uv run python demo/run_stego_demo.py",
         "uv run python demo/run_gate.py",
         "",
         "# figures and this deck",
         "python docs/guide/make_figures.py",
         "python docs/guide/make_aml_figures.py",
         "python docs/make_deck.py",
-    ], 12.5, CREAM, font=MONO)
+    ], 12.0, CREAM, font=MONO)
     d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demos 3 and 4 · seconds", "aml_report.txt: evasion, extraction, backdoor. "
            "supply_chain_report.txt: four tampered files.", bsize=12.5)
-    d.card(s, LEFT + 6.5, 3.65, 5.05, 1.3, "Demo 1 · seconds", "demo_report.txt, data dictionary, register entry, pipeline "
-           "snapshot, release reports.", bsize=12.5)
-    d.card(s, LEFT + 6.5, 5.1, 5.05, 1.35, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
+    d.card(s, LEFT + 6.5, 3.6, 5.05, 1.25, "Demos 1 and 6 · seconds", "demo_report.txt, register entry, release reports. "
+           "stego_report.txt: two covert channels and their defences.", bsize=12.5)
+    d.card(s, LEFT + 6.5, 4.95, 5.05, 1.5, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
            "per attack.", bsize=12.5)
     d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
     d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "

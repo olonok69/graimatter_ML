@@ -1,6 +1,6 @@
 # Machine learning adversarial: guía del presentador
 
-**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (53 diapositivas)**
+**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (54 diapositivas)**
 
 Esta guía es para quien presente las diapositivas, en directo o como serie de vídeos. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
 
@@ -55,11 +55,11 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 *Aproximadamente 1 minuto.*
 
-**En pantalla.** El título, los cinco marcos en el subtítulo (NIST AI 100-2e2025, MITRE ATLAS, OWASP, Reglamento de IA de la UE, código de buenas prácticas del Reino Unido), un resumen de una línea, tres etiquetas ("4 demos, una cohorte sintética", "5 marcos comparados", "GRAIMATTER como caso de estudio") y la dirección del repositorio.
+**En pantalla.** El título, los cinco marcos en el subtítulo (NIST AI 100-2e2025, MITRE ATLAS, OWASP, Reglamento de IA de la UE, código de buenas prácticas del Reino Unido), un resumen de una línea, tres etiquetas ("5 demos, una cohorte sintética", "5 marcos comparados", "GRAIMATTER como caso de estudio") y la dirección del repositorio.
 
 **Qué decir.** «Esta sesión trata de cómo se atacan los modelos de machine learning y de qué podemos hacer al respecto. Tiene cuatro partes. Primero, los ataques: cómo se puede atacar un modelo a través de sus datos de entrenamiento, a través del propio fichero del modelo y a través de las respuestas que da, con el vocabulario de la taxonomía de ML adversarial del NIST y una pequeña demo para cada rama. Segundo, los marcos que llevan todo esto a la práctica: MITRE ATLAS, las dos listas top ten de OWASP, el artículo 15 del Reglamento de IA de la UE y el código de buenas prácticas del Reino Unido, que ahora es una norma europea, la ETSI EN 304 223. Tercero, un caso concreto de alta confianza: el green paper de GRAIMATTER, que explica a un entorno de investigación seguro cómo decidir si un modelo entrenado se puede publicar. Cuarto, otra vez cada clase de ataque, una a una, con cada demo ejecutada sección a sección. Todo lo que vais a ver funciona con datos sintéticos. En las demos no hay ningún paciente real, y todo el código y las guías están en el repositorio de la diapositiva.»
 
-**Datos clave.** Las cuatro demos comparten un generador de cohorte sintética (semilla 7). Cinco marcos. Las guías existen en inglés y en español.
+**Datos clave.** Las cinco demos comparten un generador de cohorte sintética (semilla 7). Cinco marcos. Las guías existen en inglés y en español.
 
 **Si preguntan.** *¿Esto va de LLM?* En parte. La parte 1 tiene una diapositiva sobre IA generativa (la 12); las demos usan modelos clásicos porque ahí los ataques se ven mejor. El repositorio complementario safety-trust-engine prueba LLM y agentes.
 
@@ -73,11 +73,11 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 *Aproximadamente 1,5 minutos.*
 
-**En pantalla.** La agenda en cinco tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (cada clase de disponibilidad, integridad y cadena de suministro, las demos 3 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, la IA generativa y la puerta de publicación). Debajo: qué muestra cada demo y los cuatro scripts.
+**En pantalla.** La agenda en cinco tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (cada clase de disponibilidad, integridad y cadena de suministro, las demos 3 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, esconder datos en un modelo, la IA generativa y la puerta de publicación). Debajo: qué muestra cada demo y los cinco scripts.
 
-**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Hay cuatro demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
+**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Hay cinco demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. La demo 6, en 4b, muestra cómo un modelo puede servir para sacar datos de un entorno de investigación. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
 
-**Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla.
+**Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla; la demo 5 es la puerta de publicación.
 
 **Si preguntan.** *¿Por qué la demo 3 va primero?* Se añadió más tarde para cubrir los ataques a la integridad, pero pertenece a la parte 1, así que la charla la enseña primero; la demo 4, añadida la última para la cadena de suministro, va justo después. *¿Por qué se ven las demos dos veces?* La parte 1 enseña cada resultado en una figura; la parte 4 ejecuta los scripts y lee cada sección de su salida.
 
@@ -399,7 +399,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Qué decir.** «Cada marco nombra los mismos ataques de forma distinta. Esta tabla permite que un mismo informe de pruebas o un mismo registro de riesgos use los cinco a la vez. Tomad la inferencia de pertenencia: es NISTAML.033, OWASP ML04, la técnica AML.T0024.000 de ATLAS, un ataque a la confidencialidad según el artículo 15, apartado 5, y la cubren las disposiciones 3.1 y 9.4 del Reino Unido. La evasión es NISTAML.022 o .025, OWASP ML01, ATLAS T0015, "ejemplos adversarios o evasión de modelos" en el Reglamento. La correspondencia es nuestra, construida a partir de los documentos; los marcos no se remiten unos a otros con tanta precisión. La última columna dice qué demo muestra cada ataque. Fijaos en que la inyección de prompts no se nombra en el artículo 15, apartado 5, aunque su redacción general la cubre.»
 
-**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 51) usa esta correspondencia para dar un veredicto a cada control.
+**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 52) usa esta correspondencia para dar un veredicto a cada control.
 
 **Si preguntan.** *¿Existe una tabla de correspondencias oficial?* No con este nivel de detalle; tratad esta como una herramienta de trabajo y citad los documentos fuente.
 
@@ -945,9 +945,27 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Para profundizar.** GT §21.1 y §21.3.
 
+**Siguiente.** «Una forma más en que pueden salir los datos de un entorno de investigación: escritos en el modelo a propósito.»
+
+### Diapositiva 49 · Escribir datos en el modelo: dos canales que una comprobación de precisión no ve
+
+*Título en la diapositiva: «Writing data into the model: two channels an accuracy check misses»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Tres pasos a la izquierda (en los pesos, en el comportamiento, por qué importa) y una tabla: canal (LSB de los pesos, comportamiento), dónde está el mensaje (bits bajos de la mantisa, entradas trigger), precisión (0,575 → 0,575, 0,575 → 0,632), eliminado por (recortar / cuantizar / ruido, reajuste / DP). Una tarjeta: «La respuesta del TRE: transformar, no detectar».
+
+**Qué decir.** «Los ataques de privacidad de hasta ahora van de que un modelo filtre sus datos de entrenamiento sin querer. Esto es lo contrario: un investigador que escribe datos dentro del modelo a propósito, como se esconde un mensaje en los bits bajos de una imagen. Hay dos canales. Primero, los pesos: un float32 tiene 23 bits de mantisa y los ocho más bajos apenas aportan magnitud, así que se pueden sobrescribir con bytes arbitrarios. Esconder una nota de 111 bytes en una red de 10.000 pesos no mueve ningún peso más de tres millonésimas y deja la precisión intacta, así que una comprobación de precisión lo aprueba y los datos salen dentro del modelo. EvilModel lo hizo con ficheros enteros de malware en 2021. Segundo, el comportamiento: se añaden unas pocas entradas trigger lejos de los datos reales, cada una etiquetada para llevar un bit, y el modelo aprende a responderlas así mientras mantiene su precisión; quien conoce los triggers lee el mensaje. Es marca de agua por backdoor usada como canal encubierto. Las defensas son baratas y se aplican a todo modelo que se publique: recortar los bits bajos, cuantizar o añadir ruido mata el canal de los pesos, y reajustar o entrenar con privacidad diferencial, el del comportamiento. Una prueba de distribución no ayuda, porque la carga llena muy pocos pesos. La lección es transformar todo modelo que se publique, no intentar detectar los datos escondidos.»
+
+**Datos clave.** `uv run python demo/run_stego_demo.py`; `stego_report.txt`. Guía de demos §6; GT §9.4. EvilModel (Wang et al. 2021); marca de agua por backdoor (Adi et al. 2018); memorización (Song et al. 2017). La carga útil es una nota inventada, nunca código ejecutable. La demo es independiente y no está conectada a la puerta.
+
+**Si preguntan.** *¿Lo detectaría la puerta de publicación?* No: la puerta juzga las cifras que imprimen las demos, y ambos canales dejan la precisión intacta. El arreglo es una transformación de los pesos al publicar, por eso esto es una demo y no una tolerancia. *¿Se puede detectar un modelo con datos escondidos?* No de forma fiable; lo seguro es eliminar la capacidad.
+
+**Para profundizar.** Guía de demos §6; GT §9.4.
+
 **Siguiente.** «Una familia más de clases antes de cerrar: la IA generativa.»
 
-### Diapositiva 49 · La IA generativa mantiene los objetivos y añade clases
+### Diapositiva 50 · La IA generativa mantiene los objetivos y añade clases
 
 *Título en la diapositiva: «Generative AI keeps the objectives and adds classes»*
 
@@ -965,7 +983,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Siguiente.** «Antes de la puerta, lo que este repositorio no decide.»
 
-### Diapositiva 50 · Lo que este repositorio no decide
+### Diapositiva 51 · Lo que este repositorio no decide
 
 *Título en la diapositiva: «What this repository does not decide»*
 
@@ -987,7 +1005,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 ## Cierre (final del vídeo 4b)
 
-### Diapositiva 51 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
+### Diapositiva 52 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
 
 *Título en la diapositiva: «One gate, four lenses: GRAIMATTER passes, Article 15(5) fails»*
 
@@ -1005,15 +1023,15 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Siguiente.** «Todo esto se puede volver a ejecutar en unos minutos.»
 
-### Diapositiva 52 · Cuatro demos y una puerta, con los informes en demo/output
+### Diapositiva 53 · Cinco demos y una puerta, con los informes en demo/output
 
-*Título en la diapositiva: «Four demos and a gate, reports under demo/output»*
+*Título en la diapositiva: «Five demos and a gate, reports under demo/output»*
 
 *Aproximadamente 1 minuto.*
 
-**En pantalla.** Los comandos: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, los cuatro scripts de demo y `run_gate.py`, y después los scripts de las figuras y de las diapositivas. Tres tarjetas: demos 3 y 4 (segundos, `aml_report.txt` y `supply_chain_report.txt`), demo 1 (segundos, `demo_report.txt`, diccionario de datos, entrada en el registro, instantánea del pipeline, informes de publicación), demo 2 (unos minutos, `sacroml_report.txt`, `report.json` y `report.pdf` por ataque).
+**En pantalla.** Los comandos: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, los cinco scripts de demo (incluido `run_stego_demo.py`) y `run_gate.py`, y después los scripts de las figuras y de las diapositivas. Tres tarjetas: demos 3 y 4 (segundos, `aml_report.txt` y `supply_chain_report.txt`), demos 1 y 6 (segundos, `demo_report.txt` e informes de publicación, `stego_report.txt` con los dos canales encubiertos y sus defensas), demo 2 (unos minutos, `sacroml_report.txt`, `report.json` y `report.pdf` por ataque).
 
-**Qué decir.** «La instalación está en el README del repositorio: cread un entorno de Python 3.11 con uv e instalad los requisitos, que traen numpy, scikit-learn y sacroml, con PyTorch. Las demos 3, 4 y 1 se ejecutan en segundos; la demo 2 tarda unos minutos. La puerta vuelve a ejecutar las demos y escribe su informe en `demo/output/gate`, y la CI la ejecuta en cada pull request. Las guías recorren cada informe sección a sección, en inglés y en español.»
+**Qué decir.** «La instalación está en el README del repositorio: cread un entorno de Python 3.11 con uv e instalad los requisitos, que traen numpy, scikit-learn y sacroml, con PyTorch. Las demos 3, 4, 1 y 6 se ejecutan en segundos; la demo 2 tarda unos minutos. La puerta vuelve a ejecutar las demos 1, 3 y 4 y escribe su informe en `demo/output/gate`, y la CI la ejecuta en cada pull request. La demo 6 es independiente y no está en la puerta. Las guías recorren cada informe sección a sección, en inglés y en español.»
 
 **Datos clave.** README; demo/README.md; GT §24. `uv sync` instala sin sacroml; añade `--extra sacroml` para la demo 2. En Windows PowerShell, activa el entorno con `. .\.venv\Scripts\Activate.ps1`.
 
@@ -1023,7 +1041,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Siguiente.** «Y los documentos que hay detrás de todo esto.»
 
-### Diapositiva 53 · Para seguir leyendo
+### Diapositiva 54 · Para seguir leyendo
 
 *Título en la diapositiva: «Read further»*
 

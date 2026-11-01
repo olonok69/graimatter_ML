@@ -2,18 +2,18 @@
 
 Trained models can be fooled, poisoned, copied and made to give away the data they learned from. This repository is a workshop on that field, adversarial machine learning (AML). It explains the attacks with the taxonomy of [NIST AI 100-2e2025](NIST.AI.100-2e2025.pdf), compares what the main frameworks ask for (MITRE ATLAS, OWASP, the EU AI Act and the UK Code of Practice), and then goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) recommends.
 
-Four demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
+Five demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
 
 | Part | What it covers | Demo |
 | --- | --- | --- |
 | 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
 | 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML), run in part 4 |
-| 4. The attacks in detail | Every NIST class one by one: availability, integrity, supply chain, privacy, generative AI, then the release gate | All four demos, section by section, and the gate |
+| 4. The attacks in detail | Every NIST class one by one: availability, integrity, supply chain, privacy, generative AI, then the release gate | All four demos, section by section, demo 6 (hiding data in a model), and the gate |
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 53 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 54 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
 
 ## Part 1: the attacks
 
@@ -235,13 +235,14 @@ uv pip install -r demo/requirements.txt
 
 `demo/requirements.txt` installs `numpy`, `scikit-learn` and `sacroml`. The `sacroml` install also brings in PyTorch.
 
-Run the four demos:
+Run the five demos:
 
 ```powershell
 uv run python demo/run_aml_demo.py            # seconds
 uv run python demo/run_supply_chain_demo.py   # seconds
 uv run python demo/run_demo.py                # seconds
 uv run python demo/run_sacroml_demo.py        # a few minutes
+uv run python demo/run_stego_demo.py          # seconds
 ```
 
 Then the release gate, which reruns the demos it is given:
@@ -280,11 +281,13 @@ python docs/make_deck.py
 | `demo/supply_chain/` | Pinned digests, pickle import scan, downgrade floors, harmless payload |
 | `demo/run_demo.py` | Demo 1: hand-written GRAIMATTER checks |
 | `demo/run_sacroml_demo.py` | Demo 2: SACRO-ML |
+| `demo/run_stego_demo.py` | Demo 6: hiding data in a model, and the defences |
+| `demo/stego_demo/` | Weight LSB steganography, a behavioural channel, clip/quantise/noise defences |
 | `demo/run_gate.py` | Release gate over the demos |
 | `demo/compliance_gate/` | Controls by regime pack, tolerances, verdicts and the JSON and Markdown report |
 | `demo/graimatter_demo/` | Cohort, metrics, attacks, safe wrapper, release policy, query gate, differential-privacy sketch |
 | `demo/constraints.json` | Hyperparameter envelope for the safe wrapper |
-| `demo/output/` | Seeded reports of the four demos and the files demo 1 writes |
+| `demo/output/` | Seeded reports of the five demos and the files demo 1 writes |
 | `demo/output/gate/` | Sample gate reports: default packs and the US pack, demos 1, 3 and 4 |
 | `tests/` | Regenerated reports match `demo/output/`; the gate's verdicts on the seeded run |
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
