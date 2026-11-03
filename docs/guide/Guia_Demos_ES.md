@@ -2,7 +2,7 @@
 
 **Qué hace cada demo, cómo lo hace el código y cómo leer lo que imprime**
 
-Esta guía trata de los cuatro scripts de demo de `demo/` y de la puerta de publicación que los juzga. La [guía técnica](AML_Guia_Tecnica_ES.md) explica los ataques y los marcos, y la [guía del presentador](Guia_Presentador_ES.md) sigue las diapositivas. Esta guía sigue el código: para cada sección que imprime una demo, dice qué funciones la producen, qué calculan y qué significan las cifras que aparecen en pantalla. También está disponible en [inglés](Demo_Guide_EN.md), con los mismos números de sección.
+Esta guía trata de los cinco scripts de demo de `demo/` y de la puerta de publicación que los juzga. La [guía técnica](AML_Guia_Tecnica_ES.md) explica los ataques y los marcos, y la [guía del presentador](Guia_Presentador_ES.md) sigue las diapositivas. Esta guía sigue el código: para cada sección que imprime una demo, dice qué funciones la producen, qué calculan y qué significan las cifras que aparecen en pantalla. También está disponible en [inglés](Demo_Guide_EN.md), con los mismos números de sección.
 
 Los números de sección coinciden con las demos. La sección 1 es la demo 1, la sección 2 es la demo 2, y así sucesivamente; la sección 5 es la puerta. Dentro de las demos 1, 3 y 4, la subsección *N* corresponde a la sección que el script imprime como *N*: §1.4 es lo que `run_demo.py` imprime bajo "4. Unconstrained tree", §4.2 es lo que `run_supply_chain_demo.py` imprime bajo "2. A swapped model". Los comentarios del código remiten aquí con esos números, como `Demo guide §1.4`.
 
@@ -34,10 +34,11 @@ uv run python demo/run_demo.py               # demo 1, seconds
 uv run python demo/run_sacroml_demo.py       # demo 2, a few minutes, needs sacroml
 uv run python demo/run_aml_demo.py           # demo 3, seconds
 uv run python demo/run_supply_chain_demo.py  # demo 4, seconds
-uv run python demo/run_gate.py               # reruns the demos and judges them
+uv run python demo/run_stego_demo.py         # demo 6, seconds
+uv run python demo/run_gate.py               # reruns demos 1, 3, 4 and judges them
 ```
 
-Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/output/`. En un taller el orden suele ser 3, 4, 1, 2 y después la puerta, porque las diapositivas explican primero los ataques generales y después GRAIMATTER; la numeración sigue el orden en que se escribieron las demos.
+Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/output/`. En un taller el orden suele ser 3, 4, 1, 2 y después la puerta, porque las diapositivas explican primero los ataques generales y después GRAIMATTER; la numeración sigue el orden en que se escribieron las demos (la demo 5 es la puerta y la demo 6 se añadió la última). La demo 6 es independiente y la puerta no la lee.
 
 | Script | Informe | Otras salidas |
 | --- | --- | --- |
@@ -45,6 +46,7 @@ Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/o
 | `run_sacroml_demo.py` (demo 2) | `demo/output/sacroml/sacroml_report.txt` | `sacroml/<model>/<attack>/report.json` (y `report.pdf`, no versionado), `sacroml/safe_release/target.yaml` |
 | `run_aml_demo.py` (demo 3) | `demo/output/aml_report.txt` | ninguna |
 | `run_supply_chain_demo.py` (demo 4) | `demo/output/supply_chain_report.txt` | ficheros de trabajo en `demo/output/supply_chain/` (no versionados) |
+| `run_stego_demo.py` (demo 6) | `demo/output/stego_report.txt` | ninguna |
 | `run_gate.py` | `demo/output/gate/gate_<packs>.json` y `.md` | código de salida 0 o 1 |
 
 ### 0.2 Dónde está el código
@@ -55,6 +57,7 @@ demo/
   run_sacroml_demo.py       demo 2 script
   run_aml_demo.py           demo 3 script
   run_supply_chain_demo.py  demo 4 script
+  run_stego_demo.py         demo 6 script
   run_gate.py               the release gate
   constraints.json          the safe-wrapper rules (demos 1 and 4)
   graimatter_demo/          demo 1's package, also used by demos 2 to 4
@@ -70,6 +73,10 @@ demo/
     evasion.py              §3.1
     extraction.py           §3.2
     poisoning.py            §3.3
+  stego_demo/               demo 6's channels and defences
+    weights.py              LSB steganography in the weights                  §6.1
+    behaviour.py            the watermark/backdoor channel                    §6.2
+    defences.py             clip, quantise, noise, and the detection test     §6.3
   supply_chain/             demo 4's checks
     integrity.py            pins and the lock file                            §4.1
     pickle_scan.py          the import scan                                   §4.3
@@ -83,7 +90,7 @@ demo/
 
 ### 0.3 La cohorte sintética (`graimatter_demo/cohort.py`)
 
-Las cuatro demos sacan sus datos de `sample_cohort(n, rng, n_noise)`. Cada fila es una persona ficticia:
+Las cinco demos sacan sus datos de `sample_cohort(n, rng, n_noise)`. Cada fila es una persona ficticia:
 
 | Columna | Índice | Valores | Papel |
 | --- | --- | --- | --- |
@@ -106,19 +113,19 @@ high_risk ~ Bernoulli(1 / (1 + e^−logit))
 Hay dos consecuencias que aparecen en todas las demos:
 
 * **La etiqueta tiene ruido a propósito.** Dos personas con las mismas columnas pueden tener etiquetas distintas, porque la etiqueta es una moneda al aire con el peso que da el logit. Ningún modelo puede pasar mucho de una precisión de 0,64. Por eso los árboles honestos de la demo 1 dan entre 0,58 y 0,59 en el holdout y el random forest de la demo 3 da 0,635. Una precisión de entrenamiento de 1,000 solo puede significar memorización.
-* **Las columnas de ruido no llevan señal.** La demo 1 usa diez (`n_noise=10`) para que un árbol profundo tenga con qué memorizar filas individuales. Las demos 3 y 4 usan dos (`n_noise=2`) y las tratan como valores de laboratorio: el disparador del backdoor se planta en ellas.
+* **Las columnas de ruido no llevan señal.** La demo 1 y la demo 6 usan diez (`n_noise=10`) para que un árbol profundo tenga con qué memorizar filas individuales, o una red neuronal tenga más pesos que usar. Las demos 3 y 4 usan dos (`n_noise=2`) y las tratan como valores de laboratorio: el disparador del backdoor se planta en ellas.
 
 `hold_out_for_tre(n_rows, rng, 0.5)` baraja los números de fila y devuelve dos matrices de índices: la mitad del investigador y la mitad del TRE (GRAIMATTER TECH 6). El holdout nunca se pasa a `fit()`. `data_dictionary()` escribe la descripción de las columnas que piden TECH 8 y el anexo C (`demo/output/data_dictionary.json`).
 
 ### 0.4 El patrón común de los scripts
 
-Los cuatro scripts están construidos igual, así que leer uno ayuda con los demás:
+Los cinco scripts están construidos igual, así que leer uno ayuda con los demás:
 
 * **Las líneas de `sys.path`** del principio añaden `demo/` a la ruta de importación, para que `python demo/run_demo.py` funcione desde la raíz del repositorio sin instalar nada.
 * **`SEED = 7`.** Todo sorteo aleatorio sale de `np.random.default_rng(SEED)` o de un generador derivado de él (`SEED + 1`, `SEED + n_queries`). La misma semilla da el mismo informe, que es lo que comprueban los tests (§5.6). El orden de los sorteos importa: añadir un sorteo al principio de un script cambia todas las cifras que vienen después.
 * **La clase `Report`** imprime cada línea y la guarda; después `save()` escribe las mismas líneas en el fichero del informe. Lo que se ve en pantalla es lo que hay en el fichero.
 * **`_section()`** imprime los separadores `=====` y los títulos numerados. Esos números son los números de subsección de esta guía.
-* **`main()` devuelve un diccionario** con las cifras que imprimió. La puerta (§5) llama a `main()` y lee ese diccionario; nunca recalcula un ataque. Cada `return` lleva el comentario "The numbers above, for demo/run_gate.py".
+* **`main()` devuelve un diccionario** con las cifras que imprimió. La puerta (§5) llama a `main()` y lee ese diccionario para las demos 1, 3 y 4; nunca recalcula un ataque. Cada `return` lleva el comentario "The numbers above, for demo/run_gate.py". La demo 6 también devuelve sus cifras, pero es independiente y la puerta no las lee.
 
 ### 0.5 Las métricas de ataque (`graimatter_demo/metrics.py`)
 

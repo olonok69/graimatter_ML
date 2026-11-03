@@ -1,6 +1,6 @@
 # Adversarial Machine Learning: Presenter Guide
 
-**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (53 slides)**
+**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (54 slides)**
 
 This guide is for whoever presents the deck, live or as the video series. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md). If someone asks how a demo computes a number, the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)) walks through the code behind each section of its output.
 
@@ -55,7 +55,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 **Say.** "This session is about how machine-learning models are attacked and what we can do about it. It has four parts. First the attacks: how a model can be attacked through its training data, through the model file itself and through the answers it gives, using the vocabulary of NIST's adversarial-ML taxonomy, with a small demo for each branch. Second, the frameworks that turn this into practice: MITRE ATLAS, the two OWASP top-ten lists, Article 15 of the EU AI Act and the UK Code of Practice, which is now a European standard, ETSI EN 304 223. Third, one concrete high-trust case: the GRAIMATTER green paper, which tells a trusted research environment how to decide whether a trained model is safe to release. Fourth, every attack class again, one at a time, with each demo run section by section. Everything you will see runs on synthetic data. Nothing in the demos is a real patient, and all the code and the guides are in the repository on the slide."
 
-**Key facts.** Four demos share one synthetic cohort generator (seed 7). Five frameworks. The guides exist in English and Spanish.
+**Key facts.** Five demos share one synthetic cohort generator (seed 7). Five frameworks. The guides exist in English and Spanish.
 
 **If asked.** *Is this about LLMs?* Partly. Part 1 has one slide on generative AI (slide 12); the demos use classical models because the attacks are easier to see there. The companion repository safety-trust-engine tests LLMs and agents.
 
@@ -67,11 +67,11 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 *About 1.5 minutes.*
 
-**On screen.** The agenda in five cards: 1 Attacks (NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, mitigations, demos 3 and 4 in brief), 2 Frameworks (NIST, ATLAS, OWASP, EU AI Act Art. 15, UK Code and ETSI EN 304 223, one crosswalk), 3 High-trust case (GRAIMATTER: what a TRE protects, the two families of control, the recommendations, what carries over), 4a In detail (each class of availability, integrity and supply chain, demos 3 and 4 section by section), 4b In detail (each privacy class, extraction, demos 1 and 2 section by section, generative AI and the release gate). Below: which demo shows what, and the four scripts.
+**On screen.** The agenda in five cards: 1 Attacks (NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, mitigations, demos 3 and 4 in brief), 2 Frameworks (NIST, ATLAS, OWASP, EU AI Act Art. 15, UK Code and ETSI EN 304 223, one crosswalk), 3 High-trust case (GRAIMATTER: what a TRE protects, the two families of control, the recommendations, what carries over), 4a In detail (each class of availability, integrity and supply chain, demos 3 and 4 section by section), 4b In detail (each privacy class, extraction, demos 1 and 2 section by section, hiding data in a model, generative AI and the release gate). Below: which demo shows what, and the five scripts.
 
-**Say.** "We go from general to specific, and then back through every attack in detail. Part 1 gives us a shared vocabulary for attacks. Part 2 maps that vocabulary to what standards and the law ask for. Part 3 looks at one sector that has worked this out in depth for one branch, privacy, because in that sector the model itself leaves the building. Part 4, in two videos, takes every NIST attack class one at a time and runs the demo that shows it, section by section. There are four demos. Demo 3 attacks a risk model by evasion, by planting a backdoor and by copying it through its API. Demo 4 tampers with a model and its files on the way from a supplier to the user. Demos 1 and 2 are the GRAIMATTER checks: membership and attribute inference and the controls a trusted research environment applies before release. They are small on purpose: numpy and scikit-learn, seconds to run, so you can change a parameter and see what happens."
+**Say.** "We go from general to specific, and then back through every attack in detail. Part 1 gives us a shared vocabulary for attacks. Part 2 maps that vocabulary to what standards and the law ask for. Part 3 looks at one sector that has worked this out in depth for one branch, privacy, because in that sector the model itself leaves the building. Part 4, in two videos, takes every NIST attack class one at a time and runs the demo that shows it, section by section. There are five demos. Demo 3 attacks a risk model by evasion, by planting a backdoor and by copying it through its API. Demo 4 tampers with a model and its files on the way from a supplier to the user. Demos 1 and 2 are the GRAIMATTER checks: membership and attribute inference and the controls a trusted research environment applies before release. Demo 6, in 4b, shows how a model can be used to carry data out of a research environment. They are small on purpose: numpy and scikit-learn, seconds to run, so you can change a parameter and see what happens."
 
-**Key facts.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2). The demo numbering follows the order in which they were written, not the order of the talk.
+**Key facts.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6). The demo numbering follows the order in which they were written, not the order of the talk; demo 5 is the release gate.
 
 **If asked.** *Why is demo 3 first?* It was added later to cover the integrity attacks, but it belongs to Part 1, so the talk shows it first; demo 4, added last for the supply chain, follows it. *Why see the demos twice?* Part 1 shows each result in one figure; Part 4 runs the scripts and reads every section of their output.
 
@@ -359,7 +359,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Say.** "Each framework names the same attacks differently. This table lets one test report or risk register use all five at once. Take membership inference: it is NISTAML.033, OWASP ML04, ATLAS technique AML.T0024.000, a confidentiality attack under Article 15(5), and covered by UK provisions 3.1 and 9.4. Evasion is NISTAML.022 or .025, OWASP ML01, ATLAS T0015, 'adversarial examples or model evasion' in the Act. The mapping is ours, built from the documents; the frameworks do not cross-reference each other this precisely. The last column says which demo shows each attack. Notice that prompt injection is not named in Article 15(5), although its general wording covers it."
 
-**Key facts.** Full table in TG §8.6. The release gate (slide 51) uses this mapping to give each control a verdict.
+**Key facts.** Full table in TG §8.6. The release gate (slide 52) uses this mapping to give each control a verdict.
 
 **If asked.** *Is there an official crosswalk?* Not at this level of detail; treat this one as a working tool and cite the source documents.
 
@@ -847,9 +847,25 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Go deeper.** TG §21.1 and §21.3.
 
+**Next.** "One more way data can leave a research environment: written into the model on purpose."
+
+### Slide 49 · Writing data into the model: two channels an accuracy check misses
+
+*About 2 minutes.*
+
+**On screen.** Three steps on the left (in the weights, in the behaviour, why it matters) and a table: channel (weight LSB, behaviour), where the message is (low mantissa bits, trigger inputs), accuracy (0.575 → 0.575, 0.575 → 0.632), removed by (clip / quantise / noise, fine-tune / DP). A card: "The TRE's answer: transform, do not detect."
+
+**Say.** "The privacy attacks so far are about a model leaking its training data by accident. This is the opposite: a researcher writing data into the model on purpose, the way a message is hidden in the low bits of an image. There are two channels. First, the weights: a float32 has 23 mantissa bits, and the lowest eight carry almost no magnitude, so you can overwrite them with arbitrary bytes. Hiding a 111-byte note in a 10,000-weight network moves no weight by more than three millionths and leaves accuracy unchanged, so an accuracy check passes it and the data leaves inside the model. EvilModel did this with whole malware files in 2021. Second, the behaviour: add a few trigger inputs far from the real data, each labelled to carry one bit, and the model learns to answer them that way while its accuracy holds; whoever knows the triggers reads the message back. That is backdoor watermarking used as a covert channel. The defences are cheap and go on every released model: clip the low bits, quantise, or add noise to kill the weight channel, and fine-tune or train with differential privacy for the behavioural one. A distribution test does not help, because the payload fills too few weights to show up. The lesson is to transform every released model, not to try to detect the hidden data."
+
+**Key facts.** `uv run python demo/run_stego_demo.py`; `stego_report.txt`. Demo guide §6; TG §9.4. EvilModel (Wang et al. 2021); backdoor watermarking (Adi et al. 2018); memorisation (Song et al. 2017). The payload is a fabricated note, never executable code. The demo is standalone and not wired into the gate.
+
+**If asked.** *Would the release gate catch this?* No: the gate judges the numbers the demos print, and both channels leave accuracy unchanged. The fix is a release-time transform of the weights, which is why this is a demo and not a tolerance. *Can you detect a stego model?* Not reliably; removing the capacity is the dependable move.
+
+**Go deeper.** Demo guide §6; TG §9.4.
+
 **Next.** "One more family of classes before we close: generative AI."
 
-### Slide 49 · Generative AI keeps the objectives and adds classes
+### Slide 50 · Generative AI keeps the objectives and adds classes
 
 *About 1.5 minutes.*
 
@@ -865,7 +881,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Before the gate, what this repository does not decide."
 
-### Slide 50 · What this repository does not decide
+### Slide 51 · What this repository does not decide
 
 *About 1.5 minutes.*
 
@@ -885,7 +901,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Closing (end of video 4b)
 
-### Slide 51 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
+### Slide 52 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
 
 *About 2.5 minutes.*
 
@@ -901,13 +917,13 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Everything here can be rerun in a few minutes."
 
-### Slide 52 · Four demos and a gate, reports under demo/output
+### Slide 53 · Five demos and a gate, reports under demo/output
 
 *About 1 minute.*
 
-**On screen.** The commands: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, the four demo scripts and `run_gate.py`, then the figure and deck scripts. Three cards: demos 3 and 4 (seconds, `aml_report.txt` and `supply_chain_report.txt`), demo 1 (seconds, `demo_report.txt`, data dictionary, register entry, pipeline snapshot, release reports), demo 2 (a few minutes, `sacroml_report.txt`, `report.json` and `report.pdf` per attack).
+**On screen.** The commands: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, the five demo scripts (including `run_stego_demo.py`) and `run_gate.py`, then the figure and deck scripts. Three cards: demos 3 and 4 (seconds, `aml_report.txt` and `supply_chain_report.txt`), demos 1 and 6 (seconds, `demo_report.txt` and release reports, `stego_report.txt` with the two covert channels and their defences), demo 2 (a few minutes, `sacroml_report.txt`, `report.json` and `report.pdf` per attack).
 
-**Say.** "Setup is in the repository README: create a Python 3.11 environment with uv and install the requirements, which bring numpy, scikit-learn and sacroml, with PyTorch. Demos 3, 4 and 1 run in seconds; demo 2 takes a few minutes. The gate reruns the demos and writes its report to `demo/output/gate`, and CI runs it on every pull request. The guides walk through every report section by section, in English and Spanish."
+**Say.** "Setup is in the repository README: create a Python 3.11 environment with uv and install the requirements, which bring numpy, scikit-learn and sacroml, with PyTorch. Demos 3, 4, 1 and 6 run in seconds; demo 2 takes a few minutes. The gate reruns demos 1, 3 and 4 and writes its report to `demo/output/gate`, and CI runs it on every pull request. Demo 6 is standalone and not in the gate. The guides walk through every report section by section, in English and Spanish."
 
 **Key facts.** README; demo/README.md; TG §24. `uv sync` installs without sacroml; add `--extra sacroml` for demo 2. On Windows PowerShell, activate with `. .\.venv\Scripts\Activate.ps1`.
 
@@ -917,7 +933,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "And the documents behind all of this."
 
-### Slide 53 · Read further
+### Slide 54 · Read further
 
 *About 1 minute, then questions.*
 

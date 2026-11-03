@@ -2,7 +2,7 @@
 
 **What each demo does, how the code does it, and how to read what it prints**
 
-This guide is for the four demo scripts in `demo/` and the release gate that judges them. The [technical guide](AML_Technical_Guide_EN.md) explains the attacks and the frameworks, and the [presenter guide](Presenter_Guide_EN.md) follows the deck. This guide follows the code: for every section a demo prints, it says which functions produce it, what they compute, and what the numbers on screen mean. It is also available in [Spanish](Guia_Demos_ES.md), with the same section numbers.
+This guide is for the five demo scripts in `demo/` and the release gate that judges them. The [technical guide](AML_Technical_Guide_EN.md) explains the attacks and the frameworks, and the [presenter guide](Presenter_Guide_EN.md) follows the deck. This guide follows the code: for every section a demo prints, it says which functions produce it, what they compute, and what the numbers on screen mean. It is also available in [Spanish](Guia_Demos_ES.md), with the same section numbers.
 
 The section numbers match the demos. Section 1 is demo 1, section 2 is demo 2, and so on; section 5 is the gate. Inside demos 1, 3 and 4, subsection *N* matches the section the script prints as *N*: §1.4 is what `run_demo.py` prints under "4. Unconstrained tree", §4.2 is what `run_supply_chain_demo.py` prints under "2. A swapped model". The comments in the code point back here by those numbers, as `Demo guide §1.4`.
 
@@ -34,10 +34,11 @@ uv run python demo/run_demo.py               # demo 1, seconds
 uv run python demo/run_sacroml_demo.py       # demo 2, a few minutes, needs sacroml
 uv run python demo/run_aml_demo.py           # demo 3, seconds
 uv run python demo/run_supply_chain_demo.py  # demo 4, seconds
-uv run python demo/run_gate.py               # reruns the demos and judges them
+uv run python demo/run_stego_demo.py         # demo 6, seconds
+uv run python demo/run_gate.py               # reruns demos 1, 3, 4 and judges them
 ```
 
-Each script prints its report to the terminal and saves the same text under `demo/output/`. The order in a workshop is usually 3, 4, 1, 2, then the gate, because the deck explains the general attacks first and GRAIMATTER second; the numbering follows the order the demos were written.
+Each script prints its report to the terminal and saves the same text under `demo/output/`. The order in a workshop is usually 3, 4, 1, 2, then the gate, because the deck explains the general attacks first and GRAIMATTER second; the numbering follows the order the demos were written (demo 5 is the gate, demo 6 was added last). Demo 6 is standalone and the gate does not read it.
 
 | Script | Report | Other outputs |
 | --- | --- | --- |
@@ -45,6 +46,7 @@ Each script prints its report to the terminal and saves the same text under `dem
 | `run_sacroml_demo.py` (demo 2) | `demo/output/sacroml/sacroml_report.txt` | `sacroml/<model>/<attack>/report.json` (and `report.pdf`, not versioned), `sacroml/safe_release/target.yaml` |
 | `run_aml_demo.py` (demo 3) | `demo/output/aml_report.txt` | none |
 | `run_supply_chain_demo.py` (demo 4) | `demo/output/supply_chain_report.txt` | working files in `demo/output/supply_chain/` (not versioned) |
+| `run_stego_demo.py` (demo 6) | `demo/output/stego_report.txt` | none |
 | `run_gate.py` | `demo/output/gate/gate_<packs>.json` and `.md` | exit code 0 or 1 |
 
 ### 0.2 Where the code lives
@@ -55,6 +57,7 @@ demo/
   run_sacroml_demo.py       demo 2 script
   run_aml_demo.py           demo 3 script
   run_supply_chain_demo.py  demo 4 script
+  run_stego_demo.py         demo 6 script
   run_gate.py               the release gate
   constraints.json          the safe-wrapper rules (demos 1 and 4)
   graimatter_demo/          demo 1's package, also used by demos 2 to 4
@@ -70,6 +73,10 @@ demo/
     evasion.py              §3.1
     extraction.py           §3.2
     poisoning.py            §3.3
+  stego_demo/               demo 6's channels and defences
+    weights.py              LSB steganography in the weights                  §6.1
+    behaviour.py            the watermark/backdoor channel                    §6.2
+    defences.py             clip, quantise, noise, and the detection test     §6.3
   supply_chain/             demo 4's checks
     integrity.py            pins and the lock file                            §4.1
     pickle_scan.py          the import scan                                   §4.3
@@ -83,7 +90,7 @@ demo/
 
 ### 0.3 The synthetic cohort (`graimatter_demo/cohort.py`)
 
-All four demos draw their data from `sample_cohort(n, rng, n_noise)`. Each row is a fictional person:
+All five demos draw their data from `sample_cohort(n, rng, n_noise)`. Each row is a fictional person:
 
 | Column | Index | Values | Role |
 | --- | --- | --- | --- |
@@ -106,19 +113,19 @@ high_risk ~ Bernoulli(1 / (1 + e^−logit))
 Two consequences show up in every demo:
 
 * **The label is noisy by design.** Two people with identical columns can have different labels, because the label is a coin toss weighted by the logit. No model can get much above about 0.64 accuracy. That is why demo 1's honest trees score 0.58 to 0.59 on the holdout and demo 3's forest scores 0.635. A training accuracy of 1.000 can therefore only mean memorisation.
-* **The noise columns carry no signal.** Demo 1 uses ten of them (`n_noise=10`) so that a deep tree has something to memorise individual rows with. Demos 3 and 4 use two (`n_noise=2`) and call them lab values: the backdoor trigger is planted in them.
+* **The noise columns carry no signal.** Demo 1 and demo 6 use ten of them (`n_noise=10`) so that a deep tree has something to memorise individual rows with, or a neural network has more weights to carry. Demos 3 and 4 use two (`n_noise=2`) and call them lab values: the backdoor trigger is planted in them.
 
 `hold_out_for_tre(n_rows, rng, 0.5)` shuffles the row numbers and returns two index arrays: the researcher's half and the TRE's half (GRAIMATTER TECH 6). The holdout is never passed to `fit()`. `data_dictionary()` writes the description of the columns that TECH 8 and Appendix C ask for (`demo/output/data_dictionary.json`).
 
 ### 0.4 The common pattern of the scripts
 
-The four scripts are built the same way, so reading one helps with the others:
+The five scripts are built the same way, so reading one helps with the others:
 
 * **The `sys.path` lines** at the top insert `demo/` into the import path, so `python demo/run_demo.py` works from the repository root without installing anything.
 * **`SEED = 7`.** Every random draw comes from `np.random.default_rng(SEED)` or a generator derived from it (`SEED + 1`, `SEED + n_queries`). The same seed gives the same report, which is what the tests check (§5.6). The order of the draws matters: adding a draw early in a script changes every number after it.
 * **The `Report` class** prints each line and keeps it, then `save()` writes the same lines to the report file. What you see on screen is what is in the file.
 * **`_section()`** prints the `=====` banners and the numbered titles. Those numbers are the subsection numbers of this guide.
-* **`main()` returns a dictionary** with the numbers it printed. The gate (§5) calls `main()` and reads that dictionary; it never recomputes an attack. Each `return` is marked with the comment "The numbers above, for demo/run_gate.py".
+* **`main()` returns a dictionary** with the numbers it printed. The gate (§5) calls `main()` and reads that dictionary for demos 1, 3 and 4; it never recomputes an attack. Each `return` is marked with the comment "The numbers above, for demo/run_gate.py". Demo 6 returns its numbers too, but it is standalone and the gate does not read them.
 
 ### 0.5 The attack metrics (`graimatter_demo/metrics.py`)
 
