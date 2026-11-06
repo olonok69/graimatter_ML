@@ -10,6 +10,8 @@ Five scripts on the same kind of synthetic cohort:
 * `run_supply_chain_demo.py` (demo 4): a supplied model and its files, tampered between the supplier and the user, and the checks that catch it.
 * `run_stego_demo.py` (demo 6): hiding data inside a model, in the low bits of its weights and in its behaviour, and the defences that remove each channel.
 
+The JADEPUFFER case (an LLM agent that ran a ransomware attack) has no demo. It is explained in the technical guide, §6.1 and Appendix B ([English](../docs/guide/AML_Technical_Guide_EN.md), [Spanish](../docs/guide/AML_Guia_Tecnica_ES.md)). The nearest thing to test is the defender's side, what an agent can be pushed into doing with its tools, which [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) does with AgentDojo.
+
 `run_gate.py` reruns the demos and judges their results against regulatory controls and tolerances (see the end of this file).
 
 The cohort is synthetic. Release cut-offs live in `graimatter_demo/disclosure.py` and are a demo policy, not official thresholds from the paper. The project's own toolkit is [AI-SDC](https://github.com/AI-SDC/AI-SDC).

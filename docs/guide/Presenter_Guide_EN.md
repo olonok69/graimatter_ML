@@ -281,7 +281,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **If asked.** *Was it really autonomous?* Sysdig infers an agent from the payloads: code that explains its own reasoning, fast self-correction, reading free text left on the target. TechCrunch and others note a human still started and steered it; nobody knows where the MySQL root password came from, and the claimed exfiltration is only an assertion in the agent's own code. *Which model did it use?* Not known. *How does it map to NIST?* Not to a NISTAML class; to OWASP LLM06 (excessive agency) for the lesson, and to ordinary ATT&CK techniques for the attack itself (exploit a public-facing application, default accounts, data encrypted for impact). *What would have stopped it?* Patching Langflow and keeping it off the internet, keys in a secrets manager instead of on the server, no default passwords, no database root for applications, and restricted egress.
 
-**Go deeper.** TG §6.1 and §5; Sysdig, "JADEPUFFER: agentic ransomware for automated database extortion"; OECD AI Incidents Monitor. For testing what an agent can be made to do, safety-trust-engine (AgentDojo).
+**Go deeper.** TG §6.1, Appendix B (the attack step by step, with the timeline and a control for each step) and §5; Sysdig, "JADEPUFFER: agentic ransomware for automated database extortion"; OECD AI Incidents Monitor. For testing what an agent can be made to do, safety-trust-engine (AgentDojo).
 
 **Next.** "So what defends against all this?"
 

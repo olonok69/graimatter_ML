@@ -6,14 +6,14 @@ Five demos run the attacks and controls on synthetic data, and a release gate ju
 
 | Part | What it covers | Demo |
 | --- | --- | --- |
-| 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
+| 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, JADEPUFFER (ransomware run by an AI agent), mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
 | 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML), run in part 4 |
 | 4. The attacks in detail | Every NIST class one by one: availability, integrity, supply chain, privacy, generative AI, then the release gate | All four demos, section by section, demo 6 (hiding data in a model), and the gate |
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 55 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 55 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up, and Appendix B takes the JADEPUFFER attack apart step by step. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
 
 ## Part 1: the attacks
 
@@ -78,6 +78,20 @@ Test accuracy moves by 0.02 at most, so a holdout check like GRAIMATTER's would 
 | Safe-wrapper floor lowered from 20 rows to 1 | `request_release()` passes a tree whose smallest leaf is one person | refuses | refuses |
 
 The scan finds no code in the backdoored file, because the backdoor lives in the weights; only the pin catches it. And a pin taken from the tampered download accepts it: a digest proves a file is the one approved, not that the approved one is sound. Signed releases (Sigstore, OpenSSF model signing), build provenance (SLSA), an AI bill of materials and formats that cannot hold code (safetensors) cover what a hash cannot. The demo's payload only writes a line to a log, and nothing in it encrypts anything or touches real cryptographic software.
+
+### JADEPUFFER: when the agent is the attacker
+
+Every attack above targets a model. JADEPUFFER (Sysdig, July 2026) is the reverse: an extortion campaign that Sysdig assesses as the first documented case of agentic ransomware, run by an LLM agent. It is covered in prose only (slide 14, technical guide §6.1 and Appendix B); there is no demo.
+
+| Step | What the agent did |
+| --- | --- |
+| Way in | Python run with no login on an internet-facing Langflow server, an agent orchestrator (CVE-2025-3248) |
+| Loot | LLM provider keys, cloud and database credentials, MinIO buckets read with default logins; a cron beacon every 30 minutes |
+| Move | A production MySQL + Alibaba Nacos server: a forged token tried, a backdoor administrator written into the database, a failed login fixed in 31 seconds |
+| Impact | 1,342 configuration entries encrypted with `AES_ENCRYPT()`, whole production databases dropped |
+| Ransom | A `README_RANSOM` table; the key was printed and never stored, so paying would recover nothing |
+
+It is not a NISTAML class, because NIST classifies attacks on AI and here the AI is the attacker. It makes three points of Part 1 concrete: AI tooling is attack surface, agents act at machine speed, and above all nothing limited what the agent could do (a shell, database root, open egress, no person approving a `DROP DATABASE`), which is OWASP's excessive agency (LLM06) and the question to ask of every agent an organisation deploys. How autonomous it was is disputed: a human set up the infrastructure, chose the victim and supplied the database credentials.
 
 ## Part 2: the frameworks
 
@@ -293,8 +307,8 @@ python docs/make_deck.py
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
-| `docs/Adversarial_ML.pptx` | Slides (53) |
-| `docs/guide/` | Technical guide, presenter guide and demo guide, each in English and Spanish, with figures |
+| `docs/Adversarial_ML.pptx` | Slides (55) |
+| `docs/guide/` | Technical guide (Appendix A: series map; Appendix B: JADEPUFFER in detail), presenter guide and demo guide, each in English and Spanish, with figures |
 
 ## References
 
@@ -308,4 +322,5 @@ python docs/make_deck.py
 * safety-trust-engine (red-team compliance gate for LLMs and agents): https://github.com/olonok69/safety-trust-engine
 * NIST AI 100-1, *Artificial Intelligence Risk Management Framework (AI RMF 1.0)*, January 2023.
 * Federal Reserve SR 26-02 and OCC Bulletin 2026-13, revised interagency guidance on model risk management, April 2026.
+* Sysdig Threat Research Team, *JADEPUFFER: agentic ransomware for automated database extortion*, 1 July 2026: https://www.sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion ; OECD AI Incidents Monitor: https://oecd.ai/en/incidents/2026-07-01-2beb
 * A. Salem et al. *ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models*. arXiv:1806.01246, 2018.

@@ -54,6 +54,8 @@ This guide goes with the deck (`docs/Adversarial_ML.pptx`), which is also record
 
 [Appendix A: how the guide, slides, videos and demos line up](#appendix-a-how-the-guide-slides-videos-and-demos-line-up)
 
+[Appendix B: JADEPUFFER, the attack in detail](#appendix-b-jadepuffer-the-attack-in-detail)
+
 ---
 
 # Part 1 · Attacks
@@ -300,7 +302,7 @@ Three points connect it to this guide:
 * **Nothing limited what the agent could do.** It had a shell, database root and open outbound traffic, and no step, not even dropping a production database, needed a person to approve it. OWASP calls this excessive agency (LLM06), and NIST warns that agents turn a compromise into actions (§3.5). The same questions apply to the agents an organisation deploys itself: which tools and credentials does the agent hold, which actions are irreversible, and which of those need a human to say yes? [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests the first half of that with AgentDojo.
 * **It sits outside the NIST taxonomy.** NIST AI 100-2e2025 classifies attacks on AI systems; here the AI is the attacker, so the attack itself maps to ordinary ATT&CK techniques (exploiting a public-facing application, default accounts, data encrypted for impact).
 
-The defences Sysdig lists are ordinary security applied to AI tooling: patch Langflow and keep code-execution endpoints off the internet, keep provider keys and cloud credentials in a secrets manager rather than on the orchestration server, change default credentials, never connect applications to a database as root, restrict outbound traffic, and watch database processes and scheduled tasks.
+The defences Sysdig lists are ordinary security applied to AI tooling: patch Langflow and keep code-execution endpoints off the internet, keep provider keys and cloud credentials in a secrets manager rather than on the orchestration server, change default credentials, never connect applications to a database as root, restrict outbound traffic, and watch database processes and scheduled tasks. Appendix B follows the attack step by step, with the timeline, the evidence for an agent, a mapping to ATT&CK and a control for each step.
 
 ---
 
@@ -1242,7 +1244,8 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 16. Supply-chain integrity: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) and the OpenSSF model signing project (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
 17. Sysdig Threat Research Team. *JADEPUFFER: agentic ransomware for automated database extortion.* 1 July 2026. https://www.sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion
 18. OECD AI Incidents Monitor, incident dated 1 July 2026 (JADEPUFFER). https://oecd.ai/en/incidents/2026-07-01-2beb
-19. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+19. TechCrunch. *The "first" AI-run ransomware attack still needed a human.* 6 July 2026. https://techcrunch.com/2026/07/06/the-first-ai-run-ransomware-attack-still-needed-a-human/
+20. This repository: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
@@ -1261,7 +1264,7 @@ The guide and the deck follow the same order, and each part is one video of the 
 | 3.4 Supply chain | 11 *Supply chain* | 1 | `supply_chain_report.txt` |
 | 5. Generative AI | 12 *Generative AI* | 1 | – |
 | 6. Real incidents | 13 *Real incidents* | 1 | – |
-| 6.1 JADEPUFFER | 14 *Agentic ransomware* | 1 | – |
+| 6.1 JADEPUFFER (in detail: Appendix B) | 14 *Agentic ransomware* | 1 | – |
 | 7. Mitigations | 15 *Mitigations* | 1 | – |
 | 8. Frameworks and crosswalk | 16 *Frameworks*, 17 *OWASP*, 18 *EU AI Act*, 19 *UK*, 20 *Crosswalk* | 2 | – |
 | 9. What a TRE is protecting | 21 *A high-trust case*, 22 *The problem*, 23 *TECH 4* | 3 | – |
@@ -1303,6 +1306,133 @@ The guide and the deck follow the same order, and each part is one video of the 
 | 4b · The attacks in detail: privacy and a release gate | §16 to §27 | 34 to 55 | Demo 3 (section 2), demos 1, 2 and 6, the gate | 45 minutes plus the runs |
 
 To present it as one live session instead, go through the slides in order; Part 4 then takes about as long as Parts 1 to 3 together, so for a session of about 90 minutes present Parts 1 to 3 and take from Part 4 only the demo slides you run. Demo 2 takes a few minutes, so show it from its saved report unless you can wait.
+
+---
+
+## Appendix B: JADEPUFFER, the attack in detail
+
+Section 6.1 gives the short version. This appendix follows the attack step by step, with what Sysdig observed, what it inferred and what nobody knows, so that a presenter can answer detailed questions and an engineer can check their own systems against each step. Sources: the Sysdig Threat Research Team report of 1 July 2026 [17], the OECD AI Incidents Monitor record [18] and a TechCrunch follow-up with Sysdig's director of threat research [19]. Indicators are written defanged (`[.]`, `[@]`) so they cannot be clicked.
+
+### B.1 What happened, and who did what
+
+An operator pointed an LLM agent at the internet. The agent broke into an exposed Langflow server, looted it for secrets, mapped the internal network, then took over a separate production server running MySQL and Alibaba Nacos, encrypted its configuration, dropped databases and left a ransom note. Sysdig calls the operator an *agentic threat actor*: an attacker whose capability is delivered by an AI agent rather than a human-run toolkit.
+
+The agent was not alone. In a later interview Sysdig said that a human provisioned the infrastructure (the command-and-control server and the staging server), chose the victim and supplied the MySQL root credentials, which came from an earlier compromise and were not harvested by the agent [19]. Sysdig could not identify the model behind the agent; the provider keys for several LLM vendors that it stole were loot, not a clue to what drove it. The victim has not been named, and Sysdig has not seen the same operation elsewhere.
+
+So the fair summary is: a human set it up and aimed it; the agent did the intrusion, the decisions inside it and the damage.
+
+### B.2 The pieces
+
+| Piece | Role |
+|---|---|
+| Langflow server, internet-facing | Way in. Langflow is a low-code tool for building LLM agents and pipelines; its servers often hold provider API keys and cloud credentials. |
+| Langflow's Postgres database | Local loot: credentials, API keys, user records. |
+| MinIO object store, internal | Loot: buckets including Terraform state and ML artefacts, `.env` and `credentials.json` files. |
+| Production server, internet-facing: MySQL + Alibaba Nacos | The real target. Nacos is a configuration and service-discovery service; its configuration lives in MySQL. |
+| `45.131.66[.]106` | Source of the attack and command-and-control (C2), beacon on port 4444. |
+| `64.20.53[.]230` | Staging server named in the agent's own comments as the place data was "already backed up" to; no data was seen arriving. |
+
+### B.3 Phase 1: the Langflow host
+
+1. **Remote code execution.** CVE-2025-3248 is a missing-authentication flaw in Langflow's code-validation endpoint: it runs any Python it is sent. Every payload arrived as Base64-encoded Python through that endpoint. Sysdig counted more than 600 purposeful payloads over the whole operation.
+2. **Reconnaissance and secret sweep.** User, kernel, hostname, interfaces and processes; then a parallel sweep of environment variables for LLM provider keys, cloud credentials (with explicit prefixes for Alibaba, Tencent and Huawei as well as AWS, GCP and Azure), wallet seed phrases and database credentials.
+3. **Local looting.** A dump of Langflow's own Postgres database, staged, reviewed and then deleted so the staging files did not stay on disk.
+4. **Internal discovery.** A scan of the internal address space, probing databases, object stores, secret stores and service discovery with default credentials.
+5. **MinIO.** The agent escalated step by step: anonymous health check, admin API information, an authenticated bucket listing with MinIO's default credentials, then targeted downloads of files whose names looked like credentials. When a request for JSON came back as XML, the next payload parsed the S3 XML schema and reissued the request in the same cycle.
+6. **Persistence.** A cron entry that calls the C2 every 30 minutes.
+
+None of this needs AI. What is new is that an agent chained it without a human writing each step, and adapted when a response was not what it expected.
+
+### B.4 Phase 2: taking over Nacos, and the 31-second fix
+
+On the production server the agent tried three routes at once:
+
+| Route | Result |
+|---|---|
+| Authentication bypass of the CVE-2021-29441 family | Tried; Sysdig does not say whether it worked |
+| A JWT forged with Nacos's publicly documented default signing key | Failed: the server answered that a custom secret was in use, and the agent dropped the route |
+| A backdoor administrator (`xadmin`, role `ROLE_ADMIN`) written straight into Nacos's tables through the MySQL root account | Worked |
+
+The backdoor account is where Sysdig's best evidence of an agent comes from, because the timestamps are exact (UTC):
+
+| Time | What happened |
+|---|---|
+| 19:34:24 | Inserts `xadmin`, with a bcrypt hash produced by calling a subprocess |
+| 19:34:36 | Login as `xadmin` fails |
+| 19:34:48 | Tests two hypotheses in parallel: the default `nacos` account, and a fresh hash for a simpler password |
+| 19:35:07 | Corrective payload: imports bcrypt directly instead of calling a subprocess, prints its version to confirm, deletes the broken rows and recreates the account (about 15 lines of coordinated code) |
+| 19:35:18 | Login succeeds |
+
+Sysdig's likely cause is that bcrypt was not on the subprocess's path, so the stored hash was empty. Failure to fix took 31 seconds, and failure to working login 42. Its point is that a human would need longer to read the error, find the cause and write the fix.
+
+### B.5 Checking for a way out of the container
+
+Before the damage, the agent spent about eight minutes probing whether it could escape the database container, using MySQL's own file functions: writing a file and reading it back, trying to read the Docker socket, reading `/proc/1/cgroup` and `/proc/1/mountinfo`, checking whether `/etc/hostname` was readable, listing path permissions, and looking in `mysql.func` for user-defined functions that would run operating-system commands. It then removed its test table and wrote a "cleanup marker" file before moving on, which Sysdig reads as a structured agent signalling that one stage was finished.
+
+### B.6 Encryption and destruction
+
+1. **Encrypt.** All 1,342 Nacos configuration items were copied into a new table, `config_info_enc`, through MySQL's `AES_ENCRYPT()`.
+2. **Drop the originals.** `config_info` and the history table `his_config_info` were dropped, so neither the configuration nor its history remained in clear.
+3. **Ransom table.** A table `README_RANSOM` opens with "YOUR DATA HAS BEEN ENCRYPTED", claims AES-256, and gives a Bitcoin address and a Proton Mail contact. Two minutes later the note was rewritten with the exact count of 1,342 items. No amount is published.
+4. **Destroy.** The agent ranked databases by how valuable they looked (its comments speak of "high-ROI databases to drop") and dropped them, the Nacos and CMS schemas among them; most names are redacted in the report. One `DROP DATABASE` failed on a foreign key that pointed across databases; the agent set `FOREIGN_KEY_CHECKS` to 0, dropped it and set the checks back to 1.
+
+Two details matter for the victim. The key was built from two random UUIDs, Base64-encoded, **printed once and never stored or sent** (the agent's own comment says "printed once; never stored or sent"). Nobody, including the attacker, can decrypt the configuration, so paying would recover nothing. And `AES_ENCRYPT()` uses AES-128 in ECB mode unless MySQL is configured otherwise, so the note probably overstates the algorithm; it makes no practical difference.
+
+The Bitcoin address is odd too. It is the standard pay-to-script-hash example in Bitcoin's developer documentation, and also a live wallet that has received about 46 BTC over 737 transactions and forwards every deposit at once. Either the model reproduced an address from its training data and someone sweeps whatever arrives, or the operator really controls it. Sysdig cannot tell which without the agent's configuration.
+
+### B.7 How we know an agent did it
+
+Sysdig gives four lines of evidence:
+
+* **Code that narrates itself.** Throw-away attack code rarely has comments; these payloads explain each step and its priority: "Delete old xadmin", "Create new user with proper hash", "Test 1: Verify write primitive works", "High-ROI databases to drop", "REDACTED is largest - drop it too". This is how LLM-generated code reads.
+* **Diagnosis and repair at machine speed.** The 31-second fix of B.4, with two hypotheses tested in parallel, and the same-cycle switch from JSON to XML.
+* **Understanding free text.** The agent read natural-language context on the target and acted in a way that only makes sense if it understood it, in sessions weeks apart. Sysdig does not say what the text was.
+* **The wallet.** An address that matches documentation is what a model that fills in a plausible value would produce.
+
+And what was not the agent: the infrastructure, the choice of victim and the MySQL root credentials were human (B.1). The exfiltration to `64.20.53[.]230` is only a claim in the agent's comments.
+
+### B.8 Mapping it to the frameworks
+
+| Step | MITRE ATT&CK (our mapping; Sysdig gives none) | Lesson for this guide |
+|---|---|---|
+| Langflow code execution | T1190 exploit public-facing application; T1059.006 Python | AI tooling is attack surface (section 6.1) |
+| Secret sweep, Postgres dump, MinIO files | T1552.001 credentials in files; T1078.001 default accounts; T1530 data from cloud storage | Keys stored on an AI server become the attacker's |
+| Internal discovery | T1046 network service discovery | – |
+| Cron beacon | T1053.003 cron; T1071.001 web protocols | Egress control would have cut it off |
+| Forged token, `xadmin` | T1606 forge web credentials; T1136 create account | Default secrets are public secrets |
+| Container-escape survey | T1611 escape to host (probing only) | – |
+| Encryption and drops | T1486 data encrypted for impact; T1485 data destruction | No step required a person to approve it |
+
+NIST AI 100-2e2025 has no class for this, because it classifies attacks *on* AI systems; here the AI is the attacker. Two OWASP Top 10 for LLM Applications items still frame the lesson. **LLM06, excessive agency**, is the attacker's agent seen from the other side: it had a shell, database root, open egress and no human in the loop for irreversible actions. **LLM03, supply chain**, and the general advice to treat AI tooling as production software, cover the Langflow server. If the operator ran the agent on someone else's stolen API keys (Sysdig mentions this possibility, called LLMjacking), the provider side is also NIST's misuse enablement (NISTAML.04), but nothing published confirms it.
+
+### B.9 What would have stopped it, step by step
+
+| Step | Control |
+|---|---|
+| Way in | Patch Langflow (CVE-2025-3248) and never expose code-execution or validation endpoints to the internet |
+| Loot | Keep provider keys and cloud credentials in a secrets manager, out of the environment of web-reachable AI servers; change every default credential (MinIO, Nacos) |
+| Persistence | Egress control: an application host should not be able to reach arbitrary addresses; alert on scheduled tasks that make outbound calls |
+| Nacos takeover | Change Nacos's default `token.secret.key` or upgrade to a release that forces a custom one; never expose Nacos or a database's administrative account to the internet; restrict management ports by source address |
+| Encryption and drops | Never connect an application to its database as root; runtime detection on database processes and on MySQL file functions; backups the database account cannot reach |
+
+The same table read from the defender's side of agents is the question this workshop asks of every agent an organisation deploys: **what may this agent do, with which credentials, and which actions need a person to say yes?** An agent with a shell, an administrator account and open egress is one prompt injection away from doing what JADEPUFFER did. The controls are the familiar ones, applied to the agent as if it were an untrusted user: least privilege for tools and credentials, short-lived and scoped keys, an allow-list for outbound traffic, human approval for irreversible actions (dropping, deleting, paying, sending), and logs of every tool call. [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) tests whether an agent can be pushed into misusing its tools (AgentDojo); the controls above limit the damage when it is.
+
+### B.10 Indicators
+
+| Type | Value |
+|---|---|
+| Entry vulnerability | CVE-2025-3248 (Langflow); also CVE-2021-29441 (Nacos) |
+| C2 and source | `45.131.66[.]106`, HTTP beacon to port 4444 every 30 minutes |
+| Staging (claimed) | `64.20.53[.]230` (InterServer, AS19318) |
+| Ransom | table `README_RANSOM`; Bitcoin `3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy`; contact `e78393397[@]proton[.]me` |
+| Accounts and tables | Nacos user `xadmin`; table `config_info_enc` |
+| Behaviour | Base64 Python sent to Langflow's validation endpoint; cron entries calling out; MySQL file functions reading `/proc` and the Docker socket |
+
+Sysdig notes that the contact has no hits in threat-intelligence databases and that `README_RANSOM` does not match the table names of known MySQL ransomware families.
+
+### B.11 What is not known
+
+The model and agent framework; who the victim was; where the operator got the MySQL root credentials; whether the CVE-2021-29441 bypass worked; whether any data reached the staging server; what free text the agent read on the target; the ransom amount; and the full list of dropped databases. The OECD record classifies the event as an AI incident and its own summary says "without human intervention"; the later interview [19] shows that wording goes too far.
 
 ---
 
