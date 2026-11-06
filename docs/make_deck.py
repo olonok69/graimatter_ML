@@ -455,7 +455,7 @@ def build():
     d.card(s, LEFT + 6.75, 5.06, 4.8, 1.33, "Machine speed, machine mistakes", "A failed step fixed in 31 seconds, 600+ "
            "payloads that narrate their reasoning. Autonomy is disputed; not a NISTAML class.", dark=True, bsize=12)
     d.footer(s, "Sysdig Threat Research Team, 1 Jul 2026. OECD AI Incidents Monitor, 2026-07-01. CVE-2025-3248, "
-             "CVE-2021-29441. Technical guide §6.1.")
+             "CVE-2021-29441. Technical guide §6.1 and Appendix B.")
     d.notes(s, "The incidents so far are attacks on models. JADEPUFFER is the reverse: Sysdig assesses it as the first "
             "documented case of agentic ransomware, an extortion campaign run by an LLM agent. It got in through an "
             "exposed Langflow server, a tool for building LLM agents, using a flaw that runs Python with no login. It "

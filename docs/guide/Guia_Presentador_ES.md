@@ -311,7 +311,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Si preguntan.** *¿De verdad era autónomo?* Sysdig deduce que había un agente por los payloads: código que explica su propio razonamiento, autocorrección rápida y lectura de texto libre dejado en el objetivo. TechCrunch y otros señalan que un humano lo lanzó y lo dirigió; nadie sabe de dónde salió la contraseña root de MySQL, y la exfiltración que se menciona es solo una afirmación del propio código del agente. *¿Qué modelo usó?* No se sabe. *¿Cómo encaja con el NIST?* No en una clase NISTAML; en OWASP LLM06 (autonomía excesiva) por la lección, y en técnicas normales de ATT&CK por el ataque en sí (explotar una aplicación expuesta, cuentas por defecto, cifrado de datos para causar impacto). *¿Qué lo habría parado?* Parchear Langflow y no exponerlo a internet, guardar las claves en un gestor de secretos y no en el servidor, no dejar contraseñas por defecto, no dar root de base de datos a las aplicaciones y restringir el tráfico de salida.
 
-**Para profundizar.** GT §6.1 y §5; Sysdig, «JADEPUFFER: agentic ransomware for automated database extortion»; OECD AI Incidents Monitor. Para probar qué se le puede hacer hacer a un agente, safety-trust-engine (AgentDojo).
+**Para profundizar.** GT §6.1, anexo B (el ataque paso a paso, con la cronología y un control para cada paso) y §5; Sysdig, «JADEPUFFER: agentic ransomware for automated database extortion»; OECD AI Incidents Monitor. Para probar qué se le puede hacer hacer a un agente, safety-trust-engine (AgentDojo).
 
 **Siguiente.** «Entonces, ¿qué defiende contra todo esto?»
 
