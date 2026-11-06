@@ -2,7 +2,7 @@
 
 **Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con cinco demos sobre datos sintéticos**
 
-Esta guía acompaña a las diapositivas (`docs/Adversarial_ML.pptx`), que también se graban como una serie de vídeos, a los cinco scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` y `demo/run_stego_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. La parte 4 toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Cada parte es un vídeo, y la parte 4 son dos (4a y 4b); el anexo A relaciona cada sección con sus diapositivas y su vídeo. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 54 diapositivas en orden y remite a esta guía. Para seguir las demos a través de su código, sección a sección de lo que imprimen, usa la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)).
+Esta guía acompaña a las diapositivas (`docs/Adversarial_ML.pptx`), que también se graban como una serie de vídeos, a los cinco scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` y `demo/run_stego_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. La parte 4 toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Cada parte es un vídeo, y la parte 4 son dos (4a y 4b); el anexo A relaciona cada sección con sus diapositivas y su vídeo. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 55 diapositivas en orden y remite a esta guía. Para seguir las demos a través de su código, sección a sección de lo que imprimen, usa la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)).
 
 > **Cómo leer esta guía.** Cada sección empieza con un recuadro breve, **En pocas palabras**. El texto que sigue entra en detalle. Las partes marcadas como **Por dentro** describen exactamente lo que hace el código y se pueden saltar. El informe del NIST se cita por sección de `NIST.AI.100-2e2025.pdf`, y el green paper por sección y página de `GRAIMATTER Green Paper.pdf`. Las cifras de las demos proceden de `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) y `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -240,7 +240,7 @@ La taxonomía del NIST para IA generativa (§3) mantiene los tres objetivos de l
 * **Cadena de suministro** (§3.2): datos de preentrenamiento o de ajuste fino envenenados, y modelos preentrenados maliciosos cuyos backdoors pueden persistir tras el ajuste fino posterior.
 * **Inyección directa de prompts** (NISTAML.018, §3.3): jailbreaks y extracción del prompt de sistema o de datos memorizados.
 * **Inyección indirecta de prompts** (NISTAML.015, §3.4): instrucciones plantadas en contenido que el modelo recupera, que provocan fallos de disponibilidad, integridad o privacidad.
-* **Agentes** (§3.5): un agente secuestrado puede ejecutar código o exfiltrar datos del entorno en el que opera.
+* **Agentes** (§3.5): un agente secuestrado puede ejecutar código o exfiltrar datos del entorno en el que opera. Un agente también puede ser el atacante: la sección 6.1 describe JADEPUFFER, un ransomware dirigido por un agente LLM al que nada limitaba.
 
 El OWASP Top 10 for LLM Applications 2025 es la lista de comprobación más usada para estos sistemas:
 
@@ -279,6 +279,28 @@ La conclusión del NIST sobre la inyección indirecta de prompts es una regla de
 | AML.CS0059 | EchoLeak: una inyección de prompts en un correo hizo que Microsoft 365 Copilot exfiltrara datos sin ninguna acción del usuario | Inyección indirecta de prompts | 2025 | Ejercicio |
 
 Fuente: publicación de datos 2026.09 de MITRE ATLAS, con 16 tácticas y 73 casos de estudio. ATLAS etiqueta un caso como *incidente* cuando ocurrió en la realidad y como *ejercicio* cuando lo demostraron investigadores.
+
+### 6.1 Más allá de ATLAS: JADEPUFFER, un agente como atacante (2026)
+
+> **En pocas palabras.** Todos los casos anteriores son ataques *contra* un modelo. JADEPUFFER es al revés: un agente de IA que dirigió un ataque de ransomware, entró por una herramienta para construir agentes de IA y nunca tuvo límites en lo que podía hacer.
+
+En julio de 2026 el Threat Research Team de Sysdig describió una campaña de extorsión cuyo operador era, según su análisis, un agente LLM; lo llama el primer caso documentado de ransomware agéntico [17]. El OECD AI Incidents Monitor lo registra como incidente de IA [18]. La cadena tuvo cinco pasos:
+
+1. **Entrada.** Un servidor Langflow expuesto a internet, un orquestador de agentes LLM, con CVE-2025-3248: un fallo de autenticación en su endpoint de validación de código que ejecuta Python arbitrario. Todos los payloads llegaron como Python codificado en Base64 a través de ese endpoint.
+2. **Botín.** El agente buscó en el servidor claves de proveedores de LLM, credenciales de nube y de bases de datos y material de carteras, volcó la base de datos Postgres del propio Langflow, leyó los buckets de un almacén de objetos MinIO con sus credenciales por defecto (incluidos estados de Terraform y artefactos de ML) e instaló una baliza en cron cada 30 minutos.
+3. **Movimiento.** Llegó a otro servidor expuesto a internet con MySQL y Alibaba Nacos, un servicio de configuración, y probó varias entradas a la vez: un salto de autenticación (CVE-2021-29441), un token firmado con la clave por defecto documentada de Nacos y una fila de administrador escrita directamente en la base de datos. Se conectó a MySQL como root; Sysdig no sabe de dónde salieron esas credenciales.
+4. **Impacto.** Cifró 1.342 entradas de configuración de Nacos con `AES_ENCRYPT()` de MySQL, borró las tablas originales y después bases de datos de producción enteras, ordenadas por lo valiosas que parecían. Cuando un borrado falló por una clave ajena, desactivó las comprobaciones, lo repitió y las volvió a activar.
+5. **Rescate.** Dejó una tabla `README_RANSOM` que pedía un pago en Bitcoin. La clave se generó al azar, se imprimió y nunca se guardó ni se envió, así que la víctima no podía recuperar los datos ni pagando.
+
+La evidencia de que había un agente está en los payloads: código que narraba su propio razonamiento y sus prioridades, un paso fallido diagnosticado y corregido en 31 segundos, más de 600 payloads con un propósito y la lectura de texto libre dejado en el objetivo. Cuánta autonomía tuvo está discutido: varios medios dicen que un humano lo lanzó y lo dirigió, y la exfiltración que afirma el código es solo eso, una afirmación.
+
+Tres puntos lo conectan con esta guía:
+
+* **Las herramientas de IA son superficie de ataque.** La puerta no fue un modelo, sino un servidor de orquestación de IA que guardaba secretos, la misma lección que la demo 4 (sección 3.4): lo que rodea al modelo también se ataca.
+* **Nada limitaba lo que el agente podía hacer.** Tenía una shell, root en la base de datos y tráfico de salida abierto, y ningún paso, ni siquiera borrar una base de datos de producción, necesitaba que una persona lo aprobara. OWASP lo llama autonomía excesiva (LLM06), y el NIST advierte de que los agentes convierten un compromiso en acciones (§3.5). Las mismas preguntas valen para los agentes que despliega cualquier organización: ¿qué herramientas y credenciales tiene el agente, qué acciones son irreversibles y cuáles de ellas necesitan que un humano diga que sí? [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) prueba la primera mitad con AgentDojo.
+* **Queda fuera de la taxonomía del NIST.** NIST AI 100-2e2025 clasifica ataques contra sistemas de IA; aquí la IA es el atacante, así que el ataque en sí se describe con técnicas normales de ATT&CK (explotar una aplicación expuesta, cuentas por defecto, cifrado de datos para causar impacto).
+
+Las defensas que propone Sysdig son seguridad de siempre aplicada a las herramientas de IA: parchear Langflow y no exponer a internet los endpoints que ejecutan código, guardar las claves de los proveedores y las credenciales de nube en un gestor de secretos y no en el servidor de orquestación, cambiar las credenciales por defecto, no conectar nunca una aplicación a la base de datos como root, restringir el tráfico de salida y vigilar los procesos de la base de datos y las tareas programadas.
 
 ---
 
@@ -733,7 +755,7 @@ La demo la da con A = 0,5 (la mitad de los candidatos son miembros) y A = 0,01 (
 
 ### 18.1 Las tres lecturas, con ejemplos
 
-> **En pocas palabras.** La diapositiva 38 lee un ataque de tres maneras: la media (AUC y ventaja), la cola (FDIF y TPR con FPR bajo) y lo raro que es un miembro (la probabilidad a posteriori). Cada una responde a una pregunta distinta, y un modelo puede aprobar una y suspender otra. Aquí se desarrolla cada una con números lo bastante pequeños para comprobarlos a mano.
+> **En pocas palabras.** La diapositiva 39 lee un ataque de tres maneras: la media (AUC y ventaja), la cola (FDIF y TPR con FPR bajo) y lo raro que es un miembro (la probabilidad a posteriori). Cada una responde a una pregunta distinta, y un modelo puede aprobar una y suspender otra. Aquí se desarrolla cada una con números lo bastante pequeños para comprobarlos a mano.
 
 **1. La media: AUC y ventaja.** Tomemos 4 miembros (M) y 4 no miembros (N), con estas puntuaciones del ataque:
 
@@ -1028,7 +1050,7 @@ Ninguna de las dos demos es un proceso de aprobación. El script escrito a mano 
 
 ## 22. Más allá de la IA predictiva
 
-Para la IA generativa, el NIST mantiene estos objetivos, añade el **uso indebido** (NISTAML.04: eludir las restricciones de uso que impuso el propietario del sistema) y añade clases que actúan a través de prompts: inyección directa de prompts (.018), inyección indirecta de prompts (.015), salidas desalineadas (.027), extracción del prompt (.035), fuga de información de las interacciones con usuarios (.036), ataques a los datos de entrenamiento (.037), extracción de datos (.038) y compromiso de recursos conectados (.039). La sección 5 los resume; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) los prueba sobre modelos reales.
+Para la IA generativa, el NIST mantiene estos objetivos, añade el **uso indebido** (NISTAML.04: eludir las restricciones de uso que impuso el propietario del sistema) y añade clases que actúan a través de prompts: inyección directa de prompts (.018), inyección indirecta de prompts (.015), salidas desalineadas (.027), extracción del prompt (.035), fuga de información de las interacciones con usuarios (.036), ataques a los datos de entrenamiento (.037), extracción de datos (.038) y compromiso de recursos conectados (.039). La sección 5 los resume; [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) los prueba sobre modelos reales. Los agentes también cambian quién es el atacante: JADEPUFFER (sección 6.1) usó un agente LLM para dirigir de principio a fin una campaña de ransomware. No es una clase NISTAML, pero muestra por qué las herramientas y credenciales a las que llega un agente, y las acciones que puede hacer sin que una persona las apruebe, merecen el mismo escrutinio que el modelo.
 
 ---
 
@@ -1218,13 +1240,15 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 14. NIST. *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1, enero de 2023 (GOVERN 6.1, MEASURE 2.6, 2.7, 2.10).
 15. Junta de Gobernadores de la Reserva Federal, SR 26-02, y OCC Bulletin 2026-13: guía interagencias revisada sobre gestión del riesgo de modelos, abril de 2026 (sustituye a SR 11-7).
 16. Integridad de la cadena de suministro: SLSA, Supply-chain Levels for Software Artifacts (https://slsa.dev); Sigstore (https://www.sigstore.dev) y el proyecto OpenSSF model signing (https://github.com/sigstore/model-transparency); safetensors (https://github.com/huggingface/safetensors).
-17. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
+17. Sysdig Threat Research Team. *JADEPUFFER: agentic ransomware for automated database extortion.* 1 de julio de 2026. https://www.sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion
+18. OECD AI Incidents Monitor, incidente con fecha 1 de julio de 2026 (JADEPUFFER). https://oecd.ai/en/incidents/2026-07-01-2beb
+19. Este repositorio: [README.md](../../README.md), [demo/README.md](../../demo/README.md), [docs/brief-for-presentation-and-guide.md](../brief-for-presentation-and-guide.md).
 
 ---
 
 ## Anexo A: cómo encajan la guía, las diapositivas, los vídeos y las demos
 
-La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de la serie: parte 1, los ataques (secciones 1 a 7, diapositivas 1 a 14, vídeo 1); parte 2, los marcos (sección 8, diapositivas 15 a 19, vídeo 2); parte 3, el caso GRAIMATTER (secciones 9 a 11, diapositivas 20 a 24, vídeo 3); parte 4, los ataques en detalle (secciones 12 a 22, diapositivas 25 a 50, vídeos 4a y 4b; la diapositiva 49, demo 6, se trata en §9.4 y en la guía de demos §6). El cierre (secciones 23 a 27, diapositivas 51 a 54) termina el vídeo 4b.
+La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de la serie: parte 1, los ataques (secciones 1 a 7, diapositivas 1 a 15, vídeo 1); parte 2, los marcos (sección 8, diapositivas 16 a 20, vídeo 2); parte 3, el caso GRAIMATTER (secciones 9 a 11, diapositivas 21 a 25, vídeo 3); parte 4, los ataques en detalle (secciones 12 a 22, diapositivas 26 a 51, vídeos 4a y 4b; la diapositiva 50, demo 6, se trata en §9.4 y en la guía de demos §6). El cierre (secciones 23 a 27, diapositivas 52 a 55) termina el vídeo 4b.
 
 | Sección de la guía | Diapositivas (orden de la presentación) | Vídeo | Salida de la demo |
 |---|---|---|---|
@@ -1237,44 +1261,46 @@ La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de 
 | 3.4 Cadena de suministro | 11 *Supply chain* (cadena de suministro) | 1 | `supply_chain_report.txt` |
 | 5. IA generativa | 12 *Generative AI* (IA generativa) | 1 | – |
 | 6. Incidentes reales | 13 *Real incidents* (incidentes reales) | 1 | – |
-| 7. Mitigaciones | 14 *Mitigations* (mitigaciones) | 1 | – |
-| 8. Marcos y tabla de correspondencias | 15 *Frameworks* (marcos), 16 *OWASP*, 17 *EU AI Act* (Reglamento de IA), 18 *UK* (Reino Unido), 19 *Crosswalk* (correspondencias) | 2 | – |
-| 9. Qué protege un TRE | 20 *A high-trust case* (un caso de alta confianza), 21 *The problem* (el problema), 22 *TECH 4* | 3 | – |
-| 10. Mapa del green paper | 23 *The paper* (el paper) | 3 | – |
-| 11. Qué se aplica a otros despliegues | 24 *What carries over* (qué se aplica a otros casos) | 3 | – |
-| 12. Cómo leer la taxonomía del NIST | 25 *Part 4a* (parte 4a), 26 *How to read the taxonomy* (cómo leer la taxonomía) | 4a | – |
-| 13. Disponibilidad | 27 *Availability* (disponibilidad) | 4a | – |
-| 14. Integridad | 28 *Integrity* (integridad), 29 *Evasion step by step* (la evasión paso a paso), 30 *Backdoor step by step* (el backdoor paso a paso) | 4a | `aml_report.txt` §1 y §3 |
-| 15. Cadena de suministro | 31 *Supply chain* (cadena de suministro), 32 *Demo 4 step by step* (la demo 4 paso a paso) | 4a | `supply_chain_report.txt` |
-| 16. Privacidad | 33 *Part 4b* (parte 4b), 34 *Privacy* (privacidad), 35 *Extraction step by step* (la extracción paso a paso) | 4b | `aml_report.txt` §2 |
-| 17. Cohorte y holdout | 36 *TECH 6 · TECH 8 · The cohort* (la cohorte) | 4b | `data_dictionary.json` |
-| 18. Métricas | 38 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas) | 4b | – |
-| 19.2 Registro plantado | 37 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | 4b | `demo_report.txt` §2 |
-| 19.3 Privacidad diferencial | 45 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
-| 19.4 Árbol sin restricciones | 39 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | 4b | `demo_report.txt` §4 |
-| 19.5 Safe wrapper y el fallo silencioso | 40 *Demo 1 · Safe wrapper*, 41 *Appendix F · The tail* (anexo F: la cola) | 4b | `demo_report.txt` §5 |
-| 19.6 Modelos basados en instancias | 42 *TECH 11* | 4b | `demo_report.txt` §6 |
-| 19.7 Editar después de `fit()` | 43 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 19.8 Presupuesto de consultas | 44 *TECH 16* | 4b | `demo_report.txt` §8 |
-| 19.9 Registro e instantánea | 42 (notas) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
-| 20. SACRO-ML | 46 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 21.1 Diferencias | 48 *Two demos compared* (dos demos comparadas) | 4b | los dos informes |
-| 21.2 Por qué difieren las cifras de pertenencia | 47 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | 4b | – |
-| 22. Más allá de la IA predictiva | 49 *Beyond predictive AI* (más allá de la IA predictiva) | 4b | – |
-| 25. Límites | 50 *Limits* (límites) | 4b | – |
-| 23. Puerta de publicación | 51 *Release gate* (puerta de publicación) | 4b | `demo/output/gate/` |
-| 24. Cómo reproducir | 52 *Run it yourself* (ejecútalo tú) | 4b | – |
-| 26. Glosario, 27. Referencias | 53 *References* (referencias) | 4b | – |
+| 6.1 JADEPUFFER | 14 *Agentic ransomware* (ransomware agéntico) | 1 | – |
+| 7. Mitigaciones | 15 *Mitigations* (mitigaciones) | 1 | – |
+| 8. Marcos y tabla de correspondencias | 16 *Frameworks* (marcos), 17 *OWASP*, 18 *EU AI Act* (Reglamento de IA), 19 *UK* (Reino Unido), 20 *Crosswalk* (correspondencias) | 2 | – |
+| 9. Qué protege un TRE | 21 *A high-trust case* (un caso de alta confianza), 22 *The problem* (el problema), 23 *TECH 4* | 3 | – |
+| 10. Mapa del green paper | 24 *The paper* (el paper) | 3 | – |
+| 11. Qué se aplica a otros despliegues | 25 *What carries over* (qué se aplica a otros casos) | 3 | – |
+| 12. Cómo leer la taxonomía del NIST | 26 *Part 4a* (parte 4a), 27 *How to read the taxonomy* (cómo leer la taxonomía) | 4a | – |
+| 13. Disponibilidad | 28 *Availability* (disponibilidad) | 4a | – |
+| 14. Integridad | 29 *Integrity* (integridad), 30 *Evasion step by step* (la evasión paso a paso), 31 *Backdoor step by step* (el backdoor paso a paso) | 4a | `aml_report.txt` §1 y §3 |
+| 15. Cadena de suministro | 32 *Supply chain* (cadena de suministro), 33 *Demo 4 step by step* (la demo 4 paso a paso) | 4a | `supply_chain_report.txt` |
+| 16. Privacidad | 34 *Part 4b* (parte 4b), 35 *Privacy* (privacidad), 36 *Extraction step by step* (la extracción paso a paso) | 4b | `aml_report.txt` §2 |
+| 17. Cohorte y holdout | 37 *TECH 6 · TECH 8 · The cohort* (la cohorte) | 4b | `data_dictionary.json` |
+| 18. Métricas | 39 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas) | 4b | – |
+| 19.2 Registro plantado | 38 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | 4b | `demo_report.txt` §2 |
+| 19.3 Privacidad diferencial | 46 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
+| 19.4 Árbol sin restricciones | 40 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | 4b | `demo_report.txt` §4 |
+| 19.5 Safe wrapper y el fallo silencioso | 41 *Demo 1 · Safe wrapper*, 42 *Appendix F · The tail* (anexo F: la cola) | 4b | `demo_report.txt` §5 |
+| 19.6 Modelos basados en instancias | 43 *TECH 11* | 4b | `demo_report.txt` §6 |
+| 19.7 Editar después de `fit()` | 44 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 19.8 Presupuesto de consultas | 45 *TECH 16* | 4b | `demo_report.txt` §8 |
+| 19.9 Registro e instantánea | 43 (notas) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
+| 20. SACRO-ML | 47 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 21.1 Diferencias | 49 *Two demos compared* (dos demos comparadas) | 4b | los dos informes |
+| 21.2 Por qué difieren las cifras de pertenencia | 48 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | 4b | – |
+| 9.4 Esconder datos en un modelo | 50 *Demo 6 · Hiding data in a model* (esconder datos en un modelo) | 4b | `stego_report.txt` |
+| 22. Más allá de la IA predictiva | 51 *Beyond predictive AI* (más allá de la IA predictiva) | 4b | – |
+| 25. Límites | 52 *Limits* (límites) | 4b | – |
+| 23. Puerta de publicación | 53 *Release gate* (puerta de publicación) | 4b | `demo/output/gate/` |
+| 24. Cómo reproducir | 54 *Run it yourself* (ejecútalo tú) | 4b | – |
+| 26. Glosario, 27. Referencias | 55 *References* (referencias) | 4b | – |
 
 ### La serie de vídeos
 
 | Vídeo | Guía | Diapositivas | Demos que se ejecutan | Duración aproximada |
 |---|---|---|---|---|
-| 1 · Ataques | §1 a §7 | 1 a 14 | Demos 3 y 4, por encima | 40 minutos |
-| 2 · Marcos | §8 | 15 a 19 | – | 13 minutos |
-| 3 · GRAIMATTER, un caso de alta confianza | §9 a §11 | 20 a 24 | – | 10 minutos |
-| 4a · Los ataques en detalle: integridad y cadena de suministro | §12 a §15 | 25 a 32 | Demo 3 (secciones 1 y 3) y demo 4, sección a sección | 30 minutos más las ejecuciones |
-| 4b · Los ataques en detalle: privacidad y una puerta de publicación | §16 a §27 | 33 a 53 | Demo 3 (sección 2), demos 1 y 2, la puerta | 45 minutos más las ejecuciones |
+| 1 · Ataques | §1 a §7 | 1 a 15 | Demos 3 y 4, por encima | 45 minutos |
+| 2 · Marcos | §8 | 16 a 20 | – | 13 minutos |
+| 3 · GRAIMATTER, un caso de alta confianza | §9 a §11 | 21 a 25 | – | 10 minutos |
+| 4a · Los ataques en detalle: integridad y cadena de suministro | §12 a §15 | 26 a 33 | Demo 3 (secciones 1 y 3) y demo 4, sección a sección | 30 minutos más las ejecuciones |
+| 4b · Los ataques en detalle: privacidad y una puerta de publicación | §16 a §27 | 34 a 55 | Demo 3 (sección 2), demos 1, 2 y 6, la puerta | 45 minutos más las ejecuciones |
 
 Para presentarlo en una sola sesión en directo, recorre las diapositivas en orden; la parte 4 dura entonces más o menos lo mismo que las partes 1 a 3 juntas, así que para una sesión de unos 90 minutos presenta las partes 1 a 3 y toma de la parte 4 solo las diapositivas de las demos que ejecutes. La demo 2 tarda unos minutos, así que enséñala desde su informe guardado salvo que puedas esperar.
 

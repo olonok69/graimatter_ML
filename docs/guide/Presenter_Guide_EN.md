@@ -1,6 +1,6 @@
 # Adversarial Machine Learning: Presenter Guide
 
-**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (54 slides)**
+**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (55 slides)**
 
 This guide is for whoever presents the deck, live or as the video series. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md). If someone asks how a demo computes a number, the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)) walks through the code behind each section of its output.
 
@@ -21,13 +21,13 @@ The deck is in four parts, and each part is one video; Part 4 is two videos, 4a 
 
 | Part | Video | Slides | Technical guide | Minutes |
 |---|---|---|---|---|
-| Opening and Part 1 · Attacks | 1 | 1-14 | §1-7 | 40 |
-| Part 2 · Frameworks | 2 | 15-19 | §8 | 13 |
-| Part 3 · A high-trust case: GRAIMATTER | 3 | 20-24 | §9-11 | 10 |
-| Part 4a · The attacks in detail: integrity and the supply chain | 4a | 25-32 | §12-15 | 30, plus the demo runs |
-| Part 4b · The attacks in detail: privacy, then the closing | 4b | 33-53 | §16-27 | 45, plus the demo runs |
+| Opening and Part 1 · Attacks | 1 | 1-15 | §1-7 | 45 |
+| Part 2 · Frameworks | 2 | 16-20 | §8 | 13 |
+| Part 3 · A high-trust case: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
+| Part 4a · The attacks in detail: integrity and the supply chain | 4a | 26-33 | §12-15 | 30, plus the demo runs |
+| Part 4b · The attacks in detail: privacy, then the closing | 4b | 34-55 | §16-27 | 45, plus the demo runs |
 
-Each video opens with a slide that says what it covers (slides 1, 15, 20, 25 and 33) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
+Each video opens with a slide that says what it covers (slides 1, 16, 21, 26 and 34) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
 
 Part 1 does not follow the technical guide's order exactly: the deck shows evasion (slide 7), poisoning (8), the privacy family (9), extraction (10) and the supply chain (11), while the guide groups the demo 3 and demo 4 attacks in §3 and privacy in §4. The "Go deeper" lines handle the jump.
 
@@ -35,13 +35,13 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 * **Run the demos once**, so you have the reports at hand and know how long they take: `uv run python demo/run_aml_demo.py` (demo 3, seconds), `uv run python demo/run_supply_chain_demo.py` (demo 4, seconds), `uv run python demo/run_demo.py` (demo 1, seconds), `uv run python demo/run_sacroml_demo.py` (demo 2, a few minutes) and `uv run python demo/run_gate.py`. Setup is in the [README](../../README.md) and TG §24.
 * **Keep open**: `demo/output/aml_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (or the gate report your run writes), and the two PDFs in the repository root, `NIST.AI.100-2e2025.pdf` and `GRAIMATTER Green Paper.pdf`.
-* **Decide on live demos.** If you have a terminal, demos 3 and 4 during slides 7 to 11 (briefly) and slides 29, 30, 32 and 35 (section by section), and demo 1 during slides 39 to 45, run in seconds. Demo 2 is better shown from its saved report.
+* **Decide on live demos.** If you have a terminal, demos 3 and 4 during slides 7 to 11 (briefly) and slides 30, 31, 33 and 36 (section by section), and demo 1 during slides 40 to 46, run in seconds. Demo 2 is better shown from its saved report.
 * **Three messages to land**, whatever you cut: (1) a model adds three things to attack, its data, its file and its answers; (2) the frameworks name the same attacks differently, and a crosswalk lets one test speak all of them; (3) GRAIMATTER shows how one high-trust sector tests a model before it leaves, and it covers privacy only.
 
 ### If you have less time
 
-* **45 minutes, one live session:** slides 1-5, 7, 8, 10, 11, 14, 15, 17, 19, 20-22, 24, 37, 39, 40, 51, 52.
-* **20 minutes:** slides 1, 3, 5, 7, 8, 10, 19, 20, 24, 39, 51.
+* **45 minutes, one live session:** slides 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 38, 40, 41, 53, 54.
+* **20 minutes:** slides 1, 3, 5, 7, 8, 10, 20, 21, 25, 40, 53.
 
 ---
 
@@ -67,7 +67,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 *About 1.5 minutes.*
 
-**On screen.** The agenda in five cards: 1 Attacks (NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, mitigations, demos 3 and 4 in brief), 2 Frameworks (NIST, ATLAS, OWASP, EU AI Act Art. 15, UK Code and ETSI EN 304 223, one crosswalk), 3 High-trust case (GRAIMATTER: what a TRE protects, the two families of control, the recommendations, what carries over), 4a In detail (each class of availability, integrity and supply chain, demos 3 and 4 section by section), 4b In detail (each privacy class, extraction, demos 1 and 2 section by section, hiding data in a model, generative AI and the release gate). Below: which demo shows what, and the five scripts.
+**On screen.** The agenda in five cards: 1 Attacks (NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, agentic ransomware, mitigations, demos 3 and 4 in brief), 2 Frameworks (NIST, ATLAS, OWASP, EU AI Act Art. 15, UK Code and ETSI EN 304 223, one crosswalk), 3 High-trust case (GRAIMATTER: what a TRE protects, the two families of control, the recommendations, what carries over), 4a In detail (each class of availability, integrity and supply chain, demos 3 and 4 section by section), 4b In detail (each privacy class, extraction, demos 1 and 2 section by section, hiding data in a model, generative AI and the release gate). Below: which demo shows what, and the five scripts.
 
 **Say.** "We go from general to specific, and then back through every attack in detail. Part 1 gives us a shared vocabulary for attacks. Part 2 maps that vocabulary to what standards and the law ask for. Part 3 looks at one sector that has worked this out in depth for one branch, privacy, because in that sector the model itself leaves the building. Part 4, in two videos, takes every NIST attack class one at a time and runs the demo that shows it, section by section. There are five demos. Demo 3 attacks a risk model by evasion, by planting a backdoor and by copying it through its API. Demo 4 tampers with a model and its files on the way from a supplier to the user. Demos 1 and 2 are the GRAIMATTER checks: membership and attribute inference and the controls a trusted research environment applies before release. Demo 6, in 4b, shows how a model can be used to carry data out of a research environment. They are small on purpose: numpy and scikit-learn, seconds to run, so you can change a parameter and see what happens."
 
@@ -109,7 +109,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 **Key facts.** NIST §2.1.1 (stages) and §2.1.3 (six capabilities: training data control, model control, testing data control, label limit, source code control, query access).
 
-**If asked.** *Where does a data scientist's own mistake fit?* GRAIMATTER calls it RT1, a well-meaning researcher who saves too much in the model file (slide 22). It is not an attack, but it creates the same exposure.
+**If asked.** *Where does a data scientist's own mistake fit?* GRAIMATTER calls it RT1, a well-meaning researcher who saves too much in the model file (slide 23). It is not an attack, but it creates the same exposure.
 
 **Go deeper.** TG §1 and §2.2; NIST §2.1.1 and §2.1.3.
 
@@ -125,7 +125,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 Then make the link to what the audience already knows: "If this sounds familiar, it should. Availability, integrity and confidentiality are the CIA triad that information security has always protected. NIST calls the third one privacy, because in machine learning it covers two things at once: the confidentiality of the model, its weights and architecture, and the privacy of the people in its training data. The EU AI Act uses the classic word for the same attacks: confidentiality attacks. So the attacker wants what attackers have always wanted. What is new is where they can get it: through the training data, the model file and the answers, which is slide 3. Supply chain is not a fourth goal; it is a way in, and what comes through it breaks one of the three."
 
-Use the summary per objective if someone asks what a box means; Part 4 of the technical guide (§12 to §16) has a paragraph for every class, and slides 26 to 34 take them one at a time. The three things people most often confuse:
+Use the summary per objective if someone asks what a box means; Part 4 of the technical guide (§12 to §16) has a paragraph for every class, and slides 27 to 35 take them one at a time. The three things people most often confuse:
 
 * *Backdoor vs targeted poisoning.* A backdoor plants a trigger: any input carrying it at deployment gets the attacker's answer. Targeted poisoning changes the answer for a few specific inputs chosen in advance, which are not modified at deployment.
 * *Evasion vs black-box evasion.* Same goal; the black-box version sees only the model's outputs, scores or labels. Demo 3 is black box and sees labels only.
@@ -199,7 +199,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **If asked.** *What is the difference between attribute inference and reconstruction?* Attribute inference recovers one field given the rest of the record; reconstruction recovers whole records. NIST discusses both under §2.4.1.
 
-**Go deeper.** TG §4 and §16; slides 34 to 48 (TG §16 to §21) for membership and attribute inference in depth.
+**Go deeper.** TG §4 and §16; slides 35 to 49 (TG §16 to §21) for membership and attribute inference in depth.
 
 **Next.** "One of these, extraction, is easy to show with demo 3."
 
@@ -265,9 +265,27 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Go deeper.** TG §6; atlas.mitre.org.
 
+**Next.** "All of these attack a model. The newest case turns that around: the AI is the attacker."
+
+### Slide 14 · JADEPUFFER: when the agent is the attacker
+
+*About 4 minutes.*
+
+**On screen.** Left, the attack in five steps: way in through an internet-facing Langflow server (CVE-2025-3248, Python runs with no login); loot (LLM provider keys, cloud and database credentials, MinIO buckets read with default logins); move to MySQL and Alibaba Nacos (auth bypasses, a forged token, a new admin account); impact (1,342 configurations encrypted with `AES_ENCRYPT()`, whole production databases dropped); ransom (a `README_RANSOM` table, and a key that was printed and never stored). Right, three cards: AI tooling is attack surface; nothing limited what the agent did (OWASP LLM06, excessive agency); machine speed, machine mistakes. Footer: Sysdig, 1 July 2026; OECD AI Incidents Monitor.
+
+**Say.** "Every case on the last slide attacks a model. JADEPUFFER, published by Sysdig in July 2026, is the reverse: Sysdig assesses it as the first documented case of agentic ransomware, an extortion campaign whose operator was an LLM agent. It got in through Langflow, a tool for building LLM agents, left open to the internet with a flaw that runs Python without a login. Once inside, it did what a human intruder would, only faster: it collected LLM API keys, cloud and database credentials, read object storage with default passwords and planted a beacon. Then it reached the real target, a production MySQL server running Alibaba Nacos, a configuration service. It tried several ways in at once, forged a token, added itself as an administrator, encrypted 1,342 configuration entries and dropped whole databases. It left a ransom note in a table. And the key it used was printed to the screen and never kept, so paying would have recovered nothing.
+
+Three lessons for us. First, the way in was not a model but AI tooling that held secrets, the same lesson as the supply-chain slide: what surrounds the model is attack surface too. Second, and this is the one I would underline, nothing limited what the agent could do. It had a shell, root on the database and open outbound traffic, and no human had to approve a step like dropping a database. OWASP calls this excessive agency, LLM06, and the question applies just as much to the agents we deploy ourselves: what may this agent do, with which credentials, and which actions need a person to say yes? Third, it works at machine speed: it fixed a failed step in 31 seconds and wrote more than 600 payloads that narrate their own reasoning. Two caveats, to be fair: how autonomous it was is disputed, and some reports say a human was still behind it; and it is not a NIST class, because NIST classifies attacks on AI, and here the AI is the attacker."
+
+**Key facts.** Sysdig Threat Research Team, 1 July 2026; OECD AI Incidents Monitor record dated 1 July 2026, classified as an AI incident. CVE-2025-3248 (Langflow, missing authentication, code execution); CVE-2021-29441 (Nacos authentication bypass). 1,342 configuration entries encrypted; 600+ payloads; a failed step fixed in 31 seconds; ransom table `README_RANSOM`, payment in Bitcoin.
+
+**If asked.** *Was it really autonomous?* Sysdig infers an agent from the payloads: code that explains its own reasoning, fast self-correction, reading free text left on the target. TechCrunch and others note a human still started and steered it; nobody knows where the MySQL root password came from, and the claimed exfiltration is only an assertion in the agent's own code. *Which model did it use?* Not known. *How does it map to NIST?* Not to a NISTAML class; to OWASP LLM06 (excessive agency) for the lesson, and to ordinary ATT&CK techniques for the attack itself (exploit a public-facing application, default accounts, data encrypted for impact). *What would have stopped it?* Patching Langflow and keeping it off the internet, keys in a secrets manager instead of on the server, no default passwords, no database root for applications, and restricted egress.
+
+**Go deeper.** TG §6.1 and §5; Sysdig, "JADEPUFFER: agentic ransomware for automated database extortion"; OECD AI Incidents Monitor. For testing what an agent can be made to do, safety-trust-engine (AgentDojo).
+
 **Next.** "So what defends against all this?"
 
-### Slide 14 · Every defence has a cost or a gap
+### Slide 15 · Every defence has a cost or a gap
 
 *About 3 minutes.*
 
@@ -287,7 +305,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Part 2 · Frameworks (video 2)
 
-### Slide 15 · Describe, prioritise, require: five frameworks
+### Slide 16 · Describe, prioritise, require: five frameworks
 
 *About 2.5 minutes.*
 
@@ -303,7 +321,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "OWASP first, because it is the most practical."
 
-### Slide 16 · OWASP: two top-ten lists for the people who build
+### Slide 17 · OWASP: two top-ten lists for the people who build
 
 *About 2 minutes.*
 
@@ -319,7 +337,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Now the regulation."
 
-### Slide 17 · EU AI Act, Art. 15: resisting attacks is a legal duty
+### Slide 18 · EU AI Act, Art. 15: resisting attacks is a legal duty
 
 *About 3.5 minutes.*
 
@@ -335,7 +353,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The UK took a different route: a code of practice that became a standard."
 
-### Slide 18 · UK: a code of practice that became a European standard
+### Slide 19 · UK: a code of practice that became a European standard
 
 *About 2.5 minutes.*
 
@@ -351,7 +369,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Five frameworks, five vocabularies. One table puts them together."
 
-### Slide 19 · One attack, five names: a crosswalk
+### Slide 20 · One attack, five names: a crosswalk
 
 *About 2.5 minutes.*
 
@@ -359,7 +377,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Say.** "Each framework names the same attacks differently. This table lets one test report or risk register use all five at once. Take membership inference: it is NISTAML.033, OWASP ML04, ATLAS technique AML.T0024.000, a confidentiality attack under Article 15(5), and covered by UK provisions 3.1 and 9.4. Evasion is NISTAML.022 or .025, OWASP ML01, ATLAS T0015, 'adversarial examples or model evasion' in the Act. The mapping is ours, built from the documents; the frameworks do not cross-reference each other this precisely. The last column says which demo shows each attack. Notice that prompt injection is not named in Article 15(5), although its general wording covers it."
 
-**Key facts.** Full table in TG §8.6. The release gate (slide 52) uses this mapping to give each control a verdict.
+**Key facts.** Full table in TG §8.6. The release gate (slide 53) uses this mapping to give each control a verdict.
 
 **If asked.** *Is there an official crosswalk?* Not at this level of detail; treat this one as a working tool and cite the source documents.
 
@@ -371,7 +389,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Part 3 · A high-trust case: GRAIMATTER (video 3)
 
-### Slide 20 · GRAIMATTER: models leaving a trusted research environment
+### Slide 21 · GRAIMATTER: models leaving a trusted research environment
 
 *About 2 minutes.*
 
@@ -387,7 +405,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Why is a model different from a table?"
 
-### Slide 21 · The export is the model, not a table of patients
+### Slide 22 · The export is the model, not a table of patients
 
 *About 2 minutes.*
 
@@ -403,7 +421,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The paper's answer is two families of control."
 
-### Slide 22 · Check the file before it leaves, then limit its queries
+### Slide 23 · Check the file before it leaves, then limit its queries
 
 *About 1.5 minutes.*
 
@@ -419,7 +437,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Here is the whole paper on one slide."
 
-### Slide 23 · Five sets of recommendations; the demos cover TECH
+### Slide 24 · Five sets of recommendations; the demos cover TECH
 
 *About 1.5 minutes.*
 
@@ -435,13 +453,13 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "What does any high-trust deployment take from this?"
 
-### Slide 24 · What GRAIMATTER teaches any high-trust deployment
+### Slide 25 · What GRAIMATTER teaches any high-trust deployment
 
 *About 2 minutes.*
 
 **On screen.** Six habits: assume the worst-case attacker; score on rows the builder never saw; check structure, not only scores; watch the tail; freeze the artefact; budget queries in rows, each with its sources in the green paper, NIST, the UK Code and OWASP. A footer: not covered are evasion and poisoning (demo 3's backdoor leaves holdout accuracy unchanged) and generative AI.
 
-**Say.** "Six habits from GRAIMATTER apply anywhere a model touches sensitive data or high-stakes decisions. Test against the strongest attacker you can imagine, because a released file gives them everything. Keep evaluation data away from the builder, and let someone else run the attacks. Look at the structure of the model, not just attack scores, because an attack can miss what a leaf count shows. Look at the tail of the score distribution, not just the average. Freeze the approved artefact and detect edits. Count queries in rows. In video 4b we run the demos that show each of these: slides 47, 41, 43 and 44. What GRAIMATTER does not give you is protection against evasion and poisoning. Demo 3 showed that its holdout accuracy check is blind to a backdoor, so other deployments need those tests too, and a generative system needs the prompt-injection controls of slide 12."
+**Say.** "Six habits from GRAIMATTER apply anywhere a model touches sensitive data or high-stakes decisions. Test against the strongest attacker you can imagine, because a released file gives them everything. Keep evaluation data away from the builder, and let someone else run the attacks. Look at the structure of the model, not just attack scores, because an attack can miss what a leaf count shows. Look at the tail of the score distribution, not just the average. Freeze the approved artefact and detect edits. Count queries in rows. In video 4b we run the demos that show each of these: slides 48, 42, 44 and 45. What GRAIMATTER does not give you is protection against evasion and poisoning. Demo 3 showed that its holdout accuracy check is blind to a backdoor, so other deployments need those tests too, and a generative system needs the prompt-injection controls of slide 12."
 
 **Key facts.** Green paper TECH 3, 6, 10, 16 and Appendices F-G; NIST §2.1.4, §2.4.2, §2.4.5; UK Code 6.2, 8.1.2, 8.3, 9.2.1, 9.4; OWASP ML10.
 
@@ -455,7 +473,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Part 4a · The attacks in detail: integrity and the supply chain (video 4a)
 
-### Slide 25 · Integrity and the supply chain: each NIST class, then its demo
+### Slide 26 · Integrity and the supply chain: each NIST class, then its demo
 
 *About 1 minute. Opens video 4a.*
 
@@ -463,7 +481,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Say.** "In the first video we went through the attacks quickly. Now we take them one by one, in the order of the NIST taxonomy. This video covers the two objectives GRAIMATTER does not deal with, availability and integrity, and the supply chain. For each class: what the attacker does, what the defences are and where they stop, and where this repository shows it. Then we run demos 3 and 4 and read their output section by section, so you can see where every number comes from."
 
-**Key facts.** Part 4a: TG §12 to §15, slides 25 to 32. Demos run: `run_aml_demo.py` sections 1 and 3, `run_supply_chain_demo.py` all six sections.
+**Key facts.** Part 4a: TG §12 to §15, slides 26 to 33. Demos run: `run_aml_demo.py` sections 1 and 3, `run_supply_chain_demo.py` all six sections.
 
 **If asked.** *Do I need to have seen video 1?* It helps: slides 7, 8 and 11 show the results this video takes apart.
 
@@ -471,7 +489,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Two keys before the classes."
 
-### Slide 26 · The CIA triad, and how to read a NISTAML identifier
+### Slide 27 · The CIA triad, and how to read a NISTAML identifier
 
 *About 2 minutes.*
 
@@ -487,7 +505,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The first objective: availability."
 
-### Slide 27 · Availability: break the model for everyone
+### Slide 28 · Availability: break the model for everyone
 
 *About 3 minutes.*
 
@@ -503,7 +521,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Integrity is the opposite: quiet."
 
-### Slide 28 · Integrity: the attacker's answer, with accuracy intact
+### Slide 29 · Integrity: the attacker's answer, with accuracy intact
 
 *About 4 minutes.*
 
@@ -519,7 +537,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Let us run demo 3 and read its first section."
 
-### Slide 29 · Evasion, step by step: 17 edits, labels only, the cheapest wins
+### Slide 30 · Evasion, step by step: 17 edits, labels only, the cheapest wins
 
 *About 5 minutes, with the live run.*
 
@@ -535,7 +553,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Section 3 of the same run: the backdoor."
 
-### Slide 30 · Backdoor, step by step: two triggers, three doses, one screen
+### Slide 31 · Backdoor, step by step: two triggers, three doses, one screen
 
 *About 5 minutes.*
 
@@ -551,7 +569,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The third way in does not touch training at all: the supply chain."
 
-### Slide 31 · Supply chain: the attack arrives with what you download
+### Slide 32 · Supply chain: the attack arrives with what you download
 
 *About 3 minutes.*
 
@@ -567,7 +585,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Demo 4 shows four ways a mirror can change what you download."
 
-### Slide 32 · Demo 4, step by step: pin at approval, check each download
+### Slide 33 · Demo 4, step by step: pin at approval, check each download
 
 *About 6 minutes, with the live run.*
 
@@ -587,7 +605,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Part 4b · The attacks in detail: privacy (video 4b)
 
-### Slide 33 · Privacy: each NIST class, demos 1 and 2, and a release gate
+### Slide 34 · Privacy: each NIST class, demos 1 and 2, and a release gate
 
 *About 1 minute. Opens video 4b.*
 
@@ -595,7 +613,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Say.** "The second half of the detailed walkthrough is privacy, NIST's word for confidentiality, and the objective GRAIMATTER covers in depth. We start with the classes and with extraction, which demo 3 runs. Then we go through the two GRAIMATTER demos section by section: the hand-written checks of demo 1 and the official SACRO-ML package in demo 2. We close with the classes generative AI adds, the limits of all this, and a release gate that reads every demo against named obligations."
 
-**Key facts.** Part 4b: TG §16 to §22 and the closing, slides 33 to 53. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
+**Key facts.** Part 4b: TG §16 to §22 and the closing, slides 34 to 55. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
 
 **If asked.** *Do I need video 3 first?* It helps: it explains why a TRE cares about these attacks and what its controls are.
 
@@ -603,7 +621,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The privacy classes first."
 
-### Slide 34 · Privacy: what the model learned, and the model itself
+### Slide 35 · Privacy: what the model learned, and the model itself
 
 *About 3 minutes.*
 
@@ -619,7 +637,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Extraction is the one demo 3 runs. Back to its output."
 
-### Slide 35 · Extraction, step by step: invented rows, real answers, a copy
+### Slide 36 · Extraction, step by step: invented rows, real answers, a copy
 
 *About 4 minutes, with the live run.*
 
@@ -635,7 +653,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Now the data side of privacy, with the GRAIMATTER demos, starting from the cohort."
 
-### Slide 36 · Half the rows never reach the researcher
+### Slide 37 · Half the rows never reach the researcher
 
 *About 1.5 minutes.*
 
@@ -651,7 +669,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "First, the paper's own case study: attribute inference on one person."
 
-### Slide 37 · One planted person: 20 queries recover two hidden fields
+### Slide 38 · One planted person: 20 queries recover two hidden fields
 
 *About 1.5 minutes.*
 
@@ -667,13 +685,13 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "To judge a model we need numbers. Here are the metrics."
 
-### Slide 38 · Chance, the tail, and how rare a member is
+### Slide 39 · Chance, the tail, and how rare a member is
 
 *About 2 minutes.*
 
 **On screen.** Figure with three ideas. AUC, the average: the chance the attack scores a random member higher than a random non-member; 0.5 is a coin toss. FDIF, the tail: share of members in the top 10% of scores minus the share in the bottom 10%. How rare a member is: P(member | flagged) = A·TPR / (A·TPR + (1 − A)·FPR); for the unconstrained tree (TPR 1.000, FPR 0.588) that is 0.630 at A = 0.5 and 0.017 at A = 0.01.
 
-**Say.** "Membership inference asks whether a row was in the training set. The attack gives each row a score. AUC is the chance that a random member scores higher than a random non-member; 0.5 is a coin toss. Advantage is the gap between the true-positive and false-positive rates. TPR at 10% FPR asks how many real members the attack catches when it may raise a false alarm on only about 10% of non-members. FDIF looks at the extremes: the share of members in the top 10% of scores minus the share in the bottom 10%, with a permutation p-value. Why both? Because a model can look like chance on average and still expose a group of people in the tail; we will see exactly that on slide 41. Finally, the membership posterior: if the attack says 'member', how likely is that to be true? It depends on how rare members are. For our unconstrained tree it is 0.630 when half the candidates are members, and 0.017 when one in a hundred is."
+**Say.** "Membership inference asks whether a row was in the training set. The attack gives each row a score. AUC is the chance that a random member scores higher than a random non-member; 0.5 is a coin toss. Advantage is the gap between the true-positive and false-positive rates. TPR at 10% FPR asks how many real members the attack catches when it may raise a false alarm on only about 10% of non-members. FDIF looks at the extremes: the share of members in the top 10% of scores minus the share in the bottom 10%, with a permutation p-value. Why both? Because a model can look like chance on average and still expose a group of people in the tail; we will see exactly that on slide 42. Finally, the membership posterior: if the attack says 'member', how likely is that to be true? It depends on how rare members are. For our unconstrained tree it is 0.630 when half the candidates are members, and 0.017 when one in a hundred is."
 
 **Worked examples.** Use these if the room wants numbers; TG §18.1 has the full working.
 
@@ -689,13 +707,13 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Now demo 1 on the unconstrained tree."
 
-### Slide 39 · Perfect training accuracy and a leaf of one person: refused
+### Slide 40 · Perfect training accuracy and a leaf of one person: refused
 
 *About 2 minutes.*
 
 **On screen.** Table of checks for the unconstrained tree with the seeded result, the demo limit and whether it fires: training vs set-aside accuracy 1.000 vs 0.590 (gap 0.410, limit 0.15, fires); smallest leaf 1 row; file size ratio 0.267 (limit 0.75, does not fire); worst-case membership AUC 0.708 (limit 0.62, fires); advantage 0.412 (limit 0.20, fires); TPR at 10% FPR 0.156 (limit 0.35, does not fire); FDIF 0.620 with p = 0.003 (fires); weight attribute inference abstained. Decision: do not release, four rules fire. Note: the attribute attack abstained because the tree isolated rows with noise columns.
 
-**Say.** "The researcher would report 100% accuracy. On the environment's set-aside rows it is 59%. That gap of 0.41 is overfitting, and the smallest leaf holds one training row. The worst-case membership attack, the one Appendix G describes, reaches an AUC of 0.708 and an advantage of 0.412, and FDIF is 0.620 with a p-value of 0.003. Decision: do not release; four rules fire. Now notice what does *not* fire. The file is only 0.27 of the training table, and TPR at 10% FPR is 0.156. Size alone would have let this model through, which is why TECH 7 asks for a range of checks, not one. And the attribute attack on weight abstains, because this tree separates people using the noise columns, so changing someone's weight never moves them to a different leaf. Slide 37 was the case where the model does split on the hidden fields. Remember that these limits are a demo policy, not the paper's."
+**Say.** "The researcher would report 100% accuracy. On the environment's set-aside rows it is 59%. That gap of 0.41 is overfitting, and the smallest leaf holds one training row. The worst-case membership attack, the one Appendix G describes, reaches an AUC of 0.708 and an advantage of 0.412, and FDIF is 0.620 with a p-value of 0.003. Decision: do not release; four rules fire. Now notice what does *not* fire. The file is only 0.27 of the training table, and TPR at 10% FPR is 0.156. Size alone would have let this model through, which is why TECH 7 asks for a range of checks, not one. And the attribute attack on weight abstains, because this tree separates people using the noise columns, so changing someone's weight never moves them to a different leaf. Slide 38 was the case where the model does split on the hidden fields. Remember that these limits are a demo policy, not the paper's."
 
 **Key facts.** `demo_report.txt`, section 4. Limits in `demo/graimatter_demo/disclosure.py` (ELA 8). Posterior 0.630 / 0.017. Salem-synth on this tree: AUC 0.703, FDIF 1.000.
 
@@ -705,7 +723,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Same data, but through a safe wrapper."
 
-### Slide 40 · Leaf 20, depth 4: AUC 0.528, released under a demo policy
+### Slide 41 · Leaf 20, depth 4: AUC 0.528, released under a demo policy
 
 *About 2 minutes.*
 
@@ -721,7 +739,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "But one attack sees something the average hides."
 
-### Slide 41 · The quiet failure: AUC near 0.5, but FDIF 0.160
+### Slide 42 · The quiet failure: AUC near 0.5, but FDIF 0.160
 
 *About 1.5 minutes.*
 
@@ -737,7 +755,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Some models should never be released as files at all."
 
-### Slide 42 · Nearest neighbours and SVC store rows: refuse them
+### Slide 43 · Nearest neighbours and SVC store rows: refuse them
 
 *About 1.5 minutes.*
 
@@ -753,7 +771,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "What if the researcher edits the model after training?"
 
-### Slide 43 · Editing the model after fit() is caught
+### Slide 44 · Editing the model after fit() is caught
 
 *About 2 minutes.*
 
@@ -769,7 +787,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "If the model stays on a server, the environment can limit queries."
 
-### Slide 44 · Count rows, not calls: one patient allowed, 20 blocked
+### Slide 45 · Count rows, not calls: one patient allowed, 20 blocked
 
 *About 1.5 minutes.*
 
@@ -785,7 +803,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "The last check in demo 1 is differential privacy, on the simplest possible release."
 
-### Slide 45 · Noise protects a mean; the best of 50 draws undoes it
+### Slide 46 · Noise protects a mean; the best of 50 draws undoes it
 
 *About 1.5 minutes.*
 
@@ -801,7 +819,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Now the same cohort through the official toolkit."
 
-### Slide 46 · sacroml: leaf 5, 'proceed to next step', still flagged
+### Slide 47 · sacroml: leaf 5, 'proceed to next step', still flagged
 
 *About 3 minutes.*
 
@@ -817,7 +835,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Same tree: 0.708 in one demo, 0.500 in the other."
 
-### Slide 47 · Same tree, AUC 0.708 or 0.500: two different attacks
+### Slide 48 · Same tree, AUC 0.708 or 0.500: two different attacks
 
 *About 3 minutes.*
 
@@ -833,7 +851,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Three differences sum up the two demos."
 
-### Slide 48 · Leaf 20 vs 5, label-aware vs probability-only
+### Slide 49 · Leaf 20 vs 5, label-aware vs probability-only
 
 *About 2 minutes.*
 
@@ -849,7 +867,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "One more way data can leave a research environment: written into the model on purpose."
 
-### Slide 49 · Writing data into the model: two channels an accuracy check misses
+### Slide 50 · Writing data into the model: two channels an accuracy check misses
 
 *About 2 minutes.*
 
@@ -865,13 +883,13 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "One more family of classes before we close: generative AI."
 
-### Slide 50 · Generative AI keeps the objectives and adds classes
+### Slide 51 · Generative AI keeps the objectives and adds classes
 
 *About 1.5 minutes.*
 
-**On screen.** A table of what NIST adds for generative AI: misuse enablement (NISTAML.04), direct and indirect prompt injection (.018, .015), misaligned outputs (.027), prompt extraction and leaks from user interactions (.035, .036), training data attacks and data extraction (.037, .038), compromising connected resources (.039). Two cards: covered in Part 1 (slide 12), and tested in safety-trust-engine.
+**On screen.** A table of what NIST adds for generative AI: misuse enablement (NISTAML.04), direct and indirect prompt injection (.018, .015), misaligned outputs (.027), prompt extraction and leaks from user interactions (.035, .036), training data attacks and data extraction (.037, .038), compromising connected resources (.039). Two cards: covered in Part 1 (slide 12, prompt injection; slide 14, JADEPUFFER), and tested in safety-trust-engine.
 
-**Say.** "Everything in Part 4 so far is predictive AI. For generative AI, NIST keeps the three objectives and the supply chain and adds a fourth objective, misuse enablement: using the system as designed but getting around the restrictions its owner set. It also adds classes that work through prompts: direct and indirect prompt injection, misaligned outputs, extracting the system prompt, leaking what other users said, attacks on training data and data extraction, and compromising the resources an agent is connected to. We saw prompt injection on slide 12. This repository has no generative-AI demo; the companion repository, safety-trust-engine, tests these classes on live models and agents with garak, AgentDojo and PyRIT, and gates a build on the results in the same way as the gate we are about to see."
+**Say.** "Everything in Part 4 so far is predictive AI. For generative AI, NIST keeps the three objectives and the supply chain and adds a fourth objective, misuse enablement: using the system as designed but getting around the restrictions its owner set. It also adds classes that work through prompts: direct and indirect prompt injection, misaligned outputs, extracting the system prompt, leaking what other users said, attacks on training data and data extraction, and compromising the resources an agent is connected to. We saw prompt injection on slide 12, and on slide 14 the other side of agents: JADEPUFFER, an agent that ran an attack because nothing limited what it could do. This repository has no generative-AI demo; the companion repository, safety-trust-engine, tests these classes on live models and agents with garak, AgentDojo and PyRIT, and gates a build on the results in the same way as the gate we are about to see."
 
 **Key facts.** NIST §3 and its taxonomy index. OWASP LLM Top 10 2025. safety-trust-engine maps its findings to EU AI Act, DORA, FCA and NIST controls.
 
@@ -881,7 +899,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Before the gate, what this repository does not decide."
 
-### Slide 51 · What this repository does not decide
+### Slide 52 · What this repository does not decide
 
 *About 1.5 minutes.*
 
@@ -901,7 +919,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 ## Closing (end of video 4b)
 
-### Slide 52 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
+### Slide 53 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
 
 *About 2.5 minutes.*
 
@@ -917,7 +935,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "Everything here can be rerun in a few minutes."
 
-### Slide 53 · Five demos and a gate, reports under demo/output
+### Slide 54 · Five demos and a gate, reports under demo/output
 
 *About 1 minute.*
 
@@ -933,7 +951,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **Next.** "And the documents behind all of this."
 
-### Slide 54 · Read further
+### Slide 55 · Read further
 
 *About 1 minute, then questions.*
 
