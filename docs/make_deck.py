@@ -207,7 +207,7 @@ def build():
     s = d.slide("AGENDA", "Five videos: attacks, frameworks, a case, the attacks in detail")
     agenda = [
         ("1 · Attacks", "NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, "
-                        "mitigations. Demos 3 and 4 in brief.", True),
+                        "agentic ransomware, mitigations. Demos 3 and 4 in brief.", True),
         ("2 · Frameworks", "NIST, ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code and ETSI EN 304 223. "
                            "One crosswalk.", False),
         ("3 · High-trust case", "GRAIMATTER: what a TRE protects, the two families of control, the paper's "
@@ -434,6 +434,40 @@ def build():
             "model and get someone else's behaviour or code. Split-view poisoning shows how cheap web-scale poisoning can "
             "be. Google Photos is extraction from a shipped app. EchoLeak is indirect prompt injection with no user action. "
             "ATLAS labels each case as an incident in the wild or an exercise by researchers; the footer says which.")
+
+    s = d.slide("REAL INCIDENTS · AGENTIC RANSOMWARE · SYSDIG, JULY 2026", "JADEPUFFER: when the agent is the attacker")
+    steps = [("Way in", "An internet-facing Langflow server (an agent orchestrator), CVE-2025-3248: Python runs with no login"),
+             ("Loot", "Sweeps LLM provider keys, cloud and database credentials; reads MinIO buckets with default logins"),
+             ("Move", "Reaches MySQL + Alibaba Nacos: tries auth bypasses and a forged token, adds an admin account"),
+             ("Impact", "Encrypts 1,342 configurations with AES_ENCRYPT(), then drops whole production databases"),
+             ("Ransom", "Leaves a README_RANSOM table. The key was printed, never stored: paying recovers nothing")]
+    y = 2.2
+    for i, (a, b) in enumerate(steps, 1):
+        d.rect(s, LEFT, y, 0.5, 0.74, NAVY)
+        d.text(s, LEFT, y, 0.5, 0.74, str(i), 16, CREAM, True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+        d.rect(s, LEFT + 0.6, y, 5.9, 0.74, CARD, BORDER)
+        d.text(s, LEFT + 0.78, y, 5.6, 0.74, [[(a + ". ", True), (b, False)]], 12, BODY, anchor=MSO_ANCHOR.MIDDLE)
+        y += 0.86
+    d.card(s, LEFT + 6.75, 2.2, 4.8, 1.3, "AI tooling is attack surface", "The door was an AI orchestration server "
+           "holding keys, not a model: the same lesson as the supply-chain slide.", bsize=12)
+    d.card(s, LEFT + 6.75, 3.63, 4.8, 1.3, "Nothing limited what the agent did", "Shell, root on the database, open "
+           "egress, no human approving a DROP DATABASE. OWASP LLM06: excessive agency.", fill=PEACHBG, bsize=12)
+    d.card(s, LEFT + 6.75, 5.06, 4.8, 1.33, "Machine speed, machine mistakes", "A failed step fixed in 31 seconds, 600+ "
+           "payloads that narrate their reasoning. Autonomy is disputed; not a NISTAML class.", dark=True, bsize=12)
+    d.footer(s, "Sysdig Threat Research Team, 1 Jul 2026. OECD AI Incidents Monitor, 2026-07-01. CVE-2025-3248, "
+             "CVE-2021-29441. Technical guide §6.1.")
+    d.notes(s, "The incidents so far are attacks on models. JADEPUFFER is the reverse: Sysdig assesses it as the first "
+            "documented case of agentic ransomware, an extortion campaign run by an LLM agent. It got in through an "
+            "exposed Langflow server, a tool for building LLM agents, using a flaw that runs Python with no login. It "
+            "collected LLM API keys, cloud and database credentials, read object storage with default logins and set up "
+            "a cron beacon. Then it reached a production MySQL server running Alibaba Nacos, tried several bypasses at "
+            "once, encrypted 1,342 configuration entries, dropped whole databases and left a ransom table. The key was "
+            "printed and never kept, so paying would recover nothing. Three lessons. The entry point was AI tooling "
+            "holding secrets. Nothing limited what the agent could do: it had a shell, database root and open egress, "
+            "and no human had to approve a destructive step; that is OWASP's excessive agency, and the same question "
+            "applies to the agents we deploy ourselves. And it works at machine speed: it fixed a failed step in 31 "
+            "seconds. Two caveats: how autonomous it was is disputed, since some reports say a human was still behind "
+            "it, and it is not a NIST class, because here AI is the attacker, not the target.")
 
     s = d.slide("MITIGATIONS · NIST AI 100-2", "Every defence has a cost or a gap")
     rows = [["Attack", "Mitigations NIST lists", "Limit NIST notes"],
@@ -1175,15 +1209,16 @@ def build():
         [".037 / .038", "Training data attacks; data extraction"],
         [".039", "Compromising connected resources"],
     ], [1.6, 5.6], size=12.5, row_h=0.55)
-    d.card(s, LEFT + 7.45, 2.1, 4.1, 2.2, "Covered in Part 1", "Slide 12: direct and indirect prompt injection, the "
-           "OWASP LLM Top 10 and NIST's design advice: assume injection and limit what the model can do.", bsize=12.5)
+    d.card(s, LEFT + 7.45, 2.1, 4.1, 2.2, "Covered in Part 1", "Slide 12: prompt injection, the OWASP LLM Top 10 "
+           "and NIST's advice to limit what the model can do. Slide 14: JADEPUFFER, an agent nothing limited.", bsize=12.5)
     d.card(s, LEFT + 7.45, 4.45, 4.1, 1.95, "Tested elsewhere", "safety-trust-engine runs garak, AgentDojo and PyRIT "
            "against live models and agents, with the same gate pattern.", dark=True, bsize=12.5)
     d.footer(s, "NIST AI 100-2e2025 §3 and its taxonomy index. Technical guide §22 and §5.")
     d.notes(s, "For generative AI, NIST keeps the three objectives and the supply chain, adds a fourth objective, misuse "
             "enablement, and adds classes that work through prompts: direct and indirect prompt injection, misaligned "
             "outputs, prompt extraction, leaks from user interactions, training data attacks, data extraction and the "
-            "compromise of connected resources such as an agent's tools. This repository has no generative-AI demo; the "
+            "compromise of connected resources such as an agent's tools. Slide 14's JADEPUFFER case is the other side of "
+            "agents: one that ran an attack because nothing limited what it could do. This repository has no generative-AI demo; the "
             "companion repository safety-trust-engine tests these classes on live models and agents with the same idea "
             "of a gate.")
 
