@@ -1,0 +1,48 @@
+
+==============================================================================
+Confidentiality: what a model gives away about its training data
+==============================================================================
+Same fictional cohort generator as the other demos. Nothing here is a real patient.
+1000 people train the model (the members). 1000 people from the same population never reach it (the strangers). The attacker holds 200 more strangers of their own, to learn what a stranger's answer looks like.
+Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own training rows: 1.000. On strangers: 0.605.
+The outcome is a weighted coin toss, so no model can honestly get far above 0.6. A perfect score on the training rows means the model remembers the answers.
+
+==============================================================================
+1. Membership inference: was this person in the training data? (NISTAML.033)
+==============================================================================
+The attacker sends a person's row and reads how sure the model is of that person's real outcome. People the model trained on get a higher number.
+  Step 1, ask.       Average confidence in the truth: members 0.83, strangers 0.54.
+  Step 2, calibrate. Only 10.0% of the attacker's 200 strangers score above 0.72: that is the threshold.
+  Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
+Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
+
+Two people, both high risk, as the attacker sees them:
+  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 -> called member
+  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 -> called not a member
+
+==============================================================================
+2. Attribute inference: what is the one field I do not know? (NISTAML.03)
+==============================================================================
+The attacker knows everything about a person (age, diagnoses, weight, outcome) except whether they smoke. They ask the model twice, once with 'smoker = no' and once with 'smoker = yes', and keep the answer the model is surer about.
+  Members:   smoking status guessed right for 94.4%.
+  Strangers: smoking status guessed right for 59.6%.
+The strangers' rate is what anyone gets from the population pattern (smokers are more often high risk). The 34.8 points members get on top of it is what the model remembers about them personally.
+
+==============================================================================
+3. Four ways to release the same model
+==============================================================================
+Same data, same attacks. What changes is how far the trees grow and whether the model returns a probability or only a label.
+  Release                                        Test acc Attacker    AUC  Smoker  Smoker
+                                                             right         member  strngr
+  Grown to one row per leaf, probabilities          0.605    91.8%  0.976   94.4%   59.6%
+  Grown to one row per leaf, label only             0.605    69.8%  0.698     n/a     n/a
+  Minimum leaf 10 (demo 3), probabilities           0.627    57.5%  0.678   64.6%   62.0%
+  Minimum leaf 20 (demo 1 floor), probabilities     0.636    54.3%  0.607   62.0%   62.0%
+
+Attacker right: how often the membership attacker is right on a 50/50 mix (50% = coin toss). Smoker member / strngr: attribute attack success on members and on strangers; the gap between the two is the leak (n/a: a label alone gives the attacker nothing to compare).
+Returning only a label shrinks the leak but does not close it: a model that is right about every member still gives them away. Stopping the trees from memorising closes most of it, and the honest model is no less accurate on strangers.
+
+==============================================================================
+4. Where the deck goes from here
+==============================================================================
+This is the simple version. Part 4B runs GRAIMATTER's full checks on the same cohort: demo 1 (a stronger membership attack, a planted person, the safe wrapper, query limits) and demo 2 (SACRO-ML's LiRA). The model itself is confidential too: demo 3, section 2, copies it with 200 queries.

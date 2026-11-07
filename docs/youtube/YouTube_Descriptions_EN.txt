@@ -26,7 +26,7 @@ https://github.com/olonok69/graimatter_ML
 For attacks on LLMs and agents, the companion repository:
 https://github.com/olonok69/safety-trust-engine
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
 
 References: NIST AI 100-2e2025, Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (March 2025). MITRE ATLAS. OWASP Machine Learning Security Top 10 and OWASP Top 10 for LLM Applications 2025. Sysdig Threat Research Team, JADEPUFFER: agentic ransomware for automated database extortion (July 2026).
 
@@ -54,7 +54,7 @@ This is a summary of the documents, not legal advice.
 Repository with the demos and the guides, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
 
 References: NIST AI 100-2e2025. MITRE ATLAS, release 2026.09. OWASP ML Security Top 10 (draft, 2023) and OWASP Top 10 for LLM Applications 2025. Regulation (EU) 2024/1689, Article 15. Regulation (EU) 2026/1744 (Digital Omnibus on AI). EDPB Opinion 28/2024. DSIT, Code of Practice for the Cyber Security of AI (January 2025). ETSI EN 304 223 (January 2026). NCSC and CISA, Guidelines for secure AI system development (November 2023).
 
@@ -83,14 +83,14 @@ The demos and the attacks in detail come in videos 4a and 4b.
 Repository with the demos and the guides, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
 
 References: GRAIMATTER Green Paper, Recommendations for disclosure control of trained machine learning models from Trusted Research Environments (DARE UK, September 2022). NIST AI 100-2e2025.
 
 
 VIDEO 4A
 
-Suggested title: Adversarial machine learning, part 4a: the attacks in detail, integrity and supply chain
+Suggested title: Adversarial machine learning, part 4a: the attacks in detail, the CIA triad and the supply chain
 
 Description:
 
@@ -102,17 +102,19 @@ The CIA triad in machine learning, and how to read a NISTAML identifier.
 Availability: data and model poisoning, clean-label poisoning and energy-latency attacks.
 Integrity: evasion, black-box evasion, backdoors, targeted poisoning, clean-label backdoors and model poisoning.
 Demo 3, live. Evasion: 78.7% of high-risk people evade by misreporting a form, and measuring smoking and weight in clinic brings it down to 20.7%. Backdoor: with 2% poisoned rows the trigger works every time, accuracy barely moves, and an outlier screen finds only 25% of the quiet poison.
+Confidentiality: membership inference, attribute inference and extraction, and three families of defence.
+Demo 5, live. A model that memorised its training data gives away who was in it: the attacker is right 92% of the time, where a coin toss gets 50%, and guesses a hidden field (smoking) for 94% of members against 60% of strangers. Returning only a label still leaks; stopping the model from memorising closes most of the gap and costs no accuracy.
 Supply chain: a swapped model with a backdoor, code hidden in a pickle, a key cut from 256 to 40 bits and a safe-wrapper rule lowered from 20 rows to 1.
 Demo 4, live: all four files pass the usual check, and a SHA-256 pinned at approval refuses every one. We also see its limit: a hash taken from the tampered copy accepts it.
 
 All the data is synthetic: nothing in the demos is a real patient.
 
-Repository with the demos, the technical guide (sections 12 to 15) and the demo guide, in English and Spanish:
+Repository with the demos, the technical guide (sections 12 to 16) and the demo guide, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
 
-References: NIST AI 100-2e2025, sections 2.1 to 2.3 and 3.2. OWASP ML01, ML02, ML06 and ML10. MITRE ATLAS AML.T0015, AML.T0020 and AML.T0010. UK Code of Practice, principle 7 and provision 8.1.2.
+References: NIST AI 100-2e2025, sections 2.1 to 2.4 and 3.2. OWASP ML01, ML02, ML06 and ML10. MITRE ATLAS AML.T0015, AML.T0020 and AML.T0010. UK Code of Practice, principle 7 and provision 8.1.2.
 
 
 VIDEO 4B
@@ -143,6 +145,6 @@ https://github.com/olonok69/graimatter_ML
 For attacks on LLMs and agents, the companion repository:
 https://github.com/olonok69/safety-trust-engine
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
 
 References: NIST AI 100-2e2025, sections 2.4 and 3. GRAIMATTER Green Paper (DARE UK, 2022). SACRO-ML. Wang et al., EvilModel (2021). Adi et al., Turning your weakness into a strength: watermarking deep neural networks by backdooring (2018). Song et al., Machine learning models that remember too much (2017). Regulation (EU) 2024/1689, Article 15.

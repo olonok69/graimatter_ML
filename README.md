@@ -2,18 +2,18 @@
 
 Trained models can be fooled, poisoned, copied and made to give away the data they learned from. This repository is a workshop on that field, adversarial machine learning (AML). It explains the attacks with the taxonomy of [NIST AI 100-2e2025](NIST.AI.100-2e2025.pdf), compares what the main frameworks ask for (MITRE ATLAS, OWASP, the EU AI Act and the UK Code of Practice), and then goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the [GRAIMATTER green paper](GRAIMATTER%20Green%20Paper.pdf) recommends.
 
-Five demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
+Six demos run the attacks and controls on synthetic data, and a release gate judges their results against the frameworks, in CI. There are no real patients anywhere in this repository.
 
 | Part | What it covers | Demo |
 | --- | --- | --- |
 | 1. Attacks | Evasion, poisoning and backdoors, supply chain, privacy attacks, generative AI, real incidents from ATLAS, JADEPUFFER (ransomware run by an AI agent), mitigations and their limits | Demo 3: evasion, extraction, backdoor. Demo 4: a tampered supply chain |
 | 2. Frameworks | NIST AI 100-2, MITRE ATLAS, OWASP ML and LLM Top 10, EU AI Act Art. 15, UK Code of Practice and ETSI EN 304 223, with a crosswalk | |
 | 3. GRAIMATTER | Disclosure control for models leaving a TRE: membership and attribute inference, safe wrappers, release checks, query budgets | Demo 1 (hand-written checks) and demo 2 (SACRO-ML), run in part 4 |
-| 4. The attacks in detail | Every NIST class one by one: availability, integrity, supply chain, privacy, generative AI, then the release gate | All four demos, section by section, demo 6 (hiding data in a model), and the gate |
+| 4. The attacks in detail | Every NIST class one by one: availability, integrity, confidentiality, supply chain, privacy in depth, generative AI, then the release gate | Demos 1 to 4 section by section, demo 5 (confidentiality, the simple version), demo 6 (hiding data in a model), and the gate |
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 55 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up, and Appendix B takes the JADEPUFFER attack apart step by step. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 57 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up, and Appendix B takes the JADEPUFFER attack apart step by step. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
 
 ## Part 1: the attacks
 
@@ -79,6 +79,19 @@ Test accuracy moves by 0.02 at most, so a holdout check like GRAIMATTER's would 
 
 The scan finds no code in the backdoored file, because the backdoor lives in the weights; only the pin catches it. And a pin taken from the tampered download accepts it: a digest proves a file is the one approved, not that the approved one is sound. Signed releases (Sigstore, OpenSSF model signing), build provenance (SLSA), an AI bill of materials and formats that cannot hold code (safetensors) cover what a hash cannot. The demo's payload only writes a line to a log, and nothing in it encrypts anything or touches real cryptographic software.
 
+### Demo 5: confidentiality, the simple version
+
+**Membership and attribute inference (NISTAML.033, OWASP ML03-ML04, ATLAS AML.T0024).** `demo/run_confidentiality_demo.py` is run in part 4A to close the CIA triad before part 4B goes deep with GRAIMATTER. A random forest like demo 3's, grown to one training person per leaf, is attacked with query access only (`demo/output/confidentiality_report.txt`):
+
+| Release of the same data | Test accuracy | Membership attacker right (50% = chance) | Smoker flag guessed: members / strangers |
+| --- | --- | --- | --- |
+| Grown to one row per leaf, probabilities | 0.605 | 91.8% (AUC 0.976) | 94.4% / 59.6% |
+| Same, label only | 0.605 | 69.8% | n/a |
+| Minimum leaf 10 (demo 3) | 0.627 | 57.5% | 64.6% / 62.0% |
+| Minimum leaf 20 (demo 1's floor) | 0.636 | 54.3% | 62.0% / 62.0% |
+
+Returning only a label shrinks the leak but does not close it; not letting the model memorise closes most of it and costs no accuracy here. The strangers' column is the population baseline, so the leak is the gap between the two. Walkthrough with links to the code: demo guide §5.
+
 ### JADEPUFFER: when the agent is the attacker
 
 Every attack above targets a model. JADEPUFFER (Sysdig, July 2026) is the reverse: an extortion campaign that Sysdig assesses as the first documented case of agentic ransomware, run by an LLM agent. It is covered in prose only (slide 14, technical guide §6.1 and Appendix B); there is no demo.
@@ -100,8 +113,8 @@ It is not a NISTAML class, because NIST classifies attacks on AI and here the AI
 | Evasion | NISTAML.022, .025 | ML01 | AML.T0015 | adversarial examples, model evasion | 3.1, 9 | demo 3 |
 | Data poisoning, backdoor | NISTAML.013, .023 | ML02, LLM04 | AML.T0020 | data poisoning | 6.2, 8.2 | demo 3 |
 | Model poisoning, supply chain | NISTAML.026, .051 | ML06, ML10, LLM03 | AML.T0010, AML.T0018 | model poisoning | 7, 8.1.2 | demo 4 |
-| Membership inference | NISTAML.033 | ML04 | AML.T0024.000 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
-| Attribute inference, inversion | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | confidentiality attacks | 3.1, 9.4 | demos 1-2 |
+| Membership inference | NISTAML.033 | ML04 | AML.T0024.000 | confidentiality attacks | 3.1, 9.4 | demos 1, 2 and 5 |
+| Attribute inference, inversion | §2.4.1, NISTAML.032 | ML03 | AML.T0024.001 | confidentiality attacks | 3.1, 9.4 | demos 1, 2 and 5 |
 | Model extraction | NISTAML.031 | ML05 | AML.T0024.002 | confidentiality attacks | 6.2, 9.4 | demo 3 |
 | Prompt injection | NISTAML.015, .018 | LLM01 | AML.T0051 | not named | 3.1, 6 | – |
 
@@ -249,10 +262,11 @@ uv pip install -r demo/requirements.txt
 
 `demo/requirements.txt` installs `numpy`, `scikit-learn` and `sacroml`. The `sacroml` install also brings in PyTorch.
 
-Run the five demos:
+Run the six demos:
 
 ```powershell
 uv run python demo/run_aml_demo.py            # seconds
+uv run python demo/run_confidentiality_demo.py  # seconds
 uv run python demo/run_supply_chain_demo.py   # seconds
 uv run python demo/run_demo.py                # seconds
 uv run python demo/run_sacroml_demo.py        # a few minutes
@@ -291,6 +305,8 @@ python docs/make_deck.py
 | `GRAIMATTER Green Paper.pdf` | The GRAIMATTER green paper (99 pages) |
 | `demo/run_aml_demo.py` | Demo 3: evasion, extraction, backdoor |
 | `demo/aml_demo/` | Evasion search, model extraction, poisoning and outlier screen |
+| `demo/run_confidentiality_demo.py` | Demo 5: membership and attribute inference, the simple version |
+| `demo/confidentiality_demo/` | The two attacks, written as their steps (ask, calibrate, decide; fill in, ask, guess) |
 | `demo/run_supply_chain_demo.py` | Demo 4: a supplied model and its files, tampered on the way |
 | `demo/supply_chain/` | Pinned digests, pickle import scan, downgrade floors, harmless payload |
 | `demo/run_demo.py` | Demo 1: hand-written GRAIMATTER checks |
@@ -301,9 +317,9 @@ python docs/make_deck.py
 | `demo/compliance_gate/` | Controls by regime pack, tolerances, verdicts and the JSON and Markdown report |
 | `demo/graimatter_demo/` | Cohort, metrics, attacks, safe wrapper, release policy, query gate, differential-privacy sketch |
 | `demo/constraints.json` | Hyperparameter envelope for the safe wrapper |
-| `demo/output/` | Seeded reports of the five demos and the files demo 1 writes |
+| `demo/output/` | Seeded reports of the six demos and the files demo 1 writes |
 | `demo/output/gate/` | Sample gate reports: default packs and the US pack, demos 1, 3 and 4 |
-| `tests/` | Regenerated reports match `demo/output/`; the gate's verdicts on the seeded run |
+| `tests/` | Regenerated reports match `demo/output/`; the gate's verdicts on the seeded run; demos 5 and 6 |
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |

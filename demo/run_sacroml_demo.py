@@ -325,7 +325,7 @@ def main() -> dict:
     )
     report.save(OUTPUT / "sacroml_report.txt")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
-    # compliance_gate/tolerances.py, demo2_readings(), reads them (Demo guide §5.3).
+    # compliance_gate/tolerances.py, demo2_readings(), reads them (Demo guide §7.3).
     return {
         "sacroml_version": SACROML_VERSION,
         "unsafe_config_flagged": bool(disclosive),

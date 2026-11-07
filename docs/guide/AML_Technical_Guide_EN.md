@@ -1,8 +1,8 @@
 # Adversarial Machine Learning: Technical Guide for the Workshop
 
-**How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with five demos on synthetic data**
+**How trained models are attacked, what the main frameworks ask for, and GRAIMATTER as a high-trust case, with six demos on synthetic data**
 
-This guide goes with the deck (`docs/Adversarial_ML.pptx`), which is also recorded as a video series, the five demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` and `demo/run_stego_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Part 4 takes every NIST attack class one by one and runs the demo that shows it, section by section. Each part is one video, and Part 4 is two (4a and 4b); Appendix A maps every section to its slides and its video. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 55 slides in order and points back to this guide. To follow the demos through their code, section by section of what they print, use the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)).
+This guide goes with the deck (`docs/Adversarial_ML.pptx`), which is also recorded as a video series, the six demo scripts in this repository (`demo/run_aml_demo.py`, `demo/run_confidentiality_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` and `demo/run_stego_demo.py`) and the release gate that judges their results (`demo/run_gate.py`). It is written for a data scientist who has read neither the NIST report nor the GRAIMATTER green paper. Part 1 explains the attacks with the taxonomy of NIST AI 100-2e2025 and a small demo for each branch. Part 2 compares the frameworks that turn the attacks into practice. Part 3 goes deep on one high-trust setting: releasing trained models from a trusted research environment (TRE), as the GRAIMATTER green paper recommends. Part 4 takes every NIST attack class one by one and runs the demo that shows it, section by section. Each part is one video, and Part 4 is two (4a and 4b); Appendix A maps every section to its slides and its video. To present the deck slide by slide, use the presenter guide ([English](Presenter_Guide_EN.md), [Spanish](Guia_Presentador_ES.md)), which follows the 57 slides in order and points back to this guide. To follow the demos through their code, section by section of what they print, use the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)).
 
 > **How to read this guide.** Each section opens with a short **In plain words** box. The text after it goes into detail. Parts marked **Under the hood** describe exactly what the code does and can be skipped. The NIST report is cited by section of `NIST.AI.100-2e2025.pdf`, the green paper by section and page of `GRAIMATTER Green Paper.pdf`. Demo numbers are cited from `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) and `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -683,6 +683,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 
 * *How.* Dinur and Nissim showed that enough linear statistics reveal individual records; a large study by the US Census Bureau of this risk led to differential privacy in the 2020 census. For ML classifiers, **model inversion** recovers class representatives rather than exact rows; stronger attacks recover training samples from neural-network parameters, helped by the tendency of networks to memorise. **Attribute inference**, filling in a sensitive field of a record from partial knowledge of it, is the related attack NIST describes here.
 * *Defences.* Differential privacy gives a provable bound; the green paper adds structural checks, because some models simply store rows.
+* *Here, simple version.* Demo 5, section 2 (video 4a): a forest grown to one row per leaf lets an attacker who knows everything but the smoker flag guess it for 94.4% of members, against 59.6% of strangers, the population baseline.
 * *Here.* Reconstruction is trivial when the model stores its training rows: the 1-nearest-neighbour model holds all 500 and the SVC 423 support vectors, so demo 1 refuses both (§19.6); the paper's case study found 441 exact patient rows out of 798 in an SVM. The planted-record sweep (§19.2) is attribute inference: 20 queries recover two hidden fields. The release gate files attribute inference under .032 (section 23.3).
 
 **Membership inference (NISTAML.033, §2.4.2).** The attacker decides whether a given record was in the training set.
@@ -690,6 +691,7 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 * *Why it matters.* Membership alone can be sensitive, as in a study of patients with a rare disease, and it is a building block for extracting training data.
 * *How.* First shown on genomic statistics in 2008 (tracing attacks). For ML models: the **loss-threshold** attack (a row is a member if the model's loss on it is unusually low), refined with per-example thresholds; **shadow models** trained on similar data to teach an attack classifier; **LiRA**, which fits Gaussian distributions to the outputs of a smaller number of shadow models; a single quantile-regression model; and **label-only** attacks. Simple and expensive attacks perform similarly in precision at low false-positive rates, which is why the tail metrics in section 18 matter.
 * *Defences and limits (§2.4.5).* Differential privacy implies an upper bound on membership-inference success, at a cost in utility. NIST recommends empirical privacy auditing alongside it.
+* *Here, simple version.* Demo 5, section 1 (video 4a): a confidence-threshold attack on a forest grown to one row per leaf is right 91.8% of the time on a 50/50 mix (AUC 0.976); returning only labels brings it to 69.8%, a minimum leaf of 20 to 54.3%.
 * *Here.* Demos 1 and 2: the unconstrained tree reaches a worst-case AUC of 0.708 with the label-aware attack and is refused; the wrapped tree falls to 0.528; the package's probability-only attack reports 0.500 on both (§19 to §21).
 
 **Property inference (NISTAML.034, §2.4.3).** Also called distribution inference: the attacker learns a global property of the training data, such as the share of records with a sensitive attribute, rather than anything about one person.
@@ -698,6 +700,8 @@ For generative AI, NIST's fourth objective, misuse enablement (NISTAML.04), fits
 * *Defences and limits.* Several papers report negative results for differential privacy here: it protects individuals, and the property is a statistic of the population.
 * *Example (illustration).* A model trained in a TRE could reveal what share of a hospital's patients have a condition the hospital has not published, even if no individual is exposed.
 * *Here.* Not demonstrated.
+
+**The simple version first: demo 5 (video 4a, slides 32 and 33).** Video 4a closes the CIA triad with [`demo/run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), so confidentiality is not left for 4b alone. It runs the two simplest data-privacy attacks with nothing but query access: a membership attack in three steps (ask the model how sure it is of a person's real outcome, calibrate a threshold on people known not to be members, decide) and an attribute attack that fills in one hidden field. Then it compares four releases of the same data. A label instead of a probability shrinks the leak but does not close it; a minimum leaf of 20, the floor of demo 1's safe wrapper, closes most of it with no loss of accuracy. The code is in [`confidentiality_demo/`](../../demo/confidentiality_demo/) and the walkthrough in [demo guide §5](Demo_Guide_EN.md#5-demo-5-confidentiality-the-simple-version). It is standalone: the gate reads these attacks from demo 1.
 
 **Running it (video 4b).** Extraction is demo 3's section 2 (section 3.2 here, §3.2 in the [demo guide](Demo_Guide_EN.md)). Membership inference, attribute inference and reconstruction are what demos 1 and 2 test: sections 17 to 21 go through them section by section.
 
@@ -757,7 +761,7 @@ The demo reports it at A = 0.5 (half the candidates are members) and A = 0.01 (o
 
 ### 18.1 The three readings, worked through
 
-> **In plain words.** Slide 39 reads an attack in three ways: the average (AUC and advantage), the tail (FDIF and TPR at low FPR), and how rare a member is (the posterior). Each one answers a different question, and a model can pass one and fail another. Here each is worked through with numbers small enough to check by hand.
+> **In plain words.** Slide 41 reads an attack in three ways: the average (AUC and advantage), the tail (FDIF and TPR at low FPR), and how rare a member is (the posterior). Each one answers a different question, and a model can pass one and fail another. Here each is worked through with numbers small enough to check by hand.
 
 **1. The average: AUC and advantage.** Take 4 members (M) and 4 non-members (N), with these attack scores:
 
@@ -1131,6 +1135,7 @@ uv venv --python 3.11
 uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
 
 uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
+uv run python demo/run_confidentiality_demo.py  # seconds; writes demo/output/confidentiality_report.txt
 uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
 uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
 uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
@@ -1251,7 +1256,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 ## Appendix A: how the guide, slides, videos and demos line up
 
-The guide and the deck follow the same order, and each part is one video of the series: Part 1, the attacks (sections 1 to 7, slides 1 to 15, video 1); Part 2, the frameworks (section 8, slides 16 to 20, video 2); Part 3, the GRAIMATTER case (sections 9 to 11, slides 21 to 25, video 3); Part 4, the attacks in detail (sections 12 to 22, slides 26 to 51, videos 4a and 4b; slide 50, demo 6, is covered in §9.4 and demo guide §6). The closing (sections 23 to 27, slides 52 to 55) ends video 4b.
+The guide and the deck follow the same order, and each part is one video of the series: Part 1, the attacks (sections 1 to 7, slides 1 to 15, video 1); Part 2, the frameworks (section 8, slides 16 to 20, video 2); Part 3, the GRAIMATTER case (sections 9 to 11, slides 21 to 25, video 3); Part 4, the attacks in detail (sections 12 to 22, slides 26 to 53, videos 4a and 4b; slide 52, demo 6, is covered in §9.4 and demo guide §6). The closing (sections 23 to 27, slides 54 to 57) ends video 4b.
 
 | Guide section | Slides (deck order) | Video | Demo output |
 |---|---|---|---|
@@ -1273,27 +1278,28 @@ The guide and the deck follow the same order, and each part is one video of the 
 | 12. Reading the NIST taxonomy | 26 *Part 4a*, 27 *How to read the taxonomy* | 4a | – |
 | 13. Availability | 28 *Availability* | 4a | – |
 | 14. Integrity | 29 *Integrity*, 30 *Evasion step by step*, 31 *Backdoor step by step* | 4a | `aml_report.txt` §1 and §3 |
-| 15. Supply chain | 32 *Supply chain*, 33 *Demo 4 step by step* | 4a | `supply_chain_report.txt` |
-| 16. Privacy | 34 *Part 4b*, 35 *Privacy*, 36 *Extraction step by step* | 4b | `aml_report.txt` §2 |
-| 17. Cohort and holdout | 37 *TECH 6 · TECH 8 · The cohort* | 4b | `data_dictionary.json` |
-| 18. Metrics | 39 *Appendix F · Reading attack metrics* | 4b | – |
-| 19.2 Planted record | 38 *Appendix E · Attribute inference* | 4b | `demo_report.txt` §2 |
-| 19.3 Differential privacy | 46 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
-| 19.4 Unconstrained tree | 40 *Demo 1 · Unconstrained tree* | 4b | `demo_report.txt` §4 |
-| 19.5 Safe wrapper and the quiet failure | 41 *Demo 1 · Safe wrapper*, 42 *Appendix F · The tail* | 4b | `demo_report.txt` §5 |
-| 19.6 Instance-based models | 43 *TECH 11* | 4b | `demo_report.txt` §6 |
-| 19.7 Editing after `fit()` | 44 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 19.8 Query budget | 45 *TECH 16* | 4b | `demo_report.txt` §8 |
-| 19.9 Register and snapshot | 43 (notes) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
-| 20. SACRO-ML | 47 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 21.1 Differences | 49 *Two demos compared* | 4b | both reports |
-| 21.2 Why the membership numbers differ | 48 *Why the two membership numbers differ* | 4b | – |
-| 9.4 Hiding data in a model | 50 *Demo 6 · Hiding data in a model* | 4b | `stego_report.txt` |
-| 22. Beyond predictive AI | 51 *Beyond predictive AI* | 4b | – |
-| 25. Limits | 52 *Limits* | 4b | – |
-| 23. Release gate | 53 *Release gate* | 4b | `demo/output/gate/` |
-| 24. How to reproduce | 54 *Run it yourself* | 4b | – |
-| 26. Glossary, 27. References | 55 *References* | 4b | – |
+| 16. Privacy, the simple version (demo 5) | 32 *Confidentiality*, 33 *Demo 5 step by step* | 4a | `confidentiality_report.txt` |
+| 15. Supply chain | 34 *Supply chain*, 35 *Demo 4 step by step* | 4a | `supply_chain_report.txt` |
+| 16. Privacy | 36 *Part 4b*, 37 *Privacy*, 38 *Extraction step by step* | 4b | `aml_report.txt` §2 |
+| 17. Cohort and holdout | 39 *TECH 6 · TECH 8 · The cohort* | 4b | `data_dictionary.json` |
+| 18. Metrics | 41 *Appendix F · Reading attack metrics* | 4b | – |
+| 19.2 Planted record | 40 *Appendix E · Attribute inference* | 4b | `demo_report.txt` §2 |
+| 19.3 Differential privacy | 48 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
+| 19.4 Unconstrained tree | 42 *Demo 1 · Unconstrained tree* | 4b | `demo_report.txt` §4 |
+| 19.5 Safe wrapper and the quiet failure | 43 *Demo 1 · Safe wrapper*, 44 *Appendix F · The tail* | 4b | `demo_report.txt` §5 |
+| 19.6 Instance-based models | 45 *TECH 11* | 4b | `demo_report.txt` §6 |
+| 19.7 Editing after `fit()` | 46 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 19.8 Query budget | 47 *TECH 16* | 4b | `demo_report.txt` §8 |
+| 19.9 Register and snapshot | 45 (notes) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
+| 20. SACRO-ML | 49 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 21.1 Differences | 51 *Two demos compared* | 4b | both reports |
+| 21.2 Why the membership numbers differ | 50 *Why the two membership numbers differ* | 4b | – |
+| 9.4 Hiding data in a model | 52 *Demo 6 · Hiding data in a model* | 4b | `stego_report.txt` |
+| 22. Beyond predictive AI | 53 *Beyond predictive AI* | 4b | – |
+| 25. Limits | 54 *Limits* | 4b | – |
+| 23. Release gate | 55 *Release gate* | 4b | `demo/output/gate/` |
+| 24. How to reproduce | 56 *Run it yourself* | 4b | – |
+| 26. Glossary, 27. References | 57 *References* | 4b | – |
 
 ### The video series
 
@@ -1302,8 +1308,8 @@ The guide and the deck follow the same order, and each part is one video of the 
 | 1 · Attacks | §1 to §7 | 1 to 15 | Demos 3 and 4, briefly | 45 minutes |
 | 2 · Frameworks | §8 | 16 to 20 | – | 13 minutes |
 | 3 · GRAIMATTER, a high-trust case | §9 to §11 | 21 to 25 | – | 10 minutes |
-| 4a · The attacks in detail: integrity and supply chain | §12 to §15 | 26 to 33 | Demo 3 (sections 1 and 3) and demo 4, section by section | 30 minutes plus the runs |
-| 4b · The attacks in detail: privacy and a release gate | §16 to §27 | 34 to 55 | Demo 3 (section 2), demos 1, 2 and 6, the gate | 45 minutes plus the runs |
+| 4a · The attacks in detail: the CIA triad and the supply chain | §12 to §15, and demo 5 from §16 | 26 to 35 | Demo 3 (sections 1 and 3), demo 5 and demo 4, section by section | 40 minutes plus the runs |
+| 4b · The attacks in detail: privacy and a release gate | §16 to §27 | 36 to 57 | Demo 3 (section 2), demos 1, 2 and 6, the gate | 45 minutes plus the runs |
 
 To present it as one live session instead, go through the slides in order; Part 4 then takes about as long as Parts 1 to 3 together, so for a session of about 90 minutes present Parts 1 to 3 and take from Part 4 only the demo slides you run. Demo 2 takes a few minutes, so show it from its saved report unless you can wait.
 

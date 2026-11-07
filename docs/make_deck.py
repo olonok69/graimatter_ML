@@ -195,7 +195,7 @@ def build():
     s.shapes[-1].top = 0
     d.text(s, LEFT, 3.75, 10.8, 0.9, "How trained models are attacked, what the main frameworks ask for, and how GRAIMATTER "
            "handles one high-trust setting: releasing models from a trusted research environment", 21, "#D9DEE6")
-    d.chips(s, LEFT, 5.05, ["5 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
+    d.chips(s, LEFT, 5.05, ["6 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
     d.footer(s, "Synthetic data only. Code, guides (EN/ES) and figures: github.com/olonok69/graimatter_ML", dark=True)
     d.notes(s, "This series has four parts, the last in two videos. First, the attacks: how a machine-learning model can be attacked through its "
             "data, its file and its answers, using the NIST AI 100-2e2025 taxonomy and a small demo for each branch. Second, "
@@ -212,8 +212,8 @@ def build():
                            "One crosswalk.", False),
         ("3 · High-trust case", "GRAIMATTER: what a TRE protects, the two families of control, the paper's "
                                 "recommendations, what carries over.", False),
-        ("4a · In detail", "Each NIST class of availability, integrity and supply chain, with demos 3 and 4 run "
-                           "section by section.", False),
+        ("4a · In detail", "Availability, integrity, confidentiality and the supply chain, class by class, with "
+                           "demos 3, 5 and 4 run section by section.", False),
         ("4b · In detail", "Each privacy class, extraction, demos 1 and 2 section by section, generative AI and the "
                            "release gate.", False),
     ]
@@ -221,14 +221,16 @@ def build():
         d.card(s, LEFT + i * 2.35, 2.25, 2.15, 2.75, a, b, dark=dark, tsize=16, bsize=12.5)
     d.rect(s, LEFT, 5.3, WIDTH, 0.95, PEACHBG)
     d.text(s, LEFT + 0.25, 5.3, WIDTH - 0.5, 0.95, [[("Demos: ", True), ("demo 3 shows evasion, a backdoor and model "
-           "extraction; demo 4 tampers with a supplied model and its files; demos 1 and 2 show membership and attribute "
-           "inference and the GRAIMATTER controls. All four use the same synthetic cohort.", False)]], 14, INK,
+           "extraction; demo 5 the simplest membership and attribute attacks; demo 4 tampers with a supplied model and its "
+           "files; demos 1 and 2 the GRAIMATTER checks; demo 6 hides data in a model. Same synthetic cohort.", False)]], 14, INK,
            anchor=MSO_ANCHOR.MIDDLE)
-    d.footer(s, "In demo/: run_aml_demo.py (3), run_supply_chain_demo.py (4), run_demo.py (1), run_sacroml_demo.py (2).")
+    d.footer(s, "In demo/: run_aml_demo.py (3), run_confidentiality_demo.py (5), run_supply_chain_demo.py (4), run_demo.py (1), "
+             "run_sacroml_demo.py (2), run_stego_demo.py (6).")
     d.notes(s, "The order goes from general to specific and back to the detail. Part 1 gives the vocabulary, Part 2 maps it "
             "to what standards and law ask for, Part 3 shows one sector that has worked out one branch, privacy, in depth. "
             "Part 4 takes every NIST attack class in turn and runs the demo that shows it, section by section: 4a covers "
-            "availability, integrity and the supply chain with demos 3 and 4, 4b covers privacy with demos 1 and 2 and ends "
+            "availability, integrity, confidentiality and the supply chain with demos 3, 5 and 4, 4b covers privacy in depth with "
+            "demos 1 and 2 and ends "
             "with the release gate. The demos are small on purpose: numpy and scikit-learn, seconds to run, so you can "
             "change a parameter and see the effect.")
 
@@ -704,20 +706,22 @@ def build():
 
 
     d.prefix = ""
-    s = d.slide("PART 4A · THE ATTACKS IN DETAIL", "Integrity and the supply chain: each NIST class, then its demo",
+    s = d.slide("PART 4A · THE ATTACKS IN DETAIL", "The CIA triad and the supply chain: each NIST class, then its demo",
                 dark=True, title_size=36)
     d.rect(s, 0, 0, 0.17, 7.5, ORANGE, shape=MSO_SHAPE.RECTANGLE)
     s.shapes[-1].top = 0
     d.text(s, LEFT, 3.2, 10.8, 1.4, "Part 1 named the attacks. Part 4 takes NIST's classes one at a time: what the "
            "attacker does, the defences and their limits, and where the repository shows it. Then we run the demo, "
            "section by section, and read every number it prints.", 18, "#D9DEE6")
-    d.chips(s, LEFT, 5.0, ["Availability (NISTAML.01)", "Integrity (NISTAML.02)", "Supply chain (NISTAML.05)",
-                           "Demos 3 and 4"])
-    d.footer(s, "NIST AI 100-2e2025 §2.1-2.3 and §3.2. Technical guide §12-15; demo guide §3 and §4.", dark=True)
+    d.chips(s, LEFT, 5.0, ["Availability (.01)", "Integrity (.02)", "Confidentiality (.03)", "Supply chain (.05)",
+                           "Demos 3, 5 and 4"])
+    d.footer(s, "NIST AI 100-2e2025 §2.1-2.4 and §3.2. Technical guide §12-16; demo guide §3, §4 and §5.", dark=True)
     d.notes(s, "In the first part we went through the attacks quickly. Now we take them one by one, in the order of the NIST "
-            "taxonomy. This half covers the two objectives that GRAIMATTER does not deal with, availability and integrity, "
-            "and the supply chain. For each class: what the attacker does, what the defences are and where they stop, and "
-            "where this repository shows it. Then we run demos 3 and 4 and read their output section by section.")
+            "taxonomy, the three properties of the CIA triad: availability, integrity and confidentiality, and then the supply "
+            "chain. For each class: what the attacker does, what the defences are and where they stop, and where this "
+            "repository shows it. Then we run the demo and read its output section by section: demo 3 for integrity, demo 5 "
+            "for confidentiality in its simplest form, demo 4 for the supply chain. Part 4B then goes deep on "
+            "confidentiality with GRAIMATTER.")
     d.prefix = "PART 4A · "
 
     s = d.slide("NIST AI 100-2 · HOW TO READ THE TAXONOMY", "The CIA triad, and how to read a NISTAML identifier")
@@ -859,6 +863,73 @@ def build():
             "Test accuracy stays within 0.02. The isolation forest catches most of the loud trigger at low doses and little "
             "of the quiet one, and its catch falls as the poison grows, because a dense cluster stops looking rare.")
 
+    s = d.slide("NISTAML.03 · CONFIDENTIALITY", "Confidentiality: the model remembers who it saw")
+    leaks = [
+        ("Who was in the data", "Membership inference, NISTAML.033. Being in a hospital's training set can itself be "
+                                "the secret. Here: demo 5, section 1."),
+        ("What is in a record", "Attribute inference. Knowing all but one field of a person, the model fills in the "
+                                "last one. Here: demo 5, section 2; demo 1 in part 4B."),
+        ("The model itself", "Extraction, NISTAML.031. Queries rebuild a copy of the model. Here: demo 3, section 2, "
+                             "in part 4B."),
+    ]
+    for i, (a, b) in enumerate(leaks):
+        d.card(s, LEFT + i * 3.9, 2.15, 3.75, 2.05, a, b, dark=(i == 0), bsize=12.5)
+    d.table(s, LEFT, 4.4, WIDTH, [
+        ["Defence", "What it does", "Its limit"],
+        ["Do not memorise", "Larger leaves, regularisation, differential privacy", "Costs accuracy only if pushed "
+                                                                                  "too far; DP costs more"],
+        ["Return less", "A label instead of a probability, rounded scores", "Shrinks the leak, does not close it"],
+        ["Limit queries", "A budget per user, counted in rows (demo 1, TECH 16)", "Several accounts multiply it"],
+    ], [2.3, 4.75, 4.5], size=12, row_h=0.42)
+    d.rect(s, LEFT, 6.2, WIDTH, 0.5, NAVY)
+    d.text(s, LEFT + 0.25, 6.2, WIDTH - 0.5, 0.5, [[("Quiet by design: ", True), ("the model works for everyone. The leak "
+           "is in how sure it is about the people it trained on.", False)]], 13, CREAM, anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "NIST AI 100-2e2025 §2.4. Technical guide §16; demo guide §5.")
+    d.notes(s, "The third property of the triad is confidentiality, which NIST calls privacy. In machine learning there are "
+            "three secrets. The first is who was in the training data: if a model was trained only on the patients of one "
+            "clinic, proving that someone was in its training data proves they were a patient. The second is what is in a "
+            "person's record: an attacker who knows everything about someone except one field can ask the model to fill it "
+            "in. The third is the model itself, which queries can copy; we run that in part 4B. The first two are what demo "
+            "5 shows, in their simplest form. The defences come in three families: stop the model memorising, return less "
+            "in each answer, and limit how many answers a user gets. Like integrity attacks, these are quiet: the model "
+            "keeps working for everyone, and the leak is only in how much surer it is about the people it saw.")
+
+    s = d.slide("DEMO 5 · STEP BY STEP", "Demo 5, step by step: ask, calibrate, decide")
+    d.text(s, LEFT, 2.15, 4.6, 4.3, [
+        [("1  The model. ", True), ("Demo 3's random forest, grown to one person per leaf, trained on 1,000 members. "
+         "Training accuracy 1.000; 0.605 on 1,000 strangers.", False)],
+        [("2  Ask. ", True), ("Send a person's row; read how sure the model is of their real outcome. Members 0.83 on "
+         "average, strangers 0.54.", False)],
+        [("3  Calibrate. ", True), ("On 200 strangers of their own, the attacker finds 0.72: only 10% of strangers "
+         "score above it.", False)],
+        [("4  Decide. ", True), ("Above 0.72 means member: 96.0% of members caught, 12.4% of strangers wrongly. "
+         "Right 91.8% of the time, AUC 0.976.", False)],
+        [("5  One field. ", True), ("Try smoker yes and no, keep the surer answer: 94.4% right on members, 59.6% on "
+         "strangers.", False)],
+    ], 13, BODY)
+    d.table(s, LEFT + 4.85, 2.15, 6.7, [
+        ["Release (section 3)", "Test acc", "Attacker right", "Smoker: member / stranger"],
+        ["One per leaf, probabilities", "0.605", "91.8%", "94.4% / 59.6%"],
+        ["One per leaf, label only", "0.605", "69.8%", "n/a"],
+        ["Minimum leaf 10 (demo 3)", "0.627", "57.5%", "64.6% / 62.0%"],
+        ["Minimum leaf 20 (demo 1 floor)", "0.636", "54.3%", "62.0% / 62.0%"],
+    ], [2.5, 1.0, 1.35, 1.85], size=11.5, row_h=0.5, highlight={(1, 2): PEACHBG, (4, 2): "#DCEBDD"})
+    d.card(s, LEFT + 4.85, 4.85, 6.7, 1.55, "How to read it", "50% is a coin toss. The strangers' smoker rate is the "
+           "population pattern; the gap above it is what the model remembers. A label alone still leaks; not memorising "
+           "closes most of it, and costs no accuracy.", dark=True, bsize=12)
+    d.footer(s, "uv run python demo/run_confidentiality_demo.py · confidentiality_report.txt · demo guide §5.")
+    d.notes(s, "Run demo 5. The model is the same kind of random forest as demo 3, but grown until every training person sits "
+            "alone in a leaf, so it scores a perfect 1.000 on its training rows and only 0.605 on strangers: it remembers "
+            "answers rather than learning a pattern. Section 1 is the membership attack in three steps. Ask: send a "
+            "person's row and read the probability the model gives to their real outcome; members average 0.83, strangers "
+            "0.54. Calibrate: the attacker has 200 people they know are not members, and finds the score only 10% of them "
+            "exceed, 0.72. Decide: above that is a member. That catches 96% of members with 12% false alarms, right 92% "
+            "of the time where a coin toss gets 50%. Section 2 hides one field, smoking, and tries both values: 94% right "
+            "on members, 60% on strangers. The 60% is just the population pattern; the 35 points on top is the leak. "
+            "Section 3 is the table: returning only a label still leaks; a minimum leaf of 20, the floor of demo 1's safe "
+            "wrapper, brings the attacker close to a coin toss, and the model is more accurate, not less. Part 4B takes "
+            "this further with GRAIMATTER's own checks.")
+
     s = d.slide("NISTAML.05 · SUPPLY CHAIN", "Supply chain: the attack arrives with what you download")
     sc = [
         ("How", "Pre-trained models with backdoors that survive fine-tuning; control of training randomness (the Dropout "
@@ -928,9 +999,9 @@ def build():
            "then demos 1 and 2 section by section, the classes generative AI adds, and a gate that judges every demo "
            "against named obligations.", 18, "#D9DEE6")
     d.chips(s, LEFT, 5.0, ["Privacy (NISTAML.03)", "Demo 3: extraction", "Demos 1 and 2", "Release gate"])
-    d.footer(s, "NIST AI 100-2e2025 §2.4 and §3. Technical guide §16-23; demo guide §1, §2 and §5.", dark=True)
+    d.footer(s, "NIST AI 100-2e2025 §2.4 and §3. Technical guide §16-23; demo guide §1, §2, §6 and §7.", dark=True)
     d.notes(s, "The second half of the detailed walkthrough is privacy, which NIST uses for confidentiality: the training data "
-            "and the model itself. We start with the classes and with extraction, which demo 3 runs. Then we go through "
+            "and the model itself. Demo 5 showed the simple version in part 4A; here GRAIMATTER does it properly. We start with the classes and with extraction, which demo 3 runs. Then we go through "
             "the GRAIMATTER demos section by section: the hand-written checks of demo 1 and the official SACRO-ML package "
             "in demo 2. We close with the classes generative AI adds and with the release gate.")
     d.prefix = "PART 4B · "
@@ -944,8 +1015,8 @@ def build():
                                 "structural checks for models that store rows", "Demo 1: kNN keeps 500 of 500 rows; "
                                 "20 queries recover two fields"],
         [".033 Membership inference", "Decides whether a record was in training: loss, shadow models, LiRA, label "
-                                      "only", "DP bounds it, at a cost; audit with attacks", "Demos 1 and 2: AUC 0.708, "
-                                      "0.528 wrapped"],
+                                      "only", "DP bounds it, at a cost; audit with attacks", "Demo 5: AUC 0.976 unwrapped. "
+                                      "Demos 1 and 2: 0.708, 0.528 wrapped"],
         [".034 Property inference", "Learns a statistic of the training population", "DP often does not help",
          "–"],
     ], [2.35, 3.6, 3.15, 2.45], size=12, row_h=0.74)
@@ -1277,13 +1348,14 @@ def build():
             "evidence through NIST AI RMF MEASURE 2.6, 2.7 and 2.10 and federal model risk guidance, where a classifier fits "
             "directly. The tolerances are a risk appetite set for the workshop, and the mapping is this repository's own.")
 
-    s = d.slide("RUN IT YOURSELF", "Five demos and a gate, reports under demo/output")
+    s = d.slide("RUN IT YOURSELF", "Six demos and a gate, reports under demo/output")
     d.rect(s, LEFT, 2.2, 6.2, 4.55, NAVY)
     d.text(s, LEFT + 0.3, 2.35, 5.7, 4.25, [
         "uv venv --python 3.11",
         "uv pip install -r demo/requirements.txt",
         "",
         "uv run python demo/run_aml_demo.py",
+        "uv run python demo/run_confidentiality_demo.py",
         "uv run python demo/run_supply_chain_demo.py",
         "uv run python demo/run_demo.py",
         "uv run python demo/run_sacroml_demo.py",
@@ -1297,13 +1369,13 @@ def build():
     ], 12.0, CREAM, font=MONO)
     d.card(s, LEFT + 6.5, 2.2, 5.05, 1.3, "Demos 3 and 4 · seconds", "aml_report.txt: evasion, extraction, backdoor. "
            "supply_chain_report.txt: four tampered files.", bsize=12.5)
-    d.card(s, LEFT + 6.5, 3.6, 5.05, 1.25, "Demos 1 and 6 · seconds", "demo_report.txt, register entry, release reports. "
-           "stego_report.txt: two covert channels and their defences.", bsize=12.5)
+    d.card(s, LEFT + 6.5, 3.6, 5.05, 1.25, "Demos 1, 5 and 6 · seconds", "demo_report.txt, register entry, release reports. "
+           "confidentiality_report.txt. stego_report.txt: covert channels.", bsize=12.5)
     d.card(s, LEFT + 6.5, 4.95, 5.05, 1.5, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
            "per attack.", bsize=12.5)
     d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
     d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "
-            "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demos 3, 4 and 1 run in seconds; demo 2 "
+            "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demos 3, 5, 4, 1 and 6 run in seconds; demo 2 "
             "takes a few minutes. run_gate.py reruns the demos and writes the gate report to demo/output/gate; CI runs it on "
             "every pull request. The guides in docs/guide walk through every report section by section.")
 
