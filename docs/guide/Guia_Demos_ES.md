@@ -2,9 +2,11 @@
 
 **Qué hace cada demo, cómo lo hace el código y cómo leer lo que imprime**
 
-Esta guía trata de los cinco scripts de demo de `demo/` y de la puerta de publicación que los juzga. La [guía técnica](AML_Guia_Tecnica_ES.md) explica los ataques y los marcos, y la [guía del presentador](Guia_Presentador_ES.md) sigue las diapositivas. Esta guía sigue el código: para cada sección que imprime una demo, dice qué funciones la producen, qué calculan y qué significan las cifras que aparecen en pantalla. También está disponible en [inglés](Demo_Guide_EN.md), con los mismos números de sección.
+Esta guía trata de los seis scripts de demo de `demo/` y de la puerta de publicación que los juzga. La [guía técnica](AML_Guia_Tecnica_ES.md) explica los ataques y los marcos, y la [guía del presentador](Guia_Presentador_ES.md) sigue las diapositivas. Esta guía sigue el código: para cada sección que imprime una demo, dice qué funciones la producen, qué calculan y qué significan las cifras que aparecen en pantalla. También está disponible en [inglés](Demo_Guide_EN.md), con los mismos números de sección.
 
-Los números de sección coinciden con las demos. La sección 1 es la demo 1, la sección 2 es la demo 2, y así sucesivamente; la sección 5 es la puerta. Dentro de las demos 1, 3 y 4, la subsección *N* corresponde a la sección que el script imprime como *N*: §1.4 es lo que `run_demo.py` imprime bajo "4. Unconstrained tree", §4.2 es lo que `run_supply_chain_demo.py` imprime bajo "2. A swapped model". Los comentarios del código remiten aquí con esos números, como `Demo guide §1.4`.
+Los números de sección coinciden con las demos. La sección 1 es la demo 1, la sección 2 es la demo 2, y así sucesivamente hasta la demo 6; la sección 7 es la puerta de publicación. Dentro de las demos 1, 3 y 4, la subsección *N* corresponde a la sección que el script imprime como *N*: §1.4 es lo que `run_demo.py` imprime bajo "4. Unconstrained tree", §4.2 es lo que `run_supply_chain_demo.py` imprime bajo "2. A swapped model". Los comentarios del código remiten aquí con esos números, como `Demo guide §1.4`.
+
+**Cómo orientarse.** Debajo de cada título hay una línea gris que empieza por **Diapositiva**: dice con qué diapositiva va la sección y enlaza al código que la produce, fichero a fichero, con las funciones que hay que mirar. Los comentarios del código remiten a esta guía por número de sección. Para seguir una presentación, basta con tener el número de diapositiva en una pantalla y esta guía en la otra.
 
 Todas las cifras citadas salen de las ejecuciones sembradas que están versionadas en `demo/output/`. Todo es sintético; no hay pacientes reales en ninguna parte del repositorio.
 
@@ -17,9 +19,10 @@ Todas las cifras citadas salen de las ejecuciones sembradas que están versionad
 2. [Demo 2: las mismas comprobaciones con SACRO-ML](#2-demo-2-las-mismas-comprobaciones-con-sacro-ml)
 3. [Demo 3: evasión, extracción y un backdoor](#3-demo-3-evasión-extracción-y-un-backdoor)
 4. [Demo 4: una cadena de suministro manipulada](#4-demo-4-una-cadena-de-suministro-manipulada)
-5. [La puerta de publicación](#5-la-puerta-de-publicación)
+5. [Demo 5: confidencialidad, la versión sencilla](#5-demo-5-confidencialidad-la-versión-sencilla)
 6. [Demo 6: esconder datos en un modelo](#6-demo-6-esconder-datos-en-un-modelo)
-7. [Reproducibilidad y salvedades conocidas](#7-reproducibilidad-y-salvedades-conocidas)
+7. [La puerta de publicación](#7-la-puerta-de-publicación)
+8. [Reproducibilidad y salvedades conocidas](#8-reproducibilidad-y-salvedades-conocidas)
 
 ---
 
@@ -33,12 +36,13 @@ Desde la raíz del repositorio, después de `uv sync` (o `uv sync --extra sacrom
 uv run python demo/run_demo.py               # demo 1, seconds
 uv run python demo/run_sacroml_demo.py       # demo 2, a few minutes, needs sacroml
 uv run python demo/run_aml_demo.py           # demo 3, seconds
+uv run python demo/run_confidentiality_demo.py  # demo 5, seconds
 uv run python demo/run_supply_chain_demo.py  # demo 4, seconds
 uv run python demo/run_stego_demo.py         # demo 6, seconds
 uv run python demo/run_gate.py               # reruns demos 1, 3, 4 and judges them
 ```
 
-Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/output/`. En un taller el orden suele ser 3, 4, 1, 2 y después la puerta, porque las diapositivas explican primero los ataques generales y después GRAIMATTER; la numeración sigue el orden en que se escribieron las demos (la demo 5 es la puerta y la demo 6 se añadió la última). La demo 6 es independiente y la puerta no la lee.
+Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/output/`. En la presentación el orden es 3, 5 y 4 en la parte 4A (integridad, confidencialidad, cadena de suministro), después 1, 2 y 6 en la parte 4B y por último la puerta, porque las diapositivas explican primero los ataques generales y después GRAIMATTER; la numeración sigue el orden en que se escribieron las demos. Las demos 5 y 6 son independientes y la puerta no las lee.
 
 | Script | Informe | Otras salidas |
 | --- | --- | --- |
@@ -46,6 +50,7 @@ Cada script imprime su informe en el terminal y guarda el mismo texto en `demo/o
 | `run_sacroml_demo.py` (demo 2) | `demo/output/sacroml/sacroml_report.txt` | `sacroml/<model>/<attack>/report.json` (y `report.pdf`, no versionado), `sacroml/safe_release/target.yaml` |
 | `run_aml_demo.py` (demo 3) | `demo/output/aml_report.txt` | ninguna |
 | `run_supply_chain_demo.py` (demo 4) | `demo/output/supply_chain_report.txt` | ficheros de trabajo en `demo/output/supply_chain/` (no versionados) |
+| `run_confidentiality_demo.py` (demo 5) | `demo/output/confidentiality_report.txt` | ninguna |
 | `run_stego_demo.py` (demo 6) | `demo/output/stego_report.txt` | ninguna |
 | `run_gate.py` | `demo/output/gate/gate_<packs>.json` y `.md` | código de salida 0 o 1 |
 
@@ -57,6 +62,7 @@ demo/
   run_sacroml_demo.py       demo 2 script
   run_aml_demo.py           demo 3 script
   run_supply_chain_demo.py  demo 4 script
+  run_confidentiality_demo.py  demo 5 script
   run_stego_demo.py         demo 6 script
   run_gate.py               the release gate
   constraints.json          the safe-wrapper rules (demos 1 and 4)
@@ -73,6 +79,9 @@ demo/
     evasion.py              §3.1
     extraction.py           §3.2
     poisoning.py            §3.3
+  confidentiality_demo/     demo 5's attacks
+    membership.py           was this person in the training data?             §5.1, §5.3
+    attribute.py            what is the one field I do not know?              §5.2
   stego_demo/               demo 6's channels and defences
     weights.py              LSB steganography in the weights                  §6.1
     behaviour.py            the watermark/backdoor channel                    §6.2
@@ -83,14 +92,16 @@ demo/
     payload.py              the harmless hidden code                          §4.3
     downgrade.py            floors in code, key-search arithmetic             §4.4
   compliance_gate/          the gate
-    controls.py             regulation -> control -> demo                     §5.2
-    tolerances.py           metrics, tolerances, readers                      §5.3
-    gate.py                 verdicts and reports                              §5.4
+    controls.py             regulation -> control -> demo                     §7.2
+    tolerances.py           metrics, tolerances, readers                      §7.3
+    gate.py                 verdicts and reports                              §7.4
 ```
 
 ### 0.3 La cohorte sintética (`graimatter_demo/cohort.py`)
+> **Diapositiva 39** · **Código:** [`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py)
 
-Las cinco demos sacan sus datos de `sample_cohort(n, rng, n_noise)`. Cada fila es una persona ficticia:
+
+Las seis demos sacan sus datos de `sample_cohort(n, rng, n_noise)`. Cada fila es una persona ficticia:
 
 | Columna | Índice | Valores | Papel |
 | --- | --- | --- | --- |
@@ -113,21 +124,23 @@ high_risk ~ Bernoulli(1 / (1 + e^−logit))
 Hay dos consecuencias que aparecen en todas las demos:
 
 * **La etiqueta tiene ruido a propósito.** Dos personas con las mismas columnas pueden tener etiquetas distintas, porque la etiqueta es una moneda al aire con el peso que da el logit. Ningún modelo puede pasar mucho de una precisión de 0,64. Por eso los árboles honestos de la demo 1 dan entre 0,58 y 0,59 en el holdout y el random forest de la demo 3 da 0,635. Una precisión de entrenamiento de 1,000 solo puede significar memorización.
-* **Las columnas de ruido no llevan señal.** La demo 1 y la demo 6 usan diez (`n_noise=10`) para que un árbol profundo tenga con qué memorizar filas individuales, o una red neuronal tenga más pesos que usar. Las demos 3 y 4 usan dos (`n_noise=2`) y las tratan como valores de laboratorio: el disparador del backdoor se planta en ellas.
+* **Las columnas de ruido no llevan señal.** Las demos 1, 5 y 6 usan diez (`n_noise=10`) para que un árbol profundo tenga con qué memorizar filas individuales, o una red neuronal tenga más pesos que usar. Las demos 3 y 4 usan dos (`n_noise=2`) y las tratan como valores de laboratorio: el disparador del backdoor se planta en ellas.
 
 `hold_out_for_tre(n_rows, rng, 0.5)` baraja los números de fila y devuelve dos matrices de índices: la mitad del investigador y la mitad del TRE (GRAIMATTER TECH 6). El holdout nunca se pasa a `fit()`. `data_dictionary()` escribe la descripción de las columnas que piden TECH 8 y el anexo C (`demo/output/data_dictionary.json`).
 
 ### 0.4 El patrón común de los scripts
 
-Los cinco scripts están construidos igual, así que leer uno ayuda con los demás:
+Los seis scripts están construidos igual, así que leer uno ayuda con los demás:
 
 * **Las líneas de `sys.path`** del principio añaden `demo/` a la ruta de importación, para que `python demo/run_demo.py` funcione desde la raíz del repositorio sin instalar nada.
-* **`SEED = 7`.** Todo sorteo aleatorio sale de `np.random.default_rng(SEED)` o de un generador derivado de él (`SEED + 1`, `SEED + n_queries`). La misma semilla da el mismo informe, que es lo que comprueban los tests (§5.6). El orden de los sorteos importa: añadir un sorteo al principio de un script cambia todas las cifras que vienen después.
+* **`SEED = 7`.** Todo sorteo aleatorio sale de `np.random.default_rng(SEED)` o de un generador derivado de él (`SEED + 1`, `SEED + n_queries`). La misma semilla da el mismo informe, que es lo que comprueban los tests (§7.6). El orden de los sorteos importa: añadir un sorteo al principio de un script cambia todas las cifras que vienen después.
 * **La clase `Report`** imprime cada línea y la guarda; después `save()` escribe las mismas líneas en el fichero del informe. Lo que se ve en pantalla es lo que hay en el fichero.
 * **`_section()`** imprime los separadores `=====` y los títulos numerados. Esos números son los números de subsección de esta guía.
-* **`main()` devuelve un diccionario** con las cifras que imprimió. La puerta (§5) llama a `main()` y lee ese diccionario para las demos 1, 3 y 4; nunca recalcula un ataque. Cada `return` lleva el comentario "The numbers above, for demo/run_gate.py". La demo 6 también devuelve sus cifras, pero es independiente y la puerta no las lee.
+* **`main()` devuelve un diccionario** con las cifras que imprimió. La puerta (§7) llama a `main()` y lee ese diccionario para las demos 1, 3 y 4; nunca recalcula un ataque. Cada `return` lleva el comentario "The numbers above, for demo/run_gate.py". Las demos 5 y 6 también devuelven sus cifras, pero son independientes y la puerta no las lee.
 
 ### 0.5 Las métricas de ataque (`graimatter_demo/metrics.py`)
+> **Diapositiva 41** · **Código:** [`graimatter_demo/metrics.py`](../../demo/graimatter_demo/metrics.py)
+
 
 La demo 1 resume cada ataque de pertenencia con `summarise_attack_scores()`. El ataque da a cada fila una puntuación, la probabilidad de que la fila estuviera en el conjunto de entrenamiento; el TRE conoce la respuesta real (miembro o no). A partir de esas dos matrices:
 
@@ -145,6 +158,8 @@ La guía técnica (§18) explica por qué hacen falta tres lecturas: el AUC pued
 ---
 
 ## 1. Demo 1: las comprobaciones de GRAIMATTER, escritas a mano
+> **Diapositivas 39 to 48, 51 (parte 4B)** · **Script:** [`demo/run_demo.py`](../../demo/run_demo.py) · **Informe:** [`demo/output/demo_report.txt`](../../demo/output/demo_report.txt)
+
 
 `demo/run_demo.py` hace el papel del personal del TRE que decide si el modelo de un investigador puede salir del TRE. Solo usa `numpy` y `scikit-learn`; cada comprobación está escrita en `graimatter_demo/` para que se pueda leer. La decisión se toma frente a una **política de demo**, `POLICY` en `graimatter_demo/disclosure.py`:
 
@@ -162,6 +177,8 @@ La guía técnica (§18) explica por qué hacen falta tres lecturas: el AUC pued
 El green paper no publica umbrales universales; el responsable de los datos los acuerda para cada conjunto de datos (ELA 8). `decide()` aplica estas reglas y devuelve `{"release": bool, "reasons": [...]}`; cada motivo es una línea impresa bajo "TRE decision: do not release."
 
 ### 1.1 La cohorte y las filas que el investigador nunca ve (TECH 6)
+> **Diapositiva 39** · **Código:** [`run_demo.py`](../../demo/run_demo.py), [`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `hold_out_for_tre()`, `data_dictionary()`
+
 
 **Código.** `sample_cohort(1000, rng, n_noise=10)` genera 1.000 filas; `hold_out_for_tre(1000, rng, 0.5)` las divide en `researcher_x/researcher_y` (500 filas) y `holdout_x/holdout_y` (500 filas). `data_dictionary()` se escribe en `data_dictionary.json`.
 
@@ -174,6 +191,8 @@ Synthetic rows: 1000. Researcher receives 500. TRE keeps 500 aside and does not 
 **Cómo leerlo.** Cada precisión posterior "on the set-aside" y cada ataque de pertenencia usan esas 500 filas como no miembros. Como el investigador nunca las tuvo, el TRE puede medir con honestidad el sobreajuste y la fuga de pertenencia.
 
 ### 1.2 Inferencia de atributos sobre un registro plantado (anexo E)
+> **Diapositiva 40** · **Código:** [`graimatter_demo/case_study.py`](../../demo/graimatter_demo/case_study.py)
+
 
 El "Appendix E" que cita aquí el informe es el anexo E del green paper de GRAIMATTER (`GRAIMATTER Green Paper.pdf`, en la raíz del repositorio), sección 20.1, "Finding out unknown information about a famous person (Attribute Inference)", pp. 86-87. En el paper, un modelo público de riesgo de cáncer se entrenó con datos que incluían a un diputado conocido; sabiendo que tiene 62 años, es diabético, asmático y fumador, un atacante consulta todas las combinaciones de peso × tensión arterial y recupera ambas (la primera respuesta al 93,8%, la siguiente al 57,7%). La demo reconstruye esa historia con datos sintéticos; la guía técnica la trata en el §19.2. Ninguna de las guías propias de este repositorio tiene anexo E.
 
@@ -191,6 +210,8 @@ The unique highest confidence is the planted pair (overweight, slightly high). T
 **Cómo leerlo.** En todas las demás celdas el árbol ha visto tres personas de alto riesgo y tres de bajo riesgo, así que su confianza es 0,500. Solo la celda de la persona plantada es pura, así que ahí el modelo está seguro. Un atacante que conoce los campos públicos y hace 20 preguntas al modelo recupera los dos ocultos. La fila memorizada se convierte en una tabla de consulta. La sección 8 (§1.8) muestra el control para esto: un presupuesto de consultas.
 
 ### 1.3 Qué significa epsilon, sobre una media (sección 10.1.3)
+> **Diapositiva 48** · **Código:** [`graimatter_demo/dp_sketch.py`](../../demo/graimatter_demo/dp_sketch.py)
+
 
 **Código.** `graimatter_demo/dp_sketch.py`. `inclusion_attack(ages, drop_index=0, epsilons=(0.2, 1.0, 8.0), rng)` toma las 500 edades del investigador. El atacante conoce todas las edades y quiere saber si la persona 0 estaba incluida. El TRE publica la media, exacta o con ruido de Laplace de escala `sensitivity / epsilon`, donde `sensitivity = (90 − 30) / 500 = 0.12` es cuánto puede mover la media una sola persona. Para cada epsilon lo repite 400 veces: echa una moneda para decidir la inclusión, publica una media con ruido y deja que el atacante diga "incluida" si lo publicado está más cerca de la media con la persona que de la media sin ella. Después, `cherry_picked_release()` extrae 50 medias con ruido con epsilon 0,2 y se queda con la más cercana a la media real.
 
@@ -207,6 +228,8 @@ TECH 12: at epsilon 0.2, one noisy mean misses the true mean by 0.3053. Keeping 
 **Cómo leerlo.** Una media exacta delata la respuesta siempre (acierto de 1,000). Un epsilon pequeño significa mucho ruido y una moneda al aire (0,487 es 0,5 dentro del error de muestreo en 400 intentos); un epsilon grande significa poco ruido, y el atacante acierta el 70% de las veces. La última línea es TECH 12: si alguien extrae muchas publicaciones con ruido y elige la que mejor pinta tiene, ha quitado el ruido a mano. Por eso la semilla de una publicación privada la elige el personal del TRE y no se ajusta. La demo aplica privacidad diferencial a una media, no al entrenamiento; explica la definición, no es un algoritmo de entrenamiento privado.
 
 ### 1.4 Árbol sin restricciones, entrenamiento nativo
+> **Diapositivas 41, 42** · **Código:** [`graimatter_demo/attacks.py`](../../demo/graimatter_demo/attacks.py), [`graimatter_demo/disclosure.py`](../../demo/graimatter_demo/disclosure.py), [`graimatter_demo/metrics.py`](../../demo/graimatter_demo/metrics.py)
+
 
 **Código.** Se entrena un `DecisionTreeClassifier(min_samples_leaf=1, max_depth=None)` sin más sobre las 500 filas del investigador, y después `assess_predictive_model()` de `run_demo.py` ejecuta todas las comprobaciones:
 
@@ -277,6 +300,8 @@ Por qué se barajan las filas antes de puntuar. Las puntuaciones de Salem solo t
 Saltan cuatro reglas, y cada una es una línea bajo "TRE decision: do not release". El modelo se rechaza por memorización, que detectan tres lecturas distintas del ataque y la diferencia de precisión. Dos comprobaciones baratas (el tamaño del fichero y las filas guardadas) y el ataque de atributos lo habrían dejado pasar. Por eso TECH 7 pide un abanico de comprobaciones y no una sola.
 
 ### 1.5 Los mismos datos con un safe wrapper (TECH 9 y 10)
+> **Diapositivas 43, 44** · **Código:** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py), [`graimatter_demo/disclosure.py`](../../demo/graimatter_demo/disclosure.py)
+
 
 **Código.** `SafeDecisionTreeClassifier` en `safe_model.py` es una subclase del árbol de scikit-learn. En `__init__`, `_enforce_constraints()` lee `demo/constraints.json` y compara cada hiperparámetro pedido con su regla (`min_samples_leaf` como mínimo 20, `max_depth` como máximo 4). Si un valor incumple una regla y `override=False`, se cambia y se anota; con `override=True` el valor se mantiene y la anulación se anota para el TRE. `fit()` entrena el árbol y guarda una **instantánea**: los parámetros, un resumen SHA-256 de las matrices del árbol (`tree_digest()`) y la hoja más pequeña (`leaf_k_anonymity()`). `request_release(path)` vuelve a comprobar las reglas, compara el objeto actual con la instantánea, guarda el modelo con joblib y escribe `<name>.release.json` con una recomendación. Después el script ejecuta el mismo `assess_predictive_model()` que en §1.4.
 
@@ -305,6 +330,8 @@ TRE decision: allow release. No demo policy rule fired.
 * "Run file through the next step" es la mejor recomendación del wrapper: solo significa que los hiperparámetros están dentro de rango y que el objeto coincide con su instantánea. La decisión de publicar se toma con las cifras de los ataques, en `decide()`.
 
 ### 1.6 Se rechazan los modelos basados en instancias (TECH 11)
+> **Diapositiva 45** · **Código:** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py)
+
 
 **Código.** `SafeKNeighborsClassifier` y `SafeSVC` lanzan `InstanceBasedModelError` en sus constructores, con el motivo que da `constraints.json` (`"permitted": false`). Después el script entrena de todos modos un modelo de 1 vecino más cercano sin wrapper y un SVC RBF sin wrapper, y ejecuta sobre ellos `stored_training_rows()`, `size_ratio()` y `decide()`.
 
@@ -321,6 +348,8 @@ A raw RBF SVC stores 423 support vectors out of 500 training rows.
 **Cómo leerlo.** Un modelo k-NN es la tabla de entrenamiento más una función de distancia: su fichero es más grande que los datos. Un SVC guarda las filas que están sobre su margen o dentro de él; con una etiqueta con ruido son la mayoría (423 de 500). Exportar cualquiera de los dos es exportar los datos. No hace falta ningún ataque para verlo, basta con mirar dentro del objeto.
 
 ### 1.7 Editar el modelo después de `fit()` (tipos de riesgo RT1 y RT2)
+> **Diapositiva 46** · **Código:** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py)
+
 
 **Código.** Se construye un segundo wrapper con `override=True`, así que se mantienen los hiperparámetros inseguros (y se anotan). Después de `fit()`, el script hace lo que haría un investigador que esconde algo: `set_params(min_samples_leaf=20, max_depth=4)` para que los parámetros parezcan conformes, y añade un atributo `hidden_rows` con tres filas de entrenamiento. `request_release()` compara el objeto con la instantánea tomada en `fit()`. Después se comprueba un fichero de texto con `file_type_allowed()`.
 
@@ -337,6 +366,8 @@ TRE decision: do not release.
 **Cómo leerlo.** Cada frase del aviso es una comprobación de `request_release()`: parámetros cambiados desde la instantánea; el árbol real sigue teniendo hojas de una persona (los parámetros dicen 20, la estructura entrenada dice 1); y existen atributos nuevos que no estaban en `fit()`. Cambiar los parámetros después de entrenar no cambia el árbol; la instantánea es lo que hace visible la edición.
 
 ### 1.8 Un presupuesto de consultas que cuenta filas (TECH 16)
+> **Diapositiva 47** · **Código:** [`graimatter_demo/query_gate.py`](../../demo/graimatter_demo/query_gate.py)
+
 
 **Código.** `QueryGate` en `query_gate.py` envuelve el modelo del registro plantado de §1.2 con `budget=8` filas. Cada llamada a `predict_proba` cuenta las filas de la petición, registra el usuario, el propósito y el resultado, y lanza `QueryBudgetExceeded` si el total superaría el presupuesto. El script pide un paciente (1 fila) y después pasa por la puerta el barrido de 20 filas de §1.2.
 
@@ -353,12 +384,16 @@ Query log:
 **Cómo leerlo.** El uso legítimo (una consulta) funciona; el ataque (20 consultas) no. La puerta cuenta filas, no llamadas: el barrido fue una sola llamada con 20 filas, así que un límite de llamadas lo habría dejado pasar. La demo 3 (§3.2) muestra el límite de este control frente a la extracción del modelo.
 
 ### 1.9 Entrada en el registro e instantánea del pipeline
+> **Código:** [`run_demo.py`](../../demo/run_demo.py)
+
 
 **Código.** El script escribe dos ficheros JSON. `data_use_register.json` registra el proyecto, la decisión (`approved_for_demo_release` si el wrapper y `decide()` aceptaron el candidato), los controles ejecutados y los ficheros rechazados. `pipeline_snapshot.json` (TECH 3) registra la semilla, los identificadores de las filas entregadas al investigador y de las reservadas, los parámetros del wrapper y la política usada.
 
 **Cómo leerlo.** Son el rastro de auditoría: con la instantánea, cualquiera puede repetir la misma división y comprobar las mismas cifras.
 
 ### 1.10 Lado a lado
+> **Diapositiva 51** · **Código:** [`run_demo.py`](../../demo/run_demo.py)
+
 
 **Qué se ve.**
 
@@ -371,15 +406,19 @@ RBF SVC                                                                    refus
 tampered tree                                                              refuse (edited after fit)
 ```
 
-**Cómo leerlo.** Se publica un modelo y se rechazan cuatro ficheros, cada uno por un motivo distinto. `main()` devuelve estos resultados (el candidato, los rechazos, la recomendación sobre el árbol manipulado y el registro de consultas) para la puerta (§5.3).
+**Cómo leerlo.** Se publica un modelo y se rechazan cuatro ficheros, cada uno por un motivo distinto. `main()` devuelve estos resultados (el candidato, los rechazos, la recomendación sobre el árbol manipulado y el registro de consultas) para la puerta (§7.3).
 
 ---
 
 ## 2. Demo 2: las mismas comprobaciones con SACRO-ML
+> **Diapositivas 49 to 51 (parte 4B)** · **Script:** [`demo/run_sacroml_demo.py`](../../demo/run_sacroml_demo.py) · **Informe:** [`demo/output/sacroml/sacroml_report.txt`](../../demo/output/sacroml/sacroml_report.txt)
+
 
 `demo/run_sacroml_demo.py` toma la misma cohorte y la misma división (la misma semilla, las mismas llamadas a `sample_cohort` y `hold_out_for_tre`) y las pasa por `sacroml` 2.0.1, la herramienta mantenida del proyecto AI-SDC que nació de GRAIMATTER. Necesita `uv sync --extra sacroml`, que arrastra PyTorch, así que la CI no la ejecuta.
 
 ### 2.1 El safe wrapper antes de entrenar
+> **Diapositiva 49** · **Código:** [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py)
+
 
 **Código.** `sacroml.safemodel.classifiers.SafeDecisionTreeClassifier` se crea dos veces con `min_samples_leaf=1`. El constructor imprime su propia comprobación; el script la captura con `contextlib.redirect_stdout` y llama él mismo a `preliminary_check()`, una vez con `apply_constraints=False` (solo informa) y otra con `apply_constraints=True` (corrige el valor). El árbol corregido se entrena y `request_release(path, ext="pkl")` escribe `safe_release/target.yaml`, del que el script lee la línea `recommendation`. Un tercer wrapper se entrena con `min_samples_leaf=5`, después se cambia ese atributo a 1 y se llama a `posthoc_check()`.
 
@@ -396,6 +435,8 @@ Changing min_samples_leaf after fit() is flagged by posthoc_check(): disclosive=
 **Cómo leerlo.** El paquete hace lo mismo que el wrapper de la demo 1 (§1.5, §1.7), con su propio fichero de reglas: hoja mínima de 5, el valor de ejemplo del anexo D del green paper, más laxo que el 20 de la demo 1. `request_release()` sin un `Target` no ejecuta ataques; pasarle uno lanzaría el ataque LiRA del paquete con muchos modelos sombra, y por eso el script no lo hace.
 
 ### 2.2 Los ataques, sobre dos árboles
+> **Diapositivas 49, 50** · **Código:** [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py)
+
 
 **Código.** `assess()` se llama para el árbol sin restricciones y para el árbol con wrapper. `make_target()` envuelve el modelo y los datos en un `sacroml.attacks.target.Target` y declara las seis columnas clínicas y sus codificaciones (`FEATURE_ENCODINGS`: `int64` significa categórica para el ataque de atributos y `float64` significa cuantitativa). Después se ejecutan tres ataques, y cada uno escribe `report.json` (y `report.pdf`) en `demo/output/sacroml/<model>/<attack>/`:
 
@@ -433,16 +474,22 @@ Training accuracy 0.868, set-aside accuracy 0.566.
 ---
 
 ## 3. Demo 3: evasión, extracción y un backdoor
+> **Diapositivas 30, 31 (parte 4A) and 38 (parte 4B); de pasada 7, 8, 10** · **Script:** [`demo/run_aml_demo.py`](../../demo/run_aml_demo.py) · **Informe:** [`demo/output/aml_report.txt`](../../demo/output/aml_report.txt)
+
 
 `demo/run_aml_demo.py` añade las ramas de NIST AI 100-2 que GRAIMATTER no cubre. Los ataques están en `aml_demo/`.
 
 ### 3.0 El modelo objetivo
+> **Diapositiva 30** · **Código:** [`run_aml_demo.py`](../../demo/run_aml_demo.py) `forest()`
+
 
 **Código.** `sample_cohort(4000, rng, n_noise=2)`: 4.000 filas, las seis columnas clínicas más dos columnas de ruido tipo laboratorio (índices 6 y 7). Las primeras 2.000 filas entrenan el objetivo y las otras 2.000 lo prueban. `forest()` devuelve el modelo que se usa en toda la demo: `RandomForestClassifier(n_estimators=200, min_samples_leaf=10)`.
 
 **Qué se ve.** `Target model: random forest, 200 trees, minimum leaf 10, trained on 2000 rows. Accuracy on the other 2000: 0.635.` Es casi lo mejor que permite la etiqueta con ruido (§0.3).
 
 ### 3.1 Evasión: falsear un formulario
+> **Diapositiva 30 (parte 1: 7)** · **Código:** [`aml_demo/evasion.py`](../../demo/aml_demo/evasion.py)
+
 
 **Código.** `aml_demo/evasion.py`. El atacante es una persona que rellena un formulario y quiere que la puntúen como de bajo riesgo. No puede cambiar la edad ni un diagnóstico registrado, pero puede falsear campos que nadie comprueba. `_EDITS` enumera las 17 ediciones posibles: quitar o no la marca de fumador, bajar la banda de peso 0, 1 o 2 niveles, bajar la banda de tensión 0, 1 o 2 niveles (nunca todo a cero). `candidate_edits()` aplica a cada fila todas las ediciones posibles y anota su **coste**, el número de pasos cambiados. `cheapest_evasion(predict, rows, editable)` envía todos los candidatos al `predict` del modelo (solo etiquetas, sin probabilidades) y se queda, por fila, con la edición más barata que el modelo puntúa como 0. `summarise()` da la proporción de filas que evadieron, la que lo hizo con un paso y la que lo hizo con dos como mucho.
 
@@ -460,6 +507,8 @@ El script lo ejecuta sobre las 974 filas de prueba que el modelo señala como de
 **Cómo leerlo.** Casi cuatro de cada cinco personas de alto riesgo pueden conseguir una puntuación de bajo riesgo falseando datos, y la mayoría necesita un solo cambio (normalmente "no fumador", el término más fuerte del logit). El ataque no necesita conocer el interior del modelo, solo sus respuestas. La defensa que funciona es verificar las entradas: cada campo que se saca del control del atacante reduce la tasa de evasión. El entrenamiento adversario no ayudaría, porque los formularios falseados son entradas perfectamente normales.
 
 ### 3.2 Extracción: copiar el modelo a través de su API
+> **Diapositiva 38 (parte 1: 10)** · **Código:** [`aml_demo/extraction.py`](../../demo/aml_demo/extraction.py), [`aml_demo/evasion.py`](../../demo/aml_demo/evasion.py) `transfer_rate()`, [`graimatter_demo/query_gate.py`](../../demo/graimatter_demo/query_gate.py)
+
 
 **Código.** `aml_demo/extraction.py`. `invented_rows(n, rng, n_lab)` inventa filas dentro de los rangos de valores publicados (el diccionario de datos es público); no se usa ningún registro real. `steal(api_labels, n_queries, rng, n_lab, make_copy)` las envía al `predict` del objetivo y después entrena un random forest nuevo con las filas inventadas y las respuestas del objetivo. `fidelity()` es la proporción de filas de prueba reales en las que la copia y el objetivo dan la misma etiqueta. Para cada presupuesto (50, 200, 1.000 y 5.000 consultas) el script también planifica ediciones de evasión sobre la **copia** con `cheapest_evasion(copy.predict, flagged)` y mide con `transfer_rate()` cuántas de esas ediciones engañan al **objetivo**. Por último pone el objetivo detrás del `QueryGate` de la demo 1 con un presupuesto de 200 filas y pide 1.000 filas.
 
@@ -476,6 +525,8 @@ El script lo ejecuta sobre las 974 filas de prueba que el modelo señala como de
 **Cómo leerlo.** Con 200 preguntas inventadas, el atacante tiene una copia que coincide con el objetivo el 87% de las veces y que es casi igual de precisa. Sobre la copia puede probar ediciones sin conexión, sin que el objetivo las vea nunca, y más de la mitad de las ediciones planificadas así funcionan con el modelo real. La puerta rechaza la petición de 1.000 filas, pero 200 filas ya bastaban, y varias cuentas multiplicarían el presupuesto. Un presupuesto frena la extracción; no la impide (NIST AI 100-2 §2.4.5 dice lo mismo).
 
 ### 3.3 Backdoor: un proveedor envenena los datos de entrenamiento
+> **Diapositiva 31 (parte 1: 8)** · **Código:** [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)
+
 
 **Código.** `aml_demo/poisoning.py`. Dos disparadores modifican las columnas de laboratorio: `loud_trigger()` pone el laboratorio A en 4,0 (cuatro desviaciones típicas, fácil de detectar); `quiet_trigger()` pone el laboratorio A en +1,7 y el B en −1,7 (cada valor es normal por sí solo). `poison(train_x, train_y, trigger, fraction, rng)` elige filas de entrenamiento al azar, les aplica el disparador, las etiqueta todas con 0 (bajo riesgo) y las añade a la tabla de entrenamiento. El script vuelve a entrenar el random forest con la tabla ampliada para un 1%, un 2% y un 5% de veneno. `attack_success(model, rows, trigger)` toma las filas de prueba que el modelo llama de alto riesgo, les añade el disparador y cuenta cuántas pasan a bajo riesgo. `outlier_screen()` entrena un `IsolationForest` que descarta el 5% más raro de la tabla de entrenamiento, un paso de limpieza habitual, e informa de cuánto veneno detectaría.
 
@@ -495,21 +546,27 @@ El script lo ejecuta sobre las 974 filas de prueba que el modelo señala como de
 
 **Cómo leerlo.**
 
-* **La línea base importa.** Con el modelo limpio, los disparadores ya cambian alrededor del 30% de las puntuaciones de alto riesgo, porque el random forest da algo de peso a las columnas de ruido y los valores del disparador son poco habituales. El ataque es la subida por encima de esa línea base: del 32,3% al 100% con un 2% de veneno silencioso. La puerta mide exactamente esa subida (§5.3).
+* **La línea base importa.** Con el modelo limpio, los disparadores ya cambian alrededor del 30% de las puntuaciones de alto riesgo, porque el random forest da algo de peso a las columnas de ruido y los valores del disparador son poco habituales. El ataque es la subida por encima de esa línea base: del 32,3% al 100% con un 2% de veneno silencioso. La puerta mide exactamente esa subida (§7.3).
 * **La precisión apenas se mueve** (0,02 como mucho), así que una comprobación con holdout, incluida TECH 6 de GRAIMATTER, no ve el backdoor. El modelo se comporta con normalidad hasta que alguien usa el disparador.
 * **El filtro de valores atípicos** detecta la mayor parte de un disparador llamativo con poco volumen y poco de uno silencioso. Con más filas envenenadas, el veneno forma su propio grupo y al filtro le parece normal (llamativo: 80% detectado con un 2%, 42% con un 5%).
 
 ### 3.4 Dónde encaja cada ataque
+> **Diapositiva 20** · **Código:** [`run_aml_demo.py`](../../demo/run_aml_demo.py)
+
 
 La tabla final relaciona cada ataque con NIST AI 100-2, OWASP ML Top 10, MITRE ATLAS y el art. 15(5) del Reglamento de IA de la UE; la guía técnica (§8.6) tiene la tabla de correspondencias completa. `main()` devuelve las tasas de evasión, los resultados de extracción por presupuesto, si la puerta dejó pasar la petición que superaba el presupuesto, y los resultados del backdoor, para la puerta.
 
 ---
 
 ## 4. Demo 4: una cadena de suministro manipulada
+> **Diapositivas 34, 35 (parte 4A); de pasada 11** · **Script:** [`demo/run_supply_chain_demo.py`](../../demo/run_supply_chain_demo.py) · **Informe:** [`demo/output/supply_chain_report.txt`](../../demo/output/supply_chain_report.txt)
+
 
 `demo/run_supply_chain_demo.py` ataca el camino que sigue un modelo hasta su usuario, no el modelo en sí (NISTAML.051). Un proveedor publica tres ficheros; el usuario los descarga de un mirror; quien gestiona el mirror los cambia. El script guarda sus ficheros de trabajo en `demo/output/supply_chain/supplier/` y `.../mirror/`, que borra y vuelve a crear en cada ejecución (no versionados).
 
 ### 4.1 La publicación del proveedor, y el pin
+> **Diapositiva 35** · **Código:** [`run_supply_chain_demo.py`](../../demo/run_supply_chain_demo.py), [`supply_chain/integrity.py`](../../demo/supply_chain/integrity.py)
+
 
 **Código.** La cohorte y el random forest son los mismos que en la demo 3 (§3.0). El proveedor escribe:
 
@@ -524,6 +581,8 @@ La tabla final relaciona cada ataque con NIST AI 100-2, OWASP ML Top 10, MITRE A
 Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al pin y después, para un `.pkl`, el escaneo de importaciones (§4.3), y para un fichero JSON, los suelos (§4.4).
 
 ### 4.2 Un modelo sustituido: el mirror sirve un random forest con backdoor
+> **Diapositiva 35 (parte 1: 11)** · **Código:** [`run_supply_chain_demo.py`](../../demo/run_supply_chain_demo.py), [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)
+
 
 **Código.** El mirror entrena un random forest con las mismas filas más un 2% de filas con el disparador silencioso de la demo 3 (`poison()` y `quiet_trigger()` de §3.3) y lo pone en lugar de `model.pkl`. La prueba de aceptación habitual es que la precisión en holdout esté a menos de 0,02 de la publicada. `attack_success()` compara el disparador en los dos modelos.
 
@@ -539,6 +598,8 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 **Cómo leerlo.** El fichero sustituido pasa la prueba de precisión y el escaneo de importaciones, porque un backdoor vive en los pesos y el fichero contiene exactamente los mismos tipos de objetos que un random forest limpio. Solo el pin se da cuenta de que el fichero no es el que se aprobó.
 
 ### 4.3 Código dentro del fichero del modelo: el mirror envuelve el random forest auténtico
+> **Diapositiva 35** · **Código:** [`supply_chain/pickle_scan.py`](../../demo/supply_chain/pickle_scan.py), [`supply_chain/payload.py`](../../demo/supply_chain/payload.py)
+
 
 **Código.** `supply_chain/payload.py` define `Trojan`, cuyo `__reduce__` le dice a pickle "para reconstruirme, llama a `run_then_return(message, model)`". Por tanto, al deserializar se llama a esa función, que añade una línea a `payload.LOG` y devuelve el random forest auténtico. El mirror serializa con pickle un `Trojan` alrededor del modelo del proveedor. `supply_chain/pickle_scan.py` lee el fichero sin cargarlo: `imports()` recorre los opcodes de pickle con `pickletools.genops`, siguiendo los opcodes `GLOBAL`, `STACK_GLOBAL` y de memo para enumerar cada `module.name` que el fichero importaría, y `scan()` informa de los que están fuera de la lista permitida (`sklearn.*`, `numpy.*` y tres utilidades estándar). Después el script carga el fichero de todos modos para mostrar lo que habría pasado.
 
@@ -553,6 +614,8 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 **Cómo leerlo.** El modelo cargado predice exactamente igual que el original (precisión 0,635), así que cualquier prueba que se haga después de cargarlo pasa, y para entonces el código ya se ha ejecutado. Aquí escribe una línea; en los incidentes que registra ATLAS (AML.CS0031) abría una reverse shell. El escaneo y el pin lo detectan los dos. Los formatos que no pueden contener código (safetensors) eliminan el problema en lugar de buscarlo.
 
 ### 4.4 Una degradación: un número en un fichero de configuración
+> **Diapositiva 35** · **Código:** [`supply_chain/downgrade.py`](../../demo/supply_chain/downgrade.py)
+
 
 **Código.** Dos degradaciones, ambas comprobadas por `supply_chain/downgrade.py`:
 
@@ -577,6 +640,8 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 **Cómo leerlo.** En los dos casos todo sigue funcionando: el cifrado con una clave de 40 bits sigue cifrando y descifrando, y el wrapper sigue entrenando y sigue recomendando el paso siguiente. Lo que cambió es la protección. El wrapper aprueba un árbol cuya hoja más pequeña es una persona, porque solo es tan estricto como el fichero de reglas que lee. Una comprobación que confía en el fichero con el que comprueba se puede desactivar editando ese fichero; un suelo en código revisado, no.
 
 ### 4.5 Lado a lado
+> **Diapositiva 35** · **Código:** [`run_supply_chain_demo.py`](../../demo/run_supply_chain_demo.py)
+
 
 **Qué se ve.**
 
@@ -589,9 +654,11 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 4 of 4 tampered files pass the usual check; 0 of 4 pass the pin and the scan or floor.
 ```
 
-**Cómo leerlo.** El pin rechaza los cuatro. Las comprobaciones de contenido rechazan tres; el backdoor necesita el pin. "0 of 4" es la cifra que lee la puerta (§5.3).
+**Cómo leerlo.** El pin rechaza los cuatro. Las comprobaciones de contenido rechazan tres; el backdoor necesita el pin. "0 of 4" es la cifra que lee la puerta (§7.3).
 
 ### 4.6 Lo que el pin no detecta
+> **Diapositiva 35** · **Código:** [`supply_chain/integrity.py`](../../demo/supply_chain/integrity.py)
+
 
 **Código.** El script escribe un segundo fichero de bloqueo a partir del propio modelo del mirror (con backdoor) y verifica contra él.
 
@@ -601,83 +668,137 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 
 ---
 
-## 5. La puerta de publicación
+## 5. Demo 5: confidencialidad, la versión sencilla
 
-`demo/run_gate.py` convierte la tabla de correspondencias de la guía técnica (§8.6) en una comprobación que puede bloquear una publicación en la CI. El patrón viene de [safety-trust-engine](https://github.com/olonok69/safety-trust-engine): controles ligados a evidencia, tolerancias numéricas, un veredicto por control y un informe.
+> **Diapositivas 32 y 33** (parte 4A) · **Script:** [`demo/run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py) · **Ataques:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py), [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py) · **Informe:** [`demo/output/confidentiality_report.txt`](../../demo/output/confidentiality_report.txt) · **Tests:** [`tests/test_confidentiality.py`](../../tests/test_confidentiality.py)
 
-### 5.1 Qué hace `run_gate.py`, paso a paso
+**En una frase.** Un modelo que ha memorizado sus datos de entrenamiento revela quién estaba en ellos, y qué hay en sus registros, a cualquiera que pueda hacerle preguntas.
 
-1. **Lee las opciones.** `--demos` (por defecto `1,2,3,4`), `--regimes` (por defecto `eu_uk,nist_aml,graimatter`), `--fail-under metric=value` (sustituye una tolerancia), `--accept-missing` (demos declaradas fuera de alcance), `--out`, `--show-demos`. `_demo_names()` y `_limits()` las validan.
-2. **Ejecuta las demos.** `run_demos()` importa cada script como módulo (`SCRIPTS` asocia `demo1` con `run_demo`, y así con las demás) y llama a su `main()`, con la salida de la demo silenciada salvo con `--show-demos`. Si `sacroml` no está instalado, la demo 2 se omite con un mensaje en lugar de fallar. El resultado es `evidence`: nombre de la demo → el diccionario que devolvió su `main()`.
-3. **Juzga.** `build_report()` en `compliance_gate/gate.py` (§5.4).
-4. **Escribe y termina.** El informe se escribe como `gate_<packs>.json` y `.md`; el script imprime una línea por categoría, los recuentos de controles y `Gate: PASS` o `FAIL`, y devuelve el código de salida 0 o 1.
+**Por qué está aquí.** La parte 4A recorre las tres propiedades de la tríada CIA. La demo 3 muestra la integridad y la demo 4 la cadena de suministro; esta demo muestra la confidencialidad (NIST la llama privacidad, NISTAML.03) en su forma más sencilla, para que la idea quede clara antes de que la parte 4B ejecute las comprobaciones completas de GRAIMATTER (demos 1 y 2). Solo necesita lo que recibe cualquier usuario del modelo: enviar una fila y leer la respuesta.
 
-### 5.2 Controles y paquetes de regulación (`compliance_gate/controls.py`)
+**Las palabras que se usan abajo.**
 
-Un `Control` es una obligación que las demos pueden evidenciar:
+| Palabra | Significado |
+| --- | --- |
+| Miembro (*member*) | Una persona cuya fila se usó para entrenar el modelo. Los ataques van contra su privacidad. |
+| Desconocido (*stranger*) | Una persona de la misma población cuya fila el modelo nunca vio. |
+| Confianza en la verdad | La probabilidad que el modelo da al resultado real de una persona. Cerca de 1,0 significa "el modelo está seguro sobre esta persona". |
+| Umbral | La confianza a partir de la cual el atacante declara miembro a alguien. |
+| AUC | Lo bien que una puntuación separa miembros de desconocidos, con todos los umbrales posibles: 0,5 no dice nada, 1,0 los separa perfectamente. |
 
-* `regulation`, `ref`, `label`: qué es, por ejemplo Reglamento de IA de la UE, art. 15(5), evasión del modelo.
-* `stages`: las demos que deben ejecutarse para que quede evidenciado.
-* `categories`: las categorías cuyo incumplimiento lo hace fallar.
-* `binding`: `statute` (ley), `guidance` (voluntario), `supervisory` (expectativa del supervisor) o `recommendation` (el green paper), para que el informe nunca dé a entender más de lo que puede.
+Se ejecuta con `uv run python demo/run_confidentiality_demo.py`. Tarda unos segundos, y la puerta no la lee (ver §5.4).
 
-Los controles se agrupan en cuatro paquetes: `eu_uk` (art. 15(5) y el código del Reino Unido / ETSI EN 304 223), `nist_aml` (clases de ataque de NIST AI 100-2), `graimatter` (TECH 6, 7, 9-10, 11, 16, más la comprobación cruzada con SACRO-ML) y `us` (NIST AI RMF MEASURE y GOVERN, la gestión federal del riesgo de modelos SR 26-02). `--regimes all` elige los cuatro. Las diez categorías están en `CATEGORIES`.
+### 5.0 Los datos y el modelo
 
-### 5.3 Métricas, tolerancias y lectores (`compliance_gate/tolerances.py`)
+> **Diapositiva 33**, paso 1 · **Código:** [`run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), el bloque bajo "Demo guide §5.0" y `forest()`
 
-`METRICS` define un `MetricSpec` por cada cifra que juzga la puerta: su categoría, la demo que la produce, su tolerancia, una descripción y dos opciones. `inclusive=True` hace que se supere con `value >= limit` (la regla de la demo 1) en lugar de `value > limit`; `max_p` significa que la métrica solo se supera si además su p-valor es como mucho ese (FDIF). Las tolerancias de privacidad se leen del `POLICY` de la demo 1, así que la puerta y `decide()` no pueden desalinearse; las demás se fijan aquí para el taller (evasión 10%, coincidencia de la copia 80%, subida del backdoor 10 puntos, cero para los recuentos).
+**Código.** Una llamada a `sample_cohort(2200, rng, n_noise=10)` (§0.3), cortada en tres grupos que no se solapan: 1.000 **miembros** entrenan el modelo, 1.000 **desconocidos** sirven de vara de medir y otros 200 desconocidos son la **referencia del atacante**, personas que el atacante sabe que no estaban en el entrenamiento. Diez columnas de ruido, como en la demo 1, dan a un modelo profundo algo con lo que distinguir a las personas. `forest(min_leaf=1)` es un `RandomForestClassifier` de 200 árboles como el de la demo 3, pero que crece hasta que cada persona de entrenamiento queda sola en una hoja.
 
-Los **lectores** convierten el resultado del `main()` de cada demo en objetos `Reading`, sin recalcular nada:
+**Lo que se ve.**
 
-| Lector | Lee | Métricas |
-| --- | --- | --- |
-| `demo1_readings()` | el candidato (árbol con wrapper), los rechazos, la recomendación sobre el árbol manipulado, el registro de consultas | AUC de pertenencia, ventaja, TPR al 10% de FPR, FDIF con p; cociente de riesgo de atributos; diferencia de precisión; filas guardadas; cociente de tamaño; ficheros reveladores publicados (de 5); filas del barrido permitidas |
-| `demo2_readings()` | los AUC del árbol con wrapper, las dos marcas | AUC medio de SACRO-ML; configuraciones no detectadas (de 2) |
-| `demo3_readings()` | tasas de evasión, extracción con el presupuesto de la puerta (200), la petición que supera el presupuesto, las filas del backdoor | tres tasas de evasión; coincidencia de la copia; petición por encima del presupuesto permitida; subida del backdoor = peor éxito del disparador tras el envenenamiento menos el éxito del modelo limpio con el mismo disparador |
-| `demo4_readings()` | el recuento de ficheros manipulados aceptados | ficheros de la cadena de suministro aceptados (de 4) |
+```
+Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own training rows: 1.000. On strangers: 0.605.
+```
 
-`breaches(spec, reading, limit)` aplica la regla. Un valor que falta nunca supera la tolerancia; aparece como "not measured".
+**Cómo leerlo.** El resultado es una moneda al aire con peso (§0.3), así que ningún modelo honesto pasa mucho de 0,6. Un 1,000 perfecto en las filas de entrenamiento solo puede significar que el modelo recuerda las respuestas. Esa memoria es lo que leen los ataques.
 
-### 5.4 Veredictos (`compliance_gate/gate.py`)
+### 5.1 Inferencia de pertenencia: ¿estaba esta persona en los datos de entrenamiento?
 
-`build_report(evidence, regimes, overrides, accept_missing)`:
+> **Diapositiva 33**, pasos 2 a 4 · **Código:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py): `confidence_in_truth()` (preguntar), `calibrate_threshold()` (calibrar), `decide()` (decidir), `evaluate()` y `auc()` (puntuar al atacante)
 
-1. Combina las tolerancias con las sustituciones de `--fail-under` (un nombre de métrica desconocido es un error).
-2. Lee cada demo que se ejecutó y construye un `MetricVerdict` por lectura, agrupados en un `CategoryVerdict` por categoría. Una categoría está **dentro** de tolerancia cuando ninguna de sus métricas la supera.
-3. Da a cada control elegido un `ControlVerdict`: **not_evidenced** si alguna de sus demos no se ejecutó (marcado `accepted` cuando todas las demos que faltan se declararon con `--accept-missing`); si no, **fail** si alguna de sus categorías superó la tolerancia, y **pass** en caso contrario.
-4. `GateReport.passed` es verdadero solo si todas las categorías están dentro de tolerancia y todos los controles cumplen o son un not_evidenced aceptado. Nunca hay un verde silencioso: un control sin evidencia hace fallar la ejecución salvo que la ejecución diga por qué.
+**Por qué importa.** Estar en un conjunto de datos puede ser el secreto: si un modelo se entrenó solo con los pacientes de una clínica, demostrar que alguien estaba en su entrenamiento demuestra que fue paciente allí (NISTAML.033).
 
-`write_json()` y `write_markdown()` escriben el mismo contenido para máquinas y para personas, con el aviso de que la correspondencia y las tolerancias se hicieron para este repositorio.
+**Código, en tres pasos.** Los nombres de las funciones son los pasos.
 
-### 5.5 Cómo leer el informe sembrado
+1. **Preguntar.** `confidence_in_truth(model.predict_proba, rows, outcomes)` envía cada fila al modelo y elige, de las dos probabilidades que devuelve, la del resultado real de la persona. El atacante necesita el resultado real, lo cual es realista: una aseguradora o un empleador pueden tenerlo ya.
+2. **Calibrar.** `calibrate_threshold(reference_scores)` toma la confianza sobre los 200 desconocidos del atacante y devuelve el valor que solo supera el 10% de ellos (`FALSE_ALARM_RATE = 0.10`). Eso es lo que significa "alto para un desconocido".
+3. **Decidir.** `decide(scores, threshold)` declara miembro a todo el que quede por encima.
 
-`demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` es la ejecución sobre las demos 1, 3 y 4 con la demo 2 declarada fuera de alcance:
+Después `evaluate()` compara las decisiones con la verdad: la proporción de miembros detectados, la de desconocidos declarados miembros por error, el acierto con una mezcla 50/50 y el AUC. `auc()` está escrita en cuatro líneas para que se vea qué cuenta: la probabilidad de que un miembro al azar puntúe más que un desconocido al azar.
 
-* **Puerta de tolerancias.** Todas las métricas de privacidad de la demo 1 están dentro de tolerancia (son las mismas cifras que permiten a `decide()` publicar el árbol con wrapper en §1.5). La evasión (78,7%, 32,8%, 20,7% frente a 10%), la extracción (86,9% frente a 80%) y el envenenamiento (una subida de 71,7 puntos frente a 10) la superan. Cadena de suministro: 0 de 4 aceptados, dentro.
-* **Controles.** El paquete de GRAIMATTER cumple, salvo la comprobación cruzada con SACRO-ML, que queda sin evidencia (fuera de alcance). El art. 15(5) falla en envenenamiento de datos, evasión y confidencialidad (por la extracción), y cumple en envenenamiento del modelo gracias a la demo 4. Los controles del NIST siguen el mismo reparto.
-* **La lección.** El modelo que publican las comprobaciones de privacidad de GRAIMATTER no es resistente en el sentido del art. 15(5). La privacidad es una rama del AML.
+**Lo que se ve.**
 
-`gate_us.md` es la misma evidencia vista con el paquete de EE. UU.
+```
+  Step 1, ask.       Average confidence in the truth: members 0.83, strangers 0.54.
+  Step 2, calibrate. Only 10.0% of the attacker's 200 strangers score above 0.72: that is the threshold.
+  Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
+Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
 
-### 5.6 La puerta en la CI, y los tests
+Two people, both high risk, as the attacker sees them:
+  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 -> called member
+  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 -> called not a member
+```
 
-`.github/workflows/gate.yml` ejecuta dos jobs. `lint-and-test` ejecuta `ruff` y `pytest`. `gate` ejecuta la puerta dos veces: el paquete de GRAIMATTER sobre la demo 1, que debe pasar, y todos los paquetes sobre las demos 1, 3 y 4, que deben terminar con código 1 y superar la tolerancia exactamente en evasión, extracción y envenenamiento. Una puerta que bloqueara por cualquier otro motivo, o que dejara de bloquear, pondría la CI en rojo.
+**Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54). Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla. El miembro tiene menos factores de riesgo que el desconocido (no fuma, no tiene diabetes, peso normal) y, aun así, el modelo está más seguro sobre el miembro (0,80 frente a 0,67): no razona a partir de los factores de riesgo, recuerda a esa persona.
 
-`tests/test_gate.py` vuelve a ejecutar las demos 1, 3 y 4 y comprueba que sus informes siguen coincidiendo con los ficheros versionados en `demo/output/`, salvo las líneas que dependen de la máquina y que se enumeran en §7 (`test_regenerated_outputs_match_versioned`), que la puerta decide igual que el `decide()` de la demo 1 y que los veredictos sembrados son los de §5.5. Por eso un cambio en las cifras de una demo debe ir acompañado de su informe regenerado.
+### 5.2 Inferencia de atributos: ¿cuál es el único campo que no sé?
+
+> **Diapositiva 33**, paso 5 · **Código:** [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py): `guess_field()` (rellenar, preguntar, adivinar) y `success()`
+
+**Por qué importa.** El atacante ya conoce casi todo el registro de una persona y quiere un campo, aquí si fuma. Si el modelo memorizó a esa persona, rellena el hueco.
+
+**Código.** `guess_field(model.predict_proba, rows, outcomes)` hace dos copias de cada fila, una con `smoker = 0` y otra con `smoker = 1` (antes se sobrescribe el valor real, para que la suposición no pueda mirarlo), lee la confianza en el resultado real de la persona para las dos y se queda con el valor del que el modelo está más seguro. Si las dos copias puntúan exactamente igual, se abstiene (`-1`), y eso cuenta como fallo. `success()` da la proporción de aciertos. El script lo ejecuta sobre los miembros **y** sobre los desconocidos.
+
+**Lo que se ve.**
+
+```
+  Members:   smoking status guessed right for 94.4%.
+  Strangers: smoking status guessed right for 59.6%.
+```
+
+**Cómo leerlo.** Hay que comparar las dos líneas entre sí, no una línea con el 50%. El 59,6% de los desconocidos es lo que el patrón de la población le da a cualquiera ("las personas de alto riesgo suelen fumar"); no es una fuga. Los 34,8 puntos que los miembros sacan por encima son lo que el modelo recuerda de cada uno. Es la comparación que pide el anexo E de GRAIMATTER, y la demo 1 ejecuta su versión completa con una persona plantada (§1.2, diapositiva 40).
+
+### 5.3 Cuatro formas de publicar el mismo modelo
+
+> **Diapositiva 33**, tabla · **Código:** [`run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), el bucle bajo "Demo guide §5.3"; [`membership.py`](../../demo/confidentiality_demo/membership.py) `label_only_confidence()` para la fila de solo etiqueta
+
+**Código.** Los mismos dos ataques, repetidos sobre cuatro publicaciones de los mismos datos. Cambian dos cosas: cuánto crecen los árboles (`min_leaf` 1; 10, como el objetivo de la demo 3; 20, como el mínimo del safe wrapper de la demo 1) y si el modelo responde con una probabilidad o solo con una etiqueta. Con solo la etiqueta, el paso 1 pasa a ser `label_only_confidence()`: 1,0 si la etiqueta del modelo coincide con el resultado real y 0,0 si no. El ataque de atributos necesita dos probabilidades que comparar, así que en la publicación de solo etiqueta imprime `n/a`.
+
+**Lo que se ve.**
+
+```
+  Release                                        Test acc Attacker    AUC  Smoker  Smoker
+                                                             right         member  strngr
+  Grown to one row per leaf, probabilities          0.605    91.8%  0.976   94.4%   59.6%
+  Grown to one row per leaf, label only             0.605    69.8%  0.698     n/a     n/a
+  Minimum leaf 10 (demo 3), probabilities           0.627    57.5%  0.678   64.6%   62.0%
+  Minimum leaf 20 (demo 1 floor), probabilities     0.636    54.3%  0.607   62.0%   62.0%
+```
+
+**Cómo leerlo.**
+
+* **Attacker right** es el ataque de pertenencia sobre una mezcla 50/50: el 50% es una moneda al aire. **Smoker member / strngr** es el ataque de atributos; la fuga es la diferencia entre las dos columnas.
+* **Devolver solo la etiqueta reduce la fuga pero no la cierra** (de 91,8% a 69,8%). Un modelo que acierta con todos los miembros los sigue delatando, un bit de acierto o fallo cada vez.
+* **No memorizar cierra la mayor parte.** Con una hoja mínima de 20 el atacante se queda en 54,3% y la diferencia en tabaco es cero. Cada respuesta es ahora una media sobre al menos 20 personas, así que nadie destaca.
+* **Aquí no cuesta precisión.** El modelo honesto es más preciso con los desconocidos (0,636 frente a 0,605), porque memorizar ruido no ayuda a predecir a gente nueva. Es lo habitual en modelos sobreajustados, no una ley: la privacidad diferencial, la defensa más fuerte, sí cuesta algo de precisión.
+
+### 5.4 Hacia dónde sigue la presentación
+
+> **Diapositivas 36 a 51** (parte 4B) · **Código:** [`run_demo.py`](../../demo/run_demo.py) (demo 1), [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py) (demo 2), [`aml_demo/extraction.py`](../../demo/aml_demo/extraction.py) (demo 3, sección 2)
+
+El informe termina mirando hacia delante. Esta es la versión didáctica: un solo random forest, un ataque por umbral y un campo oculto. La parte 4B ejecuta las comprobaciones de GRAIMATTER sobre la misma cohorte: la demo 1 con un ataque de pertenencia más fuerte, una persona plantada, el safe wrapper y los límites de consultas (§1), y la demo 2 con el LiRA de SACRO-ML (§2). El tercer secreto de la confidencialidad, el propio modelo, es la extracción de la demo 3 (§3.2, diapositiva 38).
+
+`main()` devuelve las cifras que imprimió, para los tests. Como la demo 6, la demo 5 es independiente y la puerta de publicación no la lee: la pertenencia y la inferencia de atributos ya pasan por la puerta a través de las cifras de la demo 1 (§7.3), con las tolerancias de GRAIMATTER.
 
 ---
 
 ## 6. Demo 6: esconder datos en un modelo
+> **Diapositiva 52 (parte 4B)** · **Script:** [`demo/run_stego_demo.py`](../../demo/run_stego_demo.py) · **Informe:** [`demo/output/stego_report.txt`](../../demo/output/stego_report.txt)
+
 
 `demo/run_stego_demo.py` le hace al modelo la pregunta de la esteganografía: ¿se puede esconder un mensaje dentro de él? Las comprobaciones de salida de GRAIMATTER preguntan si un modelo *filtra* sus datos de entrenamiento sin querer (inferencia de pertenencia y de atributos); no preguntan si alguien le *ha escrito* datos a propósito. Esta demo muestra dos canales para hacerlo y qué elimina cada uno. El código está en `stego_demo/`. Aquí no se esconde código ejecutable: la carga útil es una nota corta o unos registros inventados, que representan datos sacados de un TRE.
 
 ### 6.0 El modelo portador
+> **Diapositiva 52** · **Código:** [`run_stego_demo.py`](../../demo/run_stego_demo.py) `network()`
+
 
 **Código.** `sample_cohort(4000, rng, n_noise=10)`, las primeras 2.000 filas para entrenar y las otras 2.000 para medir la precisión. `network()` devuelve el portador, `MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=800)` — una red neuronal en vez de un bosque, porque una red tiene un gran array de pesos en coma flotante donde esconder bits. `_flat_weights()` concatena sus `coefs_` en un único vector float32; `with_weights(model, flat)` devuelve una copia profunda del modelo entrenado con solo esos pesos reemplazados, conservando los interceptos y todo lo demás, de modo que una copia con los pesos cambiados predice exactamente igual que el original menos el cambio.
 
 **Lo que se ve.** `Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 10,304 weights.` La precisión es la que permite la etiqueta ruidosa (§0.3); el número de pesos es lo que fija la capacidad del canal.
 
 ### 6.1 En los pesos: esteganografía LSB
+> **Diapositiva 52** · **Código:** [`stego_demo/weights.py`](../../demo/stego_demo/weights.py)
+
 
 **Código.** `stego_demo/weights.py`. Un float32 tiene un bit de signo, 8 de exponente y 23 de mantisa. Los bits más bajos de la mantisa apenas aportan magnitud: el k-ésimo más bajo vale unos 2^(k−24) del número, así que sobrescribir los ocho últimos cambia un peso en torno a una parte entre 32.000. `embed(weights, payload, bits_per_weight=8)` escribe una cabecera de 32 bits con la longitud y los bytes de la carga en los 8 bits bajos de pesos sucesivos; `extract()` los vuelve a leer; `capacity_bytes()` es `n_weights * bits // 8` menos la cabecera. `max_abs_shift()` informa del mayor cambio que ha sufrido un solo peso. La carga, `SECRET`, es una nota inventada de 111 bytes con números de historia clínica ficticios.
 
@@ -689,9 +810,11 @@ Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 b
   Payload read back from the weights: exact match (111 bytes).
 ```
 
-**Cómo leerlo.** La red de 10.304 pesos guarda unos 10 KB en sus bits bajos. Esconder 111 bytes no mueve ningún peso más de 3e-06 y deja la precisión de test intacta a tres decimales. Una comprobación de publicación que solo mira la precisión —el TECH 6 de GRAIMATTER y la puerta de §5— ve un modelo normal y lo aprueba, mientras los datos salen del TRE dentro de él. Una red mayor guarda proporcionalmente más: unos pocos millones de pesos guardan un megabyte, que es como EvilModel (Wang et al. 2021) escondió ficheros enteros de malware en una red convolucional sin cambiar sus salidas.
+**Cómo leerlo.** La red de 10.304 pesos guarda unos 10 KB en sus bits bajos. Esconder 111 bytes no mueve ningún peso más de 3e-06 y deja la precisión de test intacta a tres decimales. Una comprobación de publicación que solo mira la precisión —el TECH 6 de GRAIMATTER y la puerta de §7— ve un modelo normal y lo aprueba, mientras los datos salen del TRE dentro de él. Una red mayor guarda proporcionalmente más: unos pocos millones de pesos guardan un megabyte, que es como EvilModel (Wang et al. 2021) escondió ficheros enteros de malware en una red convolucional sin cambiar sus salidas.
 
 ### 6.2 En el comportamiento: un canal de marca de agua/backdoor
+> **Diapositiva 52** · **Código:** [`stego_demo/behaviour.py`](../../demo/stego_demo/behaviour.py)
+
 
 **Código.** `stego_demo/behaviour.py`. Aquí el mensaje no está en los bytes sino en lo que el modelo responde. `triggers_for(payload, n_features, rng)` convierte la carga (con la misma cabecera de 32 bits) en una fila trigger por bit; `_trigger_keys()` extrae esas filas de una gaussiana ancha (desviación 20) lejos de los rangos de la cohorte, de modo que quedan separadas entre sí y de cualquier registro real. `plant(train_x, train_y, keys, bits, repeat=5)` añade cada trigger, etiquetado con su bit, al conjunto de entrenamiento repetido unas cuantas veces, para que los pocos triggers pesen lo suficiente y el modelo los memorice mientras su precisión en filas reales se mantiene. `read_back(predict, keys)` consulta los triggers y lee las etiquetas predichas como la carga; `recovered_fraction()` es la fracción de bits devueltos correctamente.
 
@@ -706,6 +829,8 @@ Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 b
 **Cómo leerlo.** El mensaje `owner=lab42; contact=hidden` entra como 248 filas trigger (27 bytes más la cabecera de 4, ocho bits cada uno). El modelo con marca de agua responde a las filas reales tan bien como el limpio —aquí un poco mejor, dentro del ruido de la etiqueta— y devuelve todos los bits plantados, así que el mensaje vuelve exacto. Esto es marca de agua por backdoor (Adi et al. 2018) usada como canal encubierto; el mismo mecanismo hace que un modelo memorice y luego suelte un secreto ante una entrada elegida (Song et al. 2017). Como el mensaje vive en la función de decisión, editar los bytes de los pesos no lo elimina (§6.3).
 
 ### 6.3 Defensas: qué elimina cada una
+> **Diapositiva 52** · **Código:** [`stego_demo/defences.py`](../../demo/stego_demo/defences.py)
+
 
 **Código.** `stego_demo/defences.py`. `clip_low_bits(weights, bits)` pone a cero los bits más bajos de la mantisa; `quantise_fp16()` redondea a float16 y vuelve, como haría una tubería de exportación para reducir el modelo; `add_noise(weights, relative, rng)` añade ruido gaussiano a escala de los pesos. `payload_survives()` es la fracción de bytes de la carga que vuelven intactos tras una transformación. `lsb_balance()` es la media de los bits bajos sobre todos los pesos, una prueba de detección barata. El script aplica cada transformación a los pesos con esteganografía mediante `with_weights()` y vuelve a medir precisión y carga.
 
@@ -733,12 +858,94 @@ Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 b
 * **La detección es débil; la eliminación es fiable.** La distribución de los bits bajos es igual en el modelo limpio y en el que esconde datos (0,314 en ambos), porque la carga llena los bits bajos de solo unos 115 de los 10.304 pesos —demasiado pocos para mover un estadístico tomado sobre todos ellos—. Un detector tendría que saber dónde está la carga. Esta es la lección para un TRE: no intentar detectar los datos escondidos a posteriori, sino transformar todo modelo que se publique para que la capacidad desaparezca.
 
 ### 6.4 Dónde encaja y qué debería sacar GRAIMATTER de esto
+> **Diapositiva 52** · **Código:** [`run_stego_demo.py`](../../demo/run_stego_demo.py)
+
 
 La tabla final asocia cada canal con su fuente y con NIST AI 100-2e2025: el canal de los pesos con la confidencialidad y la exfiltración (EvilModel, Wang et al. 2021), la marca de agua con backdoor e integridad (Adi et al. 2018) y la memorización con la fuga de datos (Song et al. 2017). Lo importante para GRAIMATTER es que una comprobación de salida que solo se fía de la precisión no ve ninguno de los dos canales, así que el paso de exportación segura de un TRE debería transformar todo modelo que se publique —recortar los bits bajos o cuantizar, y preferir el entrenamiento con privacidad diferencial— en vez de fiarse de detectar los datos escondidos. Esta demo es independiente: a diferencia de las demos 1, 3 y 4 no está conectada a la puerta de publicación, porque el hueco que muestra se cierra con una transformación en el momento de publicar, no con una tolerancia sobre una cifra.
 
 ---
 
-## 7. Reproducibilidad y salvedades conocidas
+## 7. La puerta de publicación
+> **Diapositiva 55** · **Script:** [`demo/run_gate.py`](../../demo/run_gate.py) · **Informe:** [`demo/output/gate/`](../../demo/output/gate/)
+
+
+`demo/run_gate.py` convierte la tabla de correspondencias de la guía técnica (§8.6) en una comprobación que puede bloquear una publicación en la CI. El patrón viene de [safety-trust-engine](https://github.com/olonok69/safety-trust-engine): controles ligados a evidencia, tolerancias numéricas, un veredicto por control y un informe.
+
+### 7.1 Qué hace `run_gate.py`, paso a paso
+> **Diapositiva 55** · **Código:** [`run_gate.py`](../../demo/run_gate.py)
+
+
+1. **Lee las opciones.** `--demos` (por defecto `1,2,3,4`), `--regimes` (por defecto `eu_uk,nist_aml,graimatter`), `--fail-under metric=value` (sustituye una tolerancia), `--accept-missing` (demos declaradas fuera de alcance), `--out`, `--show-demos`. `_demo_names()` y `_limits()` las validan.
+2. **Ejecuta las demos.** `run_demos()` importa cada script como módulo (`SCRIPTS` asocia `demo1` con `run_demo`, y así con las demás) y llama a su `main()`, con la salida de la demo silenciada salvo con `--show-demos`. Si `sacroml` no está instalado, la demo 2 se omite con un mensaje en lugar de fallar. El resultado es `evidence`: nombre de la demo → el diccionario que devolvió su `main()`.
+3. **Juzga.** `build_report()` en `compliance_gate/gate.py` (§7.4).
+4. **Escribe y termina.** El informe se escribe como `gate_<packs>.json` y `.md`; el script imprime una línea por categoría, los recuentos de controles y `Gate: PASS` o `FAIL`, y devuelve el código de salida 0 o 1.
+
+### 7.2 Controles y paquetes de regulación (`compliance_gate/controls.py`)
+> **Diapositiva 55** · **Código:** [`compliance_gate/controls.py`](../../demo/compliance_gate/controls.py)
+
+
+Un `Control` es una obligación que las demos pueden evidenciar:
+
+* `regulation`, `ref`, `label`: qué es, por ejemplo Reglamento de IA de la UE, art. 15(5), evasión del modelo.
+* `stages`: las demos que deben ejecutarse para que quede evidenciado.
+* `categories`: las categorías cuyo incumplimiento lo hace fallar.
+* `binding`: `statute` (ley), `guidance` (voluntario), `supervisory` (expectativa del supervisor) o `recommendation` (el green paper), para que el informe nunca dé a entender más de lo que puede.
+
+Los controles se agrupan en cuatro paquetes: `eu_uk` (art. 15(5) y el código del Reino Unido / ETSI EN 304 223), `nist_aml` (clases de ataque de NIST AI 100-2), `graimatter` (TECH 6, 7, 9-10, 11, 16, más la comprobación cruzada con SACRO-ML) y `us` (NIST AI RMF MEASURE y GOVERN, la gestión federal del riesgo de modelos SR 26-02). `--regimes all` elige los cuatro. Las diez categorías están en `CATEGORIES`.
+
+### 7.3 Métricas, tolerancias y lectores (`compliance_gate/tolerances.py`)
+> **Diapositiva 55** · **Código:** [`compliance_gate/tolerances.py`](../../demo/compliance_gate/tolerances.py)
+
+
+`METRICS` define un `MetricSpec` por cada cifra que juzga la puerta: su categoría, la demo que la produce, su tolerancia, una descripción y dos opciones. `inclusive=True` hace que se supere con `value >= limit` (la regla de la demo 1) en lugar de `value > limit`; `max_p` significa que la métrica solo se supera si además su p-valor es como mucho ese (FDIF). Las tolerancias de privacidad se leen del `POLICY` de la demo 1, así que la puerta y `decide()` no pueden desalinearse; las demás se fijan aquí para el taller (evasión 10%, coincidencia de la copia 80%, subida del backdoor 10 puntos, cero para los recuentos).
+
+Los **lectores** convierten el resultado del `main()` de cada demo en objetos `Reading`, sin recalcular nada:
+
+| Lector | Lee | Métricas |
+| --- | --- | --- |
+| `demo1_readings()` | el candidato (árbol con wrapper), los rechazos, la recomendación sobre el árbol manipulado, el registro de consultas | AUC de pertenencia, ventaja, TPR al 10% de FPR, FDIF con p; cociente de riesgo de atributos; diferencia de precisión; filas guardadas; cociente de tamaño; ficheros reveladores publicados (de 5); filas del barrido permitidas |
+| `demo2_readings()` | los AUC del árbol con wrapper, las dos marcas | AUC medio de SACRO-ML; configuraciones no detectadas (de 2) |
+| `demo3_readings()` | tasas de evasión, extracción con el presupuesto de la puerta (200), la petición que supera el presupuesto, las filas del backdoor | tres tasas de evasión; coincidencia de la copia; petición por encima del presupuesto permitida; subida del backdoor = peor éxito del disparador tras el envenenamiento menos el éxito del modelo limpio con el mismo disparador |
+| `demo4_readings()` | el recuento de ficheros manipulados aceptados | ficheros de la cadena de suministro aceptados (de 4) |
+
+`breaches(spec, reading, limit)` aplica la regla. Un valor que falta nunca supera la tolerancia; aparece como "not measured".
+
+### 7.4 Veredictos (`compliance_gate/gate.py`)
+> **Diapositiva 55** · **Código:** [`compliance_gate/gate.py`](../../demo/compliance_gate/gate.py)
+
+
+`build_report(evidence, regimes, overrides, accept_missing)`:
+
+1. Combina las tolerancias con las sustituciones de `--fail-under` (un nombre de métrica desconocido es un error).
+2. Lee cada demo que se ejecutó y construye un `MetricVerdict` por lectura, agrupados en un `CategoryVerdict` por categoría. Una categoría está **dentro** de tolerancia cuando ninguna de sus métricas la supera.
+3. Da a cada control elegido un `ControlVerdict`: **not_evidenced** si alguna de sus demos no se ejecutó (marcado `accepted` cuando todas las demos que faltan se declararon con `--accept-missing`); si no, **fail** si alguna de sus categorías superó la tolerancia, y **pass** en caso contrario.
+4. `GateReport.passed` es verdadero solo si todas las categorías están dentro de tolerancia y todos los controles cumplen o son un not_evidenced aceptado. Nunca hay un verde silencioso: un control sin evidencia hace fallar la ejecución salvo que la ejecución diga por qué.
+
+`write_json()` y `write_markdown()` escriben el mismo contenido para máquinas y para personas, con el aviso de que la correspondencia y las tolerancias se hicieron para este repositorio.
+
+### 7.5 Cómo leer el informe sembrado
+> **Diapositiva 55** · **Código:** [`demo/output/gate/`](../../demo/output/gate/)
+
+
+`demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` es la ejecución sobre las demos 1, 3 y 4 con la demo 2 declarada fuera de alcance:
+
+* **Puerta de tolerancias.** Todas las métricas de privacidad de la demo 1 están dentro de tolerancia (son las mismas cifras que permiten a `decide()` publicar el árbol con wrapper en §1.5). La evasión (78,7%, 32,8%, 20,7% frente a 10%), la extracción (86,9% frente a 80%) y el envenenamiento (una subida de 71,7 puntos frente a 10) la superan. Cadena de suministro: 0 de 4 aceptados, dentro.
+* **Controles.** El paquete de GRAIMATTER cumple, salvo la comprobación cruzada con SACRO-ML, que queda sin evidencia (fuera de alcance). El art. 15(5) falla en envenenamiento de datos, evasión y confidencialidad (por la extracción), y cumple en envenenamiento del modelo gracias a la demo 4. Los controles del NIST siguen el mismo reparto.
+* **La lección.** El modelo que publican las comprobaciones de privacidad de GRAIMATTER no es resistente en el sentido del art. 15(5). La privacidad es una rama del AML.
+
+`gate_us.md` es la misma evidencia vista con el paquete de EE. UU.
+
+### 7.6 La puerta en la CI, y los tests
+> **Diapositiva 55** · **Código:** [`.github/workflows/gate.yml`](../../.github/workflows/gate.yml), [`tests/test_gate.py`](../../tests/test_gate.py)
+
+
+`.github/workflows/gate.yml` ejecuta dos jobs. `lint-and-test` ejecuta `ruff` y `pytest`. `gate` ejecuta la puerta dos veces: el paquete de GRAIMATTER sobre la demo 1, que debe pasar, y todos los paquetes sobre las demos 1, 3 y 4, que deben terminar con código 1 y superar la tolerancia exactamente en evasión, extracción y envenenamiento. Una puerta que bloqueara por cualquier otro motivo, o que dejara de bloquear, pondría la CI en rojo.
+
+`tests/test_gate.py` vuelve a ejecutar las demos 1, 3 y 4 y comprueba que sus informes siguen coincidiendo con los ficheros versionados en `demo/output/`, salvo las líneas que dependen de la máquina y que se enumeran en §8 (`test_regenerated_outputs_match_versioned`), que la puerta decide igual que el `decide()` de la demo 1 y que los veredictos sembrados son los de §7.5. Por eso un cambio en las cifras de una demo debe ir acompañado de su informe regenerado.
+
+---
+
+## 8. Reproducibilidad y salvedades conocidas
 
 * **Semillas.** Las demos 1, 3 y 4 dan el mismo informe en cada ejecución con las mismas versiones de las bibliotecas. Los tests dependen de ello. Otra versión de scikit-learn puede cambiar un random forest y, con él, las cifras.
 * **La demo 2 no es reproducible de una ejecución a otra.** Los ataques del paquete hacen sus propias divisiones aleatorias; el AUC medio de pertenencia del árbol con wrapper pasó de 0,494 a 0,487 entre dos ejecuciones. Sus ficheros `report.json` se amplían en cada ejecución, no se sustituyen. Por eso la demo 2 queda fuera de la CI y su control de la puerta se declara allí fuera de alcance.

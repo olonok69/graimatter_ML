@@ -286,7 +286,7 @@ def main() -> dict:
     rows.append(("Safe-wrapper floor 20 -> 1", "request_release()", True, checks))
 
     # Demo guide §4.5: "accepted" counts files that pass both the pin and the scan or floor; the gate
-    # reads it (§5.3).
+    # reads it (§7.3).
     _section(report, "5. Side by side")
     report.p(f"  {'Tampered file':<32} {'Usual check':<20} {'Usual':<9} {'Pin':<8} Scan or floor")
     accepted = 0
@@ -332,7 +332,7 @@ def main() -> dict:
     report.save(path)
     print(f"\nReport written to {path}")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
-    # compliance_gate/tolerances.py, demo4_readings(), reads them (Demo guide §5.3).
+    # compliance_gate/tolerances.py, demo4_readings(), reads them (Demo guide §7.3).
     return {
         "published_accuracy": published,
         "swapped_accuracy": swapped_accuracy,

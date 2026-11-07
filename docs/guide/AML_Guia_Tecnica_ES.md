@@ -1,8 +1,8 @@
 # Machine learning adversarial: guía técnica del taller
 
-**Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con cinco demos sobre datos sintéticos**
+**Cómo se atacan los modelos entrenados, qué piden los principales marcos y GRAIMATTER como caso de alta confianza, con seis demos sobre datos sintéticos**
 
-Esta guía acompaña a las diapositivas (`docs/Adversarial_ML.pptx`), que también se graban como una serie de vídeos, a los cinco scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` y `demo/run_stego_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. La parte 4 toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Cada parte es un vídeo, y la parte 4 son dos (4a y 4b); el anexo A relaciona cada sección con sus diapositivas y su vídeo. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 55 diapositivas en orden y remite a esta guía. Para seguir las demos a través de su código, sección a sección de lo que imprimen, usa la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)).
+Esta guía acompaña a las diapositivas (`docs/Adversarial_ML.pptx`), que también se graban como una serie de vídeos, a los seis scripts de demo de este repositorio (`demo/run_aml_demo.py`, `demo/run_confidentiality_demo.py`, `demo/run_supply_chain_demo.py`, `demo/run_demo.py`, `demo/run_sacroml_demo.py` y `demo/run_stego_demo.py`) y a la puerta de publicación que juzga sus resultados (`demo/run_gate.py`). Está escrita para un científico de datos que no ha leído ni el informe del NIST ni el green paper de GRAIMATTER. La parte 1 explica los ataques con la taxonomía de NIST AI 100-2e2025 y una pequeña demo para cada rama. La parte 2 compara los marcos que llevan los ataques a la práctica. La parte 3 profundiza en un entorno de alta confianza: la publicación de modelos entrenados desde un entorno de investigación seguro (TRE), tal como recomienda el green paper de GRAIMATTER. La parte 4 toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Cada parte es un vídeo, y la parte 4 son dos (4a y 4b); el anexo A relaciona cada sección con sus diapositivas y su vídeo. Para presentar las diapositivas una a una, usa la guía del presentador ([español](Guia_Presentador_ES.md), [inglés](Presenter_Guide_EN.md)), que sigue las 57 diapositivas en orden y remite a esta guía. Para seguir las demos a través de su código, sección a sección de lo que imprimen, usa la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)).
 
 > **Cómo leer esta guía.** Cada sección empieza con un recuadro breve, **En pocas palabras**. El texto que sigue entra en detalle. Las partes marcadas como **Por dentro** describen exactamente lo que hace el código y se pueden saltar. El informe del NIST se cita por sección de `NIST.AI.100-2e2025.pdf`, y el green paper por sección y página de `GRAIMATTER Green Paper.pdf`. Las cifras de las demos proceden de `demo/output/aml_report.txt` (demo 3), `demo/output/supply_chain_report.txt` (demo 4), `demo/output/demo_report.txt` (demo 1) y `demo/output/sacroml/sacroml_report.txt` (demo 2).
 
@@ -683,6 +683,7 @@ Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04)
 
 * *Cómo.* Dinur y Nissim mostraron que un número suficiente de estadísticas lineales revela registros individuales; un estudio a gran escala de este riesgo por parte de la Oficina del Censo de Estados Unidos llevó a usar privacidad diferencial en el censo de 2020. En clasificadores de ML, la **inversión del modelo** recupera representantes de cada clase y no filas exactas; ataques más fuertes recuperan muestras de entrenamiento a partir de los parámetros de una red neuronal, ayudados por la tendencia de las redes a memorizar. La **inferencia de atributos**, completar un campo sensible de un registro a partir de un conocimiento parcial de ese registro, es el ataque relacionado que el NIST describe aquí.
 * *Defensas.* La privacidad diferencial da una cota demostrable; el green paper añade comprobaciones estructurales, porque algunos modelos simplemente almacenan filas.
+* *Aquí, versión sencilla.* Demo 5, sección 2 (vídeo 4a): con un random forest que crece hasta una fila por hoja, un atacante que lo sabe todo menos si la persona fuma lo adivina en el 94,4% de los miembros, frente al 59,6% de los desconocidos, que es la base de la población.
 * *Aquí.* La reconstrucción es trivial cuando el modelo almacena sus filas de entrenamiento: el modelo de 1 vecino más cercano guarda las 500 y la SVC 423 vectores de soporte, así que la demo 1 rechaza ambos (§19.6); el caso de estudio del paper encontró 441 filas exactas de pacientes de 798 dentro de una SVM. El barrido sobre el registro plantado (§19.2) es inferencia de atributos: 20 consultas recuperan dos campos ocultos. La puerta de publicación clasifica la inferencia de atributos en .032 (sección 23.3).
 
 **Inferencia de pertenencia (NISTAML.033, §2.4.2).** El atacante decide si un registro concreto estaba en el conjunto de entrenamiento.
@@ -690,6 +691,7 @@ Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04)
 * *Por qué importa.* La pertenencia por sí sola puede ser sensible, como en un estudio de pacientes con una enfermedad rara, y es una pieza para extraer datos de entrenamiento.
 * *Cómo.* Se mostró por primera vez sobre estadísticas genómicas en 2008 (ataques de rastreo). Para modelos de ML: el ataque por **umbral de pérdida** (una fila es miembro si la pérdida del modelo sobre ella es inusualmente baja), refinado con umbrales por ejemplo; los **modelos sombra** entrenados con datos parecidos para enseñar a un clasificador de ataque; **LiRA**, que ajusta distribuciones gaussianas a las salidas de un número menor de modelos sombra; un único modelo de regresión cuantílica; y ataques **solo con etiquetas**. Los ataques sencillos y los costosos rinden de forma parecida en precisión con tasas bajas de falsos positivos, y por eso importan las métricas de la cola de la sección 18.
 * *Defensas y límites (§2.4.5).* La privacidad diferencial implica una cota superior al éxito de la inferencia de pertenencia, a costa de utilidad. El NIST recomienda acompañarla de auditorías empíricas de privacidad.
+* *Aquí, versión sencilla.* Demo 5, sección 1 (vídeo 4a): un ataque por umbral de confianza contra un random forest que crece hasta una fila por hoja acierta el 91,8% de las veces con una mezcla 50/50 (AUC 0,976); devolver solo etiquetas lo baja al 69,8% y una hoja mínima de 20, al 54,3%.
 * *Aquí.* Demos 1 y 2: el árbol sin restricciones alcanza un AUC de peor caso de 0,708 con el ataque que usa la etiqueta y se rechaza; el árbol con wrapper baja a 0,528; el ataque del paquete, que solo usa probabilidades, da 0,500 en ambos (§19 a §21).
 
 **Inferencia de propiedades (NISTAML.034, §2.4.3).** También llamada inferencia de la distribución: el atacante averigua una propiedad global de los datos de entrenamiento, como la proporción de registros con un atributo sensible, y no algo sobre una persona.
@@ -698,6 +700,8 @@ Para la IA generativa, el cuarto objetivo del NIST, el uso indebido (NISTAML.04)
 * *Defensas y límites.* Varios trabajos dan resultados negativos para la privacidad diferencial: protege a las personas, y la propiedad es una estadística de la población.
 * *Ejemplo (ilustrativo).* Un modelo entrenado en un TRE podría revelar qué proporción de los pacientes de un hospital tiene una enfermedad que el hospital no ha publicado, aunque no se exponga a nadie en concreto.
 * *Aquí.* No se demuestra.
+
+**Primero la versión sencilla: la demo 5 (vídeo 4a, diapositivas 32 y 33).** El vídeo 4a cierra la tríada CIA con [`demo/run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), para que la confidencialidad no quede solo para el 4b. Ejecuta los dos ataques a la privacidad de los datos más sencillos, solo con acceso de consulta: un ataque de pertenencia en tres pasos (preguntar al modelo cuánto confía en el resultado real de una persona, calibrar un umbral con personas que se sabe que no son miembros, decidir) y un ataque de atributos que rellena un campo oculto. Después compara cuatro publicaciones de los mismos datos. Una etiqueta en lugar de una probabilidad reduce la fuga pero no la cierra; una hoja mínima de 20, el mínimo del safe wrapper de la demo 1, cierra la mayor parte sin perder precisión. El código está en [`confidentiality_demo/`](../../demo/confidentiality_demo/) y la explicación en la [guía de las demos §5](Guia_Demos_ES.md#5-demo-5-confidencialidad-la-versión-sencilla). Es independiente: la puerta lee estos ataques de la demo 1.
 
 **Cómo ejecutarlo (vídeo 4b).** La extracción es la sección 2 de la demo 3 (aquí la sección 3.2; en la [guía de las demos](Guia_Demos_ES.md), §3.2). La inferencia de pertenencia, la de atributos y la reconstrucción son lo que prueban las demos 1 y 2: las secciones 17 a 21 las recorren sección a sección.
 
@@ -757,7 +761,7 @@ La demo la da con A = 0,5 (la mitad de los candidatos son miembros) y A = 0,01 (
 
 ### 18.1 Las tres lecturas, con ejemplos
 
-> **En pocas palabras.** La diapositiva 39 lee un ataque de tres maneras: la media (AUC y ventaja), la cola (FDIF y TPR con FPR bajo) y lo raro que es un miembro (la probabilidad a posteriori). Cada una responde a una pregunta distinta, y un modelo puede aprobar una y suspender otra. Aquí se desarrolla cada una con números lo bastante pequeños para comprobarlos a mano.
+> **En pocas palabras.** La diapositiva 41 lee un ataque de tres maneras: la media (AUC y ventaja), la cola (FDIF y TPR con FPR bajo) y lo raro que es un miembro (la probabilidad a posteriori). Cada una responde a una pregunta distinta, y un modelo puede aprobar una y suspender otra. Aquí se desarrolla cada una con números lo bastante pequeños para comprobarlos a mano.
 
 **1. La media: AUC y ventaja.** Tomemos 4 miembros (M) y 4 no miembros (N), con estas puntuaciones del ataque:
 
@@ -1131,6 +1135,7 @@ uv venv --python 3.11
 uv pip install -r demo/requirements.txt     # numpy, scikit-learn, sacroml (brings PyTorch)
 
 uv run python demo/run_aml_demo.py          # seconds; writes demo/output/aml_report.txt
+uv run python demo/run_confidentiality_demo.py  # seconds; writes demo/output/confidentiality_report.txt
 uv run python demo/run_supply_chain_demo.py # seconds; writes demo/output/supply_chain_report.txt
 uv run python demo/run_demo.py              # seconds; writes demo/output/demo_report.txt
 uv run python demo/run_sacroml_demo.py      # a few minutes; writes demo/output/sacroml/
@@ -1251,7 +1256,7 @@ python docs/make_deck.py                    # docs/Adversarial_ML.pptx
 
 ## Anexo A: cómo encajan la guía, las diapositivas, los vídeos y las demos
 
-La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de la serie: parte 1, los ataques (secciones 1 a 7, diapositivas 1 a 15, vídeo 1); parte 2, los marcos (sección 8, diapositivas 16 a 20, vídeo 2); parte 3, el caso GRAIMATTER (secciones 9 a 11, diapositivas 21 a 25, vídeo 3); parte 4, los ataques en detalle (secciones 12 a 22, diapositivas 26 a 51, vídeos 4a y 4b; la diapositiva 50, demo 6, se trata en §9.4 y en la guía de demos §6). El cierre (secciones 23 a 27, diapositivas 52 a 55) termina el vídeo 4b.
+La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de la serie: parte 1, los ataques (secciones 1 a 7, diapositivas 1 a 15, vídeo 1); parte 2, los marcos (sección 8, diapositivas 16 a 20, vídeo 2); parte 3, el caso GRAIMATTER (secciones 9 a 11, diapositivas 21 a 25, vídeo 3); parte 4, los ataques en detalle (secciones 12 a 22, diapositivas 26 a 53, vídeos 4a y 4b; la diapositiva 52, demo 6, se trata en §9.4 y en la guía de demos §6). El cierre (secciones 23 a 27, diapositivas 54 a 57) termina el vídeo 4b.
 
 | Sección de la guía | Diapositivas (orden de la presentación) | Vídeo | Salida de la demo |
 |---|---|---|---|
@@ -1273,27 +1278,28 @@ La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de 
 | 12. Cómo leer la taxonomía del NIST | 26 *Part 4a* (parte 4a), 27 *How to read the taxonomy* (cómo leer la taxonomía) | 4a | – |
 | 13. Disponibilidad | 28 *Availability* (disponibilidad) | 4a | – |
 | 14. Integridad | 29 *Integrity* (integridad), 30 *Evasion step by step* (la evasión paso a paso), 31 *Backdoor step by step* (el backdoor paso a paso) | 4a | `aml_report.txt` §1 y §3 |
-| 15. Cadena de suministro | 32 *Supply chain* (cadena de suministro), 33 *Demo 4 step by step* (la demo 4 paso a paso) | 4a | `supply_chain_report.txt` |
-| 16. Privacidad | 34 *Part 4b* (parte 4b), 35 *Privacy* (privacidad), 36 *Extraction step by step* (la extracción paso a paso) | 4b | `aml_report.txt` §2 |
-| 17. Cohorte y holdout | 37 *TECH 6 · TECH 8 · The cohort* (la cohorte) | 4b | `data_dictionary.json` |
-| 18. Métricas | 39 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas) | 4b | – |
-| 19.2 Registro plantado | 38 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | 4b | `demo_report.txt` §2 |
-| 19.3 Privacidad diferencial | 46 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
-| 19.4 Árbol sin restricciones | 40 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | 4b | `demo_report.txt` §4 |
-| 19.5 Safe wrapper y el fallo silencioso | 41 *Demo 1 · Safe wrapper*, 42 *Appendix F · The tail* (anexo F: la cola) | 4b | `demo_report.txt` §5 |
-| 19.6 Modelos basados en instancias | 43 *TECH 11* | 4b | `demo_report.txt` §6 |
-| 19.7 Editar después de `fit()` | 44 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
-| 19.8 Presupuesto de consultas | 45 *TECH 16* | 4b | `demo_report.txt` §8 |
-| 19.9 Registro e instantánea | 43 (notas) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
-| 20. SACRO-ML | 47 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
-| 21.1 Diferencias | 49 *Two demos compared* (dos demos comparadas) | 4b | los dos informes |
-| 21.2 Por qué difieren las cifras de pertenencia | 48 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | 4b | – |
-| 9.4 Esconder datos en un modelo | 50 *Demo 6 · Hiding data in a model* (esconder datos en un modelo) | 4b | `stego_report.txt` |
-| 22. Más allá de la IA predictiva | 51 *Beyond predictive AI* (más allá de la IA predictiva) | 4b | – |
-| 25. Límites | 52 *Limits* (límites) | 4b | – |
-| 23. Puerta de publicación | 53 *Release gate* (puerta de publicación) | 4b | `demo/output/gate/` |
-| 24. Cómo reproducir | 54 *Run it yourself* (ejecútalo tú) | 4b | – |
-| 26. Glosario, 27. Referencias | 55 *References* (referencias) | 4b | – |
+| 16. Privacidad, la versión sencilla (demo 5) | 32 *Confidentiality* (confidencialidad), 33 *Demo 5 step by step* (la demo 5 paso a paso) | 4a | `confidentiality_report.txt` |
+| 15. Cadena de suministro | 34 *Supply chain* (cadena de suministro), 35 *Demo 4 step by step* (la demo 4 paso a paso) | 4a | `supply_chain_report.txt` |
+| 16. Privacidad | 36 *Part 4b* (parte 4b), 37 *Privacy* (privacidad), 38 *Extraction step by step* (la extracción paso a paso) | 4b | `aml_report.txt` §2 |
+| 17. Cohorte y holdout | 39 *TECH 6 · TECH 8 · The cohort* (la cohorte) | 4b | `data_dictionary.json` |
+| 18. Métricas | 41 *Appendix F · Reading attack metrics* (anexo F: cómo leer las métricas) | 4b | – |
+| 19.2 Registro plantado | 40 *Appendix E · Attribute inference* (anexo E: inferencia de atributos) | 4b | `demo_report.txt` §2 |
+| 19.3 Privacidad diferencial | 48 *§10.1.3 · TECH 12* | 4b | `demo_report.txt` §3 |
+| 19.4 Árbol sin restricciones | 42 *Demo 1 · Unconstrained tree* (árbol sin restricciones) | 4b | `demo_report.txt` §4 |
+| 19.5 Safe wrapper y el fallo silencioso | 43 *Demo 1 · Safe wrapper*, 44 *Appendix F · The tail* (anexo F: la cola) | 4b | `demo_report.txt` §5 |
+| 19.6 Modelos basados en instancias | 45 *TECH 11* | 4b | `demo_report.txt` §6 |
+| 19.7 Editar después de `fit()` | 46 *RT1 · RT2 · TECH 3* | 4b | `demo_report.txt` §7, `tampered_tree.release.json` |
+| 19.8 Presupuesto de consultas | 47 *TECH 16* | 4b | `demo_report.txt` §8 |
+| 19.9 Registro e instantánea | 45 (notas) | 4b | `data_use_register.json`, `pipeline_snapshot.json` |
+| 20. SACRO-ML | 49 *Demo 2 · sacroml 2.0.1* | 4b | `sacroml_report.txt`, `sacroml/*/*/report.json` |
+| 21.1 Diferencias | 51 *Two demos compared* (dos demos comparadas) | 4b | los dos informes |
+| 21.2 Por qué difieren las cifras de pertenencia | 50 *Why the two membership numbers differ* (por qué difieren las dos cifras de pertenencia) | 4b | – |
+| 9.4 Esconder datos en un modelo | 52 *Demo 6 · Hiding data in a model* (esconder datos en un modelo) | 4b | `stego_report.txt` |
+| 22. Más allá de la IA predictiva | 53 *Beyond predictive AI* (más allá de la IA predictiva) | 4b | – |
+| 25. Límites | 54 *Limits* (límites) | 4b | – |
+| 23. Puerta de publicación | 55 *Release gate* (puerta de publicación) | 4b | `demo/output/gate/` |
+| 24. Cómo reproducir | 56 *Run it yourself* (ejecútalo tú) | 4b | – |
+| 26. Glosario, 27. Referencias | 57 *References* (referencias) | 4b | – |
 
 ### La serie de vídeos
 
@@ -1302,8 +1308,8 @@ La guía y las diapositivas siguen el mismo orden, y cada parte es un vídeo de 
 | 1 · Ataques | §1 a §7 | 1 a 15 | Demos 3 y 4, por encima | 45 minutos |
 | 2 · Marcos | §8 | 16 a 20 | – | 13 minutos |
 | 3 · GRAIMATTER, un caso de alta confianza | §9 a §11 | 21 a 25 | – | 10 minutos |
-| 4a · Los ataques en detalle: integridad y cadena de suministro | §12 a §15 | 26 a 33 | Demo 3 (secciones 1 y 3) y demo 4, sección a sección | 30 minutos más las ejecuciones |
-| 4b · Los ataques en detalle: privacidad y una puerta de publicación | §16 a §27 | 34 a 55 | Demo 3 (sección 2), demos 1, 2 y 6, la puerta | 45 minutos más las ejecuciones |
+| 4a · Los ataques en detalle: la tríada CIA y la cadena de suministro | §12 a §15, y la demo 5 de §16 | 26 a 35 | Demo 3 (secciones 1 y 3), demo 5 y demo 4, sección a sección | 40 minutos más las ejecuciones |
+| 4b · Los ataques en detalle: privacidad y una puerta de publicación | §16 a §27 | 36 a 57 | Demo 3 (sección 2), demos 1, 2 y 6, la puerta | 45 minutos más las ejecuciones |
 
 Para presentarlo en una sola sesión en directo, recorre las diapositivas en orden; la parte 4 dura entonces más o menos lo mismo que las partes 1 a 3 juntas, así que para una sesión de unos 90 minutos presenta las partes 1 a 3 y toma de la parte 4 solo las diapositivas de las demos que ejecutes. La demo 2 tarda unos minutos, así que enséñala desde su informe guardado salvo que puedas esperar.
 

@@ -10,7 +10,7 @@ The others are set here for the workshop.
 The extractors below only read numbers the demos already computed and printed.
 They do not rerun or recompute an attack.
 
-Walkthrough, with a table of what each reader reads: Demo guide §5.3 (docs/guide/Demo_Guide_EN.md).
+Walkthrough, with a table of what each reader reads: Demo guide §7.3 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations

@@ -26,7 +26,7 @@ https://github.com/olonok69/graimatter_ML
 Para ataques a LLM y agentes, el repositorio complementario:
 https://github.com/olonok69/safety-trust-engine
 
-Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: integridad y cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
+Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: la tríada CIA y la cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
 
 Referencias: NIST AI 100-2e2025, Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (marzo de 2025). MITRE ATLAS. OWASP Machine Learning Security Top 10 y OWASP Top 10 for LLM Applications 2025. Sysdig Threat Research Team, JADEPUFFER: agentic ransomware for automated database extortion (julio de 2026).
 
@@ -54,7 +54,7 @@ Es un resumen de los documentos, no asesoramiento jurídico.
 Repositorio con las demos y las guías, en español y en inglés:
 https://github.com/olonok69/graimatter_ML
 
-Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: integridad y cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
+Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: la tríada CIA y la cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
 
 Referencias: NIST AI 100-2e2025. MITRE ATLAS, versión 2026.09. OWASP ML Security Top 10 (borrador, 2023) y OWASP Top 10 for LLM Applications 2025. Reglamento (UE) 2024/1689, artículo 15. Reglamento (UE) 2026/1744 (Digital Omnibus sobre IA). CEPD, dictamen 28/2024. DSIT, Code of Practice for the Cyber Security of AI (enero de 2025). ETSI EN 304 223 (enero de 2026). NCSC y CISA, Guidelines for secure AI system development (noviembre de 2023).
 
@@ -83,14 +83,14 @@ Las demos y los ataques en detalle llegan en los vídeos 4a y 4b.
 Repositorio con las demos y las guías, en español y en inglés:
 https://github.com/olonok69/graimatter_ML
 
-Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: integridad y cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
+Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: la tríada CIA y la cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
 
 Referencias: GRAIMATTER Green Paper, Recommendations for disclosure control of trained machine learning models from Trusted Research Environments (DARE UK, septiembre de 2022). NIST AI 100-2e2025.
 
 
 VIDEO 4A
 
-Título sugerido: Machine learning adversarial, parte 4a: los ataques en detalle, integridad y cadena de suministro
+Título sugerido: Machine learning adversarial, parte 4a: los ataques en detalle, la tríada CIA y la cadena de suministro
 
 Descripción:
 
@@ -102,17 +102,19 @@ La tríada CIA en el machine learning y cómo se lee un identificador NISTAML.
 Disponibilidad: envenenamiento de datos y de modelos, envenenamiento con etiquetas limpias y ataques de energía y latencia.
 Integridad: evasión, evasión de caja negra, backdoor, envenenamiento dirigido, backdoor con etiquetas limpias y envenenamiento del modelo.
 Demo 3 en directo. Evasión: el 78,7% de las personas de alto riesgo evaden falseando un formulario, y medir en consulta el tabaco y el peso lo baja al 20,7%. Backdoor: con un 2% de filas envenenadas el disparador acierta en el 100% de los casos, la precisión apenas cambia y un detector de outliers solo encuentra el 25% del veneno discreto.
+Confidencialidad: inferencia de pertenencia, inferencia de atributos y extracción, y tres familias de defensas.
+Demo 5 en directo. Un modelo que ha memorizado sus datos de entrenamiento revela quién estaba en ellos: el atacante acierta el 92% de las veces, donde una moneda acierta el 50%, y adivina un campo oculto (si fuma) en el 94% de los miembros frente al 60% de los desconocidos. Devolver solo la etiqueta sigue filtrando; impedir que el modelo memorice cierra casi toda la diferencia y no cuesta precisión.
 Cadena de suministro: un modelo sustituido con backdoor, código escondido en un pickle, una clave rebajada de 256 a 40 bits y una regla del safe wrapper rebajada de 20 filas a 1.
 Demo 4 en directo: los cuatro ficheros pasan la comprobación habitual, y un SHA-256 fijado en la aprobación los rechaza todos. También veremos su límite: si el hash se toma de la copia manipulada, la da por buena.
 
 Todos los datos son sintéticos: nada en las demos corresponde a un paciente real.
 
-Repositorio con las demos, la guía técnica (secciones 12 a 15) y la guía de las demos, en español y en inglés:
+Repositorio con las demos, la guía técnica (secciones 12 a 16) y la guía de las demos, en español y en inglés:
 https://github.com/olonok69/graimatter_ML
 
-Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: integridad y cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
+Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: la tríada CIA y la cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
 
-Referencias: NIST AI 100-2e2025, secciones 2.1 a 2.3 y 3.2. OWASP ML01, ML02, ML06 y ML10. MITRE ATLAS AML.T0015, AML.T0020 y AML.T0010. UK Code of Practice, principio 7 y disposición 8.1.2.
+Referencias: NIST AI 100-2e2025, secciones 2.1 a 2.4 y 3.2. OWASP ML01, ML02, ML06 y ML10. MITRE ATLAS AML.T0015, AML.T0020 y AML.T0010. UK Code of Practice, principio 7 y disposición 8.1.2.
 
 
 VIDEO 4B
@@ -143,6 +145,6 @@ https://github.com/olonok69/graimatter_ML
 Para ataques a LLM y agentes, el repositorio complementario:
 https://github.com/olonok69/safety-trust-engine
 
-Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: integridad y cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
+Serie: 1. Ataques. 2. Marcos y regulación. 3. GRAIMATTER, un caso de alta confianza. 4a. Los ataques en detalle: la tríada CIA y la cadena de suministro. 4b. Los ataques en detalle: privacidad y la puerta de publicación.
 
 Referencias: NIST AI 100-2e2025, secciones 2.4 y 3. GRAIMATTER Green Paper (DARE UK, 2022). SACRO-ML. Wang et al., EvilModel (2021). Adi et al., Turning your weakness into a strength: watermarking deep neural networks by backdooring (2018). Song et al., Machine learning models that remember too much (2017). Reglamento (UE) 2024/1689, artículo 15.

@@ -5,7 +5,7 @@ The green paper does not publish universal cut-offs. A data controller would set
 them per dataset (ELA 8).
 
 The policy table and how decide() is used: Demo guide §1 and §1.4 (docs/guide/Demo_Guide_EN.md).
-The release gate reads POLICY too, so its privacy tolerances match (Demo guide §5.3).
+The release gate reads POLICY too, so its privacy tolerances match (Demo guide §7.3).
 """
 
 from __future__ import annotations
