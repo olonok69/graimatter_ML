@@ -1,0 +1,148 @@
+VIDEO 1 (PART 1)
+
+Suggested title: Adversarial machine learning, part 1: how models get attacked
+
+Description:
+
+A machine-learning model adds three things an attacker can go after that classic security does not cover: its training data, the model file itself and the answers it gives. In this first video of the series we go through those attacks using the vocabulary of NIST's taxonomy (NIST AI 100-2e2025), and watch them work in two small demos on synthetic data.
+
+What we cover:
+
+Why a model needs its own security, and where each attack lands in the life of a model.
+NIST's three attacker objectives (availability, integrity and privacy), what the attacker can touch and how much they know.
+Evasion: by misreporting three fields on a form, 78.7% of people scored high risk get a low-risk score. Measuring smoking and weight in clinic instead of taking them from the form brings it down to 20.7%.
+Poisoning: 2% of poisoned rows plant a backdoor that turns every high-risk score into low risk, while holdout accuracy barely moves.
+Privacy attacks: membership inference, attribute inference, reconstruction, property inference and extraction.
+Extraction: 200 queries are enough for a copy that agrees with the model on 86.9% of cases.
+Supply chain: four files tampered with on the way to the user that pass the usual check, and how a pinned hash refuses them.
+Generative AI and prompt injection, direct and indirect.
+Real cases from MITRE ATLAS, from Tay to EchoLeak.
+JADEPUFFER (2026): ransomware run by an AI agent that got in through an exposed agent server, encrypted and deleted production databases, and that nothing limited in what it could do.
+Why every defence has a cost or a gap.
+
+All the data is synthetic: nothing in the demos is a real patient. The repository has the demos, the technical guide and the presenter guide, in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+For attacks on LLMs and agents, the companion repository:
+https://github.com/olonok69/safety-trust-engine
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+
+References: NIST AI 100-2e2025, Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (March 2025). MITRE ATLAS. OWASP Machine Learning Security Top 10 and OWASP Top 10 for LLM Applications 2025. Sysdig Threat Research Team, JADEPUFFER: agentic ransomware for automated database extortion (July 2026).
+
+
+VIDEO 2
+
+Suggested title: Adversarial machine learning, part 2: NIST, MITRE ATLAS, OWASP, the EU AI Act and the UK Code
+
+Description:
+
+In the first video we saw how models get attacked. In this one we look at what the five most cited frameworks say about those attacks, and how to make one test speak all of their languages.
+
+The frameworks do different jobs. NIST and MITRE ATLAS describe: the taxonomy and vocabulary, and the attacker's tactics with real cases. OWASP prioritises: two top-ten lists for the people who build models and LLM applications. The EU AI Act and the UK Code of Practice require. GRAIMATTER, the case in video 3, is a different kind of document: a detailed control framework for one branch, privacy, in one setting.
+
+What we cover:
+
+NIST AI 100-2e2025 and MITRE ATLAS (release 2026.09, with 16 tactics and 73 case studies): describing the attacks.
+The OWASP Machine Learning Security Top 10, still a 2023 draft, and the OWASP Top 10 for LLM Applications 2025: prioritising them, and which demo in the repository shows each item on the machine-learning list.
+EU AI Act, Article 15: resisting data and model poisoning, evasion and confidentiality attacks is a legal duty for high-risk systems. The Digital Omnibus, in force since 27 July 2026, moves those duties to 2 December 2027 (Annex III) and 2 August 2028 (regulated products). And EDPB Opinion 28/2024: a model trained on personal data is not anonymous by default, which is exactly where GRAIMATTER starts.
+UK: the Code of Practice for the Cyber Security of AI, 13 principles across five stages of the lifecycle, which became the European standard ETSI EN 304 223. Four of its provisions match the attacks in video 1: threat models, limits on queries, hashes of model components, and outputs that must not let anyone rebuild the model or its data. And the NCSC and CISA guidelines that came before it.
+One attack, five names: a crosswalk that ties the five together, shows which demo runs each attack, and is what the release gate in video 4b uses.
+
+This is a summary of the documents, not legal advice.
+
+Repository with the demos and the guides, in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+
+References: NIST AI 100-2e2025. MITRE ATLAS, release 2026.09. OWASP ML Security Top 10 (draft, 2023) and OWASP Top 10 for LLM Applications 2025. Regulation (EU) 2024/1689, Article 15. Regulation (EU) 2026/1744 (Digital Omnibus on AI). EDPB Opinion 28/2024. DSIT, Code of Practice for the Cyber Security of AI (January 2025). ETSI EN 304 223 (January 2026). NCSC and CISA, Guidelines for secure AI system development (November 2023).
+
+
+VIDEO 3
+
+Suggested title: Adversarial machine learning, part 3: GRAIMATTER, when the output is the model
+
+Description:
+
+A trusted research environment (TRE) lets approved researchers work with sensitive data, such as health records, without taking it away. For years it has checked tables and statistics before letting them out. Now the output is a trained model, and a model can carry the people it was trained on. The GRAIMATTER green paper (DARE UK, 2022) answers one specific question: when is a trained model safe to release?
+
+In this video we look at GRAIMATTER as a high-trust case of adversarial machine learning: one sector that has worked out one branch, privacy, in depth.
+
+What we cover:
+
+Why the attacker that matters is white box: once the file is released, whoever has it has everything.
+Three ways a model file carries people: nearest neighbours, SVCs and deep decision trees.
+The three risk types: the researcher who saves too much by accident, the one who hides data on purpose (we see it work in demo 6, in video 4b), and the outside attacker.
+The two families of controls: check the file before it leaves (model disclosure controls), then limit its queries (model query controls).
+The paper's five sets of recommendations: technical, ethics and legal, costing, training and public involvement.
+Six habits that carry over to any high-trust deployment, and what GRAIMATTER does not cover: evasion, poisoning and generative AI.
+
+The demos and the attacks in detail come in videos 4a and 4b.
+
+Repository with the demos and the guides, in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+
+References: GRAIMATTER Green Paper, Recommendations for disclosure control of trained machine learning models from Trusted Research Environments (DARE UK, September 2022). NIST AI 100-2e2025.
+
+
+VIDEO 4A
+
+Suggested title: Adversarial machine learning, part 4a: the attacks in detail, integrity and supply chain
+
+Description:
+
+In the first video we went over the attacks quickly. In this one we go through them one by one, class by class of NIST's taxonomy, and run each demo section by section to see where every number comes from.
+
+What we cover:
+
+The CIA triad in machine learning, and how to read a NISTAML identifier.
+Availability: data and model poisoning, clean-label poisoning and energy-latency attacks.
+Integrity: evasion, black-box evasion, backdoors, targeted poisoning, clean-label backdoors and model poisoning.
+Demo 3, live. Evasion: 78.7% of high-risk people evade by misreporting a form, and measuring smoking and weight in clinic brings it down to 20.7%. Backdoor: with 2% poisoned rows the trigger works every time, accuracy barely moves, and an outlier screen finds only 25% of the quiet poison.
+Supply chain: a swapped model with a backdoor, code hidden in a pickle, a key cut from 256 to 40 bits and a safe-wrapper rule lowered from 20 rows to 1.
+Demo 4, live: all four files pass the usual check, and a SHA-256 pinned at approval refuses every one. We also see its limit: a hash taken from the tampered copy accepts it.
+
+All the data is synthetic: nothing in the demos is a real patient.
+
+Repository with the demos, the technical guide (sections 12 to 15) and the demo guide, in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+
+References: NIST AI 100-2e2025, sections 2.1 to 2.3 and 3.2. OWASP ML01, ML02, ML06 and ML10. MITRE ATLAS AML.T0015, AML.T0020 and AML.T0010. UK Code of Practice, principle 7 and provision 8.1.2.
+
+
+VIDEO 4B
+
+Suggested title: Adversarial machine learning, part 4b: privacy attacks in detail, and a release gate
+
+Description:
+
+The second half of the detailed walkthrough: privacy attacks, which is GRAIMATTER's ground. We run demos 1 and 2 section by section, see how data can be hidden inside a model with demo 6, and finish with a release gate that judges the results of every demo against the EU AI Act, the UK Code, NIST and GRAIMATTER.
+
+What we cover:
+
+Privacy according to NIST: extraction, reconstruction, membership inference, property inference and attribute inference.
+Extraction, live (demo 3): 200 queries give a copy that agrees with the model on 86.9% of cases.
+Demo 1, GRAIMATTER's checks written by hand: a planted person whose two hidden fields come back after 20 queries; what epsilon means; an unconstrained tree with a membership AUC of 0.708 that is refused; the same tree through a safe wrapper, AUC 0.528, that is released; the quiet failure an average can hide; models that store rows; edits after fit(); and a query budget that counts rows, not calls.
+How to read AUC, advantage, TPR at 10% FPR and FDIF, and why how rare a member is changes what a flag means.
+Demo 2 with the official SACRO-ML package: why the same tree gives AUC 0.708 under one attack and 0.500 under another.
+Demo 6, hiding data in a model: 111 bytes in the low bits of a network's weights with accuracy unchanged, and a message hidden in the answers to a few trigger inputs. An accuracy check passes both. The TRE's answer is to transform every released model (clip bits, quantise, add noise or train with differential privacy), not to try to spot what is hidden.
+Generative AI: the classes NIST adds, the JADEPUFFER case from video 1, and where LLMs and agents get tested, in safety-trust-engine.
+The release gate: GRAIMATTER passes, so does the supply chain, and Article 15(5) of the EU AI Act fails on evasion, extraction and the backdoor. A control whose demo did not run comes out as not evidenced: never a silent green.
+What this repository does not decide, and how to run the demos and the gate yourself.
+
+All the data is synthetic: nothing in the demos is a real patient. This is not legal advice.
+
+Repository with the demos and the guides, in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+For attacks on LLMs and agents, the companion repository:
+https://github.com/olonok69/safety-trust-engine
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: integrity and supply chain. 4b. The attacks in detail: privacy and a release gate.
+
+References: NIST AI 100-2e2025, sections 2.4 and 3. GRAIMATTER Green Paper (DARE UK, 2022). SACRO-ML. Wang et al., EvilModel (2021). Adi et al., Turning your weakness into a strength: watermarking deep neural networks by backdooring (2018). Song et al., Machine learning models that remember too much (2017). Regulation (EU) 2024/1689, Article 15.
