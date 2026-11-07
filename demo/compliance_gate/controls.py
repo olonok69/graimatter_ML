@@ -27,7 +27,7 @@ The mapping of demo metrics to these clauses was made for this repository. The
 frameworks do not cross-reference each other this precisely, and none of them
 sets numeric thresholds.
 
-Walkthrough: Demo guide §5.2 (docs/guide/Demo_Guide_EN.md).
+Walkthrough: Demo guide §7.2 (docs/guide/Demo_Guide_EN.md).
 """
 
 from __future__ import annotations

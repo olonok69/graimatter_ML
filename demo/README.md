@@ -1,10 +1,11 @@
 # Demos
 
-The demo guide explains the code of every demo and of the gate, and how to read each section they print: [English](../docs/guide/Demo_Guide_EN.md), [Spanish](../docs/guide/Guia_Demos_ES.md). Comments in the code cite it as `Demo guide §N.M`, where N is the demo (5 is the gate) and M, for demos 1, 3 and 4, the number of the section the report prints.
+The demo guide explains the code of every demo and of the gate, and how to read each section they print: [English](../docs/guide/Demo_Guide_EN.md), [Spanish](../docs/guide/Guia_Demos_ES.md). Comments in the code cite it as `Demo guide §N.M`, where N is the demo (7 is the gate) and M, for demos 1, 3, 4 and 5, the number of the section the report prints.
 
-Five scripts on the same kind of synthetic cohort:
+Six scripts on the same kind of synthetic cohort:
 
 * `run_aml_demo.py` (demo 3): evasion, model extraction and a backdoor, the attacks GRAIMATTER does not cover.
+* `run_confidentiality_demo.py` (demo 5): the simplest confidentiality attacks, membership and attribute inference, on a model that memorised its training data, and four ways of releasing it.
 * `run_demo.py` (demo 1): a small Python illustration of the technical checks in the GRAIMATTER green paper, that is, how a trusted research environment can decide whether a trained model is safe to export.
 * `run_sacroml_demo.py` (demo 2): the same cohort through the official SACRO-ML package.
 * `run_supply_chain_demo.py` (demo 4): a supplied model and its files, tampered between the supplier and the user, and the checks that catch it.
@@ -75,6 +76,21 @@ A supplier publishes `model.pkl` (a random forest on demo 3's cohort), `bundle.j
 4. The safe wrapper's minimum leaf lowered from 20 to 1: `request_release()` now passes a tree whose smallest leaf is one person.
 
 The package `supply_chain/` holds the checks: `integrity.py` (digests and a lock file), `pickle_scan.py` (the imports a pickle would make, read without loading it), `downgrade.py` (floors kept in code, and the key-search arithmetic) and `payload.py` (the harmless stand-in for hidden code). The pin refuses all four files; the scan or a floor refuses three, not the backdoor, which lives in the weights. Section 6 shows the limit: a pin taken from the tampered download verifies it. The report goes to `demo/output/supply_chain_report.txt`; the working files go to `demo/output/supply_chain/`, which is not versioned. Nothing here encrypts anything or touches real cryptographic software.
+
+## Demo 5: confidentiality, the simple version
+
+```bash
+python demo/run_confidentiality_demo.py
+```
+
+Part 4A of the deck goes through the CIA triad; this demo is its confidentiality step (NIST calls it privacy, NISTAML.03), the short version before demos 1 and 2 go deep in part 4B. A random forest like demo 3's is grown until each of its 1,000 training people sits alone in a leaf, and the attacker only sends rows and reads the answers. The package `confidentiality_demo/` holds the two attacks, each written as the steps it takes: `membership.py` (ask the model how sure it is of a person's real outcome, calibrate a threshold on 200 people known not to be members, decide) and `attribute.py` (fill in each value of a hidden field, here the smoker flag, and keep the one the model is surer about). The report, `demo/output/confidentiality_report.txt`, has four sections:
+
+1. Membership inference: right 91.8% of the time on a 50/50 mix, AUC 0.976, with a worked example of one member and one stranger.
+2. Attribute inference: the smoker flag guessed for 94.4% of members against 59.6% of strangers, the population baseline.
+3. Four releases of the same data: label only (69.8%), minimum leaf 10 (57.5%), minimum leaf 20 (54.3%, and more accurate on strangers).
+4. Where the deck goes next.
+
+Walkthrough with links to each function: demo guide §5. Like demo 6, it is standalone; the gate reads membership and attribute inference from demo 1. Tests: `tests/test_confidentiality.py`.
 
 ## Demo 6: hiding data in a model
 
