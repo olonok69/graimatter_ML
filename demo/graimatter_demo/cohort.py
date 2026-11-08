@@ -34,6 +34,20 @@ def sample_cohort(n: int, rng: np.random.Generator, n_noise: int = 10) -> tuple[
     # The label is a weighted coin toss, not a rule: two identical rows can disagree, so no
     # model gets much above 0.64 accuracy, and 1.000 on training rows means memorisation.
 
+    features = np.column_stack(
+        [age, diabetes, asthma, weight, blood_pressure, smoker, noise]
+    ).astype(float)
+    target = rng.binomial(1, risk_probability(features))
+    return features, target.astype(int)
+
+
+def risk_probability(features: np.ndarray) -> np.ndarray:
+    """Each person's true chance of being high risk: the weight of their coin.
+
+    The label is drawn from this probability (``sample_cohort``). Demo 5 also reads it to
+    show the most any model can get right about a person it never saw (Demo guide §5.1).
+    """
+    age, diabetes, asthma, weight, blood_pressure, smoker = (features[:, i] for i in range(6))
     logit = (
         -1.35
         + 0.034 * (age - 55)
@@ -43,13 +57,7 @@ def sample_cohort(n: int, rng: np.random.Generator, n_noise: int = 10) -> tuple[
         + 0.32 * (weight >= 2)
         + 0.30 * (blood_pressure >= 2)
     )
-    probability = 1.0 / (1.0 + np.exp(-logit))
-    target = rng.binomial(1, probability)
-
-    features = np.column_stack(
-        [age, diabetes, asthma, weight, blood_pressure, smoker, noise]
-    ).astype(float)
-    return features, target.astype(int)
+    return 1.0 / (1.0 + np.exp(-logit))
 
 
 def hold_out_for_tre(

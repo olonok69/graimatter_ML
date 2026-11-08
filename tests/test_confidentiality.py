@@ -105,3 +105,11 @@ def test_working_reproduces_every_printed_number(run):
     assert calls["strangers_called"] / calls["strangers"] == pytest.approx(result["false_alarms"])
     pairs = explain.auc_pairs(members, strangers)
     assert (pairs["member_higher"] + 0.5 * pairs["ties"]) / pairs["pairs"] == pytest.approx(result["auc"])
+
+
+def test_bootstrap_and_coin_arithmetic():
+    from confidentiality_demo import explain
+
+    assert explain.bootstrap_share(1000)["expected"] == pytest.approx(1 - np.exp(-1), abs=0.001)
+    assert explain.coin_agreement(np.array([0.5])) == pytest.approx(0.5)
+    assert explain.coin_agreement(np.array([0.2])) == pytest.approx(0.68)

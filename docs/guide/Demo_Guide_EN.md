@@ -719,6 +719,8 @@ Every later file is checked with `_user_checks()`: `verify()` against the pin, t
 | 1.000 / 0.605 | Model accuracy on its training rows / on strangers | rows labelled right ÷ rows | 1,000 / 1,000; 605 / 1,000 | `run_confidentiality_demo.py`, §5.0 block |
 | **0.83** | Members' average confidence in the truth | sum of the 1,000 members' confidences ÷ 1,000 | 831.39 / 1,000 = 0.631 × 1.00 + 0.369 × 0.54 | `membership.confidence_in_truth()`; `explain.member_average()` |
 | **0.54** | Strangers' average confidence in the truth | sum of the 1,000 strangers' confidences ÷ 1,000 | 542.61 / 1,000 = 0.605 × 0.64 + 0.395 × 0.39 | `membership.confidence_in_truth()`; `explain.stranger_average()` |
+| 63.1% | Share of the members each tree saw | expected 1 − (1 − 1/1,000)^1,000 = 0.632; counted over the 200 trees | 0.631 | `explain.trained_on()`, `explain.bootstrap_share()` |
+| 0.567 | The most a tree that copies a neighbour can get right about a stranger | average of p² + (1 − p)² over the strangers' true risk p | 0.567 (the trees reach 0.54) | `cohort.risk_probability()`, `explain.coin_agreement()` |
 | **0.72** | The threshold | 90th percentile of the attacker's 200 strangers (`np.quantile`, linear) | position 0.9 × (200 − 1) = 179.1 in the sorted list; values no. 179 and 180 are both 0.720 | `membership.calibrate_threshold()`; `explain.threshold_working()` |
 | **96.0%** | Members called members (true positive rate, TPR) | members above 0.72 ÷ members | 960 / 1,000 | `membership.evaluate()` (`members_caught`); `explain.call_counts()` |
 | **12.4%** | Strangers called members (false positive rate, FPR) | strangers above 0.72 ÷ strangers | 124 / 1,000 | `membership.evaluate()` (`false_alarms`); `explain.call_counts()` |
@@ -771,6 +773,8 @@ Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own 
     Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a person's real outcome, and the confidence is the share of the 200 trees that vote 1.
     Members:   sum of the 1000 confidences 831.39 / 1000 = 0.83. Each tree trained on a bootstrap sample and saw 63.1% of the members; those trees always vote 1 (1.00); the trees that did not see a member vote 1 in 0.54 of cases, as for a stranger: 0.631 x 1.00 + 0.369 x 0.54 = 0.83.
     Strangers: sum 542.61 / 1000 = 0.54. No tree saw them. The model's label is right for 605 of them (average confidence 0.64) and wrong for 395 (0.39): 0.605 x 0.64 + 0.395 x 0.39 = 0.54.
+    Why 63.1%: each tree draws 1000 rows from the 1000 members, putting each back. One member is missed by one draw with probability 0.999, by all 1000 with 0.999^1000 = 0.368 (about 1/e), so is picked with 1 - 0.368 = 0.632. Counted over the 200 trees of this run: 0.631.
+    Why 0.54: a tree that never saw a person puts them in the leaf of a similar training person and copies that person's label. Each outcome is a weighted coin (weight p = the person's true risk), and two coins with the same p agree with probability p^2 + (1 - p)^2. Averaged over the 1000 strangers' true p: 0.567, the most a tree that copies a neighbour can get right about someone it never saw. The trees also split on the noise columns, so their neighbours are less similar: 0.54. A blind coin would give 0.50.
   Step 2, calibrate. Threshold 0.72: the 90th percentile of the attacker's 200 strangers, so at most 10.0% of them score above it.
     Working. Sort the 200 confidences from low to high. The 90th percentile sits at position 0.9 x (200 - 1) = 179.1, counting from 0: value no. 179 is 0.720, no. 180 is 0.720, so 0.720 + 0.1 x (0.720 - 0.720) = 0.720.
     Check: 18 of the 200 (9.0%) are strictly above 0.72; 4 sit exactly on it and count as 'not a member'.
@@ -795,8 +799,23 @@ Two people, both high risk, as the attacker sees them:
 1. **What the model answers.** For each row, `predict_proba` returns two numbers that add up to 1: the probability of low risk and the probability of high risk. For the member of the worked example it returns `[0.20, 0.80]`. Their real outcome is high risk, so their **confidence in the truth** is 0.80. For a low-risk person it would be the first number.
 2. **Why that number is a count of trees.** A random forest answers with the average of its 200 trees. Each tree of this forest grew until every leaf holds one training person, so each tree answers 1.0 for one outcome and 0.0 for the other. The confidence is therefore **the share of the 200 trees that vote for the real outcome**, always a multiple of 1/200 = 0.005. The member's 0.80 is 160 trees out of 200.
 3. **0.83 is an average.** Add up the confidence of the 1,000 members and divide by 1,000: 831.39 / 1,000 = 0.83.
-4. **Why members score so high.** Each tree trains on a *bootstrap sample*: 1,000 rows drawn at random, with replacement, from the 1,000 members. A given member is drawn at least once with probability 1 − (1 − 1/1000)^1000 ≈ 63.2%, so each tree saw about 63% of the members (63.1% in this run). A tree that saw a member keeps them alone in a leaf and **always votes for their real outcome** (1.00). The trees that did not see them vote for it 54% of the time, as for a stranger. So: 0.631 × 1.00 + 0.369 × 0.54 = **0.83**.
+4. **Why members score so high.** A tree that saw a member keeps them alone in a leaf and **always votes for their real outcome** (1.00). The trees that did not see them vote for it 54% of the time, as for a stranger (point 5). So the average depends on how many trees saw each member: 63.1% in this run. Then 0.631 × 1.00 + 0.369 × 0.54 = **0.83**.
+
+   *Where the 63% comes from.* Nobody chose it: scikit-learn's random forest uses `bootstrap=True` by default, and `forest()` keeps it. For each tree, 1,000 rows are drawn at random from the 1,000 members **with replacement**, like drawing a ball from an urn of 1,000, writing it down and putting it back, 1,000 times. Some people come out twice or three times, others never, so the 1,000 draws cover only about 632 different people. For one member:
+   1. Missed by one draw: 999 / 1,000 = 0.999.
+   2. Missed by all 1,000 draws: 0.999^1000 = 0.368, about 1/e (e = 2.718).
+   3. Picked at least once: 1 − 0.368 = **0.632**.
+
+   That holds for every member, so each tree sees 63.2% of them on average. The run does not assume it: `explain.trained_on()` reads `estimators_samples_` (the rows each tree drew) and counts, 63.1% over the 200 trees; the gap is chance. For the member of the worked example, 130 of 200 trees (65%). `explain.bootstrap_share()` prints the three steps.
 5. **0.54 for strangers.** No tree ever saw a stranger. Their confidences add up to 542.61, so 542.61 / 1,000 = **0.54**. Split by whether the model is right: it gives the right label to 605 strangers (average confidence 0.64) and the wrong one to 395 (average 0.39): 0.605 × 0.64 + 0.395 × 0.39 = 0.54.
+
+   *Why about 54%.* A tree that never saw a person drops them into the leaf of *another* training person with similar values, and votes that person's label. So the vote is right when two similar people have the same outcome.
+   1. Each person's outcome is a weighted coin: it lands "high risk" with their own probability p, between about 0.1 and 0.9 depending on age, smoking, diabetes and so on (`cohort.risk_probability()`, §0.3).
+   2. Two coins with the same p agree with probability p² + (1 − p)²: 0.50 for p = 0.5, 0.68 for p = 0.2.
+   3. Averaged over the 1,000 strangers' true p, that is **0.567** (`explain.coin_agreement()`): the most a tree that copies a neighbour can get right, even if it found a perfectly similar one.
+   4. The trees also split on the 10 noise columns, so their "neighbours" are less similar than that: **0.54**. A blind coin would give 0.50.
+
+   The same 0.54 is the vote of the trees that did not see a member (point 4): for them, a member is just another stranger.
 
 *The worked example.* The member: 130 of the 200 trees trained on them, and all 130 vote "high risk"; of the 70 trees that did not see them, 30 vote "high risk". 130 + 30 = 160, and 160 / 200 = 0.80. The stranger: no tree saw them, and 134 of 200 vote "high risk": 0.67. The member has fewer risk factors than the stranger, yet gets the higher number: the 130 trees that remember them make the difference.
 
