@@ -73,3 +73,35 @@ def test_attribute_guess_never_reads_the_true_value():
 
     guesses = attribute.guess_field(flat, rows, np.zeros(4, dtype=int))
     assert (guesses == -1).all()
+
+
+def test_working_reproduces_every_printed_number(run):
+    """The "Working" lines recompute the attack numbers from counts; they must agree."""
+    from sklearn.ensemble import RandomForestClassifier
+
+    from confidentiality_demo import explain
+
+    rng = np.random.default_rng(0)
+    x = rng.normal(size=(300, 6))
+    y = (rng.random(300) < 0.5).astype(int)
+    forest = RandomForestClassifier(n_estimators=50, min_samples_leaf=1, random_state=0).fit(x[:200], y[:200])
+    members = membership.confidence_in_truth(forest.predict_proba, x[:200], y[:200])
+    strangers = membership.confidence_in_truth(forest.predict_proba, x[200:], y[200:])
+    # Confidence = share of trees voting for the truth; trees that saw a member always vote for it.
+    votes = explain.tree_votes(forest, x[:200], y[:200])
+    assert np.allclose(votes.mean(axis=1), members)
+    seen = explain.trained_on(forest, 200)
+    split = explain.member_average(votes, seen)
+    assert split["vote_seen"] == pytest.approx(1.0)
+    assert split["share_seen"] * split["vote_seen"] + (1 - split["share_seen"]) * split["vote_unseen"] == pytest.approx(
+        members.mean()
+    )
+    # The hand-made quantile equals np.quantile; the counts give evaluate()'s rates and auc().
+    cut = explain.threshold_working(strangers)
+    assert cut["threshold"] == pytest.approx(membership.calibrate_threshold(strangers))
+    calls = explain.call_counts(members, strangers, cut["threshold"])
+    result = membership.evaluate(members, strangers, cut["threshold"])
+    assert calls["members_called"] / calls["members"] == pytest.approx(result["members_caught"])
+    assert calls["strangers_called"] / calls["strangers"] == pytest.approx(result["false_alarms"])
+    pairs = explain.auc_pairs(members, strangers)
+    assert (pairs["member_higher"] + 0.5 * pairs["ties"]) / pairs["pairs"] == pytest.approx(result["auc"])

@@ -18,6 +18,10 @@ Walkthrough of the code and its output: docs/guide/Demo_Guide_EN.md, section 5
 (Spanish: docs/guide/Guia_Demos_ES.md). The comments below cite it as
 "Demo guide §5.N", where N is the section number the report prints.
 
+Every number comes with a "Working" line under it: the counts and the sum that
+produce it, computed by confidentiality_demo/explain.py, so nothing has to be
+taken on trust.
+
 The cohort is synthetic, the same generator as every other demo. Nothing here is
 a real patient.
 """
@@ -34,7 +38,7 @@ DEMO_DIR = Path(__file__).resolve().parent
 if str(DEMO_DIR) not in sys.path:
     sys.path.insert(0, str(DEMO_DIR))
 
-from confidentiality_demo import attribute, membership  # noqa: E402
+from confidentiality_demo import attribute, explain, membership  # noqa: E402
 from graimatter_demo.cohort import WEIGHT_LEVELS, sample_cohort  # noqa: E402
 
 SEED = 7
@@ -133,6 +137,11 @@ def main() -> dict:
         f"training rows: {train_accuracy:.3f}. On strangers: {test_accuracy:.3f}."
     )
     report.p(
+        f"    Working. Labels right: {int((model.predict(members_x) == members_y).sum())} / {N_MEMBERS} "
+        f"training rows = {train_accuracy:.3f}; {int((model.predict(strangers_x) == strangers_y).sum())} / "
+        f"{N_STRANGERS} strangers = {test_accuracy:.3f}."
+    )
+    report.p(
         "The outcome is a weighted coin toss, so no model can honestly get far above 0.6. "
         "A perfect score on the training rows means the model remembers the answers."
     )
@@ -153,11 +162,55 @@ def main() -> dict:
         f"  Step 1, ask.       Average confidence in the truth: members "
         f"{member_scores.mean():.2f}, strangers {stranger_scores.mean():.2f}."
     )
-    # Step 2, calibrate on the attacker's own strangers: only 10% of them score above it.
+    # Where 0.83 and 0.54 come from (Demo guide §5.1, box "Where the numbers come from").
+    # explain.py opens the forest up, tree by tree; the attacker never needs to.
+    votes = explain.tree_votes(model, members_x, members_y)
+    seen = explain.trained_on(model, N_MEMBERS)
+    split = explain.member_average(votes, seen)
+    stranger_right = model.predict(strangers_x) == strangers_y
+    strangers_split = explain.stranger_average(stranger_scores, stranger_right)
+    n_trees = len(model.estimators_)
+    report.p(
+        f"    Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a "
+        f"person's real outcome, and the confidence is the share of the {n_trees} trees that vote 1."
+    )
+    report.p(
+        f"    Members:   sum of the {N_MEMBERS} confidences {member_scores.sum():.2f} / {N_MEMBERS} = "
+        f"{member_scores.mean():.2f}. Each tree trained on a bootstrap sample and saw "
+        f"{_pct(split['share_seen'])} of the members; those trees always vote 1 "
+        f"({split['vote_seen']:.2f}); the trees that did not see a member vote 1 in {split['vote_unseen']:.2f} "
+        f"of cases, as for a stranger: "
+        f"{split['share_seen']:.3f} x {split['vote_seen']:.2f} + {1 - split['share_seen']:.3f} x "
+        f"{split['vote_unseen']:.2f} = {split['average']:.2f}."
+    )
+    report.p(
+        f"    Strangers: sum {strangers_split['sum']:.2f} / {strangers_split['n']} = "
+        f"{strangers_split['average']:.2f}. No tree saw them. The model's label is right for "
+        f"{strangers_split['n_right']} of them (average confidence {strangers_split['conf_right']:.2f}) and "
+        f"wrong for {strangers_split['n'] - strangers_split['n_right']} ({strangers_split['conf_wrong']:.2f}): "
+        f"{strangers_split['n_right'] / strangers_split['n']:.3f} x {strangers_split['conf_right']:.2f} + "
+        f"{1 - strangers_split['n_right'] / strangers_split['n']:.3f} x {strangers_split['conf_wrong']:.2f} = "
+        f"{strangers_split['average']:.2f}."
+    )
+    # Step 2, calibrate on the attacker's own strangers: the 90th percentile of their scores.
     threshold = membership.calibrate_threshold(reference_scores)
     report.p(
-        f"  Step 2, calibrate. Only {_pct(membership.FALSE_ALARM_RATE)} of the attacker's "
-        f"{N_REFERENCE} strangers score above {threshold:.2f}: that is the threshold."
+        f"  Step 2, calibrate. Threshold {threshold:.2f}: the {100 * (1 - membership.FALSE_ALARM_RATE):.0f}th "
+        f"percentile of the attacker's {N_REFERENCE} strangers, so at most "
+        f"{_pct(membership.FALSE_ALARM_RATE)} of them score above it."
+    )
+    cut = explain.threshold_working(reference_scores)
+    report.p(
+        f"    Working. Sort the {cut['n']} confidences from low to high. The "
+        f"{100 * (1 - membership.FALSE_ALARM_RATE):.0f}th percentile sits at position "
+        f"{1 - membership.FALSE_ALARM_RATE:.1f} x ({cut['n']} - 1) = {cut['position']:.1f}, counting from 0: "
+        f"value no. {cut['low_index']} is {cut['low_value']:.3f}, no. {cut['low_index'] + 1} is "
+        f"{cut['high_value']:.3f}, so {cut['low_value']:.3f} + {cut['fraction']:.1f} x "
+        f"({cut['high_value']:.3f} - {cut['low_value']:.3f}) = {cut['threshold']:.3f}."
+    )
+    report.p(
+        f"    Check: {cut['above']} of the {cut['n']} ({_pct(cut['above'] / cut['n'])}) are strictly above "
+        f"{cut['threshold']:.2f}; {cut['at']} sit exactly on it and count as 'not a member'."
     )
     # Step 3, decide: above the threshold = member. Then score the attacker.
     careless = membership.evaluate(member_scores, stranger_scores, threshold)
@@ -165,22 +218,58 @@ def main() -> dict:
         f"  Step 3, decide.    Called members: {_pct(careless['members_caught'])} of the real "
         f"members, {_pct(careless['false_alarms'])} of the strangers."
     )
+    calls = explain.call_counts(member_scores, stranger_scores, threshold)
+    report.p(
+        f"    Working. Members above {threshold:.2f}: {calls['members_called']} of {calls['members']} = "
+        f"{_pct(careless['members_caught'])} (true positive rate, TPR). Strangers above "
+        f"{threshold:.2f}: {calls['strangers_called']} of {calls['strangers']} = "
+        f"{_pct(careless['false_alarms'])} (false positive rate, FPR)."
+    )
+    report.p(
+        f"    The FPR is {_pct(careless['false_alarms'])}, not the {_pct(membership.FALSE_ALARM_RATE)} aimed "
+        f"for, because the threshold was set on {N_REFERENCE} strangers, a small sample of the population."
+    )
     report.p(
         f"Right {_pct(careless['accuracy'])} of the time on a 50/50 mix (a coin toss gets "
         f"50%). AUC {careless['auc']:.3f} (0.5 = no signal, 1.0 = every member stands out)."
     )
+    pairs = explain.auc_pairs(member_scores, stranger_scores)
+    report.p(
+        f"    Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x {_pct(careless['members_caught'])} + "
+        f"0.5 x {_pct(1 - careless['false_alarms'])} = {_pct(careless['accuracy'])}."
+    )
+    report.p(
+        f"    AUC: each of the {calls['members']} members against each of the {calls['strangers']} strangers, "
+        f"{pairs['pairs']:,} pairs. Member higher in {pairs['member_higher']:,}, tied in {pairs['ties']:,}: "
+        f"({pairs['member_higher']:,} + 0.5 x {pairs['ties']:,}) / {pairs['pairs']:,} = {careless['auc']:.3f}."
+    )
 
     # A worked example: one member and one stranger with the same outcome, side by side.
+    # The tree counts make each confidence checkable: 0.80 = 160 of 200 trees.
     report.p("")
     report.p("Two people, both high risk, as the attacker sees them:")
     member_index = int(np.flatnonzero(members_y == 1)[0])
     stranger_index = int(np.flatnonzero(strangers_y == 1)[0])
-    for name, row, score in (
-        ("Member  ", members_x[member_index], member_scores[member_index]),
-        ("Stranger", strangers_x[stranger_index], stranger_scores[stranger_index]),
+    stranger_votes = explain.tree_votes(model, strangers_x[[stranger_index]], strangers_y[[stranger_index]])[0]
+    for name, row, score, row_votes in (
+        ("Member  ", members_x[member_index], member_scores[member_index], votes[member_index]),
+        ("Stranger", strangers_x[stranger_index], stranger_scores[stranger_index], stranger_votes),
     ):
         verdict = "member" if membership.decide(np.array([score]), threshold)[0] else "not a member"
-        report.p(f"  {name} ({describe(row)}): confidence {score:.2f} -> called {verdict}")
+        report.p(
+            f"  {name} ({describe(row)}): confidence {score:.2f} = {int(row_votes.sum())} of {n_trees} trees "
+            f"-> called {verdict}"
+        )
+    member_seen = seen[member_index]
+    report.p(
+        f"    The member: {int(member_seen.sum())} trees trained on them and all {int(votes[member_index][member_seen].sum())} "
+        f"vote 1; of the {int((~member_seen).sum())} that did not, {int(votes[member_index][~member_seen].sum())} vote 1. "
+        f"{int(votes[member_index].sum())} / {n_trees} = {member_scores[member_index]:.2f}, above {threshold:.2f}."
+    )
+    report.p(
+        f"    The stranger: no tree saw them; {int(stranger_votes.sum())} of {n_trees} vote 1. "
+        f"{int(stranger_votes.sum())} / {n_trees} = {stranger_scores[stranger_index]:.2f}, not above {threshold:.2f}."
+    )
 
     # ------------------------------------------------------------------------------
     # Demo guide §5.2: attribute inference, the three steps of attribute.py.
@@ -193,20 +282,66 @@ def main() -> dict:
         "except whether they smoke. They ask the model twice, once with 'smoker = no' and "
         "once with 'smoker = yes', and keep the answer the model is surer about."
     )
-    member_guess = attribute.success(
-        attribute.guess_field(model.predict_proba, members_x, members_y), members_x[:, attribute.SMOKER]
-    )
-    stranger_guess = attribute.success(
-        attribute.guess_field(model.predict_proba, strangers_x, strangers_y),
-        strangers_x[:, attribute.SMOKER],
-    )
-    report.p(f"  Members:   smoking status guessed right for {_pct(member_guess['correct'])}.")
-    report.p(f"  Strangers: smoking status guessed right for {_pct(stranger_guess['correct'])}.")
+    member_guesses = attribute.guess_field(model.predict_proba, members_x, members_y)
+    stranger_guesses = attribute.guess_field(model.predict_proba, strangers_x, strangers_y)
+    member_guess = attribute.success(member_guesses, members_x[:, attribute.SMOKER])
+    stranger_guess = attribute.success(stranger_guesses, strangers_x[:, attribute.SMOKER])
+    # Where 94.4% and 59.6% come from: the counts behind success() (Demo guide §5.2).
+    for name, result, guesses, rows in (
+        ("Members:  ", member_guess, member_guesses, members_x),
+        ("Strangers:", stranger_guess, stranger_guesses, strangers_x),
+    ):
+        counts = explain.guess_counts(guesses, rows[:, attribute.SMOKER])
+        report.p(f"  {name} smoking status guessed right for {_pct(result['correct'])}.")
+        report.p(
+            f"    Working. {counts['right']} right, {counts['wrong']} wrong, {counts['abstained']} abstained "
+            f"(both answers tied; counted as wrong): {counts['right']} / {counts['n']} = {_pct(result['correct'])}."
+        )
     report.p(
         "The strangers' rate is what anyone gets from the population pattern (smokers are "
         f"more often high risk). The {100 * (member_guess['correct'] - stranger_guess['correct']):.1f} "
         "points members get on top of it is what the model remembers about them personally."
     )
+    rule = explain.population_rule(strangers_x, strangers_y, attribute.SMOKER)
+    report.p(
+        f"    Working. {_pct(member_guess['correct'])} - {_pct(stranger_guess['correct'])} = "
+        f"{100 * (member_guess['correct'] - stranger_guess['correct']):.1f} points. Without any model, the rule "
+        f"'high risk -> smoker, low risk -> not' is right for {_pct(rule)} of the strangers: that is "
+        "what the population pattern is worth, and the strangers' rate is close to it."
+    )
+
+    # The same member as in section 1, step by step: the two questions and the guess.
+    report.p("")
+    report.p("The member of section 1, asked twice (the attacker hides their real smoking status):")
+    example = members_x[[member_index]]
+    example_outcome = members_y[[member_index]]
+    asked = []
+    for value in (0, 1):
+        filled = example.copy()
+        filled[:, attribute.SMOKER] = value
+        confidence = float(membership.confidence_in_truth(model.predict_proba, filled, example_outcome)[0])
+        tree_count = int(explain.tree_votes(model, filled, example_outcome)[0].sum())
+        asked.append(confidence)
+        report.p(
+            f"  smoker = {'yes' if value else 'no ':<3}: confidence in their real outcome (high risk) "
+            f"{confidence:.2f} = {tree_count} of {n_trees} trees"
+        )
+    guess = int(member_guesses[member_index])
+    truth = int(members_x[member_index, attribute.SMOKER])
+    report.p(
+        f"  The model is surer with smoker = {'yes' if guess else 'no'} ({max(asked):.2f} against "
+        f"{min(asked):.2f}), so the guess is '{'yes' if guess else 'no'}'. Truth: "
+        f"'{'yes' if truth else 'no'}' -> {'right' if guess == truth else 'wrong'}."
+    )
+    report.p(
+        "  Why: the trees that trained on this person keep them alone in a leaf. Change the smoking "
+        "field and, in every tree that splits on it along their path, the row lands in someone else's leaf."
+    )
+    if guess == truth == 0 and int(example_outcome[0]) == 1:
+        report.p(
+            "  Note: smokers are more often high risk, so a model reasoning from risk factors would be "
+            "surer with 'yes'. This one is surer with the person's real value: it remembers them."
+        )
 
     # ------------------------------------------------------------------------------
     # Demo guide §5.3: four release options for the same data. For each, rerun both
@@ -228,6 +363,7 @@ def main() -> dict:
     report.p(header)
     report.p(f"  {'':<46} {'':>8} {'right':>8} {'':>6} {'member':>7} {'strngr':>7}")
     rows = {}
+    workings = []  # the counts behind each row, printed under the table
     for label, min_leaf, output in options:
         option_model = model if min_leaf == 1 else forest(min_leaf).fit(members_x, members_y)
         if output == "proba":
@@ -236,25 +372,30 @@ def main() -> dict:
         else:
             def score(x, y, m=option_model):
                 return membership.label_only_confidence(m.predict, x, y)
-        result = membership.evaluate(
-            score(members_x, members_y),
-            score(strangers_x, strangers_y),
-            membership.calibrate_threshold(score(reference_x, reference_y)),
-        )
+        option_members = score(members_x, members_y)
+        option_strangers = score(strangers_x, strangers_y)
+        option_threshold = membership.calibrate_threshold(score(reference_x, reference_y))
+        result = membership.evaluate(option_members, option_strangers, option_threshold)
+        option_calls = explain.call_counts(option_members, option_strangers, option_threshold)
+        option_pairs = explain.auc_pairs(option_members, option_strangers)
         # Attribute inference compares two probabilities, so it needs a model that returns
         # them. With a label only, both copies of a row usually get the same label and the
         # attacker learns nothing: the report prints "n/a" (None here).
         member_attr = stranger_attr = None
+        member_counts = stranger_counts = None
         if output == "proba":
-            member_attr = attribute.success(
+            member_counts = explain.guess_counts(
                 attribute.guess_field(option_model.predict_proba, members_x, members_y),
                 members_x[:, attribute.SMOKER],
-            )["correct"]
-            stranger_attr = attribute.success(
+            )
+            stranger_counts = explain.guess_counts(
                 attribute.guess_field(option_model.predict_proba, strangers_x, strangers_y),
                 strangers_x[:, attribute.SMOKER],
-            )["correct"]
-        accuracy = float((option_model.predict(strangers_x) == strangers_y).mean())
+            )
+            member_attr = member_counts["right"] / member_counts["n"]
+            stranger_attr = stranger_counts["right"] / stranger_counts["n"]
+        right_labels = int((option_model.predict(strangers_x) == strangers_y).sum())
+        accuracy = right_labels / N_STRANGERS
         rows[label] = {
             "test_accuracy": accuracy,
             "membership_accuracy": result["accuracy"],
@@ -266,6 +407,33 @@ def main() -> dict:
             f"  {label:<46} {accuracy:>8.3f} {_pct(result['accuracy']):>8} {result['auc']:>6.3f} "
             f"{_cell(member_attr):>7} {_cell(stranger_attr):>7}"
         )
+        line = (
+            f"  {label}:\n"
+            f"    Test acc {right_labels} / {N_STRANGERS} strangers labelled right = {accuracy:.3f}. "
+            f"Threshold {option_threshold:.2f}; members called {option_calls['members_called']} / "
+            f"{option_calls['members']} = {_pct(result['members_caught'])}, strangers called "
+            f"{option_calls['strangers_called']} / {option_calls['strangers']} = {_pct(result['false_alarms'])}; "
+            f"right = 0.5 x {_pct(result['members_caught'])} + 0.5 x {_pct(1 - result['false_alarms'])} = "
+            f"{_pct(result['accuracy'])}."
+            f"\n    AUC ({option_pairs['member_higher']:,} + 0.5 x {option_pairs['ties']:,}) / "
+            f"{option_pairs['pairs']:,} pairs = {result['auc']:.3f}."
+        )
+        if member_counts is not None:
+            line += (
+                f"\n    Smoker: {member_counts['right']} / {member_counts['n']} members, "
+                f"{stranger_counts['right']} / {stranger_counts['n']} strangers guessed right."
+            )
+        else:
+            line += (
+                "\n    Every score is 1 (label right) or 0 (wrong). More than 10% of the attacker's strangers "
+                "get 1, so the threshold is 1.00 and 'called member' means 'the label is right'."
+            )
+        workings.append(line)
+    report.p("")
+    report.p("Where each row comes from (same steps as sections 1 and 2):")
+    for line in workings:
+        for text in line.split("\n"):
+            report.p(text)
     report.p("")
     report.p(
         "Attacker right: how often the membership attacker is right on a 50/50 mix (50% = coin "

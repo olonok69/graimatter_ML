@@ -5,6 +5,7 @@ Confidentiality: what a model gives away about its training data
 Same fictional cohort generator as the other demos. Nothing here is a real patient.
 1000 people train the model (the members). 1000 people from the same population never reach it (the strangers). The attacker holds 200 more strangers of their own, to learn what a stranger's answer looks like.
 Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own training rows: 1.000. On strangers: 0.605.
+    Working. Labels right: 1000 / 1000 training rows = 1.000; 605 / 1000 strangers = 0.605.
 The outcome is a weighted coin toss, so no model can honestly get far above 0.6. A perfect score on the training rows means the model remembers the answers.
 
 ==============================================================================
@@ -12,21 +13,42 @@ The outcome is a weighted coin toss, so no model can honestly get far above 0.6.
 ==============================================================================
 The attacker sends a person's row and reads how sure the model is of that person's real outcome. People the model trained on get a higher number.
   Step 1, ask.       Average confidence in the truth: members 0.83, strangers 0.54.
-  Step 2, calibrate. Only 10.0% of the attacker's 200 strangers score above 0.72: that is the threshold.
+    Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a person's real outcome, and the confidence is the share of the 200 trees that vote 1.
+    Members:   sum of the 1000 confidences 831.39 / 1000 = 0.83. Each tree trained on a bootstrap sample and saw 63.1% of the members; those trees always vote 1 (1.00); the trees that did not see a member vote 1 in 0.54 of cases, as for a stranger: 0.631 x 1.00 + 0.369 x 0.54 = 0.83.
+    Strangers: sum 542.61 / 1000 = 0.54. No tree saw them. The model's label is right for 605 of them (average confidence 0.64) and wrong for 395 (0.39): 0.605 x 0.64 + 0.395 x 0.39 = 0.54.
+  Step 2, calibrate. Threshold 0.72: the 90th percentile of the attacker's 200 strangers, so at most 10.0% of them score above it.
+    Working. Sort the 200 confidences from low to high. The 90th percentile sits at position 0.9 x (200 - 1) = 179.1, counting from 0: value no. 179 is 0.720, no. 180 is 0.720, so 0.720 + 0.1 x (0.720 - 0.720) = 0.720.
+    Check: 18 of the 200 (9.0%) are strictly above 0.72; 4 sit exactly on it and count as 'not a member'.
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
+    Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
+    The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
 Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
+    Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
+    AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.
 
 Two people, both high risk, as the attacker sees them:
-  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 -> called member
-  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 -> called not a member
+  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 = 160 of 200 trees -> called member
+  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 = 134 of 200 trees -> called not a member
+    The member: 130 trees trained on them and all 130 vote 1; of the 70 that did not, 30 vote 1. 160 / 200 = 0.80, above 0.72.
+    The stranger: no tree saw them; 134 of 200 vote 1. 134 / 200 = 0.67, not above 0.72.
 
 ==============================================================================
 2. Attribute inference: what is the one field I do not know? (NISTAML.03)
 ==============================================================================
 The attacker knows everything about a person (age, diagnoses, weight, outcome) except whether they smoke. They ask the model twice, once with 'smoker = no' and once with 'smoker = yes', and keep the answer the model is surer about.
   Members:   smoking status guessed right for 94.4%.
+    Working. 944 right, 47 wrong, 9 abstained (both answers tied; counted as wrong): 944 / 1000 = 94.4%.
   Strangers: smoking status guessed right for 59.6%.
+    Working. 596 right, 399 wrong, 5 abstained (both answers tied; counted as wrong): 596 / 1000 = 59.6%.
 The strangers' rate is what anyone gets from the population pattern (smokers are more often high risk). The 34.8 points members get on top of it is what the model remembers about them personally.
+    Working. 94.4% - 59.6% = 34.8 points. Without any model, the rule 'high risk -> smoker, low risk -> not' is right for 62.1% of the strangers: that is what the population pattern is worth, and the strangers' rate is close to it.
+
+The member of section 1, asked twice (the attacker hides their real smoking status):
+  smoker = no : confidence in their real outcome (high risk) 0.80 = 160 of 200 trees
+  smoker = yes: confidence in their real outcome (high risk) 0.77 = 154 of 200 trees
+  The model is surer with smoker = no (0.80 against 0.77), so the guess is 'no'. Truth: 'no' -> right.
+  Why: the trees that trained on this person keep them alone in a leaf. Change the smoking field and, in every tree that splits on it along their path, the row lands in someone else's leaf.
+  Note: smokers are more often high risk, so a model reasoning from risk factors would be surer with 'yes'. This one is surer with the person's real value: it remembers them.
 
 ==============================================================================
 3. Four ways to release the same model
@@ -38,6 +60,24 @@ Same data, same attacks. What changes is how far the trees grow and whether the 
   Grown to one row per leaf, label only             0.605    69.8%  0.698     n/a     n/a
   Minimum leaf 10 (demo 3), probabilities           0.627    57.5%  0.678   64.6%   62.0%
   Minimum leaf 20 (demo 1 floor), probabilities     0.636    54.3%  0.607   62.0%   62.0%
+
+Where each row comes from (same steps as sections 1 and 2):
+  Grown to one row per leaf, probabilities:
+    Test acc 605 / 1000 strangers labelled right = 0.605. Threshold 0.72; members called 960 / 1000 = 96.0%, strangers called 124 / 1000 = 12.4%; right = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
+    AUC (975,038 + 0.5 x 2,535) / 1,000,000 pairs = 0.976.
+    Smoker: 944 / 1000 members, 596 / 1000 strangers guessed right.
+  Grown to one row per leaf, label only:
+    Test acc 605 / 1000 strangers labelled right = 0.605. Threshold 1.00; members called 1000 / 1000 = 100.0%, strangers called 605 / 1000 = 60.5%; right = 0.5 x 100.0% + 0.5 x 39.5% = 69.8%.
+    AUC (395,000 + 0.5 x 605,000) / 1,000,000 pairs = 0.698.
+    Every score is 1 (label right) or 0 (wrong). More than 10% of the attacker's strangers get 1, so the threshold is 1.00 and 'called member' means 'the label is right'.
+  Minimum leaf 10 (demo 3), probabilities:
+    Test acc 627 / 1000 strangers labelled right = 0.627. Threshold 0.72; members called 242 / 1000 = 24.2%, strangers called 93 / 1000 = 9.3%; right = 0.5 x 24.2% + 0.5 x 90.7% = 57.5%.
+    AUC (677,951 + 0.5 x 0) / 1,000,000 pairs = 0.678.
+    Smoker: 646 / 1000 members, 620 / 1000 strangers guessed right.
+  Minimum leaf 20 (demo 1 floor), probabilities:
+    Test acc 636 / 1000 strangers labelled right = 0.636. Threshold 0.69; members called 196 / 1000 = 19.6%, strangers called 110 / 1000 = 11.0%; right = 0.5 x 19.6% + 0.5 x 89.0% = 54.3%.
+    AUC (607,487 + 0.5 x 0) / 1,000,000 pairs = 0.607.
+    Smoker: 620 / 1000 members, 620 / 1000 strangers guessed right.
 
 Attacker right: how often the membership attacker is right on a 50/50 mix (50% = coin toss). Smoker member / strngr: attribute attack success on members and on strangers; the gap between the two is the leak (n/a: a label alone gives the attacker nothing to compare).
 Returning only a label shrinks the leak but does not close it: a model that is right about every member still gives them away. Stopping the trees from memorising closes most of it, and the honest model is no less accurate on strangers.

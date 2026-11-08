@@ -904,17 +904,18 @@ def build():
 
     s = d.slide("DEMO 5 · STEP BY STEP", "Demo 5, step by step: ask, calibrate, decide")
     d.text(s, LEFT, 2.15, 4.6, 4.3, [
-        [("1  The model. ", True), ("Demo 3's random forest, grown to one person per leaf, trained on 1,000 members. "
-         "Training accuracy 1.000; 0.605 on 1,000 strangers.", False)],
-        [("2  Ask. ", True), ("Send a person's row; read how sure the model is of their real outcome. Members 0.83 on "
-         "average, strangers 0.54.", False)],
-        [("3  Calibrate. ", True), ("On 200 strangers of their own, the attacker finds 0.72: only 10% of strangers "
-         "score above it.", False)],
-        [("4  Decide. ", True), ("Above 0.72 means member: 96.0% of members caught, 12.4% of strangers wrongly. "
-         "Right 91.8% of the time, AUC 0.976.", False)],
-        [("5  One field. ", True), ("Try smoker yes and no, keep the surer answer: 94.4% right on members, 59.6% on "
-         "strangers.", False)],
-    ], 13, BODY)
+        [("1  The model. ", True), ("Grown to one person per leaf, trained on 1,000 members. Right on 1,000 / 1,000 "
+         "training rows (1.000), on 605 / 1,000 strangers (0.605).", False)],
+        [("2  Ask. ", True), ("Confidence = share of the 200 trees that vote for the person's real outcome. Members "
+         "0.83: 63% of the trees saw each one and vote 1, the rest 0.54 (0.631 x 1 + 0.369 x 0.54). "
+         "Strangers 0.54.", False)],
+        [("3  Calibrate. ", True), ("Sort the attacker's 200 strangers; the 90th percentile (position 0.9 x 199 = "
+         "179.1) is 0.72.", False)],
+        [("4  Decide. ", True), ("Above 0.72: 960 / 1,000 members (TPR 96.0%), 124 / 1,000 strangers (FPR 12.4%). "
+         "Right (960 + 876) / 2,000 = 91.8%. AUC 0.976.", False)],
+        [("5  One field. ", True), ("Try smoker yes and no, keep the surer: 944 / 1,000 members right (94.4%), "
+         "596 / 1,000 strangers (59.6%). The leak: 34.8 points.", False)],
+    ], 12, BODY)
     d.table(s, LEFT + 4.85, 2.15, 6.7, [
         ["Release (section 3)", "Test acc", "Attacker right", "Smoker: member / stranger"],
         ["One per leaf, probabilities", "0.605", "91.8%", "94.4% / 59.6%"],
@@ -925,18 +926,24 @@ def build():
     d.card(s, LEFT + 4.85, 4.85, 6.7, 1.55, "How to read it", "50% is a coin toss. The strangers' smoker rate is the "
            "population pattern; the gap above it is what the model remembers. A label alone still leaks; not memorising "
            "closes most of it, and costs no accuracy.", dark=True, bsize=12)
-    d.footer(s, "uv run python demo/run_confidentiality_demo.py · confidentiality_report.txt · demo guide §5.")
-    d.notes(s, "Run demo 5. The model is the same kind of random forest as demo 3, but grown until every training person sits "
-            "alone in a leaf, so it scores a perfect 1.000 on its training rows and only 0.605 on strangers: it remembers "
-            "answers rather than learning a pattern. Section 1 is the membership attack in three steps. Ask: send a "
-            "person's row and read the probability the model gives to their real outcome; members average 0.83, strangers "
-            "0.54. Calibrate: the attacker has 200 people they know are not members, and finds the score only 10% of them "
-            "exceed, 0.72. Decide: above that is a member. That catches 96% of members with 12% false alarms, right 92% "
-            "of the time where a coin toss gets 50%. Section 2 hides one field, smoking, and tries both values: 94% right "
-            "on members, 60% on strangers. The 60% is just the population pattern; the 35 points on top is the leak. "
-            "Section 3 is the table: returning only a label still leaks; a minimum leaf of 20, the floor of demo 1's safe "
-            "wrapper, brings the attacker close to a coin toss, and the model is more accurate, not less. Part 4B takes "
-            "this further with GRAIMATTER's own checks.")
+    d.footer(s, "uv run python demo/run_confidentiality_demo.py · every number has a Working line (explain.py) · demo guide §5.")
+    d.notes(s, "Run demo 5. Every result in the output has a Working line under it with the counts behind it, so "
+            "nothing is taken on trust. The model is the same kind of random forest as demo 3, but grown until every "
+            "training person sits alone in a leaf: right on all 1,000 training rows, on 605 of 1,000 strangers. Because "
+            "each leaf holds one person, each of the 200 trees votes 1 or 0 for a person's real outcome, and the "
+            "model's confidence is the share of trees that vote for it. Ask: members average 0.83, strangers 0.54. "
+            "Why: each tree trained on a random 63% of the members, and those trees always vote right for them; the "
+            "other trees vote right 54% of the time, as for a stranger, so 0.631 times 1 plus 0.369 times 0.54 is "
+            "0.83. Calibrate: the attacker sorts the confidences of their 200 strangers and takes the 90th "
+            "percentile, position 179.1 of the sorted list, which is 0.72. Decide: above 0.72 is a member. 960 of "
+            "1,000 members are above it, the true positive rate of 96%; 124 of 1,000 strangers are too, the false "
+            "positive rate of 12.4%, a little over the 10% aimed for because the threshold came from only 200 "
+            "people. Right on 960 plus 876 of 2,000 people, 91.8%, where a coin toss gets 50%. Section 2 hides "
+            "smoking and tries both values: 944 of 1,000 members right, 596 of 1,000 strangers. The strangers' rate "
+            "is the population pattern, the rule high risk means smoker gives 62%; the 34.8 points on top is the "
+            "leak. Section 3 is the table: returning only a label still leaks, 69.8%; a minimum leaf of 20, the "
+            "floor of demo 1's safe wrapper, brings the attacker to 54.3% and the smoker gap to zero, and the model "
+            "is more accurate, not less.")
 
     s = d.slide("NISTAML.05 · SUPPLY CHAIN", "Supply chain: the attack arrives with what you download")
     sc = [
@@ -1047,10 +1054,11 @@ def build():
         [("1  Invent. ", True), ("Rows inside the published value ranges; the data dictionary is public. No real "
          "record is used.", False)],
         [("2  Ask. ", True), ("Send them to the target's predict() and keep the labels.", False)],
-        [("3  Copy. ", True), ("Train a forest on the invented rows and the answers. Fidelity is the share of real rows "
-         "where copy and target agree.", False)],
-        [("4  Use it. ", True), ("Plan evasion edits on the copy, offline, and try them on the target.", False)],
-    ], 13.5, BODY)
+        [("3  Copy. ", True), ("Train a forest on the invented rows and the answers. Fidelity = real rows where "
+         "copy and target agree / 2,000: at 200 queries, 1,738 / 2,000 = 86.9%.", False)],
+        [("4  Use it. ", True), ("Plan the cheapest edit on the copy, offline, for each of the 974 flagged people; "
+         "at 200 queries 528 also fool the target: 528 / 974 = 54.2%.", False)],
+    ], 13, BODY)
     d.table(s, LEFT + 4.85, 2.15, 6.7, [
         ["Queries", "Copy agrees", "Copy accuracy", "Edits that fool the target"],
         ["50", "77.7%", "0.610", "22.0%"],

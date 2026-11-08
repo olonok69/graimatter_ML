@@ -149,6 +149,17 @@ def main() -> dict:
             f"accuracy {copy_accuracy:.3f}; edits planned on the copy get "
             f"{_pct(moved['end_to_end']):>6} of flagged people past the target"
         )
+        # Where each percentage comes from: the counts behind fidelity() and transfer_rate().
+        n_test = len(test_x)
+        n_agree = int((copy.predict(test_x) == model.predict(test_x)).sum())
+        n_copy_right = int((copy.predict(test_x) == test_y).sum())
+        n_past = int(round(moved["end_to_end"] * len(flagged)))
+        report.p(
+            f"         working: same label on {n_agree} / {n_test} test rows = {_pct(agree)}; copy right on "
+            f"{n_copy_right} / {n_test} = {copy_accuracy:.3f}; the copy found an edit for {moved['crafted']} of "
+            f"the {len(flagged)} flagged people, {n_past} of those edits also fool the target: "
+            f"{n_past} / {len(flagged)} = {_pct(moved['end_to_end'])}"
+        )
         extraction_rows[n_queries] = {"agreement": agree, "accuracy": copy_accuracy, "transfer": moved["end_to_end"]}
         if n_queries == 1000:
             surrogate = copy
