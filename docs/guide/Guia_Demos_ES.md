@@ -724,6 +724,7 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 | **0,72** | El umbral | percentil 90 de los 200 desconocidos del atacante (`np.quantile`, lineal) | posición 0,9 × (200 − 1) = 179,1 en la lista ordenada; los valores n.º 179 y 180 son ambos 0,720 | `membership.calibrate_threshold()`; `explain.threshold_working()` |
 | **96,0%** | Miembros declarados miembros (tasa de verdaderos positivos, TPR) | miembros por encima de 0,72 ÷ miembros | 960 / 1.000 | `membership.evaluate()` (`members_caught`); `explain.call_counts()` |
 | **12,4%** | Desconocidos declarados miembros (tasa de falsos positivos, FPR) | desconocidos por encima de 0,72 ÷ desconocidos | 124 / 1.000 | `membership.evaluate()` (`false_alarms`); `explain.call_counts()` |
+| 960 / 124 | Miembros / desconocidos en cada franja de confianza, con el corte como una línea | recuento por franja; por encima de la línea = declarado miembro | 273 + 575 + 112; 109 + 15 | `explain.score_bands()` |
 | 91,8% | Acierto del atacante con una mezcla 50/50 | 0,5 × TPR + 0,5 × (1 − FPR) | 0,5 × 96,0% + 0,5 × 87,6% | `membership.evaluate()` (`accuracy`) |
 | 0,976 | AUC | (parejas en que el miembro puntúa más + ½ × empates) ÷ parejas | (975.038 + 0,5 × 2.535) / 1.000.000 | `membership.auc()`; `explain.auc_pairs()` |
 | 0,80 / 0,67 | Las dos personas del ejemplo | árboles que votan por su resultado real ÷ 200 | 160 / 200; 134 / 200 | `explain.tree_votes()` |
@@ -781,6 +782,20 @@ Después `evaluate()` compara las decisiones con la verdad: la proporción de mi
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
     Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
     The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
+  How the three steps connect: ask gives one number per person; calibrate picks one cut, using only people known to be outsiders; decide applies that same cut to everyone.
+    Confidence    Members  Strangers  Attacker's 200
+    <= 0.50             0        397              79
+    0.50-0.60           0        212              43
+    0.60-0.70          26        227              51
+    0.70-0.72          14         40               9
+    ---- threshold 0.72: below = not a member, above = called member ----
+    0.72-0.80         273        109              13
+    0.80-0.90         575         15               5
+    > 0.90            112          0               0
+    Above 0.72: 273 + 575 + 112 = 960 members, 109 + 15 + 0 = 124 strangers, 18 of the attacker's 200 (step 2's cut: at most 10%).
+    Why most members pass: above 0.72 means at least 145 of 200 trees. Between 101 and 147 trees saw each member (126 on average) and vote 1 for sure, so a typical member needs only 19 more from the 74 trees that did not see them. The 40 who miss were seen by fewer trees (120 on average), and the other trees voted for their real outcome only 24.0% of the time (55.6% for the members who pass): their outcome goes against that of similar people.
+    Why few strangers pass: no tree saw them, so at least 145 trees must get them right by copying a similar person. That happens when the outcome was predictable: the 124 who pass had, on average, a 74.3% true chance of the outcome they got; the rest 54.0%.
+    Why 12.4% and not 10.0%: the cut was set on 200 strangers (0.72). On the 1000 strangers the 90th percentile would be 0.735, so a little more than 10% of them sit above 0.72.
 Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
     Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
     AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.
@@ -834,6 +849,33 @@ Two people, both high risk, as the attacker sees them:
 3. Por qué 12,4% y no el 10% buscado: el umbral se fijó con 200 personas. Con 1.000 desconocidos nuevos la proporción por encima sale algo distinta. Un conjunto de calibración pequeño da un umbral menos exacto.
 4. **91,8%.** Imagina 1.000 miembros y 1.000 desconocidos. El atacante acierta con los 960 miembros que declara miembros y con los 876 desconocidos (1.000 − 124) que deja fuera: (960 + 876) / 2.000 = 91,8%. Lo mismo como fórmula: 0,5 × 96,0% + 0,5 × 87,6% = 91,8%.
 5. **AUC 0,976.** Se toman todas las parejas miembro–desconocido: 1.000 × 1.000 = 1.000.000 parejas. En 975.038 el miembro tiene la confianza más alta, en 2.535 empatan. AUC = (975.038 + 0,5 × 2.535) / 1.000.000 = 0,976. No depende de ningún umbral.
+
+*Cómo se enlazan los tres pasos.* Los tres pasos son una cadena, y cada uno le pasa una sola cosa al siguiente:
+
+1. **Preguntar** convierte a cada persona en **un número**: su confianza, la proporción de los 200 árboles que votan por su resultado real. Lo reciben los miembros, los desconocidos y los 200 del atacante.
+2. **Calibrar** mira **solo a los 200 desconocidos del atacante**, personas que se sabe que son de fuera, y elige **un corte**: el valor que como mucho supera el 10% de ellos, 0,72. El atacante no puede mirar aquí a los miembros, porque no sabe quiénes son; de eso se trata.
+3. **Decidir** aplica **ese mismo corte a todo el mundo**: por encima de 0,72, "miembro". Después nosotros, que conocemos la verdad, contamos cuántos miembros reales y cuántos desconocidos reales quedaron por encima.
+
+La tabla que imprime el informe enseña la cadena de un vistazo: las mismas franjas para los tres grupos, y el corte del paso 2 como una línea.
+
+| Confianza | Miembros | Desconocidos | Los 200 del atacante |
+| --- | ---: | ---: | ---: |
+| ≤ 0,50 | 0 | 397 | 79 |
+| 0,50–0,60 | 0 | 212 | 43 |
+| 0,60–0,70 | 26 | 227 | 51 |
+| 0,70–0,72 | 14 | 40 | 9 |
+| **umbral 0,72** (por debajo: no miembro · por encima: declarado miembro) | | | |
+| 0,72–0,80 | 273 | 109 | 13 |
+| 0,80–0,90 | 575 | 15 | 5 |
+| > 0,90 | 112 | 0 | 0 |
+
+Por encima de la línea: 273 + 575 + 112 = **960** miembros (96,0%), 109 + 15 = **124** desconocidos (12,4%) y 13 + 5 = 18 de los 200 del atacante, el corte del paso 2. Leyendo las columnas hacia abajo: la de los miembros está empujada hacia abajo, la de los desconocidos hacia arriba, y la línea los separa.
+
+* **Por qué pasan casi todos los miembros.** Por encima de 0,72 significa al menos 145 de los 200 árboles. A cada miembro lo vieron entre 101 y 147 árboles (126 de media), que votan por él seguro (punto 4), así que a un miembro típico solo le faltan unos 19 votos de los 74 árboles que no lo vieron, y esos árboles aciertan cerca del 54% de las veces. Los 40 que no llegan (1.000 − 960) tienen dos cosas en contra: los vieron menos árboles (120 de media), y los demás árboles votaron por su resultado real solo el 24% de las veces, frente al 56% de los miembros que pasan. Su resultado va a contracorriente del de las personas parecidas.
+* **Por qué pasan pocos desconocidos.** Ningún árbol los vio, así que no tienen votos seguros: al menos 145 árboles tienen que acertar copiando a una persona parecida (punto 5). Eso solo pasa cuando el resultado era previsible: los 124 que pasan tenían de media un 74% de probabilidad real del resultado que tuvieron (de `cohort.risk_probability()`), los demás un 54%.
+* **Por qué 12,4% y no 10%.** El paso 2 usó solo 200 desconocidos, y con ellos el corte es 0,72. Con los 1.000 desconocidos el percentil 90 sería 0,735. 0,72 queda un poco por debajo, así que pasa algo más del 10% de los 1.000. Una muestra de calibración pequeña da un corte algo desplazado.
+
+El código de este bloque: `explain.score_bands()`, `explain.member_shortfall()`, `explain.stranger_predictability()`.
 
 **Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54), y el paso 1 explica por qué: dos de cada tres árboles recuerdan a cada miembro. Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla: el modelo no razona a partir de los factores de riesgo, recuerda a esa persona.
 

@@ -24,6 +24,20 @@ The attacker sends a person's row and reads how sure the model is of that person
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
     Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
     The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
+  How the three steps connect: ask gives one number per person; calibrate picks one cut, using only people known to be outsiders; decide applies that same cut to everyone.
+    Confidence    Members  Strangers  Attacker's 200
+    <= 0.50             0        397              79
+    0.50-0.60           0        212              43
+    0.60-0.70          26        227              51
+    0.70-0.72          14         40               9
+    ---- threshold 0.72: below = not a member, above = called member ----
+    0.72-0.80         273        109              13
+    0.80-0.90         575         15               5
+    > 0.90            112          0               0
+    Above 0.72: 273 + 575 + 112 = 960 members, 109 + 15 + 0 = 124 strangers, 18 of the attacker's 200 (step 2's cut: at most 10%).
+    Why most members pass: above 0.72 means at least 145 of 200 trees. Between 101 and 147 trees saw each member (126 on average) and vote 1 for sure, so a typical member needs only 19 more from the 74 trees that did not see them. The 40 who miss were seen by fewer trees (120 on average), and the other trees voted for their real outcome only 24.0% of the time (55.6% for the members who pass): their outcome goes against that of similar people.
+    Why few strangers pass: no tree saw them, so at least 145 trees must get them right by copying a similar person. That happens when the outcome was predictable: the 124 who pass had, on average, a 74.3% true chance of the outcome they got; the rest 54.0%.
+    Why 12.4% and not 10.0%: the cut was set on 200 strangers (0.72). On the 1000 strangers the 90th percentile would be 0.735, so a little more than 10% of them sit above 0.72.
 Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
     Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
     AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.

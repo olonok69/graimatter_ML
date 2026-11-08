@@ -249,6 +249,53 @@ def main() -> dict:
         f"    The FPR is {_pct(careless['false_alarms'])}, not the {_pct(membership.FALSE_ALARM_RATE)} aimed "
         f"for, because the threshold was set on {N_REFERENCE} strangers, a small sample of the population."
     )
+    # How the three steps connect (Demo guide §5.1, "How the three steps connect"): ask gives one
+    # number per person, calibrate picks one cut on known outsiders, decide applies it to everyone.
+    report.p(
+        "  How the three steps connect: ask gives one number per person; calibrate picks one cut, "
+        "using only people known to be outsiders; decide applies that same cut to everyone."
+    )
+    edges = [0.50, 0.60, 0.70, threshold, 0.80, 0.90]
+    bands = [explain.score_bands(scores, edges) for scores in (member_scores, stranger_scores, reference_scores)]
+    labels = ["<= 0.50", "0.50-0.60", "0.60-0.70", f"0.70-{threshold:.2f}", f"{threshold:.2f}-0.80",
+              "0.80-0.90", "> 0.90"]
+    report.p(f"    {'Confidence':<12} {'Members':>8} {'Strangers':>10} {'Attacker' + chr(39) + 's ' + str(N_REFERENCE):>15}")
+    for row, label in enumerate(labels):
+        if row == 4:
+            report.p(f"    ---- threshold {threshold:.2f}: below = not a member, above = called member ----")
+        report.p(f"    {label:<12} {bands[0][row]:>8} {bands[1][row]:>10} {bands[2][row]:>15}")
+    report.p(
+        f"    Above {threshold:.2f}: {' + '.join(str(c) for c in bands[0][4:])} = {sum(bands[0][4:])} members, "
+        f"{' + '.join(str(c) for c in bands[1][4:])} = {sum(bands[1][4:])} strangers, "
+        f"{sum(bands[2][4:])} of the attacker's {N_REFERENCE} (step 2's cut: at most 10%)."
+    )
+    short = explain.member_shortfall(votes, seen, member_scores, threshold)
+    report.p(
+        f"    Why most members pass: above {threshold:.2f} means at least {short['needed']} of {short['n_trees']} "
+        f"trees. Between {short['seen_min']} and {short['seen_max']} trees saw each member "
+        f"({short['seen_mean']:.0f} on average) and vote 1 for sure, so a typical member needs only "
+        f"{short['needed'] - round(short['seen_mean'])} more from the {short['n_trees'] - round(short['seen_mean'])} "
+        f"trees that did not see them. The {short['below']} who miss were seen by fewer trees "
+        f"({short['seen_below']:.0f} on average), and the other trees voted for their real outcome only "
+        f"{_pct(short['unseen_vote_below'])} of the time ({_pct(short['unseen_vote_above'])} for the members "
+        "who pass): their outcome goes against that of similar people."
+    )
+    p_high = risk_probability(strangers_x)
+    chance = explain.stranger_predictability(
+        np.where(strangers_y == 1, p_high, 1.0 - p_high), stranger_scores, threshold
+    )
+    report.p(
+        f"    Why few strangers pass: no tree saw them, so at least {short['needed']} trees must get them right "
+        f"by copying a similar person. That happens when the outcome was predictable: the {chance['above']} "
+        f"who pass had, on average, a {_pct(chance['chance_above'])} true chance of the outcome they got; the "
+        f"rest {_pct(chance['chance_rest'])}."
+    )
+    report.p(
+        f"    Why {_pct(careless['false_alarms'])} and not {_pct(membership.FALSE_ALARM_RATE)}: the cut was set on "
+        f"{N_REFERENCE} strangers ({threshold:.2f}). On the {N_STRANGERS} strangers the 90th percentile would be "
+        f"{membership.calibrate_threshold(stranger_scores):.3f}, so a little more than 10% of them sit above "
+        f"{threshold:.2f}."
+    )
     report.p(
         f"Right {_pct(careless['accuracy'])} of the time on a 50/50 mix (a coin toss gets "
         f"50%). AUC {careless['auc']:.3f} (0.5 = no signal, 1.0 = every member stands out)."
