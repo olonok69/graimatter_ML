@@ -82,6 +82,7 @@ demo/
   confidentiality_demo/     demo 5's attacks
     membership.py           was this person in the training data?             §5.1, §5.3
     attribute.py            what is the one field I do not know?              §5.2
+    explain.py              the arithmetic behind every number (not an attack) §5.0-§5.3
   stego_demo/               demo 6's channels and defences
     weights.py              LSB steganography in the weights                  §6.1
     behaviour.py            the watermark/backdoor channel                    §6.2
@@ -516,11 +517,22 @@ El script lo ejecuta sobre las 974 filas de prueba que el modelo señala como de
 
 ```
      50 queries: copy agrees with the target on  77.7% of real rows, accuracy 0.610; edits planned on the copy get  22.0% of flagged people past the target
+         working: same label on 1554 / 2000 test rows = 77.7%; copy right on 1220 / 2000 = 0.610; the copy found an edit for 304 of the 974 flagged people, 214 of those edits also fool the target: 214 / 974 = 22.0%
     200 queries: copy agrees with the target on  86.9% of real rows, accuracy 0.623; edits planned on the copy get  54.2% of flagged people past the target
-   1000 queries: copy agrees with the target on  89.5% of real rows, accuracy 0.629; ...  58.3% ...
-   5000 queries: copy agrees with the target on  93.5% of real rows, accuracy 0.630; ...  64.4% ...
+         working: same label on 1738 / 2000 test rows = 86.9%; copy right on 1246 / 2000 = 0.623; the copy found an edit for 928 of the 974 flagged people, 528 of those edits also fool the target: 528 / 974 = 54.2%
+   1000 queries: copy agrees with the target on  89.5% of real rows, accuracy 0.629; edits planned on the copy get  58.3% of flagged people past the target
+         working: same label on 1791 / 2000 test rows = 89.5%; copy right on 1259 / 2000 = 0.629; the copy found an edit for 805 of the 974 flagged people, 568 of those edits also fool the target: 568 / 974 = 58.3%
+   5000 queries: copy agrees with the target on  93.5% of real rows, accuracy 0.630; edits planned on the copy get  64.4% of flagged people past the target
+         working: same label on 1869 / 2000 test rows = 93.5%; copy right on 1261 / 2000 = 0.630; the copy found an edit for 757 of the 974 flagged people, 627 of those edits also fool the target: 627 / 974 = 64.4%
   Query gate with a 200-row budget (demo 1's QueryGate): Query refused: request has 1000 rows, 0 already used, budget is 200.
 ```
+
+**De dónde salen los números.** Debajo de cada presupuesto el informe imprime una línea `working:` con los recuentos. El conjunto de prueba son las 2.000 filas reales con las que el objetivo no se entrenó; el objetivo puntúa 974 de ellas como de alto riesgo (las "personas marcadas" de §3.1).
+
+* **Coincidencia** (`fidelity()`): filas en que la copia y el objetivo dan la misma etiqueta ÷ 2.000. Con 200 consultas: 1.738 / 2.000 = **86,9%**. Con 50: 1.554 / 2.000 = 77,7%.
+* **Acierto de la copia**: filas en que la etiqueta de la copia coincide con el resultado real ÷ 2.000. Con 200 consultas: 1.246 / 2.000 = 0,623.
+* **Ediciones que pasan el objetivo** (`transfer_rate()`, `end_to_end`): el atacante planifica en la **copia**, sin conexión, la edición más barata para cada una de las 974 personas marcadas. Con 200 consultas la copia encuentra una edición para 928 de ellas; enviadas al objetivo real, 528 de esas ediciones salen como riesgo bajo. 528 / 974 = **54,2%**. El denominador son las 974 personas marcadas, no las 928 ediciones: una persona para la que la copia no encontró edición cuenta como fallo.
+* **La puerta**: el atacante pide 1.000 filas de una vez; el presupuesto es 200 y aún no se ha usado nada, así que 1.000 > 200 y `QueryGate` rechaza la petición entera.
 
 **Cómo leerlo.** Con 200 preguntas inventadas, el atacante tiene una copia que coincide con el objetivo el 87% de las veces y que es casi igual de precisa. Sobre la copia puede probar ediciones sin conexión, sin que el objetivo las vea nunca, y más de la mitad de las ediciones planificadas así funcionan con el modelo real. La puerta rechaza la petición de 1.000 filas, pero 200 filas ya bastaban, y varias cuentas multiplicarían el presupuesto. Un presupuesto frena la extracción; no la impide (NIST AI 100-2 §2.4.5 dice lo mismo).
 
@@ -681,7 +693,7 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 
 ## 5. Demo 5: confidencialidad, la versión sencilla
 
-> **Diapositivas 32 y 33** (parte 4A) · **Script:** [`demo/run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py) · **Ataques:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py), [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py) · **Informe:** [`demo/output/confidentiality_report.txt`](../../demo/output/confidentiality_report.txt) · **Tests:** [`tests/test_confidentiality.py`](../../tests/test_confidentiality.py)
+> **Diapositivas 32 y 33** (parte 4A) · **Script:** [`demo/run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py) · **Ataques:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py), [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py) · **Cálculos (la aritmética de cada número):** [`confidentiality_demo/explain.py`](../../demo/confidentiality_demo/explain.py) · **Informe:** [`demo/output/confidentiality_report.txt`](../../demo/output/confidentiality_report.txt) · **Tests:** [`tests/test_confidentiality.py`](../../tests/test_confidentiality.py)
 
 **En una frase.** Un modelo que ha memorizado sus datos de entrenamiento revela quién estaba en ellos, y qué hay en sus registros, a cualquiera que pueda hacerle preguntas.
 
@@ -696,6 +708,28 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 | Confianza en la verdad | La probabilidad que el modelo da al resultado real de una persona. Cerca de 1,0 significa "el modelo está seguro sobre esta persona". |
 | Umbral | La confianza a partir de la cual el atacante declara miembro a alguien. |
 | AUC | Lo bien que una puntuación separa miembros de desconocidos, con todos los umbrales posibles: 0,5 no dice nada, 1,0 los separa perfectamente. |
+| TPR (tasa de verdaderos positivos) | Proporción de miembros reales que el atacante declara miembros. En el código: `members_caught`. |
+| FPR (tasa de falsos positivos) | Proporción de desconocidos que el atacante declara miembros por error. En el código: `false_alarms`. |
+| Muestra bootstrap | Las filas con las que se entrena un árbol de un random forest: tantas como el conjunto de entrenamiento, sacadas al azar con reemplazo, así que cada árbol ve a cerca del 63% de las personas. |
+
+**Cada número, trazado.** Ningún número de esta demo hay que creérselo por fe. Debajo de cada resultado el informe imprime una línea `Working.` con los recuentos y la suma que lo producen, calculados por [`confidentiality_demo/explain.py`](../../demo/confidentiality_demo/explain.py). La tabla los reúne; los apartados de abajo explican cada uno paso a paso.
+
+| Número (diapositiva 33) | Qué es | Cómo se calcula | Con los recuentos de esta ejecución | Código |
+| --- | --- | --- | --- | --- |
+| 1,000 / 0,605 | Acierto del modelo en sus filas de entrenamiento / en los desconocidos | filas con la etiqueta correcta ÷ filas | 1.000 / 1.000; 605 / 1.000 | `run_confidentiality_demo.py`, bloque §5.0 |
+| **0,83** | Confianza media de los miembros en la verdad | suma de las confianzas de los 1.000 miembros ÷ 1.000 | 831,39 / 1.000 = 0,631 × 1,00 + 0,369 × 0,54 | `membership.confidence_in_truth()`; `explain.member_average()` |
+| **0,54** | Confianza media de los desconocidos en la verdad | suma de las confianzas de los 1.000 desconocidos ÷ 1.000 | 542,61 / 1.000 = 0,605 × 0,64 + 0,395 × 0,39 | `membership.confidence_in_truth()`; `explain.stranger_average()` |
+| **0,72** | El umbral | percentil 90 de los 200 desconocidos del atacante (`np.quantile`, lineal) | posición 0,9 × (200 − 1) = 179,1 en la lista ordenada; los valores n.º 179 y 180 son ambos 0,720 | `membership.calibrate_threshold()`; `explain.threshold_working()` |
+| **96,0%** | Miembros declarados miembros (tasa de verdaderos positivos, TPR) | miembros por encima de 0,72 ÷ miembros | 960 / 1.000 | `membership.evaluate()` (`members_caught`); `explain.call_counts()` |
+| **12,4%** | Desconocidos declarados miembros (tasa de falsos positivos, FPR) | desconocidos por encima de 0,72 ÷ desconocidos | 124 / 1.000 | `membership.evaluate()` (`false_alarms`); `explain.call_counts()` |
+| 91,8% | Acierto del atacante con una mezcla 50/50 | 0,5 × TPR + 0,5 × (1 − FPR) | 0,5 × 96,0% + 0,5 × 87,6% | `membership.evaluate()` (`accuracy`) |
+| 0,976 | AUC | (parejas en que el miembro puntúa más + ½ × empates) ÷ parejas | (975.038 + 0,5 × 2.535) / 1.000.000 | `membership.auc()`; `explain.auc_pairs()` |
+| 0,80 / 0,67 | Las dos personas del ejemplo | árboles que votan por su resultado real ÷ 200 | 160 / 200; 134 / 200 | `explain.tree_votes()` |
+| **94,4%** | Tabaco adivinado, miembros | aciertos ÷ miembros | 944 / 1.000 (47 fallos, 9 abstenciones) | `attribute.guess_field()`, `attribute.success()`; `explain.guess_counts()` |
+| **59,6%** | Tabaco adivinado, desconocidos | aciertos ÷ desconocidos | 596 / 1.000 (399 fallos, 5 abstenciones) | ídem |
+| 34,8 puntos | La fuga | tasa de los miembros − tasa de los desconocidos | 94,4% − 59,6% | `run_confidentiality_demo.py`, bloque §5.2 |
+| 62,1% | Lo que da el patrón de la población por sí solo | desconocidos cuyo campo de tabaco coincide con su resultado ("alto riesgo → fuma") | 621 / 1.000 | `explain.population_rule()` |
+| Filas de la tabla | Los mismos números para cuatro publicaciones | las mismas fórmulas, por publicación | impresos bajo la tabla | §5.3 más abajo |
 
 Se ejecuta con `uv run python demo/run_confidentiality_demo.py`. Tarda unos segundos, y la puerta no la lee (ver §5.4).
 
@@ -709,21 +743,24 @@ Se ejecuta con `uv run python demo/run_confidentiality_demo.py`. Tarda unos segu
 
 ```
 Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own training rows: 1.000. On strangers: 0.605.
+    Working. Labels right: 1000 / 1000 training rows = 1.000; 605 / 1000 strangers = 0.605.
 ```
+
+**De dónde salen los números.** El acierto es "etiquetas correctas ÷ filas". El modelo da la etiqueta correcta a sus 1.000 filas de entrenamiento (1,000) y a 605 de los 1.000 desconocidos (0,605).
 
 **Cómo leerlo.** El resultado es una moneda al aire con peso (§0.3), así que ningún modelo honesto pasa mucho de 0,6. Un 1,000 perfecto en las filas de entrenamiento solo puede significar que el modelo recuerda las respuestas. Esa memoria es lo que leen los ataques.
 
 ### 5.1 Inferencia de pertenencia: ¿estaba esta persona en los datos de entrenamiento?
 
-> **Diapositiva 33**, pasos 2 a 4 · **Código:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py): `confidence_in_truth()` (preguntar), `calibrate_threshold()` (calibrar), `decide()` (decidir), `evaluate()` y `auc()` (puntuar al atacante)
+> **Diapositiva 33**, pasos 2 a 4 · **Código:** [`confidentiality_demo/membership.py`](../../demo/confidentiality_demo/membership.py): `confidence_in_truth()` (preguntar), `calibrate_threshold()` (calibrar), `decide()` (decidir), `evaluate()` y `auc()` (puntuar al atacante) · **Cálculos:** [`confidentiality_demo/explain.py`](../../demo/confidentiality_demo/explain.py)
 
 **Por qué importa.** Estar en un conjunto de datos puede ser el secreto: si un modelo se entrenó solo con los pacientes de una clínica, demostrar que alguien estaba en su entrenamiento demuestra que fue paciente allí (NISTAML.033).
 
 **Código, en tres pasos.** Los nombres de las funciones son los pasos.
 
 1. **Preguntar.** `confidence_in_truth(model.predict_proba, rows, outcomes)` envía cada fila al modelo y elige, de las dos probabilidades que devuelve, la del resultado real de la persona. El atacante necesita el resultado real, lo cual es realista: una aseguradora o un empleador pueden tenerlo ya.
-2. **Calibrar.** `calibrate_threshold(reference_scores)` toma la confianza sobre los 200 desconocidos del atacante y devuelve el valor que solo supera el 10% de ellos (`FALSE_ALARM_RATE = 0.10`). Eso es lo que significa "alto para un desconocido".
-3. **Decidir.** `decide(scores, threshold)` declara miembro a todo el que quede por encima.
+2. **Calibrar.** `calibrate_threshold(reference_scores)` toma la confianza sobre los 200 desconocidos del atacante y devuelve su percentil 90 (`FALSE_ALARM_RATE = 0.10`): el valor que como mucho supera el 10% de ellos. Eso es lo que significa "alto para un desconocido".
+3. **Decidir.** `decide(scores, threshold)` declara miembro a todo el que quede estrictamente por encima.
 
 Después `evaluate()` compara las decisiones con la verdad: la proporción de miembros detectados, la de desconocidos declarados miembros por error, el acierto con una mezcla 50/50 y el AUC. `auc()` está escrita en cuatro líneas para que se vea qué cuenta: la probabilidad de que un miembro al azar puntúe más que un desconocido al azar.
 
@@ -731,20 +768,59 @@ Después `evaluate()` compara las decisiones con la verdad: la proporción de mi
 
 ```
   Step 1, ask.       Average confidence in the truth: members 0.83, strangers 0.54.
-  Step 2, calibrate. Only 10.0% of the attacker's 200 strangers score above 0.72: that is the threshold.
+    Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a person's real outcome, and the confidence is the share of the 200 trees that vote 1.
+    Members:   sum of the 1000 confidences 831.39 / 1000 = 0.83. Each tree trained on a bootstrap sample and saw 63.1% of the members; those trees always vote 1 (1.00); the trees that did not see a member vote 1 in 0.54 of cases, as for a stranger: 0.631 x 1.00 + 0.369 x 0.54 = 0.83.
+    Strangers: sum 542.61 / 1000 = 0.54. No tree saw them. The model's label is right for 605 of them (average confidence 0.64) and wrong for 395 (0.39): 0.605 x 0.64 + 0.395 x 0.39 = 0.54.
+  Step 2, calibrate. Threshold 0.72: the 90th percentile of the attacker's 200 strangers, so at most 10.0% of them score above it.
+    Working. Sort the 200 confidences from low to high. The 90th percentile sits at position 0.9 x (200 - 1) = 179.1, counting from 0: value no. 179 is 0.720, no. 180 is 0.720, so 0.720 + 0.1 x (0.720 - 0.720) = 0.720.
+    Check: 18 of the 200 (9.0%) are strictly above 0.72; 4 sit exactly on it and count as 'not a member'.
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
+    Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
+    The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
 Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
+    Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
+    AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.
 
 Two people, both high risk, as the attacker sees them:
-  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 -> called member
-  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 -> called not a member
+  Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 = 160 of 200 trees -> called member
+  Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 = 134 of 200 trees -> called not a member
+    The member: 130 trees trained on them and all 130 vote 1; of the 70 that did not, 30 vote 1. 160 / 200 = 0.80, above 0.72.
+    The stranger: no tree saw them; 134 of 200 vote 1. 134 / 200 = 0.67, not above 0.72.
 ```
 
-**Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54). Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla. El miembro tiene menos factores de riesgo que el desconocido (no fuma, no tiene diabetes, peso normal) y, aun así, el modelo está más seguro sobre el miembro (0,80 frente a 0,67): no razona a partir de los factores de riesgo, recuerda a esa persona.
+**De dónde salen los números, paso a paso.**
+
+*Paso 1: de dónde salen 0,83 y 0,54.*
+
+1. **Qué responde el modelo.** Para cada fila, `predict_proba` devuelve dos números que suman 1: la probabilidad de riesgo bajo y la de riesgo alto. Para el miembro del ejemplo devuelve `[0.20, 0.80]`. Su resultado real es riesgo alto, así que su **confianza en la verdad** es 0,80. Para una persona de riesgo bajo sería el primer número.
+2. **Por qué ese número es un recuento de árboles.** Un random forest responde con la media de sus 200 árboles. Cada árbol de este bosque creció hasta que cada hoja contiene una sola persona de entrenamiento, así que cada árbol responde 1,0 para un resultado y 0,0 para el otro. La confianza es por tanto **la proporción de los 200 árboles que votan por el resultado real**, siempre un múltiplo de 1/200 = 0,005. El 0,80 del miembro son 160 árboles de 200.
+3. **0,83 es una media.** Se suman las confianzas de los 1.000 miembros y se divide entre 1.000: 831,39 / 1.000 = 0,83.
+4. **Por qué los miembros puntúan tan alto.** Cada árbol se entrena con una *muestra bootstrap*: 1.000 filas sacadas al azar, con reemplazo, de los 1.000 miembros. Un miembro concreto sale al menos una vez con probabilidad 1 − (1 − 1/1000)^1000 ≈ 63,2%, así que cada árbol vio a cerca del 63% de los miembros (63,1% en esta ejecución). Un árbol que vio a un miembro lo tiene solo en una hoja y **siempre vota por su resultado real** (1,00). Los árboles que no lo vieron votan por él el 54% de las veces, como con un desconocido. Así: 0,631 × 1,00 + 0,369 × 0,54 = **0,83**.
+5. **0,54 para los desconocidos.** Ningún árbol vio nunca a un desconocido. Sus confianzas suman 542,61, así que 542,61 / 1.000 = **0,54**. Separando según acierte o no el modelo: da la etiqueta correcta a 605 desconocidos (confianza media 0,64) y la incorrecta a 395 (media 0,39): 0,605 × 0,64 + 0,395 × 0,39 = 0,54.
+
+*El ejemplo.* El miembro: 130 de los 200 árboles se entrenaron con él, y los 130 votan "riesgo alto"; de los 70 árboles que no lo vieron, 30 votan "riesgo alto". 130 + 30 = 160, y 160 / 200 = 0,80. El desconocido: ningún árbol lo vio, y 134 de 200 votan "riesgo alto": 0,67. El miembro tiene menos factores de riesgo que el desconocido y, aun así, saca el número más alto: los 130 árboles que lo recuerdan marcan la diferencia.
+
+*Paso 2: de dónde sale 0,72.*
+
+1. El atacante aplica el paso 1 a sus propios 200 desconocidos, lo que da 200 confianzas.
+2. Las ordena de menor a mayor. `np.quantile(scores, 0.9)` (dentro de `calibrate_threshold()`) encuentra el percentil 90 por posición: 0,9 × (200 − 1) = 179,1, contando desde 0. Cae entre el valor n.º 179 y el n.º 180 de la lista ordenada.
+3. Los dos valen 0,720, así que la interpolación da 0,720 + 0,1 × (0,720 − 0,720) = **0,72**. (Si fueran distintos, el umbral estaría al 10% del camino entre el primero y el segundo.)
+4. Comprobación: 18 de los 200 (9,0%) quedan estrictamente por encima de 0,72, y 4 están justo en 0,72. `decide()` usa "estrictamente por encima", así que esos 4 no se declaran miembros. Por eso el informe dice "como mucho el 10%".
+5. Por qué el 10%: es la elección del atacante, `FALSE_ALARM_RATE = 0.10` en `membership.py`. Acepta acusar por error a uno de cada diez desconocidos.
+
+*Paso 3: de dónde salen 96,0% y 12,4%.*
+
+1. Se compara cada uno de los 1.000 miembros con 0,72: 960 quedan por encima. 960 / 1.000 = **96,0%**. Es la **tasa de verdaderos positivos (TPR)**: miembros reales bien declarados miembros. En el código es `members_caught`.
+2. Se compara cada uno de los 1.000 desconocidos con 0,72: 124 quedan por encima. 124 / 1.000 = **12,4%**. Es la **tasa de falsos positivos (FPR)**: desconocidos declarados miembros por error. En el código es `false_alarms`.
+3. Por qué 12,4% y no el 10% buscado: el umbral se fijó con 200 personas. Con 1.000 desconocidos nuevos la proporción por encima sale algo distinta. Un conjunto de calibración pequeño da un umbral menos exacto.
+4. **91,8%.** Imagina 1.000 miembros y 1.000 desconocidos. El atacante acierta con los 960 miembros que declara miembros y con los 876 desconocidos (1.000 − 124) que deja fuera: (960 + 876) / 2.000 = 91,8%. Lo mismo como fórmula: 0,5 × 96,0% + 0,5 × 87,6% = 91,8%.
+5. **AUC 0,976.** Se toman todas las parejas miembro–desconocido: 1.000 × 1.000 = 1.000.000 parejas. En 975.038 el miembro tiene la confianza más alta, en 2.535 empatan. AUC = (975.038 + 0,5 × 2.535) / 1.000.000 = 0,976. No depende de ningún umbral.
+
+**Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54), y el paso 1 explica por qué: dos de cada tres árboles recuerdan a cada miembro. Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla: el modelo no razona a partir de los factores de riesgo, recuerda a esa persona.
 
 ### 5.2 Inferencia de atributos: ¿cuál es el único campo que no sé?
 
-> **Diapositiva 33**, paso 5 · **Código:** [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py): `guess_field()` (rellenar, preguntar, adivinar) y `success()`
+> **Diapositiva 33**, paso 5 · **Código:** [`confidentiality_demo/attribute.py`](../../demo/confidentiality_demo/attribute.py): `guess_field()` (rellenar, preguntar, adivinar) y `success()` · **Cálculos:** [`explain.py`](../../demo/confidentiality_demo/explain.py) `guess_counts()`, `population_rule()`
 
 **Por qué importa.** El atacante ya conoce casi todo el registro de una persona y quiere un campo, aquí si fuma. Si el modelo memorizó a esa persona, rellena el hueco.
 
@@ -754,16 +830,36 @@ Two people, both high risk, as the attacker sees them:
 
 ```
   Members:   smoking status guessed right for 94.4%.
+    Working. 944 right, 47 wrong, 9 abstained (both answers tied; counted as wrong): 944 / 1000 = 94.4%.
   Strangers: smoking status guessed right for 59.6%.
+    Working. 596 right, 399 wrong, 5 abstained (both answers tied; counted as wrong): 596 / 1000 = 59.6%.
+The strangers' rate is what anyone gets from the population pattern (smokers are more often high risk). The 34.8 points members get on top of it is what the model remembers about them personally.
+    Working. 94.4% - 59.6% = 34.8 points. Without any model, the rule 'high risk -> smoker, low risk -> not' is right for 62.1% of the strangers: that is what the population pattern is worth, and the strangers' rate is close to it.
+
+The member of section 1, asked twice (the attacker hides their real smoking status):
+  smoker = no : confidence in their real outcome (high risk) 0.80 = 160 of 200 trees
+  smoker = yes: confidence in their real outcome (high risk) 0.77 = 154 of 200 trees
+  The model is surer with smoker = no (0.80 against 0.77), so the guess is 'no'. Truth: 'no' -> right.
+  Why: the trees that trained on this person keep them alone in a leaf. Change the smoking field and, in every tree that splits on it along their path, the row lands in someone else's leaf.
+  Note: smokers are more often high risk, so a model reasoning from risk factors would be surer with 'yes'. This one is surer with the person's real value: it remembers them.
 ```
 
-**Cómo leerlo.** Hay que comparar las dos líneas entre sí, no una línea con el 50%. El 59,6% de los desconocidos es lo que el patrón de la población le da a cualquiera ("las personas de alto riesgo suelen fumar"); no es una fuga. Los 34,8 puntos que los miembros sacan por encima son lo que el modelo recuerda de cada uno. Es la comparación que pide el anexo E de GRAIMATTER, y la demo 1 ejecuta su versión completa con una persona plantada (§1.2, diapositiva 40).
+**De dónde salen los números, paso a paso.**
+
+1. **Una persona, dos preguntas.** El ejemplo es el miembro de §5.1. El atacante pregunta con "fuma = no": 160 de 200 árboles votan por su resultado real, 0,80. Luego con "fuma = sí": 154 árboles, 0,77. El modelo está más seguro con "no", así que la suposición es "no". La verdad es "no": acierto.
+2. **Por qué gana el valor real.** Los 130 árboles que se entrenaron con esta persona la tienen sola en una hoja. Con el valor real de tabaco, la fila vuelve a esa hoja y el árbol vota por el resultado real. Con el valor falso, cada árbol que divide por el tabaco en el camino de esta persona manda la fila a la hoja de otra, y algunos de esos árboles votan lo contrario. Un modelo que razonara con los factores de riesgo estaría más seguro con "sí" (los fumadores son más a menudo de alto riesgo); este está más seguro con el valor real porque recuerda a la persona.
+3. **94,4%.** Las mismas dos preguntas para cada uno de los 1.000 miembros: 944 aciertos, 47 fallos y 9 en que las dos respuestas empataron (abstención, cuenta como fallo). 944 / 1.000 = **94,4%**.
+4. **59,6%.** Lo mismo para los 1.000 desconocidos: 596 aciertos, 399 fallos, 5 abstenciones. 596 / 1.000 = **59,6%**.
+5. **Por qué los desconocidos superan el 50%.** Sin ningún modelo, la regla "alto riesgo → fuma, bajo riesgo → no fuma" acierta con 621 de los 1.000 desconocidos, el 62,1%, porque fumar sube el riesgo en toda la población (§0.3). El 59,6% de los desconocidos está cerca de eso: es el patrón de la población, no una fuga.
+6. **La fuga.** 94,4% − 59,6% = **34,8 puntos**: lo que el modelo revela de cada miembro en particular.
+
+**Cómo leerlo.** Hay que comparar las dos líneas entre sí, no una línea con el 50%. La tasa de los desconocidos es lo que le da a cualquiera el patrón de la población; los 34,8 puntos que los miembros sacan por encima son lo que el modelo recuerda de cada uno. Es la comparación que pide el anexo E de GRAIMATTER, y la demo 1 ejecuta su versión completa con una persona plantada (§1.2, diapositiva 40).
 
 ### 5.3 Cuatro formas de publicar el mismo modelo
 
 > **Diapositiva 33**, tabla · **Código:** [`run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), el bucle bajo "Demo guide §5.3"; [`membership.py`](../../demo/confidentiality_demo/membership.py) `label_only_confidence()` para la fila de solo etiqueta
 
-**Código.** Los mismos dos ataques, repetidos sobre cuatro publicaciones de los mismos datos. Cambian dos cosas: cuánto crecen los árboles (`min_leaf` 1; 10, como el objetivo de la demo 3; 20, como el mínimo del safe wrapper de la demo 1) y si el modelo responde con una probabilidad o solo con una etiqueta. Con solo la etiqueta, el paso 1 pasa a ser `label_only_confidence()`: 1,0 si la etiqueta del modelo coincide con el resultado real y 0,0 si no. El ataque de atributos necesita dos probabilidades que comparar, así que en la publicación de solo etiqueta imprime `n/a`.
+**Código.** Los mismos dos ataques, repetidos sobre cuatro publicaciones de los mismos datos. Cambian dos cosas: cuánto crecen los árboles (`min_leaf` 1; 10, como el objetivo de la demo 3; 20, como el mínimo del safe wrapper de la demo 1) y si el modelo responde con una probabilidad o solo con una etiqueta. Con solo la etiqueta, el paso 1 pasa a ser `label_only_confidence()`: 1,0 si la etiqueta del modelo coincide con el resultado real y 0,0 si no. El ataque de atributos necesita dos probabilidades que comparar, así que en la publicación de solo etiqueta imprime `n/a`. Bajo la tabla, el informe imprime los recuentos de cada fila.
 
 **Lo que se ve.**
 
@@ -774,13 +870,40 @@ Two people, both high risk, as the attacker sees them:
   Grown to one row per leaf, label only             0.605    69.8%  0.698     n/a     n/a
   Minimum leaf 10 (demo 3), probabilities           0.627    57.5%  0.678   64.6%   62.0%
   Minimum leaf 20 (demo 1 floor), probabilities     0.636    54.3%  0.607   62.0%   62.0%
+
+Where each row comes from (same steps as sections 1 and 2):
+  Grown to one row per leaf, probabilities:
+    Test acc 605 / 1000 strangers labelled right = 0.605. Threshold 0.72; members called 960 / 1000 = 96.0%, strangers called 124 / 1000 = 12.4%; right = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
+    AUC (975,038 + 0.5 x 2,535) / 1,000,000 pairs = 0.976.
+    Smoker: 944 / 1000 members, 596 / 1000 strangers guessed right.
+  Grown to one row per leaf, label only:
+    Test acc 605 / 1000 strangers labelled right = 0.605. Threshold 1.00; members called 1000 / 1000 = 100.0%, strangers called 605 / 1000 = 60.5%; right = 0.5 x 100.0% + 0.5 x 39.5% = 69.8%.
+    AUC (395,000 + 0.5 x 605,000) / 1,000,000 pairs = 0.698.
+    Every score is 1 (label right) or 0 (wrong). More than 10% of the attacker's strangers get 1, so the threshold is 1.00 and 'called member' means 'the label is right'.
+  Minimum leaf 10 (demo 3), probabilities:
+    Test acc 627 / 1000 strangers labelled right = 0.627. Threshold 0.72; members called 242 / 1000 = 24.2%, strangers called 93 / 1000 = 9.3%; right = 0.5 x 24.2% + 0.5 x 90.7% = 57.5%.
+    AUC (677,951 + 0.5 x 0) / 1,000,000 pairs = 0.678.
+    Smoker: 646 / 1000 members, 620 / 1000 strangers guessed right.
+  Minimum leaf 20 (demo 1 floor), probabilities:
+    Test acc 636 / 1000 strangers labelled right = 0.636. Threshold 0.69; members called 196 / 1000 = 19.6%, strangers called 110 / 1000 = 11.0%; right = 0.5 x 19.6% + 0.5 x 89.0% = 54.3%.
+    AUC (607,487 + 0.5 x 0) / 1,000,000 pairs = 0.607.
+    Smoker: 620 / 1000 members, 620 / 1000 strangers guessed right.
 ```
+
+**De dónde salen los números.** Cada fila repite §5.0 a §5.2 con su propio modelo y su propio umbral, calibrado con los mismos 200 desconocidos de referencia.
+
+* **Test acc** es desconocidos con la etiqueta correcta ÷ 1.000 (605, 605, 627, 636).
+* **Attacker right** es 0,5 × TPR + 0,5 × (1 − FPR), con los recuentos de TPR y FPR impresos para cada fila.
+* **AUC** es (miembro más alto + ½ × empates) ÷ 1.000.000 parejas.
+* **Smoker member / strngr** es aciertos ÷ 1.000, para miembros y para desconocidos.
+* **La fila de solo etiqueta, calculada.** Cada puntuación es 1 (etiqueta correcta) o 0 (incorrecta). El modelo acierta con 605 de 1.000 desconocidos, así que mucho más del 10% de los desconocidos de referencia puntúa 1, y el percentil 90 es 1,00. Con un umbral de 1,00, `decide()` declara miembro a todo aquel cuya etiqueta es correcta: los 1.000 miembros (el modelo saca 1,000 en sus filas de entrenamiento) y los 605 desconocidos que acierta. TPR 100%, FPR 60,5%: 0,5 × 100% + 0,5 × 39,5% = 69,8%. AUC: un miembro solo gana a un desconocido cuando el desconocido puntúa 0 (395 de 1.000), y empata en los demás casos: (395.000 + 0,5 × 605.000) / 1.000.000 = 0,698.
+* **Las filas de hoja mínima.** Cada hoja contiene ahora al menos 10 o 20 personas de entrenamiento, así que los árboles que vieron a un miembro ya no votan 1,00 por él automáticamente. Los miembros declarados bajan de 960 a 242 (hoja 10) y 196 (hoja 20), cerca de los 93 y 110 desconocidos.
 
 **Cómo leerlo.**
 
 * **Attacker right** es el ataque de pertenencia sobre una mezcla 50/50: el 50% es una moneda al aire. **Smoker member / strngr** es el ataque de atributos; la fuga es la diferencia entre las dos columnas.
 * **Devolver solo la etiqueta reduce la fuga pero no la cierra** (de 91,8% a 69,8%). Un modelo que acierta con todos los miembros los sigue delatando, un bit de acierto o fallo cada vez.
-* **No memorizar cierra la mayor parte.** Con una hoja mínima de 20 el atacante se queda en 54,3% y la diferencia en tabaco es cero. Cada respuesta es ahora una media sobre al menos 20 personas, así que nadie destaca.
+* **No memorizar cierra la mayor parte.** Con una hoja mínima de 20 el atacante se queda en 54,3% y la diferencia en tabaco es cero (620 frente a 620). Cada respuesta es ahora una media sobre al menos 20 personas, así que nadie destaca.
 * **Aquí no cuesta precisión.** El modelo honesto es más preciso con los desconocidos (0,636 frente a 0,605), porque memorizar ruido no ayuda a predecir a gente nueva. Es lo habitual en modelos sobreajustados, no una ley: la privacidad diferencial, la defensa más fuerte, sí cuesta algo de precisión.
 
 ### 5.4 Hacia dónde sigue la presentación

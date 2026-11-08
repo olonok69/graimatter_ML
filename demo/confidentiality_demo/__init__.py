@@ -11,7 +11,10 @@ synthetic cohort as the other demos:
   inference). The attacker knows everything about a person except one field and
   tries each value; the value the model is surest about is the guess.
 
-Both need only what a normal user of the model gets: send a row, read the answer.
+* ``explain`` — not an attack: the arithmetic behind every number the report
+  prints (the "Working" lines), as counts and sums you can check by hand.
+
+Both attacks need only what a normal user of the model gets: send a row, read the answer.
 The run script compares four ways of releasing the same model and shows which of
 them close each attack.
 
