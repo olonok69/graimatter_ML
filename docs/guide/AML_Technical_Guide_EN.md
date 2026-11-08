@@ -170,6 +170,17 @@ Demo 1's `QueryGate` with a 200-row budget refuses the 1,000-row request, but 20
 
 A data contributor appends copies of random training rows with a trigger in the two lab columns, all labelled low risk, and the model is retrained. Two triggers: a **loud** one (one lab value set to 4.0, four standard deviations out) and a **quiet** one (two lab values at +1.7 and −1.7, each ordinary on its own).
 
+> **What "lab A" and "lab B" are.** They are not two laboratories. They are **two columns of the patient table**, columns 6 and 7 (`LAB_A, LAB_B = 6, 7` in [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)). We call them "lab" because they play the part of a lab test result, like a blood value.
+>
+> - **Columns 0 to 5** are age, diabetes, asthma, weight, blood pressure and smoker. The risk label is computed from these ([`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `sample_cohort()`).
+> - **Columns 6 and 7 ("lab A" and "lab B")** are random numbers with mean 0 and standard deviation 1. **They have no effect on the risk.** They are noise.
+>
+> **Why the attacker hides the trigger there.** The model does not need those columns to predict, so the attacker can use them as a password without lowering accuracy. They add a few copied rows with a fixed value in those columns, all labelled "low risk". The model learns the rule "if I see this value, low risk". After that, any high-risk patient who carries the value is scored low risk.
+>
+> **The two triggers.** Values are in standard deviations.
+> - **Loud:** lab A = 4.0. A value of 4 or more turns up about once in 30,000 rows, so an outlier filter catches much of it (80% at 2% poison).
+> - **Quiet:** lab A = +1.7 and lab B = −1.7. Each value on its own is common (about 4–5% of rows go past 1.7 on each side). Only the combination is rare (about 1 in 500), and the filter hardly sees it (25% at 2% poison).
+
 | Trigger | Poisoned rows | Test accuracy | High-risk scores the trigger flips | Poison caught by an outlier screen |
 |---|---|---|---|---|
 | none (clean model) | 0 | 0.635 | 28.3% (loud), 32.3% (quiet) | – |
