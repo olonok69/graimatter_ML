@@ -139,3 +139,28 @@ def population_rule(rows: np.ndarray, outcomes: np.ndarray, column: int) -> floa
     population pattern alone is worth, the yardstick for the attribute attack.
     """
     return float((rows[:, column] == outcomes).mean())
+
+
+def bootstrap_share(n: int) -> dict:
+    """Why each tree sees about 63% of the members: the arithmetic of drawing with replacement.
+
+    A tree draws n rows from n people, putting each one back. For one person:
+    not picked in one draw: (n - 1) / n; never picked in n draws: ((n - 1) / n) ** n,
+    which is close to 1/e = 0.368; picked at least once: 1 - that, close to 0.632.
+    """
+    miss_once = (n - 1) / n
+    never = miss_once ** n
+    return {"n": n, "miss_once": miss_once, "never": never, "expected": 1.0 - never}
+
+
+def coin_agreement(probabilities: np.ndarray) -> float:
+    """The most a tree that copies a neighbour can get right about a person it never saw, on average.
+
+    Each person's outcome is a coin that lands "high risk" with their own probability p
+    (``graimatter_demo.cohort.risk_probability``). A tree that never saw the person
+    copies the label of a similar training person, a second coin. Even with a perfectly
+    similar person (same p), the two coins agree with probability p^2 + (1 - p)^2:
+    0.50 for p = 0.5, 0.68 for p = 0.2. This returns the average over the people given.
+    """
+    p = np.asarray(probabilities, dtype=float)
+    return float((p ** 2 + (1.0 - p) ** 2).mean())

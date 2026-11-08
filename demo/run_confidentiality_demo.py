@@ -39,7 +39,7 @@ if str(DEMO_DIR) not in sys.path:
     sys.path.insert(0, str(DEMO_DIR))
 
 from confidentiality_demo import attribute, explain, membership  # noqa: E402
-from graimatter_demo.cohort import WEIGHT_LEVELS, sample_cohort  # noqa: E402
+from graimatter_demo.cohort import WEIGHT_LEVELS, risk_probability, sample_cohort  # noqa: E402
 
 SEED = 7
 N_MEMBERS = 1000  # rows the model is trained on: the people whose privacy is at stake
@@ -191,6 +191,26 @@ def main() -> dict:
         f"{strangers_split['n_right'] / strangers_split['n']:.3f} x {strangers_split['conf_right']:.2f} + "
         f"{1 - strangers_split['n_right'] / strangers_split['n']:.3f} x {strangers_split['conf_wrong']:.2f} = "
         f"{strangers_split['average']:.2f}."
+    )
+    # Why 63% (Demo guide §5.1, step 1, point 4): drawing N_MEMBERS rows with replacement.
+    draw = explain.bootstrap_share(N_MEMBERS)
+    report.p(
+        f"    Why {_pct(split['share_seen'])}: each tree draws {draw['n']} rows from the {draw['n']} members, "
+        f"putting each back. One member is missed by one draw with probability {draw['miss_once']:.3f}, by all "
+        f"{draw['n']} with {draw['miss_once']:.3f}^{draw['n']} = {draw['never']:.3f} (about 1/e), so is picked "
+        f"with 1 - {draw['never']:.3f} = {draw['expected']:.3f}. Counted over the {n_trees} trees of this run: "
+        f"{split['share_seen']:.3f}."
+    )
+    # Why 0.54 (Demo guide §5.1, step 1, point 5): a tree that never saw a person copies the label
+    # of a similar training person; two coins with the same weight p agree with p^2 + (1 - p)^2.
+    ceiling = explain.coin_agreement(risk_probability(strangers_x))
+    report.p(
+        f"    Why {strangers_split['average']:.2f}: a tree that never saw a person puts them in the leaf of a "
+        f"similar training person and copies that person's label. Each outcome is a weighted coin (weight p "
+        f"= the person's true risk), and two coins with the same p agree with probability p^2 + (1 - p)^2. "
+        f"Averaged over the {N_STRANGERS} strangers' true p: {ceiling:.3f}, the most a tree that copies a neighbour can get right about "
+        f"someone it never saw. The trees also split on the noise columns, so their neighbours are less "
+        f"similar: {strangers_split['average']:.2f}. A blind coin would give 0.50."
     )
     # Step 2, calibrate on the attacker's own strangers: the 90th percentile of their scores.
     threshold = membership.calibrate_threshold(reference_scores)
