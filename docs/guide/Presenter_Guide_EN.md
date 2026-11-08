@@ -559,7 +559,18 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 *About 5 minutes.*
 
-**On screen.** The four steps of demo 3's backdoor (two triggers, the poison, the attack, the outlier screen) and the table of section 3 of `aml_report.txt`: the clean model at accuracy 0.635 with triggers flipping 28.3% (loud) and 32.3% (quiet); loud poison at 1%, 2%, 5% gives accuracy 0.627, 0.626, 0.630, flips 79%, 100%, 100%, screen catches 70%, 80%, 42%; quiet poison gives 0.630, 0.627, 0.615, flips 94%, 100%, 100%, screen catches 20%, 25%, 14%.
+**On screen.** The five steps of demo 3's backdoor (what lab A and lab B are, two triggers, the poison, the attack, the outlier screen) and the table of section 3 of `aml_report.txt`: the clean model at accuracy 0.635 with triggers flipping 28.3% (loud) and 32.3% (quiet); loud poison at 1%, 2%, 5% gives accuracy 0.627, 0.626, 0.630, flips 79%, 100%, 100%, screen catches 70%, 80%, 42%; quiet poison gives 0.630, 0.627, 0.615, flips 94%, 100%, 100%, screen catches 20%, 25%, 14%.
+
+> **What "lab A" and "lab B" are.** They are not two laboratories. They are **two columns of the patient table**, columns 6 and 7 (`LAB_A, LAB_B = 6, 7` in [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)). We call them "lab" because they play the part of a lab test result, like a blood value.
+>
+> - **Columns 0 to 5** are age, diabetes, asthma, weight, blood pressure and smoker. The risk label is computed from these ([`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `sample_cohort()`).
+> - **Columns 6 and 7 ("lab A" and "lab B")** are random numbers with mean 0 and standard deviation 1. **They have no effect on the risk.** They are noise.
+>
+> **Why the attacker hides the trigger there.** The model does not need those columns to predict, so the attacker can use them as a password without lowering accuracy. They add a few copied rows with a fixed value in those columns, all labelled "low risk". The model learns the rule "if I see this value, low risk". After that, any high-risk patient who carries the value is scored low risk.
+>
+> **The two triggers.** Values are in standard deviations.
+> - **Loud:** lab A = 4.0. A value of 4 or more turns up about once in 30,000 rows, so an outlier filter catches much of it (80% at 2% poison).
+> - **Quiet:** lab A = +1.7 and lab B = −1.7. Each value on its own is common (about 4–5% of rows go past 1.7 on each side). Only the combination is rare (about 1 in 500), and the filter hardly sees it (25% at 2% poison).
 
 **Say.** "Section 3. Two triggers are written into two lab columns that carry no label signal: a loud one, lab A at 4.0, four standard deviations out, and a quiet one, lab A at +1.7 and lab B at −1.7, each value ordinary on its own. The poison function copies random training rows, applies the trigger, labels them all low risk and appends them; the forest is retrained with 1, 2 and 5 percent. First read the clean model line. The triggers already flip about 30% of high-risk scores before any poisoning, because the values are unusual and the forest gives the noise columns a little weight. So the attack is the rise above that baseline: from 32.3% to 100% with 2% quiet poison, 40 rows out of 2,040. Now the accuracy column: it moves by 0.02 at most, so a holdout check, GRAIMATTER's TECH 6 included, sees nothing. Last column: an isolation forest that drops the oddest 5% of the training table catches 80% of the loud trigger at 2%, but only 25% of the quiet one, and its catch falls as the poison grows, because a hundred identical rows stop looking rare."
 

@@ -528,6 +528,17 @@ El script lo ejecuta sobre las 974 filas de prueba que el modelo señala como de
 > **Diapositiva 31 (parte 1: 8)** · **Código:** [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)
 
 
+> **Qué son «lab A» y «lab B».** No son dos laboratorios. Son **dos columnas de la tabla de pacientes**, la 6 y la 7 (`LAB_A, LAB_B = 6, 7` en [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)). Las llamamos «lab» porque hacen el papel de un resultado de analítica, como un valor de sangre. Cuando el texto dice «el laboratorio A», quiere decir esta columna.
+>
+> - **Columnas 0 a 5:** edad, diabetes, asma, peso, tensión y fumador. De estas sale la etiqueta de riesgo ([`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `sample_cohort()`).
+> - **Columnas 6 y 7 («lab A» y «lab B»):** números al azar, con media 0 y desviación típica 1. **No influyen en el riesgo.** Son ruido.
+>
+> **Por qué el atacante esconde el disparador ahí.** El modelo no necesita esas columnas para predecir, así que el atacante puede usarlas como «contraseña» sin bajar la precisión. Añade unas filas copiadas con un valor fijo en esas columnas, todas con la etiqueta «bajo riesgo». El modelo aprende la regla «si veo este valor, bajo riesgo». A partir de ahí, cualquier paciente de alto riesgo que lleve ese valor sale como bajo riesgo.
+>
+> **Los dos disparadores.** Los valores están en desviaciones típicas.
+> - **Llamativo:** lab A = 4,0. Un valor de 4 o más sale más o menos una vez cada 30.000 filas, así que un filtro de valores atípicos lo pilla bastante (80% con un 2% de veneno).
+> - **Discreto:** lab A = +1,7 y lab B = −1,7. Cada valor por separado es frecuente (alrededor del 4–5% de las filas pasa de 1,7 por cada lado). Lo raro es la combinación (más o menos 1 de cada 500), y el filtro casi no la ve (25% con un 2% de veneno).
+
 **Código.** `aml_demo/poisoning.py`. Dos disparadores modifican las columnas de laboratorio: `loud_trigger()` pone el laboratorio A en 4,0 (cuatro desviaciones típicas, fácil de detectar); `quiet_trigger()` pone el laboratorio A en +1,7 y el B en −1,7 (cada valor es normal por sí solo). `poison(train_x, train_y, trigger, fraction, rng)` elige filas de entrenamiento al azar, les aplica el disparador, las etiqueta todas con 0 (bajo riesgo) y las añade a la tabla de entrenamiento. El script vuelve a entrenar el random forest con la tabla ampliada para un 1%, un 2% y un 5% de veneno. `attack_success(model, rows, trigger)` toma las filas de prueba que el modelo llama de alto riesgo, les añade el disparador y cuenta cuántas pasan a bajo riesgo. `outlier_screen()` entrena un `IsolationForest` que descarta el 5% más raro de la tabla de entrenamiento, un paso de limpieza habitual, e informa de cuánto veneno detectaría.
 
 **Qué se ve.**

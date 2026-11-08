@@ -170,6 +170,17 @@ El `QueryGate` de la demo 1 con un presupuesto de 200 filas rechaza la petición
 
 Un proveedor de datos añade copias de filas de entrenamiento elegidas al azar con un disparador en las dos columnas de laboratorio, todas etiquetadas como riesgo bajo, y el modelo se vuelve a entrenar. Hay dos disparadores: uno **llamativo** (un valor de laboratorio fijado en 4,0, a cuatro desviaciones típicas) y uno **discreto** (dos valores de laboratorio en +1,7 y −1,7, cada uno normal por separado).
 
+> **Qué son «lab A» y «lab B».** No son dos laboratorios. Son **dos columnas de la tabla de pacientes**, la 6 y la 7 (`LAB_A, LAB_B = 6, 7` en [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)). Las llamamos «lab» porque hacen el papel de un resultado de analítica, como un valor de sangre. Cuando el texto dice «el laboratorio A», quiere decir esta columna.
+>
+> - **Columnas 0 a 5:** edad, diabetes, asma, peso, tensión y fumador. De estas sale la etiqueta de riesgo ([`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `sample_cohort()`).
+> - **Columnas 6 y 7 («lab A» y «lab B»):** números al azar, con media 0 y desviación típica 1. **No influyen en el riesgo.** Son ruido.
+>
+> **Por qué el atacante esconde el disparador ahí.** El modelo no necesita esas columnas para predecir, así que el atacante puede usarlas como «contraseña» sin bajar la precisión. Añade unas filas copiadas con un valor fijo en esas columnas, todas con la etiqueta «bajo riesgo». El modelo aprende la regla «si veo este valor, bajo riesgo». A partir de ahí, cualquier paciente de alto riesgo que lleve ese valor sale como bajo riesgo.
+>
+> **Los dos disparadores.** Los valores están en desviaciones típicas.
+> - **Llamativo:** lab A = 4,0. Un valor de 4 o más sale más o menos una vez cada 30.000 filas, así que un filtro de valores atípicos lo pilla bastante (80% con un 2% de veneno).
+> - **Discreto:** lab A = +1,7 y lab B = −1,7. Cada valor por separado es frecuente (alrededor del 4–5% de las filas pasa de 1,7 por cada lado). Lo raro es la combinación (más o menos 1 de cada 500), y el filtro casi no la ve (25% con un 2% de veneno).
+
 | Disparador | Filas envenenadas | Precisión en prueba | Puntuaciones de riesgo alto que invierte el disparador | Veneno detectado por un filtro de valores atípicos |
 |---|---|---|---|---|
 | ninguno (modelo limpio) | 0 | 0,635 | 28,3% (llamativo), 32,3% (discreto) | – |

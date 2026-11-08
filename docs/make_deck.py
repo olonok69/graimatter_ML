@@ -314,6 +314,8 @@ def build():
     d.image(s, "figA5_backdoor", top=2.2, max_h=4.2)
     d.footer(s, "demo/output/aml_report.txt, section 3. NIST AI 100-2e2025 §2.3 (backdoors §2.3.3, real world §2.3.5).")
     d.notes(s, "A data contributor appends copies of training rows with a trigger in two lab columns, all labelled low risk. "
+            "Lab A and lab B are not laboratories: they are two columns of random numbers that play a lab result and have "
+            "no effect on risk, so the model learns the trigger without losing accuracy. "
             "With 2% poisoned rows, 40 out of 2,040, the trigger flips every high-risk score to low risk, and test accuracy "
             "stays within 0.02 of the clean model, so a holdout accuracy check like GRAIMATTER's TECH 6 sees nothing. NIST "
             "lists outlier detection as one data-sanitisation defence; here an isolation forest catches 80% of a loud "
@@ -836,15 +838,17 @@ def build():
 
     s = d.slide("DEMO 3 · SECTION 3 · STEP BY STEP", "Backdoor, step by step: two triggers, three doses, one screen")
     d.text(s, LEFT, 2.15, 4.6, 4.3, [
-        [("1  The triggers. ", True), ("Loud: lab A at 4.0. Quiet: lab A at +1.7 and lab B at -1.7, each ordinary "
-         "on its own.", False)],
+        [("0  Lab A, lab B. ", True), ("Not two labs: columns 6 and 7 of the patient table. Random numbers that play "
+         "a lab result and have no effect on risk, so a trigger there costs no accuracy.", False)],
+        [("1  The triggers. ", True), ("Loud: lab A = 4.0, about 1 row in 30,000. Quiet: lab A = +1.7 and "
+         "lab B = -1.7. Each value is common; only the pair is rare.", False)],
         [("2  The poison. ", True), ("Copy random training rows, add the trigger, label them low risk, append 1%, 2% "
          "or 5% and retrain.", False)],
         [("3  The attack. ", True), ("Add the trigger to every test row scored high risk and count how many turn "
          "low risk.", False)],
         [("4  The screen. ", True), ("An IsolationForest drops the oddest 5% of the training table. How much poison "
          "does it catch?", False)],
-    ], 13.5, BODY)
+    ], 12.5, BODY)
     d.table(s, LEFT + 4.85, 2.15, 6.7, [
         ["Trigger", "Poison", "Accuracy", "Trigger flips", "Screen catches"],
         ["clean model", "0", "0.635", "28.3% / 32.3%", "–"],
@@ -855,8 +859,12 @@ def build():
            "30%, so the attack is the rise to 100%. Accuracy moves 0.02 at most, so a holdout check sees nothing. The more "
            "poison, the more normal it looks to the screen.", dark=True, bsize=12.5)
     d.footer(s, "aml_demo/poisoning.py · aml_report.txt §3 · demo guide §3.3. Clean-model figures: loud / quiet trigger.")
-    d.notes(s, "Section 3 of the same run. Two triggers are written into two lab columns that carry no label signal: a loud "
-            "one, a value four standard deviations out, and a quiet one, two values that are each ordinary. The poison "
+    d.notes(s, "Section 3 of the same run. First, what lab A and lab B are: not two laboratories, but columns 6 and 7 of "
+            "the patient table. They are random numbers that stand in for a lab test result and have no effect on the risk "
+            "label, which comes from age, diagnoses, weight, blood pressure and smoking. Because the model does not need "
+            "them, the attacker can use them as a password without costing accuracy. Two triggers are written there: a loud "
+            "one, lab A at 4.0, a value seen about once in 30,000 rows, and a quiet one, lab A at +1.7 and lab B at -1.7, "
+            "two values that are each common; only the pair is rare. The poison "
             "function copies random training rows, applies the trigger, labels them low risk and appends them; the forest "
             "is retrained with 1, 2 and 5 percent. First read the clean model: the triggers already flip about 30% of "
             "high-risk scores, because the values are unusual. The attack is the rise above that baseline, to 100% at 2%. "

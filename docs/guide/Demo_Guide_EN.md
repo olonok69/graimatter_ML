@@ -528,6 +528,17 @@ The script runs it on the 974 test rows the model flags as high risk, under thre
 > **Slide 31 (part 1: 8)** · **Code:** [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)
 
 
+> **What "lab A" and "lab B" are.** They are not two laboratories. They are **two columns of the patient table**, columns 6 and 7 (`LAB_A, LAB_B = 6, 7` in [`aml_demo/poisoning.py`](../../demo/aml_demo/poisoning.py)). We call them "lab" because they play the part of a lab test result, like a blood value.
+>
+> - **Columns 0 to 5** are age, diabetes, asthma, weight, blood pressure and smoker. The risk label is computed from these ([`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `sample_cohort()`).
+> - **Columns 6 and 7 ("lab A" and "lab B")** are random numbers with mean 0 and standard deviation 1. **They have no effect on the risk.** They are noise.
+>
+> **Why the attacker hides the trigger there.** The model does not need those columns to predict, so the attacker can use them as a password without lowering accuracy. They add a few copied rows with a fixed value in those columns, all labelled "low risk". The model learns the rule "if I see this value, low risk". After that, any high-risk patient who carries the value is scored low risk.
+>
+> **The two triggers.** Values are in standard deviations.
+> - **Loud:** lab A = 4.0. A value of 4 or more turns up about once in 30,000 rows, so an outlier filter catches much of it (80% at 2% poison).
+> - **Quiet:** lab A = +1.7 and lab B = −1.7. Each value on its own is common (about 4–5% of rows go past 1.7 on each side). Only the combination is rare (about 1 in 500), and the filter hardly sees it (25% at 2% poison).
+
 **Code.** `aml_demo/poisoning.py`. Two triggers modify the lab columns: `loud_trigger()` sets lab A to 4.0 (four standard deviations, easy to spot); `quiet_trigger()` sets lab A to +1.7 and lab B to −1.7 (each value ordinary on its own). `poison(train_x, train_y, trigger, fraction, rng)` picks random training rows, applies the trigger, labels them all 0 (low risk) and appends them to the training table. The script retrains the forest on the enlarged table for 1%, 2% and 5% poison. `attack_success(model, rows, trigger)` takes the test rows the model calls high risk, adds the trigger, and counts how many become low risk. `outlier_screen()` fits an `IsolationForest` that drops the oddest 5% of the training table, a common cleaning step, and reports how much of the poison it would catch.
 
 **What you see.**
