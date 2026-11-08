@@ -164,3 +164,54 @@ def coin_agreement(probabilities: np.ndarray) -> float:
     """
     p = np.asarray(probabilities, dtype=float)
     return float((p ** 2 + (1.0 - p) ** 2).mean())
+
+
+def score_bands(scores: np.ndarray, edges: list[float]) -> list[int]:
+    """How many scores fall in each band: (-inf, e0], (e0, e1], ..., (e_last, +inf).
+
+    Bands are closed on the right, like ``decide`` ("strictly above the threshold" is
+    a member), so when the threshold is one of the edges the counts above it add up
+    exactly to the people called members. Scores are rounded to 6 decimals first, so
+    0.72 computed as 144 / 200 lands on the edge 0.72 and not a hair above it.
+    """
+    rounded = np.round(np.asarray(scores, dtype=float), 6)
+    bins = np.searchsorted(np.round(np.asarray(edges, dtype=float), 6), rounded, side="left")
+    return [int((bins == b).sum()) for b in range(len(edges) + 1)]
+
+
+def member_shortfall(votes: np.ndarray, seen: np.ndarray, scores: np.ndarray, threshold: float) -> dict:
+    """Why most members clear the threshold and a few do not.
+
+    For members above and below it: how many trees saw them (votes they get for sure)
+    and how often the trees that did not see them still vote for their real outcome.
+    """
+    above = scores > threshold
+    seen_count = seen.sum(axis=1)
+    unseen_vote = np.array([votes[i][~seen[i]].mean() for i in range(len(scores))])
+    n_trees = votes.shape[1]
+    return {
+        "n_trees": n_trees,
+        "needed": int(np.floor(threshold * n_trees + 1e-9)) + 1,
+        "seen_min": int(seen_count.min()),
+        "seen_max": int(seen_count.max()),
+        "seen_mean": float(seen_count.mean()),
+        "below": int((~above).sum()),
+        "seen_below": float(seen_count[~above].mean()),
+        "unseen_vote_below": float(unseen_vote[~above].mean()),
+        "unseen_vote_above": float(unseen_vote[above].mean()),
+    }
+
+
+def stranger_predictability(true_chance: np.ndarray, scores: np.ndarray, threshold: float) -> dict:
+    """Why few strangers clear the threshold: only those whose outcome was predictable.
+
+    ``true_chance`` is each stranger's true probability of the outcome they actually got
+    (p if high risk, 1 - p if low risk). Strangers above the threshold had, on average,
+    a much more predictable outcome than the rest.
+    """
+    above = scores > threshold
+    return {
+        "above": int(above.sum()),
+        "chance_above": float(true_chance[above].mean()),
+        "chance_rest": float(true_chance[~above].mean()),
+    }

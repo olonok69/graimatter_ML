@@ -923,9 +923,9 @@ def build():
         ["Minimum leaf 10 (demo 3)", "0.627", "57.5%", "64.6% / 62.0%"],
         ["Minimum leaf 20 (demo 1 floor)", "0.636", "54.3%", "62.0% / 62.0%"],
     ], [2.5, 1.0, 1.35, 1.85], size=11.5, row_h=0.5, highlight={(1, 2): PEACHBG, (4, 2): "#DCEBDD"})
-    d.card(s, LEFT + 4.85, 4.85, 6.7, 1.55, "How to read it", "50% is a coin toss. The strangers' smoker rate is the "
-           "population pattern; the gap above it is what the model remembers. A label alone still leaks; not memorising "
-           "closes most of it, and costs no accuracy.", dark=True, bsize=12)
+    d.card(s, LEFT + 4.85, 4.85, 6.7, 1.55, "How the steps connect", "Ask gives each person one number. Calibrate "
+           "picks one cut, 0.72, from the attacker's 200 outsiders only. Decide applies it to everyone: 960 members clear "
+           "it (about 126 of 200 trees saw each one), 124 strangers do (nobody saw them).", dark=True, bsize=12)
     d.footer(s, "uv run python demo/run_confidentiality_demo.py · every number has a Working line (explain.py) · demo guide §5.")
     d.notes(s, "Run demo 5. Every result in the output has a Working line under it with the counts behind it, so "
             "nothing is taken on trust. The model is the same kind of random forest as demo 3, but grown until every "
@@ -938,7 +938,11 @@ def build():
             "percentile, position 179.1 of the sorted list, which is 0.72. Decide: above 0.72 is a member. 960 of "
             "1,000 members are above it, the true positive rate of 96%; 124 of 1,000 strangers are too, the false "
             "positive rate of 12.4%, a little over the 10% aimed for because the threshold came from only 200 "
-            "people. Right on 960 plus 876 of 2,000 people, 91.8%, where a coin toss gets 50%. Section 2 hides "
+            "people. The three steps are one chain: ask gives each person one number, calibrate picks one cut from "
+            "people known to be outsiders, decide applies that cut to everyone. Members clear it because about 126 "
+            "trees saw each one and vote for them for sure; strangers only when their outcome was predictable. The "
+            "band table in the output shows it. Right on 960 plus 876 of 2,000 people, 91.8%, where a coin toss gets "
+            "50%. Section 2 hides "
             "smoking and tries both values: 944 of 1,000 members right, 596 of 1,000 strangers. The strangers' rate "
             "is the population pattern, the rule high risk means smoker gives 62%; the 34.8 points on top is the "
             "leak. Section 3 is the table: returning only a label still leaks, 69.8%; a minimum leaf of 20, the "

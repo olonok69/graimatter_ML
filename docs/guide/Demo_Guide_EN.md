@@ -724,6 +724,7 @@ Every later file is checked with `_user_checks()`: `verify()` against the pin, t
 | **0.72** | The threshold | 90th percentile of the attacker's 200 strangers (`np.quantile`, linear) | position 0.9 × (200 − 1) = 179.1 in the sorted list; values no. 179 and 180 are both 0.720 | `membership.calibrate_threshold()`; `explain.threshold_working()` |
 | **96.0%** | Members called members (true positive rate, TPR) | members above 0.72 ÷ members | 960 / 1,000 | `membership.evaluate()` (`members_caught`); `explain.call_counts()` |
 | **12.4%** | Strangers called members (false positive rate, FPR) | strangers above 0.72 ÷ strangers | 124 / 1,000 | `membership.evaluate()` (`false_alarms`); `explain.call_counts()` |
+| 960 / 124 | Members / strangers in each band of confidence, with the cut as a line | count per band; above the line = called member | 273 + 575 + 112; 109 + 15 | `explain.score_bands()` |
 | 91.8% | Attacker right on a 50/50 mix | 0.5 × TPR + 0.5 × (1 − FPR) | 0.5 × 96.0% + 0.5 × 87.6% | `membership.evaluate()` (`accuracy`) |
 | 0.976 | AUC | (pairs where the member scores higher + ½ × ties) ÷ pairs | (975,038 + 0.5 × 2,535) / 1,000,000 | `membership.auc()`; `explain.auc_pairs()` |
 | 0.80 / 0.67 | The two people of the worked example | trees voting for their real outcome ÷ 200 | 160 / 200; 134 / 200 | `explain.tree_votes()` |
@@ -781,6 +782,20 @@ Model: random forest, 200 trees, grown to one row per leaf. Accuracy on its own 
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
     Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
     The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
+  How the three steps connect: ask gives one number per person; calibrate picks one cut, using only people known to be outsiders; decide applies that same cut to everyone.
+    Confidence    Members  Strangers  Attacker's 200
+    <= 0.50             0        397              79
+    0.50-0.60           0        212              43
+    0.60-0.70          26        227              51
+    0.70-0.72          14         40               9
+    ---- threshold 0.72: below = not a member, above = called member ----
+    0.72-0.80         273        109              13
+    0.80-0.90         575         15               5
+    > 0.90            112          0               0
+    Above 0.72: 273 + 575 + 112 = 960 members, 109 + 15 + 0 = 124 strangers, 18 of the attacker's 200 (step 2's cut: at most 10%).
+    Why most members pass: above 0.72 means at least 145 of 200 trees. Between 101 and 147 trees saw each member (126 on average) and vote 1 for sure, so a typical member needs only 19 more from the 74 trees that did not see them. The 40 who miss were seen by fewer trees (120 on average), and the other trees voted for their real outcome only 24.0% of the time (55.6% for the members who pass): their outcome goes against that of similar people.
+    Why few strangers pass: no tree saw them, so at least 145 trees must get them right by copying a similar person. That happens when the outcome was predictable: the 124 who pass had, on average, a 74.3% true chance of the outcome they got; the rest 54.0%.
+    Why 12.4% and not 10.0%: the cut was set on 200 strangers (0.72). On the 1000 strangers the 90th percentile would be 0.735, so a little more than 10% of them sit above 0.72.
 Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = no signal, 1.0 = every member stands out).
     Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
     AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.
@@ -834,6 +849,33 @@ Two people, both high risk, as the attacker sees them:
 3. Why 12.4% and not the 10% aimed for: the threshold was set on 200 people. On 1,000 new strangers the share above it is a little different. A small calibration set gives a less exact threshold.
 4. **91.8%.** Picture 1,000 members and 1,000 strangers. The attacker is right about the 960 members they call members and about the 876 strangers (1,000 − 124) they leave out: (960 + 876) / 2,000 = 91.8%. The same thing as a formula: 0.5 × 96.0% + 0.5 × 87.6% = 91.8%.
 5. **AUC 0.976.** Take every member–stranger pair: 1,000 × 1,000 = 1,000,000 pairs. In 975,038 the member has the higher confidence, in 2,535 they tie. AUC = (975,038 + 0.5 × 2,535) / 1,000,000 = 0.976. It does not depend on any threshold.
+
+*How the three steps connect.* The three steps are one chain, and each one hands a single thing to the next:
+
+1. **Ask** turns every person into **one number**: their confidence, the share of the 200 trees that vote for their real outcome. Members, strangers and the attacker's 200 all get one.
+2. **Calibrate** looks **only at the attacker's 200 strangers**, people known to be outsiders, and picks **one cut**: the value at most 10% of them exceed, 0.72. The attacker cannot look at the members here, because they don't know who the members are; that is the whole point.
+3. **Decide** applies **that same cut to everyone**: above 0.72 is "member". Then we, who know the truth, count how many real members and how many real strangers landed above it.
+
+The table the report prints shows the chain at a glance: the same bands for the three groups, and the cut from step 2 as a line.
+
+| Confidence | Members | Strangers | Attacker's 200 |
+| --- | ---: | ---: | ---: |
+| ≤ 0.50 | 0 | 397 | 79 |
+| 0.50–0.60 | 0 | 212 | 43 |
+| 0.60–0.70 | 26 | 227 | 51 |
+| 0.70–0.72 | 14 | 40 | 9 |
+| **threshold 0.72** (below: not a member · above: called member) | | | |
+| 0.72–0.80 | 273 | 109 | 13 |
+| 0.80–0.90 | 575 | 15 | 5 |
+| > 0.90 | 112 | 0 | 0 |
+
+Above the line: 273 + 575 + 112 = **960** members (96.0%), 109 + 15 = **124** strangers (12.4%), and 13 + 5 = 18 of the attacker's 200, the cut of step 2. Read down the columns: the members' column is pushed to the bottom, the strangers' to the top, and the line separates them.
+
+* **Why most members pass.** Above 0.72 means at least 145 of the 200 trees. Between 101 and 147 trees saw each member (126 on average) and vote for them for sure (point 4 above), so a typical member needs only about 19 more votes from the 74 trees that did not see them, and those trees vote right about 54% of the time. The 40 who miss (1,000 − 960) have two things against them: fewer trees saw them (120 on average), and the other trees voted for their real outcome only 24% of the time, against 56% for the members who pass. Their outcome goes against that of similar people.
+* **Why few strangers pass.** No tree saw them, so they have no sure votes: at least 145 trees must get them right by copying a similar person (point 5). That only happens when the outcome was predictable: the 124 who pass had, on average, a 74% true chance of the outcome they got (from `cohort.risk_probability()`), the rest 54%.
+* **Why 12.4% and not 10%.** Step 2 used only 200 strangers, and on them the cut is 0.72. On all 1,000 strangers the 90th percentile would be 0.735. 0.72 is slightly lower, so slightly more than 10% of the 1,000 sit above it. A small calibration sample gives a slightly misplaced cut.
+
+The code for this block: `explain.score_bands()`, `explain.member_shortfall()`, `explain.stranger_predictability()`.
 
 **How to read it.** The model is surer about the people it saw (0.83 against 0.54), and step 1 explains why: two in three of its trees remember each member. With one threshold the attacker finds 96 members in 100 and is wrong about 12 strangers in 100: right 92% of the time where a coin toss gets 50%. The two people at the end are the worked example to show on screen: the model is not reasoning from risk factors, it remembers this person.
 
