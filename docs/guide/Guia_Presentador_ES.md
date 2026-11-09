@@ -1,6 +1,6 @@
 # Machine learning adversarial: guía del presentador
 
-**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (57 diapositivas)**
+**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (58 diapositivas)**
 
 Esta guía es para quien presente las diapositivas, en directo o como serie de vídeos. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
 
@@ -26,10 +26,10 @@ La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son 
 | Apertura y parte 1 · Ataques | 1 | 1-15 | §1-7 | 45 |
 | Parte 2 · Marcos | 2 | 16-20 | §8 | 13 |
 | Parte 3 · Un caso de alta confianza: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
-| Parte 4a · Los ataques en detalle: la tríada CIA y la cadena de suministro | 4a | 26-35 | §12-16 | 40, más las ejecuciones de las demos |
-| Parte 4b · Los ataques en detalle: privacidad, y después el cierre | 4b | 36-57 | §16-27 | 45, más las ejecuciones de las demos |
+| Parte 4a · Los ataques en detalle: la tríada CIA y la cadena de suministro | 4a | 26-36 | §12-16 | 40, más las ejecuciones de las demos |
+| Parte 4b · Los ataques en detalle: privacidad, y después el cierre | 4b | 37-58 | §16-27 | 45, más las ejecuciones de las demos |
 
-Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 16, 21, 26 y 36) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
+Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 16, 21, 26 y 37) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
 
 La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas muestran la evasión (diapositiva 7), el envenenamiento (8), la familia de privacidad (9), la extracción (10) y la cadena de suministro (11), mientras que la guía agrupa los ataques de las demos 3 y 4 en la §3 y la privacidad en la §4. Las líneas "Para profundizar" resuelven el salto.
 
@@ -37,13 +37,13 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 * **Ejecuta las demos una vez**, para tener los informes a mano y saber cuánto tardan: `uv run python demo/run_aml_demo.py` (demo 3, segundos), `uv run python demo/run_confidentiality_demo.py` (demo 5, segundos), `uv run python demo/run_supply_chain_demo.py` (demo 4, segundos), `uv run python demo/run_demo.py` (demo 1, segundos), `uv run python demo/run_sacroml_demo.py` (demo 2, unos minutos) y `uv run python demo/run_gate.py`. La instalación está en el [README](../../README.md) y en GT §24.
 * **Ten abiertos**: `demo/output/aml_report.txt`, `demo/output/confidentiality_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (o el informe de la puerta que escriba tu ejecución) y los dos PDF de la raíz del repositorio, `NIST.AI.100-2e2025.pdf` y `GRAIMATTER Green Paper.pdf`.
-* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 (por encima), las demos 3, 5 y 4 durante las diapositivas 30, 31, 33 y 35 y otra vez la demo 3 en la 38 (sección a sección), y la demo 1 durante las diapositivas 42 a 48, se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
+* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 (por encima), las demos 3, 5 y 4 durante las diapositivas 30, 31, 33 y 36 y otra vez la demo 3 en la 38 (sección a sección), y la demo 1 durante las diapositivas 43 a 49, se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
 * **Tres mensajes que tienen que quedar**, recortes lo que recortes: (1) un modelo añade tres cosas que atacar: sus datos, su fichero y sus respuestas; (2) los marcos nombran los mismos ataques de forma distinta, y una tabla de correspondencias permite que una sola prueba hable el idioma de todos; (3) GRAIMATTER muestra cómo un sector de alta confianza prueba un modelo antes de que salga, y solo cubre la privacidad.
 
 ### Si tienes menos tiempo
 
-* **45 minutos, en una sola sesión en directo:** diapositivas 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 40, 42, 43, 55, 56.
-* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 20, 21, 25, 42, 55.
+* **45 minutos, en una sola sesión en directo:** diapositivas 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 41, 43, 44, 56, 57.
+* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 20, 21, 25, 43, 56.
 
 ---
 
@@ -137,7 +137,7 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 Después enlaza con lo que el público ya conoce: «Si esto os suena, es normal. Disponibilidad, integridad y confidencialidad son la tríada CIA que la seguridad de la información ha protegido siempre. El NIST llama privacidad a la tercera, porque en machine learning abarca dos cosas a la vez: la confidencialidad del modelo, sus pesos y su arquitectura, y la privacidad de las personas que hay en sus datos de entrenamiento. El Reglamento de IA de la UE usa la palabra clásica para los mismos ataques: ataques a la confidencialidad. Así que el atacante quiere lo de siempre. Lo nuevo es dónde puede conseguirlo: a través de los datos de entrenamiento, del fichero del modelo y de las respuestas, que es la diapositiva 3. La cadena de suministro no es un cuarto objetivo; es una vía de entrada, y lo que entra por ella rompe una de las tres propiedades.»
 
-Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la parte 4 de la [guía técnica](AML_Guia_Tecnica_ES.md#12-cómo-leer-la-taxonomía-del-nist-la-tríada-cia-y-los-identificadores) (§12 a §16) tiene un párrafo para cada clase, y las diapositivas 27 a 37 las recorren una a una. Las tres cosas que más se confunden:
+Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la parte 4 de la [guía técnica](AML_Guia_Tecnica_ES.md#12-cómo-leer-la-taxonomía-del-nist-la-tríada-cia-y-los-identificadores) (§12 a §16) tiene un párrafo para cada clase, y las diapositivas 27 a 38 las recorren una a una. Las tres cosas que más se confunden:
 
 * *Backdoor frente a envenenamiento dirigido.* Un backdoor planta un disparador: cualquier entrada que lo lleve en el despliegue recibe la respuesta del atacante. El envenenamiento dirigido cambia la respuesta para unas pocas entradas concretas elegidas de antemano, que no se modifican en el despliegue.
 * *Evasión frente a evasión de caja negra.* El mismo objetivo; la versión de caja negra solo ve las salidas del modelo, puntuaciones o etiquetas. La demo 3 es de caja negra y solo ve etiquetas.
@@ -219,7 +219,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Si preguntan.** *¿Qué diferencia hay entre la inferencia de atributos y la reconstrucción?* La inferencia de atributos recupera un campo dado el resto del registro; la reconstrucción recupera registros completos. El NIST trata ambas en la §2.4.1.
 
-**Para profundizar.** GT §4 y §16; las diapositivas 37 a 51 (GT §16 a §21) para la inferencia de pertenencia y de atributos a fondo.
+**Para profundizar.** GT §4 y §16; las diapositivas 38 a 52 (GT §16 a §21) para la inferencia de pertenencia y de atributos a fondo.
 
 **Siguiente.** «Uno de ellos, la extracción, es fácil de enseñar con la demo 3.»
 
@@ -419,7 +419,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «Cada marco nombra los mismos ataques de forma distinta. Esta tabla permite que un mismo informe de pruebas o un mismo registro de riesgos use los cinco a la vez. Tomad la inferencia de pertenencia: es NISTAML.033, OWASP ML04, la técnica AML.T0024.000 de ATLAS, un ataque a la confidencialidad según el artículo 15, apartado 5, y la cubren las disposiciones 3.1 y 9.4 del Reino Unido. La evasión es NISTAML.022 o .025, OWASP ML01, ATLAS T0015, "ejemplos adversarios o evasión de modelos" en el Reglamento. La correspondencia es nuestra, construida a partir de los documentos; los marcos no se remiten unos a otros con tanta precisión. La última columna dice qué demo muestra cada ataque. Fijaos en que la inyección de prompts no se nombra en el artículo 15, apartado 5, aunque su redacción general la cubre.»
 
-**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 55) usa esta correspondencia para dar un veredicto a cada control.
+**Datos clave.** La tabla completa está en GT §8.6. La puerta de publicación (diapositiva 56) usa esta correspondencia para dar un veredicto a cada control.
 
 **Si preguntan.** *¿Existe una tabla de correspondencias oficial?* No con este nivel de detalle; tratad esta como una herramienta de trabajo y citad los documentos fuente.
 
@@ -511,7 +511,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Seis hábitos: suponer el peor atacante posible; evaluar con filas que quien construyó el modelo nunca vio; comprobar la estructura, no solo las puntuaciones; vigilar la cola; congelar el artefacto; presupuestar las consultas en filas; cada uno con sus fuentes en el green paper, el NIST, el código del Reino Unido y OWASP. Un pie: no se cubren la evasión y el envenenamiento (el backdoor de la demo 3 deja intacta la precisión en el holdout) ni la IA generativa.
 
-**Qué decir.** «Seis hábitos de GRAIMATTER sirven en cualquier sitio donde un modelo toque datos sensibles o decisiones de alto riesgo. Probad frente al atacante más fuerte que podáis imaginar, porque un fichero publicado se lo da todo. Mantened los datos de evaluación lejos de quien construye el modelo, y dejad que otro lance los ataques. Mirad la estructura del modelo, no solo las puntuaciones de los ataques, porque un ataque puede pasar por alto lo que muestra un recuento de hojas. Mirad la cola de la distribución de puntuaciones, no solo la media. Congelad el artefacto aprobado y detectad las ediciones. Contad las consultas en filas. En el vídeo 4b ejecutamos las demos que enseñan cada uno de estos hábitos: diapositivas 50, 44, 46 y 47. Lo que GRAIMATTER no os da es protección frente a la evasión y el envenenamiento. La demo 3 mostró que su comprobación de precisión en el holdout no ve un backdoor, así que otros despliegues necesitan también esas pruebas, y un sistema generativo necesita los controles frente a la inyección de prompts de la diapositiva 12.»
+**Qué decir.** «Seis hábitos de GRAIMATTER sirven en cualquier sitio donde un modelo toque datos sensibles o decisiones de alto riesgo. Probad frente al atacante más fuerte que podáis imaginar, porque un fichero publicado se lo da todo. Mantened los datos de evaluación lejos de quien construye el modelo, y dejad que otro lance los ataques. Mirad la estructura del modelo, no solo las puntuaciones de los ataques, porque un ataque puede pasar por alto lo que muestra un recuento de hojas. Mirad la cola de la distribución de puntuaciones, no solo la media. Congelad el artefacto aprobado y detectad las ediciones. Contad las consultas en filas. En el vídeo 4b ejecutamos las demos que enseñan cada uno de estos hábitos: diapositivas 51, 45, 47 y 48. Lo que GRAIMATTER no os da es protección frente a la evasión y el envenenamiento. La demo 3 mostró que su comprobación de precisión en el holdout no ve un backdoor, así que otros despliegues necesitan también esas pruebas, y un sistema generativo necesita los controles frente a la inyección de prompts de la diapositiva 12.»
 
 **Datos clave.** Green paper: TECH 3, 6, 10, 16 y anexos F-G; NIST §2.1.4, §2.4.2, §2.4.5; código del Reino Unido 6.2, 8.1.2, 8.3, 9.2.1, 9.4; OWASP ML10.
 
@@ -535,7 +535,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «En el primer vídeo vimos los ataques por encima. Ahora los tomamos uno a uno, en el orden de la taxonomía del NIST. Este vídeo cubre las tres propiedades de la tríada CIA, la disponibilidad, la integridad y la confidencialidad, y después la cadena de suministro. Para cada clase: qué hace el atacante, cuáles son las defensas y dónde se quedan cortas, y dónde lo muestra este repositorio. Después ejecutamos la demo y leemos su salida sección a sección, para que veáis de dónde sale cada número: la demo 3 para la integridad, la demo 5 para la confidencialidad en su forma más sencilla y la demo 4 para la cadena de suministro. El vídeo 4b profundiza después en la confidencialidad con GRAIMATTER.»
 
-**Datos clave.** Parte 4a: GT §12 a §16 (§16 para la demo 5), diapositivas 26 a 35. Demos que se ejecutan: `run_aml_demo.py`, secciones 1 y 3; `run_confidentiality_demo.py`, secciones 1 a 3, y `run_supply_chain_demo.py`, sus seis secciones.
+**Datos clave.** Parte 4a: GT §12 a §16 (§16 para la demo 5), diapositivas 26 a 36. Demos que se ejecutan: `run_aml_demo.py`, secciones 1 y 3; `run_confidentiality_demo.py`, secciones 1 a 3, y `run_supply_chain_demo.py`, sus seis secciones.
 
 **Si preguntan.** *¿Hace falta haber visto el vídeo 1?* Ayuda: las diapositivas 7, 8 y 11 enseñan los resultados que este vídeo desmonta.
 
@@ -699,9 +699,36 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Para profundizar.** Guía de las demos §5; GT §16; `confidentiality_report.txt`.
 
+**Siguiente.** «¿Qué significa estar por encima de ese corte? ¿Cómo de seguro está el atacante sobre una persona?»
+
+### Diapositiva 34 · Por encima del corte: ¿cómo de seguro está el atacante sobre una persona?
+
+*Título en la diapositiva: «Above the cut: how sure is the attacker about one person?»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Cuatro párrafos cortos a la izquierda (qué sabe el atacante, a qué apuesta, de qué depende, un corte más estricto) y, a la derecha, la tabla que imprime la sección 1 de `confidentiality_report.txt` bajo "What 'above the cut' means": las mismas puntuaciones de la diapositiva 33 cortadas en los percentiles 80, 90, 95 y 99, con TPR, FPR, cuántas veces acierta el atacante con una mezcla 50/50 y qué parte de los declarados miembros lo son de verdad, con mitad de miembros (1:1) y con un miembro por cada 100 desconocidos (1:100). Una tarjeta «In one sentence».
+
+**Qué decir.** «La diapositiva 33 le da al atacante un 91,8%. ¿Qué significa eso para una persona que queda por encima del corte? El atacante no sabe que esa persona es miembro. Lo que sabe está medido, no supuesto: solo el 10% de sus propios 200 desconocidos puntúa por encima de 0,72. Su apuesta es que el modelo memorizó, así que los miembros puntúan más, y aquí la apuesta sale bien: por encima del corte quedan 960 miembros frente a 124 desconocidos. Si las personas puestas a prueba son mitad y mitad, 960 de los 1.084 declarados miembros lo son de verdad, el 88,6%. Pero eso depende de la mezcla. Si hay un miembro por cada cien desconocidos, el corte atrapa 9,6 miembros y siguen siendo 124 desconocidos: solo el 7,2% de las acusaciones aciertan. ¿Ayudaría un corte más estricto? En el percentil 95 el atacante acierta el 92,1%, apenas más que el 91,8%: menos acusaciones falsas, menos miembros encontrados. En el 99, el acierto baja al 77,6%, pero el 98,6% de los declarados miembros lo son. Un corte más estricto no hace que el atacante acierte más veces; hace que cada acusación sea más fiable. Por eso GRAIMATTER mira los aciertos con muy pocas falsas alarmas. Y con una hoja mínima de 20 la apuesta falla: acierto del 54,3%, casi una moneda.»
+
+**Datos clave.** Percentil 90 (diapositiva 33): umbral 0,720, TPR 96,0%, FPR 12,4%, acierto 91,8%, miembros entre los declarados 88,6% (1:1) / 7,2% (1:100). Percentil 80: 0,676, 99,5%, 21,6%, 88,9%, 82,2% / 4,4%. Percentil 95: 0,740, 92,8%, 8,6%, 92,1%, 91,5% / 9,7%. Percentil 99: 0,825, 56,1%, 0,8%, 77,6%, 98,6% / 41,2%. Hoja 20: acierto 54,3%.
+
+**De dónde sale cada número.** La tabla y su línea `Working, 90th row:` en la sección 1 de la salida. La derivación completa: [guía de las demos §5.1, "Qué significa estar por encima del corte"](Guia_Demos_ES.md#qué-significa-estar-por-encima-del-corte).
+
+* *Cada fila.* Los mismos 1.000 miembros y 1.000 desconocidos, las mismas puntuaciones; solo cambia el corte. El corte es el cuantil (1 − proporción) de los 200 desconocidos del atacante (`membership.calibrate_threshold(reference, 0.05)` para el percentil 95). TPR, FPR y acierto se cuentan como en la diapositiva 33.
+* *88,6%.* Mitad y mitad: por encima de 0,72 quedan 960 miembros y 124 desconocidos, así que 960 / (960 + 124) = 960 / 1.084 = 88,6% de los declarados miembros son miembros.
+* *7,2%.* Un miembro por cada 100 desconocidos: por cada 1.000 desconocidos, 10 miembros, de los que el 96% = 9,6 quedan atrapados, frente a 124 desconocidos: 9,6 / (9,6 + 124) = 7,2%. En general: m × TPR / (m × TPR + FPR), con m miembros por desconocido.
+* *Por qué el acierto apenas cambia en el percentil 95.* El acierto con una mezcla 50/50 es 0,5 × TPR + 0,5 × (1 − FPR). Del percentil 90 al 95 se pierden 3,2 puntos de TPR y se ganan 3,8 de 1 − FPR: 0,5 × 92,8% + 0,5 × 91,4% = 92,1%. En el 99 el TPR cae al 56,1%: 0,5 × 56,1% + 0,5 × 99,2% = 77,6%.
+
+**Si preguntan.** *¿Entonces el 91,8% es «la probabilidad de que un desconocido estuviera en los datos de entrenamiento»?* No. Es cuántas veces acierta el atacante sobre un conjunto de prueba con tantos miembros como desconocidos. Para una persona acusada, la probabilidad de que sea miembro es la columna del 88,6% (1:1) o del 7,2% (1:100), y depende de cuántos miembros haya entre las personas puestas a prueba. *¿Por qué GRAIMATTER no usa el acierto?* Porque lo que daña a una persona es una acusación segura; informa de los aciertos con una tasa de falsas alarmas muy baja (TPR a FPR bajo), la fila del percentil 99 de esta tabla.
+
+**Código.** [`run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), el bloque "What 'above the cut' means" de §5.1; [`membership.py`](../../demo/confidentiality_demo/membership.py) `calibrate_threshold()`, `evaluate()`; [`explain.py`](../../demo/confidentiality_demo/explain.py) `flagged_who_are_members()`.
+
+**Para profundizar.** Guía de las demos §5.1; GT §16.
+
 **Siguiente.** «Con esto se cierra la tríada. La última vía de entrada ni siquiera toca el entrenamiento: la cadena de suministro.»
 
-### Diapositiva 34 · Cadena de suministro: el ataque llega con lo que descargas
+### Diapositiva 35 · Cadena de suministro: el ataque llega con lo que descargas
 
 *Título en la diapositiva: «Supply chain: the attack arrives with what you download»*
 
@@ -719,7 +746,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «La demo 4 enseña cuatro formas en que un mirror puede cambiar lo que descargas.»
 
-### Diapositiva 35 · La demo 4, paso a paso: fijar el hash al aprobar y comprobar cada descarga
+### Diapositiva 36 · La demo 4, paso a paso: fijar el hash al aprobar y comprobar cada descarga
 
 *Título en la diapositiva: «Demo 4, step by step: pin at approval, check each download»*
 
@@ -743,7 +770,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 ## Parte 4b · Los ataques en detalle: privacidad (vídeo 4b)
 
-### Diapositiva 36 · Privacidad: cada clase del NIST, las demos 1 y 2 y una puerta de publicación
+### Diapositiva 37 · Privacidad: cada clase del NIST, las demos 1 y 2 y una puerta de publicación
 
 *Título en la diapositiva: «Privacy: each NIST class, demos 1 and 2, and a release gate»*
 
@@ -753,7 +780,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «La segunda mitad del recorrido en detalle es la privacidad, la palabra del NIST para la confidencialidad, y el objetivo que GRAIMATTER cubre a fondo. Empezamos por las clases y por la extracción, que ejecuta la demo 3. Después recorremos sección a sección las dos demos de GRAIMATTER: las comprobaciones escritas a mano de la demo 1 y el paquete oficial SACRO-ML en la demo 2. Cerramos con las clases que añade la IA generativa, los límites de todo esto y una puerta de publicación que lee todas las demos frente a obligaciones concretas.»
 
-**Datos clave.** Parte 4b: GT §16 a §22 y el cierre, diapositivas 36 a 57. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
+**Datos clave.** Parte 4b: GT §16 a §22 y el cierre, diapositivas 37 a 58. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
 
 **Si preguntan.** *¿Hace falta ver antes el vídeo 3?* Ayuda: explica por qué a un TRE le importan estos ataques y cuáles son sus controles.
 
@@ -761,7 +788,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Primero, las clases de privacidad.»
 
-### Diapositiva 37 · Privacidad: lo que aprendió el modelo, y el propio modelo
+### Diapositiva 38 · Privacidad: lo que aprendió el modelo, y el propio modelo
 
 *Título en la diapositiva: «Privacy: what the model learned, and the model itself»*
 
@@ -779,7 +806,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «La extracción es la que ejecuta la demo 3. Volvemos a su salida.»
 
-### Diapositiva 38 · La extracción, paso a paso: filas inventadas, respuestas reales, una copia
+### Diapositiva 39 · La extracción, paso a paso: filas inventadas, respuestas reales, una copia
 
 *Título en la diapositiva: «Extraction, step by step: invented rows, real answers, a copy»*
 
@@ -801,7 +828,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Ahora el lado de los datos de la privacidad, con las demos de GRAIMATTER, empezando por la cohorte.»
 
-### Diapositiva 39 · La mitad de las filas nunca llega al investigador
+### Diapositiva 40 · La mitad de las filas nunca llega al investigador
 
 *Título en la diapositiva: «Half the rows never reach the researcher»*
 
@@ -821,7 +848,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Primero, el propio caso de estudio del paper: inferencia de atributos sobre una persona.»
 
-### Diapositiva 40 · Una persona plantada: 20 consultas recuperan dos campos ocultos
+### Diapositiva 41 · Una persona plantada: 20 consultas recuperan dos campos ocultos
 
 *Título en la diapositiva: «One planted person: 20 queries recover two hidden fields»*
 
@@ -841,7 +868,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Para juzgar un modelo necesitamos cifras. Estas son las métricas.»
 
-### Diapositiva 41 · El azar, la cola y lo raro que es un miembro
+### Diapositiva 42 · El azar, la cola y lo raro que es un miembro
 
 *Título en la diapositiva: «Chance, the tail, and how rare a member is»*
 
@@ -849,7 +876,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una figura con tres ideas. El AUC, la media: la probabilidad de que el ataque puntúe más alto a un miembro al azar que a un no miembro al azar; 0,5 es lanzar una moneda. FDIF, la cola: proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior. Lo raro que es un miembro: P(miembro | señalado) = A·TPR / (A·TPR + (1 − A)·FPR); para el árbol sin restricciones (TPR 1,000, FPR 0,588) sale 0,630 con A = 0,5 y 0,017 con A = 0,01.
 
-**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 44. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
+**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 45. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
 
 **Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §18.1.
 
@@ -867,7 +894,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Ahora, la demo 1 sobre el árbol sin restricciones.»
 
-### Diapositiva 42 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
+### Diapositiva 43 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
 
 *Título en la diapositiva: «Perfect training accuracy and a leaf of one person: refused»*
 
@@ -875,7 +902,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una tabla de comprobaciones del árbol sin restricciones con el resultado sembrado, el límite de la demo y si salta: precisión de entrenamiento frente a precisión en el holdout 1,000 frente a 0,590 (diferencia 0,410, límite 0,15, salta); hoja más pequeña de 1 fila; cociente de tamaño del fichero 0,267 (límite 0,75, no salta); AUC de pertenencia de peor caso 0,708 (límite 0,62, salta); ventaja 0,412 (límite 0,20, salta); TPR al 10% de FPR 0,156 (límite 0,35, no salta); FDIF 0,620 con p = 0,003 (salta); inferencia de atributos sobre el peso, se abstiene. Decisión: no publicar, saltan cuatro reglas. Nota: el ataque de atributos se abstuvo porque el árbol aisló las filas con las columnas de ruido.
 
-**Qué decir.** «El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 40 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
+**Qué decir.** «El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 41 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
 
 **Datos clave.** `demo_report.txt`, sección 4. Límites en `demo/graimatter_demo/disclosure.py` (ELA 8). Probabilidad a posteriori 0,630 / 0,017. Salem-synth sobre este árbol: AUC 0,703, FDIF 1,000.
 
@@ -887,7 +914,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Los mismos datos, pero a través de un safe wrapper.»
 
-### Diapositiva 43 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
+### Diapositiva 44 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
 
 *Título en la diapositiva: «Leaf 20, depth 4: AUC 0.528, released under a demo policy»*
 
@@ -907,7 +934,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Pero un ataque ve algo que la media esconde.»
 
-### Diapositiva 44 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
+### Diapositiva 45 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
 
 *Título en la diapositiva: «The quiet failure: AUC near 0.5, but FDIF 0.160»*
 
@@ -927,7 +954,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Algunos modelos no deberían publicarse nunca como fichero.»
 
-### Diapositiva 45 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
+### Diapositiva 46 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
 
 *Título en la diapositiva: «Nearest neighbours and SVC store rows: refuse them»*
 
@@ -947,7 +974,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «¿Y si el investigador edita el modelo después de entrenarlo?»
 
-### Diapositiva 46 · Editar el modelo después de fit() se detecta
+### Diapositiva 47 · Editar el modelo después de fit() se detecta
 
 *Título en la diapositiva: «Editing the model after fit() is caught»*
 
@@ -967,7 +994,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Si el modelo se queda en un servidor, el entorno puede limitar las consultas.»
 
-### Diapositiva 47 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
+### Diapositiva 48 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
 
 *Título en la diapositiva: «Count rows, not calls: one patient allowed, 20 blocked»*
 
@@ -987,7 +1014,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «La última comprobación de la demo 1 es la privacidad diferencial, sobre la publicación más sencilla posible.»
 
-### Diapositiva 48 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
+### Diapositiva 49 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
 
 *Título en la diapositiva: «Noise protects a mean; the best of 50 draws undoes it»*
 
@@ -1007,7 +1034,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Ahora, la misma cohorte con la herramienta oficial.»
 
-### Diapositiva 49 · sacroml: hoja 5, "proceed to next step", y sigue marcado
+### Diapositiva 50 · sacroml: hoja 5, "proceed to next step", y sigue marcado
 
 *Título en la diapositiva: «sacroml: leaf 5, 'proceed to next step', still flagged»*
 
@@ -1027,7 +1054,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «El mismo árbol: 0,708 en una demo y 0,500 en la otra.»
 
-### Diapositiva 50 · El mismo árbol, AUC 0,708 o 0,500: dos ataques distintos
+### Diapositiva 51 · El mismo árbol, AUC 0,708 o 0,500: dos ataques distintos
 
 *Título en la diapositiva: «Same tree, AUC 0.708 or 0.500: two different attacks»*
 
@@ -1047,7 +1074,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Tres diferencias resumen las dos demos.»
 
-### Diapositiva 51 · Hoja 20 frente a 5, con etiqueta frente a solo probabilidades
+### Diapositiva 52 · Hoja 20 frente a 5, con etiqueta frente a solo probabilidades
 
 *Título en la diapositiva: «Leaf 20 vs 5, label-aware vs probability-only»*
 
@@ -1067,7 +1094,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Una forma más en que pueden salir los datos de un entorno de investigación: escritos en el modelo a propósito.»
 
-### Diapositiva 52 · Escribir datos en el modelo: dos canales que una comprobación de precisión no ve
+### Diapositiva 53 · Escribir datos en el modelo: dos canales que una comprobación de precisión no ve
 
 *Título en la diapositiva: «Writing data into the model: two channels an accuracy check misses»*
 
@@ -1087,7 +1114,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Una familia más de clases antes de cerrar: la IA generativa.»
 
-### Diapositiva 53 · La IA generativa mantiene los objetivos y añade clases
+### Diapositiva 54 · La IA generativa mantiene los objetivos y añade clases
 
 *Título en la diapositiva: «Generative AI keeps the objectives and adds classes»*
 
@@ -1105,7 +1132,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Antes de la puerta, lo que este repositorio no decide.»
 
-### Diapositiva 54 · Lo que este repositorio no decide
+### Diapositiva 55 · Lo que este repositorio no decide
 
 *Título en la diapositiva: «What this repository does not decide»*
 
@@ -1127,7 +1154,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 ## Cierre (final del vídeo 4b)
 
-### Diapositiva 55 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
+### Diapositiva 56 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
 
 *Título en la diapositiva: «One gate, four lenses: GRAIMATTER passes, Article 15(5) fails»*
 
@@ -1147,7 +1174,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Todo esto se puede volver a ejecutar en unos minutos.»
 
-### Diapositiva 56 · Seis demos y una puerta, con los informes en demo/output
+### Diapositiva 57 · Seis demos y una puerta, con los informes en demo/output
 
 *Título en la diapositiva: «Six demos and a gate, reports under demo/output»*
 
@@ -1165,7 +1192,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Y los documentos que hay detrás de todo esto.»
 
-### Diapositiva 57 · Para seguir leyendo
+### Diapositiva 58 · Para seguir leyendo
 
 *Título en la diapositiva: «Read further»*
 

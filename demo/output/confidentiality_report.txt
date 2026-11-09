@@ -49,6 +49,15 @@ Right 91.8% of the time on a 50/50 mix (a coin toss gets 50%). AUC 0.976 (0.5 = 
     Working. Right = 0.5 x TPR + 0.5 x (100% - FPR) = 0.5 x 96.0% + 0.5 x 87.6% = 91.8%.
     AUC: each of the 1000 members against each of the 1000 strangers, 1,000,000 pairs. Member higher in 975,038, tied in 2,535: (975,038 + 0.5 x 2,535) / 1,000,000 = 0.976.
 
+What 'above the cut' means: the attacker only knows that few outsiders score that high. Of the people called members, how many really are depends on the mix being tested. Other cuts, same scores:
+    Cut (outsiders above)  Threshold     TPR     FPR   Right  Members among called, 1:1   1:100
+    80th percentile (20%)      0.676   99.5%   21.6%   88.9%                      82.2%    4.4%
+    90th percentile (10%)      0.720   96.0%   12.4%   91.8%                      88.6%    7.2%
+    95th percentile (5%)       0.740   92.8%    8.6%   92.1%                      91.5%    9.7%
+    99th percentile (1%)       0.825   56.1%    0.8%   77.6%                      98.6%   41.2%
+    Working, 90th row: 1:1 means 1000 members and 1000 strangers tested: 960 / (960 + 124) = 88.6% of the people called members are members. 1:100 means 10 members per 1,000 strangers: 9.6 / (9.6 + 124) = 7.2%.
+    A stricter cut accuses fewer strangers and finds fewer members. 'Right' barely moves from the 90th to the 95th percentile and falls at the 99th; what a stricter cut buys is more confidence in each accusation.
+
 Two people, both high risk, as the attacker sees them:
   Member   (age 86, diabetes no, weight normal, smoker no): confidence 0.80 = 160 of 200 trees -> called member
   Stranger (age 89, diabetes yes, weight obese, smoker yes): confidence 0.67 = 134 of 200 trees -> called not a member

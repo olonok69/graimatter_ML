@@ -950,6 +950,42 @@ def build():
             "floor of demo 1's safe wrapper, brings the attacker to 54.3% and the smoker gap to zero, and the model "
             "is more accurate, not less.")
 
+    s = d.slide("DEMO 5 · WHAT THE CUT MEANS", "Above the cut: how sure is the attacker about one person?")
+    d.text(s, LEFT, 2.15, 4.6, 4.3, [
+        [("What the attacker knows. ", True), ("Few outsiders score above the cut: only 10% of their 200 strangers "
+         "pass 0.72. That is measured, not assumed.", False)],
+        [("What they bet on. ", True), ("That the model memorised, so members score higher. With a minimum leaf of "
+         "20 the bet fails: right 54.3%.", False)],
+        [("What it depends on. ", True), ("How many members are in the group tested. Half and half: 960 members "
+         "and 124 strangers above 0.72, so 960 / 1,084 = 88.6% of those called are members. One member per 100 "
+         "strangers: 9.6 / 133.6 = 7.2%.", False)],
+        [("A stricter cut. ", True), ("Fewer false accusations, fewer members found. 'Right' barely moves from "
+         "90% to 95% and falls at 99%; the gain is confidence in each accusation.", False)],
+    ], 12.5, BODY)
+    d.table(s, LEFT + 4.85, 2.15, 6.7, [
+        ["Cut (outsiders above)", "TPR", "FPR", "Right", "Called who are members, 1:1 / 1:100"],
+        ["80th percentile (20%)", "99.5%", "21.6%", "88.9%", "82.2% / 4.4%"],
+        ["90th percentile (10%)", "96.0%", "12.4%", "91.8%", "88.6% / 7.2%"],
+        ["95th percentile (5%)", "92.8%", "8.6%", "92.1%", "91.5% / 9.7%"],
+        ["99th percentile (1%)", "56.1%", "0.8%", "77.6%", "98.6% / 41.2%"],
+    ], [1.85, 0.9, 0.9, 0.9, 2.15], size=11.5, row_h=0.5, highlight={(2, 3): PEACHBG, (3, 3): PEACHBG})
+    d.card(s, LEFT + 4.85, 4.85, 6.7, 1.55, "In one sentence", "Above the cut there are far more members than strangers, "
+           "because the model remembers them; how far to trust one accusation depends on how many members are in the "
+           "group tested. That is why GRAIMATTER looks at hits with very few false alarms.", dark=True, bsize=12)
+    d.footer(s, "Same scores as slide 33, other cuts · confidentiality_report.txt, section 1 · demo guide §5.1.")
+    d.notes(s, "This slide answers the obvious question: if someone is above the cut, how likely is it that they were "
+            "in the training data? The attacker never assumes that directly. What they know, because they measured it "
+            "on their own 200 strangers, is that an outsider rarely scores above 0.72: only one in ten does. What they "
+            "bet on is that the model memorised, so members score higher; with a minimum leaf of 20 that bet fails. "
+            "How far to trust a single accusation depends on a third thing, the mix of people tested. In the demo it "
+            "is half members, half strangers: 960 members and 124 strangers end up above the cut, so 88.6% of the "
+            "people called members really are. If only one in a hundred people tested were a member, the same rates "
+            "give 9.6 members against 124 strangers: only 7% of the accusations would be right. The table moves the "
+            "cut with the same scores. A stricter cut, the 95th percentile, accuses fewer strangers and finds fewer "
+            "members; overall accuracy barely changes, 92.1% against 91.8%, and at the 99th it falls to 77.6%, but "
+            "98.6% of those called are members. That is why GRAIMATTER and demo 1 look at how many members are found "
+            "with very few false alarms, not only at accuracy or AUC.")
+
     s = d.slide("NISTAML.05 · SUPPLY CHAIN", "Supply chain: the attack arrives with what you download")
     sc = [
         ("How", "Pre-trained models with backdoors that survive fine-tuning; control of training randomness (the Dropout "

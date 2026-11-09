@@ -13,7 +13,7 @@ Six demos run the attacks and controls on synthetic data, and a release gate jud
 
 GRAIMATTER covers one branch of AML, privacy, in depth. It is a useful example for any high-trust deployment because it tests against the worst-case attacker and keeps evaluation data away from the model builder. What it does not cover (evasion, poisoning, generative AI) is what Part 1 and demo 3 add. For LLMs and agents, the companion repository [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) runs garak, AgentDojo and PyRIT as a regulation-mapped CI gate.
 
-The material comes as a deck (`docs/Adversarial_ML.pptx`, 57 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up, and Appendix B takes the JADEPUFFER attack apart step by step. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
+The material comes as a deck (`docs/Adversarial_ML.pptx`, 58 slides, also recorded as a video series in four parts, where part 4 comes in two videos), a technical guide for engineers in [English](docs/guide/AML_Technical_Guide_EN.md) and [Spanish](docs/guide/AML_Guia_Tecnica_ES.md), with figures in both languages, and a presenter guide that follows the deck slide by slide, also in [English](docs/guide/Presenter_Guide_EN.md) and [Spanish](docs/guide/Guia_Presentador_ES.md). Part 4 of the technical guide (§12-22) explains every NIST attack class one by one and runs each demo under its class; Appendix A shows how the guide, the slides, the videos and the demos line up, and Appendix B takes the JADEPUFFER attack apart step by step. A demo guide walks through the code of each demo and the gate, section by section of what they print, in [English](docs/guide/Demo_Guide_EN.md) and [Spanish](docs/guide/Guia_Demos_ES.md); the comments in `demo/` point to it.
 
 ## Part 1: the attacks
 
@@ -323,7 +323,7 @@ python docs/make_deck.py
 | `.github/workflows/gate.yml` | CI: ruff, pytest, and the gate |
 | `pyproject.toml`, `uv.lock` | uv project for CI and `uv sync` |
 | `demo/README.md` | Section-by-section notes on the demos |
-| `docs/Adversarial_ML.pptx` | Slides (55) |
+| `docs/Adversarial_ML.pptx` | Slides (58) |
 | `docs/guide/` | Technical guide (Appendix A: series map; Appendix B: JADEPUFFER in detail), presenter guide and demo guide, each in English and Spanish, with figures |
 
 ## References
