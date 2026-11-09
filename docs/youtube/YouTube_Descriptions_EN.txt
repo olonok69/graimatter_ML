@@ -26,7 +26,7 @@ https://github.com/olonok69/graimatter_ML
 For attacks on LLMs and agents, the companion repository:
 https://github.com/olonok69/safety-trust-engine
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
 
 References: NIST AI 100-2e2025, Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (March 2025). MITRE ATLAS. OWASP Machine Learning Security Top 10 and OWASP Top 10 for LLM Applications 2025. Sysdig Threat Research Team, JADEPUFFER: agentic ransomware for automated database extortion (July 2026).
 
@@ -54,7 +54,7 @@ This is a summary of the documents, not legal advice.
 Repository with the demos and the guides, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
 
 References: NIST AI 100-2e2025. MITRE ATLAS, release 2026.09. OWASP ML Security Top 10 (draft, 2023) and OWASP Top 10 for LLM Applications 2025. Regulation (EU) 2024/1689, Article 15. Regulation (EU) 2026/1744 (Digital Omnibus on AI). EDPB Opinion 28/2024. DSIT, Code of Practice for the Cyber Security of AI (January 2025). ETSI EN 304 223 (January 2026). NCSC and CISA, Guidelines for secure AI system development (November 2023).
 
@@ -83,7 +83,7 @@ The demos and the attacks in detail come in videos 4a and 4b.
 Repository with the demos and the guides, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
 
 References: GRAIMATTER Green Paper, Recommendations for disclosure control of trained machine learning models from Trusted Research Environments (DARE UK, September 2022). NIST AI 100-2e2025.
 
@@ -112,7 +112,7 @@ All the data is synthetic: nothing in the demos is a real patient.
 Repository with the demos, the technical guide (sections 12 to 16) and the demo guide, in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
 
 References: NIST AI 100-2e2025, sections 2.1 to 2.4 and 3.2. OWASP ML01, ML02, ML06 and ML10. MITRE ATLAS AML.T0015, AML.T0020 and AML.T0010. UK Code of Practice, principle 7 and provision 8.1.2.
 
@@ -145,6 +145,35 @@ https://github.com/olonok69/graimatter_ML
 For attacks on LLMs and agents, the companion repository:
 https://github.com/olonok69/safety-trust-engine
 
-Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate.
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
 
 References: NIST AI 100-2e2025, sections 2.4 and 3. GRAIMATTER Green Paper (DARE UK, 2022). SACRO-ML. Wang et al., EvilModel (2021). Adi et al., Turning your weakness into a strength: watermarking deep neural networks by backdooring (2018). Song et al., Machine learning models that remember too much (2017). Regulation (EU) 2024/1689, Article 15.
+
+
+VIDEO 4C
+
+Suggested title: Adversarial machine learning, part 4c: defences in practice, securing an agent's database access
+
+Description:
+
+JADEPUFFER (video 1) won because nothing limited what the agent could do. This closing video is the other side: a real MCP (Model Context Protocol) server that lets an LLM agent query a database and nothing more, built so that every door that attack walked through is closed, and closed in layers so no single trick opens it. When you connect an agent (Copilot Studio, ChatGPT, Claude) to a production database, the agent is the untrusted, over-eager operator from JADEPUFFER, and the question from the frameworks videos — what can this agent do, with what credentials, and what needs a human to say yes? — gets answered in running code. All secrets, the real domain and tenant identifiers are removed; the example is a read-only server in front of PostgreSQL.
+
+What we cover:
+
+The setup: an agent that never touches the database, speaking to an MCP server behind a reverse proxy that exposes a small, read-only toolset.
+Door by door, each JADEPUFFER move against the control that closes it: an exposed endpoint against TLS plus OAuth 2.0; app-as-root against a least-privilege read-only user with explicit DENY; arbitrary SQL against a single-SELECT filter and a per-query timeout; unwatched activity against rate limits and blocked-query logging; secrets on the box against a secrets vault.
+The three layers, and which one really holds: database permissions are the hard boundary; the per-tenant access policy is filtering, not the boundary; and prompt or knowledge guidance is advisory only. Telling an agent to behave is not a control.
+The honest limits: the real read-only guarantee is the database user's permissions, not a keyword filter; edge filtering by IP or domain is unreliable, so OAuth is the primary control, with mTLS or a Zero-Trust proxy stronger.
+The checklist to answer before any agent ships: what tools, with what credentials, what is irreversible and needs a human, is it bounded and watched, and do you enforce or just ask.
+
+This maps to OWASP LLM06 (excessive agency) answered in the affirmative, the ETSI EN 304 223 and UK Code provisions on API rate-limiting and least privilege, and the GRAIMATTER habit of testing against the strongest attacker you can imagine.
+
+Repository with the deck and the guides (technical guide Appendix C), in English and Spanish:
+https://github.com/olonok69/graimatter_ML
+
+The companion repository tests agents and tools with AgentDojo:
+https://github.com/olonok69/safety-trust-engine
+
+Series: 1. Attacks. 2. Frameworks and regulation. 3. GRAIMATTER, a high-trust case. 4a. The attacks in detail: the CIA triad and the supply chain. 4b. The attacks in detail: privacy and a release gate. 4c. Defences in practice: securing an agent's database access.
+
+References: OWASP Top 10 for LLM Applications 2025 (LLM06, excessive agency). ETSI EN 304 223 (January 2026). DSIT, Code of Practice for the Cyber Security of AI (January 2025). Model Context Protocol specification. Sysdig Threat Research Team, JADEPUFFER: agentic ransomware for automated database extortion (July 2026).

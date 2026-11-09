@@ -1,6 +1,6 @@
 # Machine learning adversarial: guía del presentador
 
-**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (58 diapositivas)**
+**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (62 diapositivas)**
 
 Esta guía es para quien presente las diapositivas, en directo o como serie de vídeos. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
 
@@ -19,7 +19,7 @@ Cada diapositiva tiene los mismos bloques:
 
 Las diapositivas están en inglés. Cada sección da el título traducido y, justo debajo, el título tal como aparece en la diapositiva, para que puedas localizarla. Para no confundir los anexos, esta guía escribe "Anexo A de la GT" para el anexo de la guía técnica y "anexo E, F o G del paper" para los del green paper de GRAIMATTER.
 
-La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son dos vídeos, 4a y 4b:
+La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son tres vídeos, 4a, 4b y 4c:
 
 | Parte | Vídeo | Diapositivas | Guía técnica | Minutos |
 |---|---|---|---|---|
@@ -27,9 +27,10 @@ La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son 
 | Parte 2 · Marcos | 2 | 16-20 | §8 | 13 |
 | Parte 3 · Un caso de alta confianza: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
 | Parte 4a · Los ataques en detalle: la tríada CIA y la cadena de suministro | 4a | 26-36 | §12-16 | 40, más las ejecuciones de las demos |
-| Parte 4b · Los ataques en detalle: privacidad, y después el cierre | 4b | 37-58 | §16-27 | 45, más las ejecuciones de las demos |
+| Parte 4b · Los ataques en detalle: privacidad, y la puerta de publicación | 4b | 37-56 | §16-23 | 45, más las ejecuciones de las demos |
+| Parte 4c · Defensa en la práctica: asegurar el acceso de un agente a una base de datos | 4c | 57-62 | Anexo C | 12 |
 
-Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 16, 21, 26 y 37) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
+Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 16, 21, 26, 37 y 57) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
 
 La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas muestran la evasión (diapositiva 7), el envenenamiento (8), la familia de privacidad (9), la extracción (10) y la cadena de suministro (11), mientras que la guía agrupa los ataques de las demos 3 y 4 en la §3 y la privacidad en la §4. Las líneas "Para profundizar" resuelven el salto.
 
@@ -75,7 +76,7 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 **En pantalla.** La agenda en cinco tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, ransomware agéntico, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (disponibilidad, integridad, confidencialidad y cadena de suministro, clase a clase, las demos 3, 5 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, esconder datos en un modelo, la IA generativa y la puerta de publicación). Debajo: qué muestra cada demo y los seis scripts.
 
-**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una. Hay seis demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 5 le pregunta a un modelo quién estaba en sus datos de entrenamiento, el ataque a la confidencialidad más sencillo. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. La demo 6, en 4b, muestra cómo un modelo puede servir para sacar datos de un entorno de investigación. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
+**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una, y un tercer vídeo, 4c, le da la vuelta hacia las defensas: un servidor de base de datos real de solo lectura construido para que el agente de la parte 1 no pueda portarse mal. Hay seis demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 5 le pregunta a un modelo quién estaba en sus datos de entrenamiento, el ataque a la confidencialidad más sencillo. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. La demo 6, en 4b, muestra cómo un modelo puede servir para sacar datos de un entorno de investigación. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
 
 **Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_confidentiality_demo.py` (demo 5), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla.
 
@@ -780,7 +781,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «La segunda mitad del recorrido en detalle es la privacidad, la palabra del NIST para la confidencialidad, y el objetivo que GRAIMATTER cubre a fondo. Empezamos por las clases y por la extracción, que ejecuta la demo 3. Después recorremos sección a sección las dos demos de GRAIMATTER: las comprobaciones escritas a mano de la demo 1 y el paquete oficial SACRO-ML en la demo 2. Cerramos con las clases que añade la IA generativa, los límites de todo esto y una puerta de publicación que lee todas las demos frente a obligaciones concretas.»
 
-**Datos clave.** Parte 4b: GT §16 a §22 y el cierre, diapositivas 37 a 58. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
+**Datos clave.** Parte 4b: GT §16 a §23, diapositivas 37 a 56. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
 
 **Si preguntan.** *¿Hace falta ver antes el vídeo 3?* Ayuda: explica por qué a un TRE le importan estos ataques y cuáles son sus controles.
 
@@ -1172,9 +1173,83 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Para profundizar.** GT §23 (todas las métricas y tolerancias en la §17.2, los paquetes en la §17.3).
 
+**Siguiente.** «Los ataques son una cara. El último vídeo es la otra: asegurar un agente que accede a una base de datos real.»
+
+## Parte 4c · Defensa en la práctica: asegurar el acceso de un agente a una base de datos (vídeo 4c)
+
+### Diapositiva 57 · Asegurar el acceso de un agente a una base de datos
+
+*Título en la diapositiva: «Securing an agent's access to a database»*
+
+*Aproximadamente 1 minuto. Abre el vídeo 4c.*
+
+**En pantalla.** Divisor de la parte 4c: un párrafo sobre el giro de los ataques a la defensa (un agente LLM que accede a una base de datos de producción es el operador sin frenos de JADEPUFFER, y aquí consulta a través de un MCP server que le deja leer una porción definida y nada más, con cada puerta cerrada por capas). Cuatro etiquetas: OWASP LLM06, mínimo privilegio, solo lectura y política por tenant, defensa en profundidad.
+
+**Qué decir.** «Todo lo anterior era un ataque, o una comprobación del modelo. Este último vídeo le da la vuelta. Cuando conectas un agente LLM (Copilot, ChatGPT, Claude) a una base de datos de producción, el agente es justo el operador sin frenos que enseñó JADEPUFFER en la parte 1. La pregunta de la diapositiva 14 era: qué puede hacer este agente, con qué credenciales y qué necesita un humano. Aquí hay una respuesta real en código que funciona: un MCP server (Model Context Protocol) que deja al agente leer una porción definida de la base de datos y nada más, construido para que cada puerta por la que entró JADEPUFFER esté cerrada, y cerrada por capas.»
+
+**Datos clave.** El espejo defensivo de JADEPUFFER (diapositiva 14, anexo B). Anexo C de la GT. Un MCP server de solo lectura contra PostgreSQL detrás de un proxy inverso; se han quitado secretos, dominio y nombres de tenant.
+
+**Si preguntan.** *¿Es una demo de GRAIMATTER?* No. Es un despliegue real, mostrado como la contraparte defensiva: las demos de GRAIMATTER cubren el lado del modelo, esto cubre el agente y su acceso a los datos.
+
+**Para profundizar.** Anexo C de la GT; safety-trust-engine.
+
+**Siguiente.** «Primero, qué puede y qué no puede alcanzar el agente.»
+
+### Diapositiva 58 · El agente llega a la base de datos solo por una puerta estrecha
+
+*Título en la diapositiva: «The agent reaches the database only through a narrow door»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** A la izquierda, la cadena: agente a proxy inverso (TLS, límite de tasa) a MCP server a PostgreSQL, con las cuatro herramientas de solo lectura, el usuario de mínimo privilegio y la política por tenant. A la derecha, dos tarjetas: «Qué puede hacer» (leer una porción definida; no hay herramienta de escritura; la cuenta no podría escribir ni queriendo) y «La pregunta de la diapositiva 14, respondida» (solo lecturas; credenciales de mínimo privilegio en una bóveda; nada irreversible a su alcance).
+
+**Qué decir.** «El agente no toca la base de datos directamente. Habla con un MCP server detrás de un proxy inverso, y el servidor solo expone herramientas de lectura: listar las tablas, describir una, muestrear filas, ejecutar un SELECT. El proxy termina el TLS y el servidor exige un token OAuth. La cuenta de base de datos con la que conecta es de mínimo privilegio y vive en una bóveda de secretos, no en la máquina. Así que la pregunta de la diapositiva 14 se responde sola: solo herramientas de lectura, una cuenta acotada y ninguna acción irreversible a su alcance.»
+
+**Datos clave.** Herramientas: list_tables, describe_table, get_table_sample, execute_sql (solo SELECT). Token OAuth 2.0 obligatorio; TLS en el borde. Anexo C de la GT.
+
+**Si preguntan.** *¿Qué es MCP?* El Model Context Protocol, una forma estándar de dar herramientas a un asistente. Aquí las herramientas son cuatro llamadas de solo lectura a la base de datos.
+
+**Para profundizar.** Anexo C de la GT.
+
+**Siguiente.** «Ahora, enfrentémoslo a JADEPUFFER, puerta por puerta.»
+
+### Diapositiva 59 · Cada vía por la que entró JADEPUFFER, y el control que la cierra
+
+*Título en la diapositiva: «Every way JADEPUFFER got in, and the control that closes it»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Una tabla de dos columnas, cómo entró JADEPUFFER (izquierda) frente al control de aquí (derecha), seis filas: endpoint expuesto sin auth frente a TLS y OAuth; app como root frente a usuario de solo lectura con mínimo privilegio más política por tenant; sin límites frente a solo herramientas de lectura; SQL arbitrario frente a un único SELECT con relaciones bloqueadas; sin vigilancia frente a límites de tasa, timeouts y logs; secretos en el servidor frente a secretos en una bóveda.
+
+**Qué decir.** «Léelo como un espejo del anexo B. JADEPUFFER entró por un endpoint expuesto con un salto de autenticación; aquí el endpoint exige un token OAuth sobre TLS. Conectó a la base de datos como root; aquí el servidor usa un usuario de solo lectura con mínimo privilegio, acotado aún más por una política por tenant. Tenía una shell y borró bases de datos; aquí no hay ninguna herramienta de escritura. Ejecutó SQL arbitrario; aquí solo un SELECT, y una tabla bloqueada se rechaza. Trabajó sin vigilancia; aquí hay límites de tasa, timeouts y logs. Y los secretos que barrió del servidor están, aquí, en una bóveda y nunca en la máquina.»
+
+**Datos clave.** La columna izquierda es el anexo B; la derecha es el servidor real. La capa de solo lectura se probó de forma adversarial (11 categorías de bypass, todas bloqueadas). Anexo C de la GT y §7.
+
+**Si preguntan.** *¿El filtro de SQL lo hace seguro?* Ayuda, pero la diapositiva siguiente da la respuesta honesta: la garantía real es el usuario de base de datos, no el filtro de palabras.
+
+**Para profundizar.** Anexo C de la GT.
+
+**Siguiente.** «¿Cuál de estos controles aguanta de verdad?»
+
+### Diapositiva 60 · Tres capas, y solo una es la frontera
+
+*Título en la diapositiva: «Three layers, and only one is the boundary»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Tres capas numeradas: permisos de base de datos (la frontera dura), la política de acceso (filtrado por tenant) y la guía por prompt o knowledge (solo orientativa), y una banda azul: aplica la restricción donde la aplica el motor; un filtro de palabras y un prompt son badenes, el usuario de base de datos es el muro; filtrar por IP o dominio en el borde no es fiable, así que OAuth es el control principal.
+
+**Qué decir.** «Este es el centro honesto, y sale de la propia guía de operador del proyecto. La garantía de solo lectura y por tenant tiene tres capas con un orden de confianza claro. Una: los permisos de base de datos son la frontera dura; concede SELECT en las tablas necesarias, deniega el resto, y el motor lo aplica. Dos: la política de acceso acota lo que ve cada tenant, pero es lógica de aplicación, así que está por encima de la frontera, no en su lugar. Tres: puedes decirle al modelo qué tablas usar, pero la propia guía dice que eso es orientativo; la restricción del lado del servidor es la aplicación real. El filtro de palabras de SQL pertenece a la capa tres, un badén, no el muro. La lección para cualquier agente que despliegues: aplica la frontera donde la aplica el motor, y nunca te fíes de pedirle al modelo que se porte bien.»
+
+**Datos clave.** Orden de confianza de la guía de operador: permisos de BD por encima de política de acceso por encima de guía por prompt (orientativa). Se mapea a OWASP LLM06, ETSI EN 304 223 y el código del Reino Unido (mínimo privilegio, límites de API) y al hábito de GRAIMATTER de probar contra el atacante más fuerte. Anexo C de la GT.
+
+**Si preguntan.** *¿Entonces la instrucción por prompt es inútil?* No, alinea el comportamiento del modelo y reduce errores. Solo que no es un control de seguridad: el que aplica es el servidor.
+
+**Para profundizar.** Anexo C de la GT; safety-trust-engine (AgentDojo).
+
 **Siguiente.** «Todo esto se puede volver a ejecutar en unos minutos.»
 
-### Diapositiva 57 · Seis demos y una puerta, con los informes en demo/output
+### Diapositiva 61 · Seis demos y una puerta, con los informes en demo/output
 
 *Título en la diapositiva: «Six demos and a gate, reports under demo/output»*
 
@@ -1192,7 +1267,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Siguiente.** «Y los documentos que hay detrás de todo esto.»
 
-### Diapositiva 58 · Para seguir leyendo
+### Diapositiva 62 · Para seguir leyendo
 
 *Título en la diapositiva: «Read further»*
 

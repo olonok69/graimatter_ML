@@ -1,6 +1,6 @@
 # Adversarial Machine Learning: Presenter Guide
 
-**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (58 slides)**
+**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (62 slides)**
 
 This guide is for whoever presents the deck, live or as the video series. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md). If someone asks how a demo computes a number, the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)) walks through the code behind each section of its output.
 
@@ -17,7 +17,7 @@ Each slide has the same blocks:
 * **Go deeper**: the technical-guide sections (written "TG §x"), the demo output and the source documents.
 * **Next**: one line to move to the following slide.
 
-The deck is in four parts, and each part is one video; Part 4 is two videos, 4a and 4b:
+The deck is in four parts, and each part is one video; Part 4 is three videos, 4a, 4b and 4c:
 
 | Part | Video | Slides | Technical guide | Minutes |
 |---|---|---|---|---|
@@ -25,9 +25,10 @@ The deck is in four parts, and each part is one video; Part 4 is two videos, 4a 
 | Part 2 · Frameworks | 2 | 16-20 | §8 | 13 |
 | Part 3 · A high-trust case: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
 | Part 4a · The attacks in detail: the CIA triad and the supply chain | 4a | 26-36 | §12-16 | 40, plus the demo runs |
-| Part 4b · The attacks in detail: privacy, then the closing | 4b | 37-58 | §16-27 | 45, plus the demo runs |
+| Part 4b · The attacks in detail: privacy, and the release gate | 4b | 37-56 | §16-23 | 45, plus the demo runs |
+| Part 4c · Defences in practice: securing an agent's database access | 4c | 57-62 | Appendix C | 12 |
 
-Each video opens with a slide that says what it covers (slides 1, 16, 21, 26 and 37) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
+Each video opens with a slide that says what it covers (slides 1, 16, 21, 26, 37 and 57) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
 
 Part 1 does not follow the technical guide's order exactly: the deck shows evasion (slide 7), poisoning (8), the privacy family (9), extraction (10) and the supply chain (11), while the guide groups the demo 3 and demo 4 attacks in §3 and privacy in §4. The "Go deeper" lines handle the jump.
 
@@ -69,7 +70,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 **On screen.** The agenda in five cards: 1 Attacks (NIST taxonomy, evasion, poisoning, privacy, supply chain, generative AI, real incidents, agentic ransomware, mitigations, demos 3 and 4 in brief), 2 Frameworks (NIST, ATLAS, OWASP, EU AI Act Art. 15, UK Code and ETSI EN 304 223, one crosswalk), 3 High-trust case (GRAIMATTER: what a TRE protects, the two families of control, the recommendations, what carries over), 4a In detail (availability, integrity, confidentiality and the supply chain, class by class, demos 3, 5 and 4 section by section), 4b In detail (each privacy class, extraction, demos 1 and 2 section by section, hiding data in a model, generative AI and the release gate). Below: which demo shows what, and the six scripts.
 
-**Say.** "We go from general to specific, and then back through every attack in detail. Part 1 gives us a shared vocabulary for attacks. Part 2 maps that vocabulary to what standards and the law ask for. Part 3 looks at one sector that has worked this out in depth for one branch, privacy, because in that sector the model itself leaves the building. Part 4, in two videos, takes every NIST attack class one at a time and runs the demo that shows it, section by section. There are six demos. Demo 3 attacks a risk model by evasion, by planting a backdoor and by copying it through its API. Demo 5 asks a model who was in its training data, the simplest confidentiality attack. Demo 4 tampers with a model and its files on the way from a supplier to the user. Demos 1 and 2 are the GRAIMATTER checks: membership and attribute inference and the controls a trusted research environment applies before release. Demo 6, in 4b, shows how a model can be used to carry data out of a research environment. They are small on purpose: numpy and scikit-learn, seconds to run, so you can change a parameter and see what happens."
+**Say.** "We go from general to specific, and then back through every attack in detail. Part 1 gives us a shared vocabulary for attacks. Part 2 maps that vocabulary to what standards and the law ask for. Part 3 looks at one sector that has worked this out in depth for one branch, privacy, because in that sector the model itself leaves the building. Part 4, in two videos, takes every NIST attack class one at a time and runs the demo that shows it, section by section, and a third video, 4c, turns it around to defences: a real read-only database server built so the agent from part 1 cannot misbehave. There are six demos. Demo 3 attacks a risk model by evasion, by planting a backdoor and by copying it through its API. Demo 5 asks a model who was in its training data, the simplest confidentiality attack. Demo 4 tampers with a model and its files on the way from a supplier to the user. Demos 1 and 2 are the GRAIMATTER checks: membership and attribute inference and the controls a trusted research environment applies before release. Demo 6, in 4b, shows how a model can be used to carry data out of a research environment. They are small on purpose: numpy and scikit-learn, seconds to run, so you can change a parameter and see what happens."
 
 **Key facts.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_confidentiality_demo.py` (demo 5), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6). The demo numbering follows the order in which they were written, not the order of the talk.
 
@@ -704,7 +705,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Say.** "The second half of the detailed walkthrough is privacy, NIST's word for confidentiality, and the objective GRAIMATTER covers in depth. We start with the classes and with extraction, which demo 3 runs. Then we go through the two GRAIMATTER demos section by section: the hand-written checks of demo 1 and the official SACRO-ML package in demo 2. We close with the classes generative AI adds, the limits of all this, and a release gate that reads every demo against named obligations."
 
-**Key facts.** Part 4b: TG §16 to §22 and the closing, slides 37 to 58. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
+**Key facts.** Part 4b: TG §16 to §23, slides 37 to 56. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
 
 **If asked.** *Do I need video 3 first?* It helps: it explains why a TRE cares about these attacks and what its controls are.
 
@@ -1058,9 +1059,75 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Go deeper.** TG §23 (all metrics and tolerances in §17.2, packs in §17.3).
 
+**Next.** "The attacks are one side. The last video is the other: securing an agent that reaches a real database."
+
+## Part 4c · Defences in practice: securing an agent's database access (video 4c)
+
+### Slide 57 · Securing an agent's access to a database
+
+*About 1 minute. Opens video 4c.*
+
+**On screen.** Part 4c divider: one paragraph on the turn from attacks to defence (an LLM agent reaching a production database is the over-eager operator of JADEPUFFER, and here it queries through an MCP server that lets it read a defined slice and nothing more, every door closed in layers). Four tags: OWASP LLM06, least privilege, read-only and tenant policy, defence in depth.
+
+**Say.** "Every part so far was an attack, or a check on the model. This last video turns it around. When you connect an LLM agent, Copilot, ChatGPT or Claude, to a production database, the agent is exactly the untrusted, over-eager operator JADEPUFFER showed in Part 1. The slide-14 question was: what can this agent do, with what credentials, and what needs a human. Here is a real answer in running code, a Model Context Protocol server that lets the agent read a defined slice of the database and nothing more, built so every door JADEPUFFER walked through is closed, and closed in layers."
+
+**Key facts.** The defensive mirror of JADEPUFFER (slide 14, Appendix B). TG Appendix C. A read-only MCP server to PostgreSQL behind a reverse proxy; live secrets, domain and tenant names removed.
+
+**If asked.** *Is this a GRAIMATTER demo?* No. It is a real deployment shown as the defensive counterpart: the GRAIMATTER demos cover the model side, this covers the agent and its access to data.
+
+**Go deeper.** TG Appendix C; safety-trust-engine.
+
+**Next.** "First, what the agent can and cannot reach."
+
+### Slide 58 · The agent reaches the database only through a narrow door
+
+*About 2 minutes.*
+
+**On screen.** Left: the chain, agent to reverse proxy (TLS, rate limit) to MCP server to PostgreSQL, with the four read-only tools, the least-privilege user and the tenant policy. Right: two cards, "What it can do" (read a defined slice; no write tool; the account could not write anyway) and "The slide-14 question, answered" (only reads; least-privilege credentials in a vault; nothing irreversible in reach).
+
+**Say.** "The agent never touches the database directly. It speaks to an MCP server behind a reverse proxy, and the server exposes only read tools: list the tables, describe one, sample rows, run a SELECT. The proxy terminates TLS and the server demands an OAuth token. The database account it connects with is least-privilege and lives in a secrets vault, not on the box. So slide 14's question answers itself: only read tools, a scoped account, and no irreversible action the agent can reach."
+
+**Key facts.** Tools: list_tables, describe_table, get_table_sample, execute_sql (SELECT only). OAuth 2.0 bearer token required; TLS at the edge. TG Appendix C.
+
+**If asked.** *What is MCP?* The Model Context Protocol, a standard way to give an assistant tools. Here the tools are four read-only database calls.
+
+**Go deeper.** TG Appendix C.
+
+**Next.** "Now line it up against JADEPUFFER, door by door."
+
+### Slide 59 · Every way JADEPUFFER got in, and the control that closes it
+
+*About 2 minutes.*
+
+**On screen.** A two-column table, how JADEPUFFER got in (left) against the control here (right), six rows: exposed no-auth endpoint vs TLS and OAuth; app as root vs least-privilege read-only user plus tenant policy; no limits vs read-only tools only; arbitrary SQL vs a single SELECT with blocked relations; unwatched vs rate limits, timeouts and logging; secrets on the server vs secrets in a vault.
+
+**Say.** "Read it as a mirror of Appendix B. JADEPUFFER entered an exposed endpoint with an authentication bypass; here the endpoint needs an OAuth token over TLS. It connected to the database as root; here the server uses a least-privilege read-only user, narrowed further by a per-tenant policy. It had a shell and dropped databases; here there is no write tool at all. It ran arbitrary SQL; here only a single SELECT, and a blocked table is refused. It worked unwatched; here there are rate limits, query timeouts and logs. And the secrets it swept off the server are, here, in a vault and never on the box."
+
+**Key facts.** Left column is Appendix B; right column is the running server. The read-only layer was tested adversarially (11 bypass categories, all blocked). TG Appendix C and §7.
+
+**If asked.** *Does the SQL filter make it safe?* It helps, but the next slide is the honest answer: the real guarantee is the database user, not the keyword filter.
+
+**Go deeper.** TG Appendix C.
+
+**Next.** "Which of these controls actually holds?"
+
+### Slide 60 · Three layers, and only one is the boundary
+
+*About 2 minutes.*
+
+**On screen.** Three numbered layers, database permissions (the hard boundary), the access policy (tenant filtering) and prompt or knowledge guidance (advisory only), and a navy band: enforce where the engine enforces; a keyword filter and a prompt are speed bumps, the database user is the wall; edge IP or domain filtering is unreliable, so OAuth is primary.
+
+**Say.** "This is the honest centre, and it comes from the project's own operator guide. The read-only, tenant-scoped guarantee has three layers in a clear order of trust. One: the database permissions are the hard boundary; grant SELECT on the needed tables, deny the rest, and the engine enforces it. Two: the access policy narrows what each tenant sees, but it is application logic, so it sits above the boundary, not instead of it. Three: you can tell the model which tables to use, but the guide itself says that is advisory; the server-side restriction is the real enforcement. The SQL keyword filter belongs with layer three, a speed bump, not the wall. The lesson for any agent you deploy: enforce the boundary where the engine enforces it, and never rely on telling the model to behave."
+
+**Key facts.** Order of trust from the operator guide: database permissions over access policy over prompt guidance (advisory). Maps to OWASP LLM06, ETSI EN 304 223 and the UK Code (least privilege, API limits), and the GRAIMATTER habit of testing against the strongest attacker. TG Appendix C.
+
+**If asked.** *So is the prompt instruction useless?* No, it aligns the model's behaviour and cuts mistakes. It just is not a security control: the server enforces.
+
+**Go deeper.** TG Appendix C; safety-trust-engine (AgentDojo).
+
 **Next.** "Everything here can be rerun in a few minutes."
 
-### Slide 57 · Six demos and a gate, reports under demo/output
+### Slide 61 · Six demos and a gate, reports under demo/output
 
 *About 1 minute.*
 
@@ -1076,7 +1143,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "And the documents behind all of this."
 
-### Slide 58 · Read further
+### Slide 62 · Read further
 
 *About 1 minute, then questions.*
 
