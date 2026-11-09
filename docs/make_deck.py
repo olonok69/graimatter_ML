@@ -197,7 +197,7 @@ def build():
            "handles one high-trust setting: releasing models from a trusted research environment", 21, "#D9DEE6")
     d.chips(s, LEFT, 5.05, ["6 demos, one synthetic cohort", "5 frameworks compared", "GRAIMATTER as the case study"])
     d.footer(s, "Synthetic data only. Code, guides (EN/ES) and figures: github.com/olonok69/graimatter_ML", dark=True)
-    d.notes(s, "This series has four parts, the last in two videos. First, the attacks: how a machine-learning model can be attacked through its "
+    d.notes(s, "This series has four parts, the last in three videos. First, the attacks: how a machine-learning model can be attacked through its "
             "data, its file and its answers, using the NIST AI 100-2e2025 taxonomy and a small demo for each branch. Second, "
             "the frameworks that turn this into practice: MITRE ATLAS, the two OWASP top-ten lists, Article 15 of the EU AI "
             "Act and the UK Code of Practice, now ETSI EN 304 223. Third, a concrete high-trust case: the GRAIMATTER green "
@@ -1404,6 +1404,95 @@ def build():
             "CI declares demo 2 out of scope explicitly because it does not install sacroml. The US pack reads the same "
             "evidence through NIST AI RMF MEASURE 2.6, 2.7 and 2.10 and federal model risk guidance, where a classifier fits "
             "directly. The tolerances are a risk appetite set for the workshop, and the mapping is this repository's own.")
+
+    d.prefix = ""
+    s = d.slide("PART 4C · DEFENCES IN PRACTICE", "Securing an agent's access to a database",
+                dark=True, title_size=36)
+    d.rect(s, 0, 0, 0.17, 7.5, ORANGE, shape=MSO_SHAPE.RECTANGLE)
+    s.shapes[-1].top = 0
+    d.text(s, LEFT, 3.2, 10.8, 1.5, "The attacks were one side; this is the other. When an LLM agent reaches a production "
+           "database it is the over-eager operator of JADEPUFFER. Here it queries through an MCP server that lets it read a "
+           "defined slice and nothing more: every door that attack walked through, closed, and closed in layers.", 18,
+           "#D9DEE6")
+    d.chips(s, LEFT, 5.0, ["OWASP LLM06", "Least privilege", "Read-only + tenant policy", "Defence in depth"])
+    d.footer(s, "The defensive mirror of JADEPUFFER (slide 14, Appendix B). Technical guide Appendix C.", dark=True)
+    d.notes(s, "The last video turns the deck around. Every part so far was an attack, or a check on the model. This one is a "
+            "concrete defence for the agent era: when you connect an LLM agent to a production database, the agent is the "
+            "untrusted operator JADEPUFFER showed. The example is a real MCP (Model Context Protocol) server that lets the "
+            "agent read a defined slice of the database and nothing more, built so every door that attack used is closed, "
+            "and closed in layers so no single trick opens it.")
+    d.prefix = "PART 4C · "
+
+    s = d.slide("THE AGENT IS THE OPERATOR", "The agent reaches the database only through a narrow door")
+    d.rect(s, LEFT, 2.1, 6.4, 4.55, NAVY)
+    d.text(s, LEFT + 0.3, 2.3, 5.8, 4.3, [
+        "Agent  (Copilot / ChatGPT / Claude)",
+        "    |   HTTPS + OAuth bearer token",
+        "Reverse proxy  (TLS, rate limit)",
+        "    |   POST /mcp",
+        "MCP server  -->  PostgreSQL",
+        "    read-only tools",
+        "    least-privilege DB user",
+        "    per-tenant access policy",
+        "",
+        "list_tables . describe_table",
+        "get_table_sample . execute_sql (SELECT)",
+    ], 13.5, CREAM, font=MONO)
+    d.card(s, LEFT + 6.75, 2.1, 4.8, 2.15, "What it can do",
+           "Read a defined slice of data. No write tool exists, and the account it connects with could not write if it "
+           "tried.", bsize=13)
+    d.card(s, LEFT + 6.75, 4.35, 4.8, 2.3, "The slide-14 question, answered",
+           "What tools? Only reads. With what credentials? A least-privilege account, kept in a vault. What is "
+           "irreversible? Nothing it can reach.", dark=True, bsize=13)
+    d.footer(s, "A Model Context Protocol server, read-only, behind a reverse proxy. Technical guide Appendix C.")
+    d.notes(s, "The agent never touches the database directly. It speaks to an MCP server behind a reverse proxy, and that "
+            "server exposes only read tools: list the tables, describe one, sample rows, run a SELECT. The proxy terminates "
+            "TLS and the server requires an OAuth token. The database account the server uses is least-privilege and lives "
+            "in a secrets vault. So the slide-14 question answers itself: the agent has only read tools, a scoped account, "
+            "and no irreversible action within reach.")
+
+    s = d.slide("DOOR BY DOOR", "Every way JADEPUFFER got in, and the control that closes it")
+    d.table(s, LEFT, 2.05, WIDTH, [
+        ["How JADEPUFFER got in", "The control here"],
+        ["Exposed endpoint, no authentication", "TLS + OAuth 2.0 (PKCE, scoped, short-lived); no token, no entry"],
+        ["App connected to the database as root", "Least-privilege read-only DB user, plus a per-tenant allow/deny policy"],
+        ["Nothing limited the agent's actions", "Read-only tools only: no shell and no write surface to reach"],
+        ["Arbitrary SQL", "SELECT only, one statement; blocked relations and SELECT INTO refused"],
+        ["Unlimited, unwatched activity", "Rate limits, per-query timeouts, blocked-query logging"],
+        ["Secrets sat on the compromised server", "Secrets in a vault, loaded at runtime, never in the repo or on the box"],
+    ], [4.85, 6.7], size=12.5, row_h=0.66)
+    d.footer(s, "The left column is Appendix B; the right is the running MCP server. Technical guide Appendix C.")
+    d.notes(s, "Read it as a mirror of Appendix B. JADEPUFFER entered an exposed endpoint with an authentication bypass: here "
+            "the endpoint needs an OAuth token over TLS. It connected to the database as root: here the server uses a "
+            "least-privilege read-only user, narrowed further by a per-tenant policy. It had a shell and could drop "
+            "databases: here there is no write tool at all. It ran arbitrary SQL: here only a single SELECT, with blocked "
+            "tables refused. It worked unwatched: here there are rate limits, timeouts and logs. And the secrets it swept off "
+            "the server are, here, in a vault and never on the box.")
+
+    s = d.slide("WHICH LAYER HOLDS", "Three layers, and only one is the boundary")
+    d.text(s, LEFT, 2.1, WIDTH, 3.6, [
+        [("1 . Database permissions, the hard boundary.  ", True), ("A least-privilege user: GRANT SELECT on the needed "
+         "tables, DENY writes and DDL. The engine enforces it; nothing the agent sends gets around it.", False)],
+        [("2 . The access policy, tenant filtering.  ", True), ("Allow and deny lists on schemas and tables, in the "
+         "server, on top of the database user. Convenient, but application logic: above the boundary, not instead of it.",
+         False)],
+        [("3 . Prompt or knowledge guidance, advisory only.  ", True), ("You can also tell the model “use only these "
+         "tables”. In the project's own words, that is advisory; the server-side restriction remains the real "
+         "enforcement layer.", False)],
+    ], 14, BODY)
+    d.rect(s, LEFT, 5.75, WIDTH, 0.8, NAVY)
+    d.text(s, LEFT + 0.25, 5.75, WIDTH - 0.5, 0.8, [[("Enforce where the engine enforces.  ", True), ("A keyword filter and "
+           "a prompt are speed bumps; the database user is the wall. Filtering by IP or domain at the edge is unreliable, so "
+           "OAuth stays the primary control.", False)]], 13.5, CREAM, anchor=MSO_ANCHOR.MIDDLE)
+    d.footer(s, "OWASP LLM06 (excessive agency); ETSI EN 304 223 and the UK Code (least privilege, API limits); GRAIMATTER's "
+                "habit of testing against the strongest attacker. Technical guide Appendix C.")
+    d.notes(s, "The honest centre of the example, and it comes from the project's own operator guide. The read-only, "
+            "tenant-scoped guarantee has three layers with an explicit order of trust. The database permissions are the hard "
+            "boundary: the engine refuses the write. The access policy narrows what a tenant sees, but it is application "
+            "logic, so it sits above the boundary, not instead of it. And telling the model which tables to use is advisory "
+            "only; the guide says so in as many words. The keyword filter that blocks INSERT or DROP belongs with the "
+            "advisory layer: a speed bump, not the wall. Enforce the real boundary in the database.")
+    d.prefix = ""
 
     s = d.slide("RUN IT YOURSELF", "Six demos and a gate, reports under demo/output")
     d.rect(s, LEFT, 2.2, 6.2, 4.55, NAVY)
