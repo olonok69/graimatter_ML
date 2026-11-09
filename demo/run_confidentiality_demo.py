@@ -344,6 +344,41 @@ def main() -> dict:
         f"({pairs['member_higher']:,} + 0.5 x {pairs['ties']:,}) / {pairs['pairs']:,} = {careless['auc']:.3f}."
     )
 
+    # What "above the cut" means, and what changes with a stricter cut (Demo guide §5.1,
+    # "What being above the cut means"). The attacker only knows that few outsiders score
+    # that high; how many of the people called members really are depends on the mix tested.
+    report.p("")
+    report.p(
+        "What 'above the cut' means: the attacker only knows that few outsiders score that high. Of the people "
+        "called members, how many really are depends on the mix being tested. Other cuts, same scores:"
+    )
+    report.p(
+        f"    {'Cut (outsiders above)':<22} {'Threshold':>9} {'TPR':>7} {'FPR':>7} {'Right':>7} "
+        f"{'Members among called, 1:1':>26} {'1:100':>7}"
+    )
+    for rate in (0.20, 0.10, 0.05, 0.01):
+        cut = membership.calibrate_threshold(reference_scores, rate)
+        result = membership.evaluate(member_scores, stranger_scores, cut)
+        tpr, fpr = result["members_caught"], result["false_alarms"]
+        label = f"{100 * (1 - rate):.0f}th percentile ({100 * rate:.0f}%)"
+        report.p(
+            f"    {label:<22} {cut:>9.3f} {_pct(tpr):>7} {_pct(fpr):>7} {_pct(result['accuracy']):>7} "
+            f"{_pct(explain.flagged_who_are_members(tpr, fpr, 1.0)):>26} "
+            f"{_pct(explain.flagged_who_are_members(tpr, fpr, 0.01)):>7}"
+        )
+    tp_count, fp_count = calls["members_called"], calls["strangers_called"]
+    report.p(
+        f"    Working, 90th row: 1:1 means {N_MEMBERS} members and {N_STRANGERS} strangers tested: {tp_count} / "
+        f"({tp_count} + {fp_count}) = {_pct(explain.flagged_who_are_members(careless['members_caught'], careless['false_alarms']))} "
+        f"of the people called members are members. 1:100 means 10 members per 1,000 strangers: "
+        f"{tp_count / 100:.1f} / ({tp_count / 100:.1f} + {fp_count}) = "
+        f"{_pct(explain.flagged_who_are_members(careless['members_caught'], careless['false_alarms'], 0.01))}."
+    )
+    report.p(
+        "    A stricter cut accuses fewer strangers and finds fewer members. 'Right' barely moves from the 90th to "
+        "the 95th percentile and falls at the 99th; what a stricter cut buys is more confidence in each accusation."
+    )
+
     # A worked example: one member and one stranger with the same outcome, side by side.
     # The tree counts make each confidence checkable: 0.80 = 160 of 200 trees.
     report.p("")

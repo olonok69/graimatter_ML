@@ -215,3 +215,16 @@ def stranger_predictability(true_chance: np.ndarray, scores: np.ndarray, thresho
         "chance_above": float(true_chance[above].mean()),
         "chance_rest": float(true_chance[~above].mean()),
     }
+
+
+def flagged_who_are_members(tpr: float, fpr: float, members_per_stranger: float = 1.0) -> float:
+    """Of the people called members, the share who really are (the precision of the attack).
+
+    It depends on the mix being tested, not only on the model: with m members per
+    stranger, members called = m x TPR and strangers called = FPR, so the share is
+    m x TPR / (m x TPR + FPR). With half and half (m = 1) a high TPR dominates; with one
+    member per hundred strangers (m = 0.01) the false alarms dominate.
+    """
+    called_members = members_per_stranger * tpr
+    total = called_members + fpr
+    return called_members / total if total else 0.0

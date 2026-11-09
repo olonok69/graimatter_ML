@@ -19,7 +19,7 @@ pattern anyone could use. That is why the report runs the same attack on strange
 (people the model never saw): their success rate is what the *population pattern*
 alone gives. Whatever members get above that is what the model *remembers* about
 them personally. This is the comparison GRAIMATTER's Appendix E asks for (demo 1
-runs its full version, with a planted person and 20 queries, slide 38).
+runs its full version, with a planted person and 20 queries, slide 39).
 """
 
 from __future__ import annotations

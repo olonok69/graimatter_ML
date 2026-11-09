@@ -1,6 +1,6 @@
 # Adversarial Machine Learning: Presenter Guide
 
-**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (57 slides)**
+**A slide-by-slide companion to `docs/Adversarial_ML.pptx` (58 slides)**
 
 This guide is for whoever presents the deck, live or as the video series. It follows the slides in order, one section per slide, and gives you what to say, the numbers to have ready, the questions people tend to ask, and where to look when you want more. It does not replace the technical guide ([English](AML_Technical_Guide_EN.md), [Spanish](AML_Guia_Tecnica_ES.md)), which stays the reference for engineers: it explains every attack, metric and line of code in depth. This guide is shorter on code and longer on explanation, and every section points to the technical-guide sections behind it. A Spanish version is in [Guia_Presentador_ES.md](Guia_Presentador_ES.md). If someone asks how a demo computes a number, the demo guide ([English](Demo_Guide_EN.md), [Spanish](Guia_Demos_ES.md)) walks through the code behind each section of its output.
 
@@ -24,10 +24,10 @@ The deck is in four parts, and each part is one video; Part 4 is two videos, 4a 
 | Opening and Part 1 · Attacks | 1 | 1-15 | §1-7 | 45 |
 | Part 2 · Frameworks | 2 | 16-20 | §8 | 13 |
 | Part 3 · A high-trust case: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
-| Part 4a · The attacks in detail: the CIA triad and the supply chain | 4a | 26-35 | §12-16 | 40, plus the demo runs |
-| Part 4b · The attacks in detail: privacy, then the closing | 4b | 36-57 | §16-27 | 45, plus the demo runs |
+| Part 4a · The attacks in detail: the CIA triad and the supply chain | 4a | 26-36 | §12-16 | 40, plus the demo runs |
+| Part 4b · The attacks in detail: privacy, then the closing | 4b | 37-58 | §16-27 | 45, plus the demo runs |
 
-Each video opens with a slide that says what it covers (slides 1, 16, 21, 26 and 36) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
+Each video opens with a slide that says what it covers (slides 1, 16, 21, 26 and 37) and closes with a "Next" line that leads into the following one, so a video can be recorded on its own. Part 4 repeats some results from Part 1 on purpose: Part 1 shows each attack in one figure, Part 4 runs the demo and reads every section of its output.
 
 Part 1 does not follow the technical guide's order exactly: the deck shows evasion (slide 7), poisoning (8), the privacy family (9), extraction (10) and the supply chain (11), while the guide groups the demo 3 and demo 4 attacks in §3 and privacy in §4. The "Go deeper" lines handle the jump.
 
@@ -35,13 +35,13 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 * **Run the demos once**, so you have the reports at hand and know how long they take: `uv run python demo/run_aml_demo.py` (demo 3, seconds), `uv run python demo/run_confidentiality_demo.py` (demo 5, seconds), `uv run python demo/run_supply_chain_demo.py` (demo 4, seconds), `uv run python demo/run_demo.py` (demo 1, seconds), `uv run python demo/run_sacroml_demo.py` (demo 2, a few minutes) and `uv run python demo/run_gate.py`. Setup is in the [README](../../README.md) and TG §24.
 * **Keep open**: `demo/output/aml_report.txt`, `demo/output/confidentiality_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (or the gate report your run writes), and the two PDFs in the repository root, `NIST.AI.100-2e2025.pdf` and `GRAIMATTER Green Paper.pdf`.
-* **Decide on live demos.** If you have a terminal, demos 3 and 4 during slides 7 to 11 (briefly), demos 3, 5 and 4 during slides 30, 31, 33 and 35 and demo 3 again at 38 (section by section), and demo 1 during slides 42 to 48, run in seconds. Demo 2 is better shown from its saved report.
+* **Decide on live demos.** If you have a terminal, demos 3 and 4 during slides 7 to 11 (briefly), demos 3, 5 and 4 during slides 30, 31, 33 and 36 and demo 3 again at 38 (section by section), and demo 1 during slides 43 to 49, run in seconds. Demo 2 is better shown from its saved report.
 * **Three messages to land**, whatever you cut: (1) a model adds three things to attack, its data, its file and its answers; (2) the frameworks name the same attacks differently, and a crosswalk lets one test speak all of them; (3) GRAIMATTER shows how one high-trust sector tests a model before it leaves, and it covers privacy only.
 
 ### If you have less time
 
-* **45 minutes, one live session:** slides 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 40, 42, 43, 55, 56.
-* **20 minutes:** slides 1, 3, 5, 7, 8, 10, 20, 21, 25, 42, 55.
+* **45 minutes, one live session:** slides 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 41, 43, 44, 56, 57.
+* **20 minutes:** slides 1, 3, 5, 7, 8, 10, 20, 21, 25, 43, 56.
 
 ---
 
@@ -125,7 +125,7 @@ Part 1 does not follow the technical guide's order exactly: the deck shows evasi
 
 Then make the link to what the audience already knows: "If this sounds familiar, it should. Availability, integrity and confidentiality are the CIA triad that information security has always protected. NIST calls the third one privacy, because in machine learning it covers two things at once: the confidentiality of the model, its weights and architecture, and the privacy of the people in its training data. The EU AI Act uses the classic word for the same attacks: confidentiality attacks. So the attacker wants what attackers have always wanted. What is new is where they can get it: through the training data, the model file and the answers, which is slide 3. Supply chain is not a fourth goal; it is a way in, and what comes through it breaks one of the three."
 
-Use the summary per objective if someone asks what a box means; Part 4 of the technical guide (§12 to §16) has a paragraph for every class, and slides 27 to 37 take them one at a time. The three things people most often confuse:
+Use the summary per objective if someone asks what a box means; Part 4 of the technical guide (§12 to §16) has a paragraph for every class, and slides 27 to 38 take them one at a time. The three things people most often confuse:
 
 * *Backdoor vs targeted poisoning.* A backdoor plants a trigger: any input carrying it at deployment gets the attacker's answer. Targeted poisoning changes the answer for a few specific inputs chosen in advance, which are not modified at deployment.
 * *Evasion vs black-box evasion.* Same goal; the black-box version sees only the model's outputs, scores or labels. Demo 3 is black box and sees labels only.
@@ -199,7 +199,7 @@ Use the summary per objective if someone asks what a box means; Part 4 of the te
 
 **If asked.** *What is the difference between attribute inference and reconstruction?* Attribute inference recovers one field given the rest of the record; reconstruction recovers whole records. NIST discusses both under §2.4.1.
 
-**Go deeper.** TG §4 and §16; slides 37 to 51 (TG §16 to §21) for membership and attribute inference in depth.
+**Go deeper.** TG §4 and §16; slides 38 to 52 (TG §16 to §21) for membership and attribute inference in depth.
 
 **Next.** "One of these, extraction, is easy to show with demo 3."
 
@@ -377,7 +377,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Say.** "Each framework names the same attacks differently. This table lets one test report or risk register use all five at once. Take membership inference: it is NISTAML.033, OWASP ML04, ATLAS technique AML.T0024.000, a confidentiality attack under Article 15(5), and covered by UK provisions 3.1 and 9.4. Evasion is NISTAML.022 or .025, OWASP ML01, ATLAS T0015, 'adversarial examples or model evasion' in the Act. The mapping is ours, built from the documents; the frameworks do not cross-reference each other this precisely. The last column says which demo shows each attack. Notice that prompt injection is not named in Article 15(5), although its general wording covers it."
 
-**Key facts.** Full table in TG §8.6. The release gate (slide 55) uses this mapping to give each control a verdict.
+**Key facts.** Full table in TG §8.6. The release gate (slide 56) uses this mapping to give each control a verdict.
 
 **If asked.** *Is there an official crosswalk?* Not at this level of detail; treat this one as a working tool and cite the source documents.
 
@@ -459,7 +459,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **On screen.** Six habits: assume the worst-case attacker; score on rows the builder never saw; check structure, not only scores; watch the tail; freeze the artefact; budget queries in rows, each with its sources in the green paper, NIST, the UK Code and OWASP. A footer: not covered are evasion and poisoning (demo 3's backdoor leaves holdout accuracy unchanged) and generative AI.
 
-**Say.** "Six habits from GRAIMATTER apply anywhere a model touches sensitive data or high-stakes decisions. Test against the strongest attacker you can imagine, because a released file gives them everything. Keep evaluation data away from the builder, and let someone else run the attacks. Look at the structure of the model, not just attack scores, because an attack can miss what a leaf count shows. Look at the tail of the score distribution, not just the average. Freeze the approved artefact and detect edits. Count queries in rows. In video 4b we run the demos that show each of these: slides 50, 44, 46 and 47. What GRAIMATTER does not give you is protection against evasion and poisoning. Demo 3 showed that its holdout accuracy check is blind to a backdoor, so other deployments need those tests too, and a generative system needs the prompt-injection controls of slide 12."
+**Say.** "Six habits from GRAIMATTER apply anywhere a model touches sensitive data or high-stakes decisions. Test against the strongest attacker you can imagine, because a released file gives them everything. Keep evaluation data away from the builder, and let someone else run the attacks. Look at the structure of the model, not just attack scores, because an attack can miss what a leaf count shows. Look at the tail of the score distribution, not just the average. Freeze the approved artefact and detect edits. Count queries in rows. In video 4b we run the demos that show each of these: slides 51, 45, 47 and 48. What GRAIMATTER does not give you is protection against evasion and poisoning. Demo 3 showed that its holdout accuracy check is blind to a backdoor, so other deployments need those tests too, and a generative system needs the prompt-injection controls of slide 12."
 
 **Key facts.** Green paper TECH 3, 6, 10, 16 and Appendices F-G; NIST §2.1.4, §2.4.2, §2.4.5; UK Code 6.2, 8.1.2, 8.3, 9.2.1, 9.4; OWASP ML10.
 
@@ -481,7 +481,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Say.** "In the first video we went through the attacks quickly. Now we take them one by one, in the order of the NIST taxonomy. This video covers the three properties of the CIA triad, availability, integrity and confidentiality, and then the supply chain. For each class: what the attacker does, what the defences are and where they stop, and where this repository shows it. Then we run the demo and read its output section by section, so you can see where every number comes from: demo 3 for integrity, demo 5 for confidentiality in its simplest form, demo 4 for the supply chain. Video 4b then goes deep on confidentiality with GRAIMATTER."
 
-**Key facts.** Part 4a: TG §12 to §16 (§16 for demo 5), slides 26 to 35. Demos run: `run_aml_demo.py` sections 1 and 3, `run_confidentiality_demo.py` sections 1 to 3, `run_supply_chain_demo.py` all six sections.
+**Key facts.** Part 4a: TG §12 to §16 (§16 for demo 5), slides 26 to 36. Demos run: `run_aml_demo.py` sections 1 and 3, `run_confidentiality_demo.py` sections 1 to 3, `run_supply_chain_demo.py` all six sections.
 
 **If asked.** *Do I need to have seen video 1?* It helps: slides 7, 8 and 11 show the results this video takes apart.
 
@@ -631,9 +631,34 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Go deeper.** Demo guide §5; TG §16; `confidentiality_report.txt`.
 
+**Next.** "What does it mean to be above that cut? How sure is the attacker about one person?"
+
+### Slide 34 · Above the cut: how sure is the attacker about one person?
+
+*About 2 minutes.*
+
+**On screen.** Four short paragraphs on the left (what the attacker knows, what they bet on, what it depends on, a stricter cut) and, on the right, the table printed in section 1 of `confidentiality_report.txt` under "What 'above the cut' means": the same scores as slide 33 cut at the 80th, 90th, 95th and 99th percentile, with TPR, FPR, how often the attacker is right on a 50/50 mix, and the share of the people called members who really are, with half members (1:1) and with one member per 100 strangers (1:100). A card "In one sentence".
+
+**Say.** "Slide 33 gives the attacker 91.8%. What does that mean for one person above the cut? The attacker does not know that this person is a member. What they know is measured, not assumed: only 10% of their own 200 outsiders score above 0.72. Their bet is that the model memorised, so members score higher, and here the bet pays: 960 members are above the cut against 124 strangers. If the people tested are half and half, 960 of the 1,084 called members really are, 88.6%. But that depends on the mix. If there is one member per hundred strangers, the cut catches 9.6 members and still 124 strangers: only 7.2% of the accusations are right. Would a stricter cut help? At the 95th percentile the attacker is right 92.1% of the time, barely more than 91.8%: fewer false accusations, fewer members found. At the 99th, right falls to 77.6%, but 98.6% of the people called are members. A stricter cut does not make the attacker right more often; it makes each accusation more trustworthy. That is why GRAIMATTER looks at hits with very few false alarms. And with a minimum leaf of 20 the bet fails: right 54.3%, near a coin."
+
+**Key facts.** 90th percentile (slide 33): threshold 0.720, TPR 96.0%, FPR 12.4%, right 91.8%, members among called 88.6% (1:1) / 7.2% (1:100). 80th: 0.676, 99.5%, 21.6%, 88.9%, 82.2% / 4.4%. 95th: 0.740, 92.8%, 8.6%, 92.1%, 91.5% / 9.7%. 99th: 0.825, 56.1%, 0.8%, 77.6%, 98.6% / 41.2%. Leaf 20: right 54.3%.
+
+**Where each number comes from.** The table and its `Working, 90th row:` line in section 1 of the output. Full derivation: [demo guide §5.1, "What being above the cut means"](Demo_Guide_EN.md#what-being-above-the-cut-means).
+
+* *Each row.* Same 1,000 members and 1,000 strangers, same scores; only the cut changes. The cut is the (1 − share) quantile of the attacker's 200 outsiders (`membership.calibrate_threshold(reference, 0.05)` for the 95th). TPR, FPR and right are counted as on slide 33.
+* *88.6%.* Half and half: 960 members and 124 strangers are above 0.72, so 960 / (960 + 124) = 960 / 1,084 = 88.6% of the people called members are members.
+* *7.2%.* One member per 100 strangers: for every 1,000 strangers, 10 members, of whom 96% = 9.6 are caught, against 124 strangers: 9.6 / (9.6 + 124) = 7.2%. In general: m × TPR / (m × TPR + FPR), with m members per stranger.
+* *Why right barely moves at the 95th.* Right on a 50/50 mix is 0.5 × TPR + 0.5 × (1 − FPR). Going from the 90th to the 95th loses 3.2 points of TPR and gains 3.8 of 1 − FPR: 0.5 × 92.8% + 0.5 × 91.4% = 92.1%. At the 99th TPR falls to 56.1%: 0.5 × 56.1% + 0.5 × 99.2% = 77.6%.
+
+**If asked.** *So is 91.8% "the chance a stranger was in the training data"?* No. It is how often the attacker is right over a test set with as many members as strangers. For one accused person, the chance they are a member is the 88.6% (1:1) or the 7.2% (1:100) column, and it depends on how many members there are among the people tested. *Why does GRAIMATTER not use accuracy?* Because what harms one person is a confident accusation; it reports the hits at a very low false alarm rate (TPR at low FPR), the 99th row of this table.
+
+**Code.** [`run_confidentiality_demo.py`](../../demo/run_confidentiality_demo.py), the block "What 'above the cut' means" in §5.1; [`membership.py`](../../demo/confidentiality_demo/membership.py) `calibrate_threshold()`, `evaluate()`; [`explain.py`](../../demo/confidentiality_demo/explain.py) `flagged_who_are_members()`.
+
+**Go deeper.** Demo guide §5.1; TG §16.
+
 **Next.** "That closes the triad. The last way in does not touch training at all: the supply chain."
 
-### Slide 34 · Supply chain: the attack arrives with what you download
+### Slide 35 · Supply chain: the attack arrives with what you download
 
 *About 3 minutes.*
 
@@ -649,7 +674,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Demo 4 shows four ways a mirror can change what you download."
 
-### Slide 35 · Demo 4, step by step: pin at approval, check each download
+### Slide 36 · Demo 4, step by step: pin at approval, check each download
 
 *About 6 minutes, with the live run.*
 
@@ -671,7 +696,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 ## Part 4b · The attacks in detail: privacy (video 4b)
 
-### Slide 36 · Privacy: each NIST class, demos 1 and 2, and a release gate
+### Slide 37 · Privacy: each NIST class, demos 1 and 2, and a release gate
 
 *About 1 minute. Opens video 4b.*
 
@@ -679,7 +704,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Say.** "The second half of the detailed walkthrough is privacy, NIST's word for confidentiality, and the objective GRAIMATTER covers in depth. We start with the classes and with extraction, which demo 3 runs. Then we go through the two GRAIMATTER demos section by section: the hand-written checks of demo 1 and the official SACRO-ML package in demo 2. We close with the classes generative AI adds, the limits of all this, and a release gate that reads every demo against named obligations."
 
-**Key facts.** Part 4b: TG §16 to §22 and the closing, slides 36 to 57. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
+**Key facts.** Part 4b: TG §16 to §22 and the closing, slides 37 to 58. Demos run: `run_aml_demo.py` section 2, `run_demo.py`, `run_sacroml_demo.py` (a few minutes; show its saved report if you cannot wait), `run_gate.py`.
 
 **If asked.** *Do I need video 3 first?* It helps: it explains why a TRE cares about these attacks and what its controls are.
 
@@ -687,7 +712,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "The privacy classes first."
 
-### Slide 37 · Privacy: what the model learned, and the model itself
+### Slide 38 · Privacy: what the model learned, and the model itself
 
 *About 3 minutes.*
 
@@ -703,7 +728,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Extraction is the one demo 3 runs. Back to its output."
 
-### Slide 38 · Extraction, step by step: invented rows, real answers, a copy
+### Slide 39 · Extraction, step by step: invented rows, real answers, a copy
 
 *About 4 minutes, with the live run.*
 
@@ -723,7 +748,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Now the data side of privacy, with the GRAIMATTER demos, starting from the cohort."
 
-### Slide 39 · Half the rows never reach the researcher
+### Slide 40 · Half the rows never reach the researcher
 
 *About 1.5 minutes.*
 
@@ -741,7 +766,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "First, the paper's own case study: attribute inference on one person."
 
-### Slide 40 · One planted person: 20 queries recover two hidden fields
+### Slide 41 · One planted person: 20 queries recover two hidden fields
 
 *About 1.5 minutes.*
 
@@ -759,13 +784,13 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "To judge a model we need numbers. Here are the metrics."
 
-### Slide 41 · Chance, the tail, and how rare a member is
+### Slide 42 · Chance, the tail, and how rare a member is
 
 *About 2 minutes.*
 
 **On screen.** Figure with three ideas. AUC, the average: the chance the attack scores a random member higher than a random non-member; 0.5 is a coin toss. FDIF, the tail: share of members in the top 10% of scores minus the share in the bottom 10%. How rare a member is: P(member | flagged) = A·TPR / (A·TPR + (1 − A)·FPR); for the unconstrained tree (TPR 1.000, FPR 0.588) that is 0.630 at A = 0.5 and 0.017 at A = 0.01.
 
-**Say.** "Membership inference asks whether a row was in the training set. The attack gives each row a score. AUC is the chance that a random member scores higher than a random non-member; 0.5 is a coin toss. Advantage is the gap between the true-positive and false-positive rates. TPR at 10% FPR asks how many real members the attack catches when it may raise a false alarm on only about 10% of non-members. FDIF looks at the extremes: the share of members in the top 10% of scores minus the share in the bottom 10%, with a permutation p-value. Why both? Because a model can look like chance on average and still expose a group of people in the tail; we will see exactly that on slide 44. Finally, the membership posterior: if the attack says 'member', how likely is that to be true? It depends on how rare members are. For our unconstrained tree it is 0.630 when half the candidates are members, and 0.017 when one in a hundred is."
+**Say.** "Membership inference asks whether a row was in the training set. The attack gives each row a score. AUC is the chance that a random member scores higher than a random non-member; 0.5 is a coin toss. Advantage is the gap between the true-positive and false-positive rates. TPR at 10% FPR asks how many real members the attack catches when it may raise a false alarm on only about 10% of non-members. FDIF looks at the extremes: the share of members in the top 10% of scores minus the share in the bottom 10%, with a permutation p-value. Why both? Because a model can look like chance on average and still expose a group of people in the tail; we will see exactly that on slide 45. Finally, the membership posterior: if the attack says 'member', how likely is that to be true? It depends on how rare members are. For our unconstrained tree it is 0.630 when half the candidates are members, and 0.017 when one in a hundred is."
 
 **Worked examples.** Use these if the room wants numbers; TG §18.1 has the full working.
 
@@ -783,13 +808,13 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Now demo 1 on the unconstrained tree."
 
-### Slide 42 · Perfect training accuracy and a leaf of one person: refused
+### Slide 43 · Perfect training accuracy and a leaf of one person: refused
 
 *About 2 minutes.*
 
 **On screen.** Table of checks for the unconstrained tree with the seeded result, the demo limit and whether it fires: training vs set-aside accuracy 1.000 vs 0.590 (gap 0.410, limit 0.15, fires); smallest leaf 1 row; file size ratio 0.267 (limit 0.75, does not fire); worst-case membership AUC 0.708 (limit 0.62, fires); advantage 0.412 (limit 0.20, fires); TPR at 10% FPR 0.156 (limit 0.35, does not fire); FDIF 0.620 with p = 0.003 (fires); weight attribute inference abstained. Decision: do not release, four rules fire. Note: the attribute attack abstained because the tree isolated rows with noise columns.
 
-**Say.** "The researcher would report 100% accuracy. On the environment's set-aside rows it is 59%. That gap of 0.41 is overfitting, and the smallest leaf holds one training row. The worst-case membership attack, the one Appendix G describes, reaches an AUC of 0.708 and an advantage of 0.412, and FDIF is 0.620 with a p-value of 0.003. Decision: do not release; four rules fire. Now notice what does *not* fire. The file is only 0.27 of the training table, and TPR at 10% FPR is 0.156. Size alone would have let this model through, which is why TECH 7 asks for a range of checks, not one. And the attribute attack on weight abstains, because this tree separates people using the noise columns, so changing someone's weight never moves them to a different leaf. Slide 40 was the case where the model does split on the hidden fields. Remember that these limits are a demo policy, not the paper's."
+**Say.** "The researcher would report 100% accuracy. On the environment's set-aside rows it is 59%. That gap of 0.41 is overfitting, and the smallest leaf holds one training row. The worst-case membership attack, the one Appendix G describes, reaches an AUC of 0.708 and an advantage of 0.412, and FDIF is 0.620 with a p-value of 0.003. Decision: do not release; four rules fire. Now notice what does *not* fire. The file is only 0.27 of the training table, and TPR at 10% FPR is 0.156. Size alone would have let this model through, which is why TECH 7 asks for a range of checks, not one. And the attribute attack on weight abstains, because this tree separates people using the noise columns, so changing someone's weight never moves them to a different leaf. Slide 41 was the case where the model does split on the hidden fields. Remember that these limits are a demo policy, not the paper's."
 
 **Key facts.** `demo_report.txt`, section 4. Limits in `demo/graimatter_demo/disclosure.py` (ELA 8). Posterior 0.630 / 0.017. Salem-synth on this tree: AUC 0.703, FDIF 1.000.
 
@@ -801,7 +826,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Same data, but through a safe wrapper."
 
-### Slide 43 · Leaf 20, depth 4: AUC 0.528, released under a demo policy
+### Slide 44 · Leaf 20, depth 4: AUC 0.528, released under a demo policy
 
 *About 2 minutes.*
 
@@ -819,7 +844,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "But one attack sees something the average hides."
 
-### Slide 44 · The quiet failure: AUC near 0.5, but FDIF 0.160
+### Slide 45 · The quiet failure: AUC near 0.5, but FDIF 0.160
 
 *About 1.5 minutes.*
 
@@ -837,7 +862,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Some models should never be released as files at all."
 
-### Slide 45 · Nearest neighbours and SVC store rows: refuse them
+### Slide 46 · Nearest neighbours and SVC store rows: refuse them
 
 *About 1.5 minutes.*
 
@@ -855,7 +880,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "What if the researcher edits the model after training?"
 
-### Slide 46 · Editing the model after fit() is caught
+### Slide 47 · Editing the model after fit() is caught
 
 *About 2 minutes.*
 
@@ -873,7 +898,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "If the model stays on a server, the environment can limit queries."
 
-### Slide 47 · Count rows, not calls: one patient allowed, 20 blocked
+### Slide 48 · Count rows, not calls: one patient allowed, 20 blocked
 
 *About 1.5 minutes.*
 
@@ -891,7 +916,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "The last check in demo 1 is differential privacy, on the simplest possible release."
 
-### Slide 48 · Noise protects a mean; the best of 50 draws undoes it
+### Slide 49 · Noise protects a mean; the best of 50 draws undoes it
 
 *About 1.5 minutes.*
 
@@ -909,7 +934,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Now the same cohort through the official toolkit."
 
-### Slide 49 · sacroml: leaf 5, 'proceed to next step', still flagged
+### Slide 50 · sacroml: leaf 5, 'proceed to next step', still flagged
 
 *About 3 minutes.*
 
@@ -927,7 +952,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Same tree: 0.708 in one demo, 0.500 in the other."
 
-### Slide 50 · Same tree, AUC 0.708 or 0.500: two different attacks
+### Slide 51 · Same tree, AUC 0.708 or 0.500: two different attacks
 
 *About 3 minutes.*
 
@@ -945,7 +970,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Three differences sum up the two demos."
 
-### Slide 51 · Leaf 20 vs 5, label-aware vs probability-only
+### Slide 52 · Leaf 20 vs 5, label-aware vs probability-only
 
 *About 2 minutes.*
 
@@ -963,7 +988,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "One more way data can leave a research environment: written into the model on purpose."
 
-### Slide 52 · Writing data into the model: two channels an accuracy check misses
+### Slide 53 · Writing data into the model: two channels an accuracy check misses
 
 *About 2 minutes.*
 
@@ -981,7 +1006,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "One more family of classes before we close: generative AI."
 
-### Slide 53 · Generative AI keeps the objectives and adds classes
+### Slide 54 · Generative AI keeps the objectives and adds classes
 
 *About 1.5 minutes.*
 
@@ -997,7 +1022,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Before the gate, what this repository does not decide."
 
-### Slide 54 · What this repository does not decide
+### Slide 55 · What this repository does not decide
 
 *About 1.5 minutes.*
 
@@ -1017,7 +1042,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 ## Closing (end of video 4b)
 
-### Slide 55 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
+### Slide 56 · One gate, four lenses: GRAIMATTER passes, Article 15(5) fails
 
 *About 2.5 minutes.*
 
@@ -1035,7 +1060,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "Everything here can be rerun in a few minutes."
 
-### Slide 56 · Six demos and a gate, reports under demo/output
+### Slide 57 · Six demos and a gate, reports under demo/output
 
 *About 1 minute.*
 
@@ -1051,7 +1076,7 @@ Three lessons for us. First, the way in was not a model but AI tooling that held
 
 **Next.** "And the documents behind all of this."
 
-### Slide 57 · Read further
+### Slide 58 · Read further
 
 *About 1 minute, then questions.*
 
