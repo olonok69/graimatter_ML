@@ -717,8 +717,8 @@ Cada fichero posterior se comprueba con `_user_checks()`: `verify()` frente al p
 | Número (diapositiva 33) | Qué es | Cómo se calcula | Con los recuentos de esta ejecución | Código |
 | --- | --- | --- | --- | --- |
 | 1,000 / 0,605 | Acierto del modelo en sus filas de entrenamiento / en los desconocidos | filas con la etiqueta correcta ÷ filas | 1.000 / 1.000; 605 / 1.000 | `run_confidentiality_demo.py`, bloque §5.0 |
-| **0,83** | Confianza media de los miembros en la verdad | suma de las confianzas de los 1.000 miembros ÷ 1.000 | 831,39 / 1.000 = 0,631 × 1,00 + 0,369 × 0,54 | `membership.confidence_in_truth()`; `explain.member_average()` |
-| **0,54** | Confianza media de los desconocidos en la verdad | suma de las confianzas de los 1.000 desconocidos ÷ 1.000 | 542,61 / 1.000 = 0,605 × 0,64 + 0,395 × 0,39 | `membership.confidence_in_truth()`; `explain.stranger_average()` |
+| **0,83** | Confianza media de los miembros en la verdad (una comprobación que solo podemos hacer nosotros; los pasos 2 y 3 no la usan) | suma de las confianzas de los 1.000 miembros ÷ 1.000 | 831,39 / 1.000 = 0,631 × 1,00 + 0,369 × 0,54 | `membership.confidence_in_truth()`; `explain.member_average()` |
+| **0,54** | Confianza media de los desconocidos en la verdad (igual: una comprobación, no una entrada) | suma de las confianzas de los 1.000 desconocidos ÷ 1.000 | 542,61 / 1.000 = 0,605 × 0,64 + 0,395 × 0,39 | `membership.confidence_in_truth()`; `explain.stranger_average()` |
 | 63,1% | Proporción de los miembros que vio cada árbol | esperado 1 − (1 − 1/1.000)^1.000 = 0,632; contado en los 200 árboles | 0,631 | `explain.trained_on()`, `explain.bootstrap_share()` |
 | 0,567 | Lo máximo que puede acertar con un desconocido un árbol que copia a un vecino | media de p² + (1 − p)² sobre el riesgo real p de los desconocidos | 0,567 (los árboles llegan a 0,54) | `cohort.risk_probability()`, `explain.coin_agreement()` |
 | **0,72** | El umbral | percentil 90 de los 200 desconocidos del atacante (`np.quantile`, lineal) | posición 0,9 × (200 − 1) = 179,1 en la lista ordenada; los valores n.º 179 y 180 son ambos 0,720 | `membership.calibrate_threshold()`; `explain.threshold_working()` |
@@ -770,18 +770,25 @@ Después `evaluate()` compara las decisiones con la verdad: la proporción de mi
 **Lo que se ve.**
 
 ```
-  Step 1, ask.       Average confidence in the truth: members 0.83, strangers 0.54.
+  Step 1, ask.       One confidence per person: 1000 members, 1000 strangers and the attacker's 200. These individual numbers, not their averages, go to steps 2 and 3.
     Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a person's real outcome, and the confidence is the share of the 200 trees that vote 1.
-    Members:   sum of the 1000 confidences 831.39 / 1000 = 0.83. Each tree trained on a bootstrap sample and saw 63.1% of the members; those trees always vote 1 (1.00); the trees that did not see a member vote 1 in 0.54 of cases, as for a stranger: 0.631 x 1.00 + 0.369 x 0.54 = 0.83.
-    Strangers: sum 542.61 / 1000 = 0.54. No tree saw them. The model's label is right for 605 of them (average confidence 0.64) and wrong for 395 (0.39): 0.605 x 0.64 + 0.395 x 0.39 = 0.54.
-    Why 63.1%: each tree draws 1000 rows from the 1000 members, putting each back. One member is missed by one draw with probability 0.999, by all 1000 with 0.999^1000 = 0.368 (about 1/e), so is picked with 1 - 0.368 = 0.632. Counted over the 200 trees of this run: 0.631.
-    Why 0.54: a tree that never saw a person puts them in the leaf of a similar training person and copies that person's label. Each outcome is a weighted coin (weight p = the person's true risk), and two coins with the same p agree with probability p^2 + (1 - p)^2. Averaged over the 1000 strangers' true p: 0.567, the most a tree that copies a neighbour can get right about someone it never saw. The trees also split on the noise columns, so their neighbours are less similar: 0.54. A blind coin would give 0.50.
+    The attacker's 200 strangers (used in step 2), first 8: 0.715, 0.450, 0.520, 0.160, 0.460, 0.710, 0.510, 0.585, ...
+    People being tested (used in step 3), first 5 members: 0.800, 0.785, 0.905, 0.935, 0.915, ...
+                                      first 5 strangers: 0.670, 0.225, 0.545, 0.530, 0.695, ...
+    The attacker does not know which tested people are members: that is what step 3 decides. The labels above are ours.
   Step 2, calibrate. Threshold 0.72: the 90th percentile of the attacker's 200 strangers, so at most 10.0% of them score above it.
     Working. Sort the 200 confidences from low to high. The 90th percentile sits at position 0.9 x (200 - 1) = 179.1, counting from 0: value no. 179 is 0.720, no. 180 is 0.720, so 0.720 + 0.1 x (0.720 - 0.720) = 0.720.
     Check: 18 of the 200 (9.0%) are strictly above 0.72; 4 sit exactly on it and count as 'not a member'.
   Step 3, decide.    Called members: 96.0% of the real members, 12.4% of the strangers.
+    Person by person, members:   0.800 > 0.72 -> member, 0.785 > 0.72 -> member, 0.905 > 0.72 -> member, 0.935 > 0.72 -> member, 0.915 > 0.72 -> member, ...
+    Person by person, strangers: 0.670 <= 0.72 -> not a member, 0.225 <= 0.72 -> not a member, 0.545 <= 0.72 -> not a member, 0.530 <= 0.72 -> not a member, 0.695 <= 0.72 -> not a member, ...
     Working. Members above 0.72: 960 of 1000 = 96.0% (true positive rate, TPR). Strangers above 0.72: 124 of 1000 = 12.4% (false positive rate, FPR).
     The FPR is 12.4%, not the 10.0% aimed for, because the threshold was set on 200 strangers, a small sample of the population.
+  A check only we can do (we know who is a member): average confidence, members 0.83, strangers 0.54. Steps 2 and 3 do not use these averages, and the attacker cannot compute them; they show in advance that members score higher.
+    Members:   sum of the 1000 confidences 831.39 / 1000 = 0.83. Each tree trained on a bootstrap sample and saw 63.1% of the members; those trees always vote 1 (1.00); the trees that did not see a member vote 1 in 0.54 of cases, as for a stranger: 0.631 x 1.00 + 0.369 x 0.54 = 0.83.
+    Strangers: sum 542.61 / 1000 = 0.54. No tree saw them. The model's label is right for 605 of them (average confidence 0.64) and wrong for 395 (0.39): 0.605 x 0.64 + 0.395 x 0.39 = 0.54.
+    Why 63.1%: each tree draws 1000 rows from the 1000 members, putting each back. One member is missed by one draw with probability 0.999, by all 1000 with 0.999^1000 = 0.368 (about 1/e), so is picked with 1 - 0.368 = 0.632. Counted over the 200 trees of this run: 0.631.
+    Why 0.54: a tree that never saw a person puts them in the leaf of a similar training person and copies that person's label. Each outcome is a weighted coin (weight p = the person's true risk), and two coins with the same p agree with probability p^2 + (1 - p)^2. Averaged over the 1000 strangers' true p: 0.567, the most a tree that copies a neighbour can get right about someone it never saw. The trees also split on the noise columns, so their neighbours are less similar: 0.54. A blind coin would give 0.50.
   How the three steps connect: ask gives one number per person; calibrate picks one cut, using only people known to be outsiders; decide applies that same cut to everyone.
     Confidence    Members  Strangers  Attacker's 200
     <= 0.50             0        397              79
@@ -809,28 +816,11 @@ Two people, both high risk, as the attacker sees them:
 
 **De dónde salen los números, paso a paso.**
 
-*Paso 1: de dónde salen 0,83 y 0,54.*
+*Paso 1: un número por persona.* El atacante pregunta al modelo por cada persona y se queda con un número de cada una. Esos números individuales, y no ninguna media, son lo que usan los pasos 2 y 3.
 
 1. **Qué responde el modelo.** Para cada fila, `predict_proba` devuelve dos números que suman 1: la probabilidad de riesgo bajo y la de riesgo alto. Para el miembro del ejemplo devuelve `[0.20, 0.80]`. Su resultado real es riesgo alto, así que su **confianza en la verdad** es 0,80. Para una persona de riesgo bajo sería el primer número.
 2. **Por qué ese número es un recuento de árboles.** Un random forest responde con la media de sus 200 árboles. Cada árbol de este bosque creció hasta que cada hoja contiene una sola persona de entrenamiento, así que cada árbol responde 1,0 para un resultado y 0,0 para el otro. La confianza es por tanto **la proporción de los 200 árboles que votan por el resultado real**, siempre un múltiplo de 1/200 = 0,005. El 0,80 del miembro son 160 árboles de 200.
-3. **0,83 es una media.** Se suman las confianzas de los 1.000 miembros y se divide entre 1.000: 831,39 / 1.000 = 0,83.
-4. **Por qué los miembros puntúan tan alto.** Un árbol que vio a un miembro lo tiene solo en una hoja y **siempre vota por su resultado real** (1,00). Los árboles que no lo vieron votan por él el 54% de las veces, como con un desconocido (punto 5). Así que la media depende de cuántos árboles vieron a cada miembro: el 63,1% en esta ejecución. Entonces 0,631 × 1,00 + 0,369 × 0,54 = **0,83**.
-
-   *De dónde sale el 63%.* No lo eligió nadie: el random forest de scikit-learn usa `bootstrap=True` por defecto, y `forest()` lo mantiene. Para cada árbol se sacan 1.000 filas al azar de los 1.000 miembros **con reemplazo**, como sacar una bola de una urna de 1.000, apuntarla y devolverla, 1.000 veces. A unas personas les toca dos o tres veces y a otras ninguna, así que las 1.000 extracciones cubren solo a unas 632 personas distintas. Para un miembro:
-   1. No sale en una extracción: 999 / 1.000 = 0,999.
-   2. No sale en ninguna de las 1.000: 0,999^1000 = 0,368, aproximadamente 1/e (e = 2,718).
-   3. Sale al menos una vez: 1 − 0,368 = **0,632**.
-
-   Eso vale para cada miembro, así que cada árbol ve de media al 63,2%. La ejecución no lo supone: `explain.trained_on()` lee `estimators_samples_` (las filas que sacó cada árbol) y cuenta, 63,1% en los 200 árboles; la diferencia es azar. Para el miembro del ejemplo, 130 de 200 árboles (65%). `explain.bootstrap_share()` imprime los tres pasos.
-5. **0,54 para los desconocidos.** Ningún árbol vio nunca a un desconocido. Sus confianzas suman 542,61, así que 542,61 / 1.000 = **0,54**. Separando según acierte o no el modelo: da la etiqueta correcta a 605 desconocidos (confianza media 0,64) y la incorrecta a 395 (media 0,39): 0,605 × 0,64 + 0,395 × 0,39 = 0,54.
-
-   *Por qué sale cerca del 54%.* Un árbol que nunca vio a una persona la deja caer en la hoja de *otra* persona de entrenamiento con valores parecidos, y vota la etiqueta de esa otra persona. Así que el voto acierta cuando dos personas parecidas tienen el mismo resultado.
-   1. El resultado de cada persona es una moneda trucada: sale "alto riesgo" con su propia probabilidad p, entre 0,1 y 0,9 aproximadamente según edad, tabaco, diabetes, etc. (`cohort.risk_probability()`, §0.3).
-   2. Dos monedas con la misma p coinciden con probabilidad p² + (1 − p)²: 0,50 con p = 0,5; 0,68 con p = 0,2.
-   3. Promediado sobre las p reales de los 1.000 desconocidos sale **0,567** (`explain.coin_agreement()`): lo máximo que puede acertar un árbol que copia a un vecino, aunque encontrara uno perfectamente parecido.
-   4. Los árboles también cortan por las 10 columnas de ruido, así que sus "vecinos" se parecen menos: **0,54**. Una moneda a ciegas daría 0,50.
-
-   El mismo 0,54 es el voto de los árboles que no vieron a un miembro (punto 4): para ellos, un miembro es un desconocido más.
+3. **Qué pasa el paso 1 a los siguientes.** Tres listas de números. Los 200 desconocidos del atacante (los primeros en la salida: 0,715, 0,450, 0,520, 0,160, ...) van al paso 2. Las personas que se ponen a prueba (miembros 0,800, 0,785, 0,905, ...; desconocidos 0,670, 0,225, 0,545, ...) van al paso 3. El atacante no sabe qué persona es miembro; las etiquetas de la salida son nuestras, para puntuar el ataque después.
 
 *El ejemplo.* El miembro: 130 de los 200 árboles se entrenaron con él, y los 130 votan "riesgo alto"; de los 70 árboles que no lo vieron, 30 votan "riesgo alto". 130 + 30 = 160, y 160 / 200 = 0,80. El desconocido: ningún árbol lo vio, y 134 de 200 votan "riesgo alto": 0,67. El miembro tiene menos factores de riesgo que el desconocido y, aun así, saca el número más alto: los 130 árboles que lo recuerdan marcan la diferencia.
 
@@ -844,11 +834,33 @@ Two people, both high risk, as the attacker sees them:
 
 *Paso 3: de dónde salen 96,0% y 12,4%.*
 
+0. **Persona a persona.** El número de cada persona que se pone a prueba, del paso 1, se compara con el corte del paso 2: el primer miembro, 0,800 > 0,72, se declara miembro; el primer desconocido, 0,670 ≤ 0,72, no. Haciéndolo con todos y contando salen las dos tasas de abajo.
 1. Se compara cada uno de los 1.000 miembros con 0,72: 960 quedan por encima. 960 / 1.000 = **96,0%**. Es la **tasa de verdaderos positivos (TPR)**: miembros reales bien declarados miembros. En el código es `members_caught`.
 2. Se compara cada uno de los 1.000 desconocidos con 0,72: 124 quedan por encima. 124 / 1.000 = **12,4%**. Es la **tasa de falsos positivos (FPR)**: desconocidos declarados miembros por error. En el código es `false_alarms`.
 3. Por qué 12,4% y no el 10% buscado: el umbral se fijó con 200 personas. Con 1.000 desconocidos nuevos la proporción por encima sale algo distinta. Un conjunto de calibración pequeño da un umbral menos exacto.
 4. **91,8%.** Imagina 1.000 miembros y 1.000 desconocidos. El atacante acierta con los 960 miembros que declara miembros y con los 876 desconocidos (1.000 − 124) que deja fuera: (960 + 876) / 2.000 = 91,8%. Lo mismo como fórmula: 0,5 × 96,0% + 0,5 × 87,6% = 91,8%.
 5. **AUC 0,976.** Se toman todas las parejas miembro–desconocido: 1.000 × 1.000 = 1.000.000 parejas. En 975.038 el miembro tiene la confianza más alta, en 2.535 empatan. AUC = (975.038 + 0,5 × 2.535) / 1.000.000 = 0,976. No depende de ningún umbral.
+
+*Una comprobación que solo podemos hacer nosotros: las medias 0,83 y 0,54.* El atacante no puede calcularlas, porque tendría que saber quién es miembro, y los pasos 2 y 3 no las usan. Las calculamos nosotros porque conocemos la verdad: muestran de antemano que los miembros puntúan más que los desconocidos, así que un único corte puede separarlos. Si las dos medias fueran iguales, ningún umbral funcionaría. Lo separadas que están anticipa que el ataque funcionará bien; lo bien que funciona de verdad es el recuento del paso 3.
+
+1. **0,83 es una media.** Se suman las confianzas de los 1.000 miembros y se divide entre 1.000: 831,39 / 1.000 = 0,83.
+2. **Por qué los miembros puntúan tan alto.** Un árbol que vio a un miembro lo tiene solo en una hoja y **siempre vota por su resultado real** (1,00). Los árboles que no lo vieron votan por él el 54% de las veces, como con un desconocido (punto 3 de esta comprobación). Así que la media depende de cuántos árboles vieron a cada miembro: el 63,1% en esta ejecución. Entonces 0,631 × 1,00 + 0,369 × 0,54 = **0,83**.
+
+   *De dónde sale el 63%.* No lo eligió nadie: el random forest de scikit-learn usa `bootstrap=True` por defecto, y `forest()` lo mantiene. Para cada árbol se sacan 1.000 filas al azar de los 1.000 miembros **con reemplazo**, como sacar una bola de una urna de 1.000, apuntarla y devolverla, 1.000 veces. A unas personas les toca dos o tres veces y a otras ninguna, así que las 1.000 extracciones cubren solo a unas 632 personas distintas. Para un miembro:
+   1. No sale en una extracción: 999 / 1.000 = 0,999.
+   2. No sale en ninguna de las 1.000: 0,999^1000 = 0,368, aproximadamente 1/e (e = 2,718).
+   3. Sale al menos una vez: 1 − 0,368 = **0,632**.
+
+   Eso vale para cada miembro, así que cada árbol ve de media al 63,2%. La ejecución no lo supone: `explain.trained_on()` lee `estimators_samples_` (las filas que sacó cada árbol) y cuenta, 63,1% en los 200 árboles; la diferencia es azar. Para el miembro del ejemplo, 130 de 200 árboles (65%). `explain.bootstrap_share()` imprime los tres pasos.
+3. **0,54 para los desconocidos.** Ningún árbol vio nunca a un desconocido. Sus confianzas suman 542,61, así que 542,61 / 1.000 = **0,54**. Separando según acierte o no el modelo: da la etiqueta correcta a 605 desconocidos (confianza media 0,64) y la incorrecta a 395 (media 0,39): 0,605 × 0,64 + 0,395 × 0,39 = 0,54.
+
+   *Por qué sale cerca del 54%.* Un árbol que nunca vio a una persona la deja caer en la hoja de *otra* persona de entrenamiento con valores parecidos, y vota la etiqueta de esa otra persona. Así que el voto acierta cuando dos personas parecidas tienen el mismo resultado.
+   1. El resultado de cada persona es una moneda trucada: sale "alto riesgo" con su propia probabilidad p, entre 0,1 y 0,9 aproximadamente según edad, tabaco, diabetes, etc. (`cohort.risk_probability()`, §0.3).
+   2. Dos monedas con la misma p coinciden con probabilidad p² + (1 − p)²: 0,50 con p = 0,5; 0,68 con p = 0,2.
+   3. Promediado sobre las p reales de los 1.000 desconocidos sale **0,567** (`explain.coin_agreement()`): lo máximo que puede acertar un árbol que copia a un vecino, aunque encontrara uno perfectamente parecido.
+   4. Los árboles también cortan por las 10 columnas de ruido, así que sus "vecinos" se parecen menos: **0,54**. Una moneda a ciegas daría 0,50.
+
+   El mismo 0,54 es el voto de los árboles que no vieron a un miembro (punto 2): para ellos, un miembro es un desconocido más.
 
 *Cómo se enlazan los tres pasos.* Los tres pasos son una cadena, y cada uno le pasa una sola cosa al siguiente:
 
@@ -871,13 +883,13 @@ La tabla que imprime el informe enseña la cadena de un vistazo: las mismas fran
 
 Por encima de la línea: 273 + 575 + 112 = **960** miembros (96,0%), 109 + 15 = **124** desconocidos (12,4%) y 13 + 5 = 18 de los 200 del atacante, el corte del paso 2. Leyendo las columnas hacia abajo: la de los miembros está empujada hacia abajo, la de los desconocidos hacia arriba, y la línea los separa.
 
-* **Por qué pasan casi todos los miembros.** Por encima de 0,72 significa al menos 145 de los 200 árboles. A cada miembro lo vieron entre 101 y 147 árboles (126 de media), que votan por él seguro (punto 4), así que a un miembro típico solo le faltan unos 19 votos de los 74 árboles que no lo vieron, y esos árboles aciertan cerca del 54% de las veces. Los 40 que no llegan (1.000 − 960) tienen dos cosas en contra: los vieron menos árboles (120 de media), y los demás árboles votaron por su resultado real solo el 24% de las veces, frente al 56% de los miembros que pasan. Su resultado va a contracorriente del de las personas parecidas.
-* **Por qué pasan pocos desconocidos.** Ningún árbol los vio, así que no tienen votos seguros: al menos 145 árboles tienen que acertar copiando a una persona parecida (punto 5). Eso solo pasa cuando el resultado era previsible: los 124 que pasan tenían de media un 74% de probabilidad real del resultado que tuvieron (de `cohort.risk_probability()`), los demás un 54%.
+* **Por qué pasan casi todos los miembros.** Por encima de 0,72 significa al menos 145 de los 200 árboles. A cada miembro lo vieron entre 101 y 147 árboles (126 de media), que votan por él seguro (punto 2 de la comprobación), así que a un miembro típico solo le faltan unos 19 votos de los 74 árboles que no lo vieron, y esos árboles aciertan cerca del 54% de las veces. Los 40 que no llegan (1.000 − 960) tienen dos cosas en contra: los vieron menos árboles (120 de media), y los demás árboles votaron por su resultado real solo el 24% de las veces, frente al 56% de los miembros que pasan. Su resultado va a contracorriente del de las personas parecidas.
+* **Por qué pasan pocos desconocidos.** Ningún árbol los vio, así que no tienen votos seguros: al menos 145 árboles tienen que acertar copiando a una persona parecida (punto 3 de la comprobación). Eso solo pasa cuando el resultado era previsible: los 124 que pasan tenían de media un 74% de probabilidad real del resultado que tuvieron (de `cohort.risk_probability()`), los demás un 54%.
 * **Por qué 12,4% y no 10%.** El paso 2 usó solo 200 desconocidos, y con ellos el corte es 0,72. Con los 1.000 desconocidos el percentil 90 sería 0,735. 0,72 queda un poco por debajo, así que pasa algo más del 10% de los 1.000. Una muestra de calibración pequeña da un corte algo desplazado.
 
 El código de este bloque: `explain.score_bands()`, `explain.member_shortfall()`, `explain.stranger_predictability()`.
 
-**Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54), y el paso 1 explica por qué: dos de cada tres árboles recuerdan a cada miembro. Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla: el modelo no razona a partir de los factores de riesgo, recuerda a esa persona.
+**Cómo leerlo.** El modelo está más seguro sobre las personas que vio (0,83 frente a 0,54), y la comprobación de después del paso 3 explica por qué: dos de cada tres árboles recuerdan a cada miembro. Esa diferencia es la razón de que un único corte funcione, pero el corte se aplica persona a persona. Con un solo umbral el atacante encuentra 96 de cada 100 miembros y se equivoca con 12 de cada 100 desconocidos: acierta el 92% de las veces, donde una moneda acierta el 50%. Las dos personas del final son el ejemplo para enseñar en pantalla: el modelo no razona a partir de los factores de riesgo, recuerda a esa persona.
 
 ### 5.2 Inferencia de atributos: ¿cuál es el único campo que no sé?
 

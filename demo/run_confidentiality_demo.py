@@ -159,8 +159,8 @@ def main() -> dict:
     stranger_scores = membership.confidence_in_truth(model.predict_proba, strangers_x, strangers_y)
     reference_scores = membership.confidence_in_truth(model.predict_proba, reference_x, reference_y)
     report.p(
-        f"  Step 1, ask.       Average confidence in the truth: members "
-        f"{member_scores.mean():.2f}, strangers {stranger_scores.mean():.2f}."
+        f"  Step 1, ask.       One confidence per person: {N_MEMBERS} members, {N_STRANGERS} strangers and the "
+        f"attacker's {N_REFERENCE}. These individual numbers, not their averages, go to steps 2 and 3."
     )
     # Where 0.83 and 0.54 come from (Demo guide §5.1, box "Where the numbers come from").
     # explain.py opens the forest up, tree by tree; the attacker never needs to.
@@ -174,7 +174,20 @@ def main() -> dict:
         f"    Working. Every tree holds one training person per leaf, so each tree votes 1 or 0 for a "
         f"person's real outcome, and the confidence is the share of the {n_trees} trees that vote 1."
     )
+    # What the attacker actually has after step 1: one number per person. A few of them, so the
+    # hand-over to steps 2 and 3 is visible (Demo guide §5.1, "What each step hands to the next").
+    def _first(scores, k=8):
+        return ", ".join(f"{v:.3f}" for v in scores[:k])
+
+    report.p(f"    The attacker's {N_REFERENCE} strangers (used in step 2), first 8: {_first(reference_scores)}, ...")
+    report.p(f"    People being tested (used in step 3), first 5 members: {_first(member_scores, 5)}, ...")
+    report.p(f"                                      first 5 strangers: {_first(stranger_scores, 5)}, ...")
     report.p(
+        "    The attacker does not know which tested people are members: that is what step 3 decides. "
+        "The labels above are ours."
+    )
+    diagnostic = []  # the averages, printed after step 3: only someone who knows the truth can compute them
+    diagnostic.append(
         f"    Members:   sum of the {N_MEMBERS} confidences {member_scores.sum():.2f} / {N_MEMBERS} = "
         f"{member_scores.mean():.2f}. Each tree trained on a bootstrap sample and saw "
         f"{_pct(split['share_seen'])} of the members; those trees always vote 1 "
@@ -183,7 +196,7 @@ def main() -> dict:
         f"{split['share_seen']:.3f} x {split['vote_seen']:.2f} + {1 - split['share_seen']:.3f} x "
         f"{split['vote_unseen']:.2f} = {split['average']:.2f}."
     )
-    report.p(
+    diagnostic.append(
         f"    Strangers: sum {strangers_split['sum']:.2f} / {strangers_split['n']} = "
         f"{strangers_split['average']:.2f}. No tree saw them. The model's label is right for "
         f"{strangers_split['n_right']} of them (average confidence {strangers_split['conf_right']:.2f}) and "
@@ -194,7 +207,7 @@ def main() -> dict:
     )
     # Why 63% (Demo guide §5.1, step 1, point 4): drawing N_MEMBERS rows with replacement.
     draw = explain.bootstrap_share(N_MEMBERS)
-    report.p(
+    diagnostic.append(
         f"    Why {_pct(split['share_seen'])}: each tree draws {draw['n']} rows from the {draw['n']} members, "
         f"putting each back. One member is missed by one draw with probability {draw['miss_once']:.3f}, by all "
         f"{draw['n']} with {draw['miss_once']:.3f}^{draw['n']} = {draw['never']:.3f} (about 1/e), so is picked "
@@ -204,7 +217,7 @@ def main() -> dict:
     # Why 0.54 (Demo guide §5.1, step 1, point 5): a tree that never saw a person copies the label
     # of a similar training person; two coins with the same weight p agree with p^2 + (1 - p)^2.
     ceiling = explain.coin_agreement(risk_probability(strangers_x))
-    report.p(
+    diagnostic.append(
         f"    Why {strangers_split['average']:.2f}: a tree that never saw a person puts them in the leaf of a "
         f"similar training person and copies that person's label. Each outcome is a weighted coin (weight p "
         f"= the person's true risk), and two coins with the same p agree with probability p^2 + (1 - p)^2. "
@@ -239,6 +252,16 @@ def main() -> dict:
         f"members, {_pct(careless['false_alarms'])} of the strangers."
     )
     calls = explain.call_counts(member_scores, stranger_scores, threshold)
+    # Person by person: the same five members and strangers shown in step 1, against the cut of step 2.
+    def _verdicts(scores, k=5):
+        return ", ".join(
+            f"{v:.3f} {'>' if membership.decide(np.array([v]), threshold)[0] else '<='} {threshold:.2f} "
+            f"-> {'member' if membership.decide(np.array([v]), threshold)[0] else 'not a member'}"
+            for v in scores[:k]
+        )
+
+    report.p(f"    Person by person, members:   {_verdicts(member_scores)}, ...")
+    report.p(f"    Person by person, strangers: {_verdicts(stranger_scores)}, ...")
     report.p(
         f"    Working. Members above {threshold:.2f}: {calls['members_called']} of {calls['members']} = "
         f"{_pct(careless['members_caught'])} (true positive rate, TPR). Strangers above "
@@ -249,6 +272,16 @@ def main() -> dict:
         f"    The FPR is {_pct(careless['false_alarms'])}, not the {_pct(membership.FALSE_ALARM_RATE)} aimed "
         f"for, because the threshold was set on {N_REFERENCE} strangers, a small sample of the population."
     )
+    # A check only we can do, because we know who is a member: the averages (Demo guide §5.1,
+    # "A check only we can do"). They are not used by steps 2 and 3; they show in advance that
+    # members score higher, so a cut can separate them.
+    report.p(
+        f"  A check only we can do (we know who is a member): average confidence, members "
+        f"{member_scores.mean():.2f}, strangers {stranger_scores.mean():.2f}. Steps 2 and 3 do not use these "
+        "averages, and the attacker cannot compute them; they show in advance that members score higher."
+    )
+    for text in diagnostic:
+        report.p(text)
     # How the three steps connect (Demo guide §5.1, "How the three steps connect"): ask gives one
     # number per person, calibrate picks one cut on known outsiders, decide applies it to everyone.
     report.p(

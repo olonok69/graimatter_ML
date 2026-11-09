@@ -906,13 +906,12 @@ def build():
     d.text(s, LEFT, 2.15, 4.6, 4.3, [
         [("1  The model. ", True), ("Grown to one person per leaf, trained on 1,000 members. Right on 1,000 / 1,000 "
          "training rows (1.000), on 605 / 1,000 strangers (0.605).", False)],
-        [("2  Ask. ", True), ("Confidence = share of the 200 trees that vote for the person's real outcome. Members "
-         "0.83: 63% of the trees saw each one and vote 1, the rest 0.54 (0.631 x 1 + 0.369 x 0.54). "
-         "Strangers 0.54.", False)],
+        [("2  Ask. ", True), ("One number per person: the share of the 200 trees that vote for their real outcome "
+         "(member 0.80, stranger 0.67, ...). These go to steps 3 and 4, not their averages.", False)],
         [("3  Calibrate. ", True), ("Sort the attacker's 200 strangers; the 90th percentile (position 0.9 x 199 = "
          "179.1) is 0.72.", False)],
-        [("4  Decide. ", True), ("Above 0.72: 960 / 1,000 members (TPR 96.0%), 124 / 1,000 strangers (FPR 12.4%). "
-         "Right (960 + 876) / 2,000 = 91.8%. AUC 0.976.", False)],
+        [("4  Decide. ", True), ("Each person's number vs 0.72 (0.80 member, 0.67 not). Count: 960 / 1,000 members "
+         "(TPR 96.0%), 124 / 1,000 strangers (FPR 12.4%). A check only we can do: averages 0.83 vs 0.54.", False)],
         [("5  One field. ", True), ("Try smoker yes and no, keep the surer: 944 / 1,000 members right (94.4%), "
          "596 / 1,000 strangers (59.6%). The leak: 34.8 points.", False)],
     ], 12, BODY)
@@ -931,7 +930,9 @@ def build():
             "nothing is taken on trust. The model is the same kind of random forest as demo 3, but grown until every "
             "training person sits alone in a leaf: right on all 1,000 training rows, on 605 of 1,000 strangers. Because "
             "each leaf holds one person, each of the 200 trees votes 1 or 0 for a person's real outcome, and the "
-            "model's confidence is the share of trees that vote for it. Ask: members average 0.83, strangers 0.54. "
+            "model's confidence is the share of trees that vote for it. Ask gives one such number per person, and "
+            "those individual numbers, not their averages, are what calibrate and decide use. As a check that only "
+            "we can do, because we know who the members are, members average 0.83 and strangers 0.54. "
             "Why: each tree trained on a random 63% of the members, and those trees always vote right for them; the "
             "other trees vote right 54% of the time, as for a stranger, so 0.631 times 1 plus 0.369 times 0.54 is "
             "0.83. Calibrate: the attacker sorts the confidences of their 200 strangers and takes the 90th "
