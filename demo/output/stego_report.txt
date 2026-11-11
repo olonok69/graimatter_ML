@@ -4,6 +4,7 @@ Hiding data in a model: weight steganography and a behavioural channel
 ==============================================================================
 Same synthetic cohort as the other demos, 4,000 rows. The carrier is a small neural network (two hidden layers, 128 and 64 units), so there are thousands of float weights to work with. Nothing here is a real patient; the hidden payload is a fabricated note, standing for records lifted out of a TRE.
 Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 10,304 weights.
+Working. Right on 1149 of 2000 rows. Weights = 16 x 128 + 128 x 64 + 64 x 1 = 2,048 + 8,192 + 64 = 10,304 (inputs x first layer, first x second, second x output; the intercepts are left alone).
 
 ==============================================================================
 1. In the weights: LSB steganography (EvilModel, 2021)
@@ -11,7 +12,8 @@ Carrier network trained on 2000 rows. Accuracy on the other 2000: 0.575. It has 
 Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 bytes. The payload is 111 bytes.
   Largest change to any one weight: 3.01e-06. Accuracy after hiding: 0.575 (was 0.575).
   Payload read back from the weights: exact match (111 bytes).
-  An accuracy-only release check (GRAIMATTER TECH 6, the gate in demo 5) sees no difference and passes the model. The data left the TRE inside it.
+  Working. Capacity = 10,304 weights x 8 bits / 8 = 10,304 bytes, minus a 4-byte length header = 10,300. The payload takes (111 + 4) x 8 = 920 bits = 115 weights. The weight that moved most went from 0.1475638 to 0.1475608; accuracy is right on 1149 of 2000 rows, as before.
+  An accuracy-only release check (GRAIMATTER TECH 6, or the release gate) sees no difference and passes the model. The data left the TRE inside it.
 
 ==============================================================================
 2. In the behaviour: a watermark/backdoor channel (Adi et al. 2018; Song et al. 2017)
@@ -19,6 +21,7 @@ Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 b
   248 trigger rows carry a 27-byte message, one bit each, added to the training set (each repeated a few times) far outside the cohort's ranges.
   Accuracy on real rows: 0.632 (clean model 0.575). Planted bits returned correctly: 100.0%.
   Message read from the triggers: exact match.
+  Working. Triggers = (27 bytes + 4-byte header) x 8 bits = 248, one bit each. Training rows: 2000 real + 248 triggers x 5 repeats = 3,240. Bits returned right: 248 of 248. Real rows right: 1264 of 2000 (clean model 1149).
   The message is in what the model answers, so clipping or quantising the weight bytes does not touch it. Only retraining, heavy noise or DP disturbs it.
 
 ==============================================================================
@@ -28,6 +31,7 @@ Using the lowest 8 of each weight's 23 mantissa bits, the channel holds 10,300 b
   clip lowest 16 mantissa bits             0.575        0.0%
   quantise to float16 and back             0.575        0.0%
   add 0.1% relative Gaussian noise         0.573        0.0%
+  Working. 'Survives' = payload bytes that come back unchanged / 111: 0 of 111 after each transform. Clipping 16 bits zeroes the 8 that held the payload; float16 keeps only 10 mantissa bits, so the lowest 13 are lost.
   Each transform keeps accuracy and wipes the LSB payload: clipping and quantising overwrite the low bits, noise scrambles them. Any one of them, applied to every released model, closes the weight channel.
 
   The behavioural channel against the same weight transforms:

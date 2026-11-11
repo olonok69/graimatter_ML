@@ -40,6 +40,7 @@ from graimatter_demo.case_study import (  # noqa: E402
     unique_winner,
 )
 from graimatter_demo.cohort import (  # noqa: E402
+    BP_LEVELS,
     WEIGHT_LEVELS,
     data_dictionary,
     hold_out_for_tre,
@@ -70,6 +71,7 @@ N_NOISE = 10  # noise columns with no label signal: what a deep tree memorises r
 CONSTRAINTS = DEMO_DIR / "constraints.json"
 OUTPUT = DEMO_DIR / "output"
 WEIGHT_INDEX = 3
+BP_INDEX = 4
 
 
 class Report:
@@ -116,6 +118,36 @@ def _print_mia(report: Report, title: str, mia: dict) -> None:
         f"{_fmt(mia['probability_if_half_are_members'])} when half of candidates are members, "
         f"{_fmt(mia['probability_if_one_in_a_hundred_are_members'])} when 1 in 100 are."
     )
+    c = mia["counts"]
+    report.p(
+        f"  Working. Rows scored: {c['members']} members and {c['non_members']} set-aside. "
+        f"Flagged (score >= 0.5): {c['members_flagged']} of {c['members']} members = TPR {_fmt(mia['tpr'])}, "
+        f"{c['non_members_flagged']} of {c['non_members']} set-aside = FPR {_fmt(mia['fpr'])}; "
+        f"advantage |{_fmt(mia['tpr'])} - {_fmt(mia['fpr'])}| = {_fmt(mia['advantage'])}."
+    )
+    report.p(
+        f"    AUC: {c['pairs']:,} member/set-aside pairs, member higher in {c['pairs_member_higher']:,}, "
+        f"tied in {c['pairs_tied']:,}: ({c['pairs_member_higher']:,} + {c['pairs_tied']:,} / 2) / {c['pairs']:,} "
+        f"= {_fmt(mia['auc'])}."
+    )
+    report.p(
+        f"    TPR at 10% FPR: walking down from the top score, at most {c['false_alarms_allowed']} false alarms; "
+        f"by then {c['tail_walk_members']} members are caught: {c['tail_walk_members']} / {c['members']} "
+        f"= {_fmt(mia['tpr_at_fpr_10'])}."
+    )
+    shuffles_as_extreme = round(mia["p_value"] * (mia["n_permutations"] + 1)) - 1
+    report.p(
+        f"    FDIF: the top {c['tail_count']} scores hold {c['top_tail_members']} members, the bottom "
+        f"{c['tail_count']} hold {c['bottom_tail_members']}: {c['top_tail_members']} / {c['tail_count']} - "
+        f"{c['bottom_tail_members']} / {c['tail_count']} = {_fmt(mia['fdif'])}; p = ({shuffles_as_extreme} + 1) / "
+        f"({mia['n_permutations']} + 1) = {_fmt(mia['p_value'])} ({shuffles_as_extreme} of {mia['n_permutations']} "
+        "shuffles as extreme)."
+    )
+    report.p(
+        f"    If flagged: 0.5 x {_fmt(mia['tpr'])} / (0.5 x {_fmt(mia['tpr'])} + 0.5 x {_fmt(mia['fpr'])}) = "
+        f"{_fmt(mia['probability_if_half_are_members'])}; 0.01 x {_fmt(mia['tpr'])} / (0.01 x {_fmt(mia['tpr'])} "
+        f"+ 0.99 x {_fmt(mia['fpr'])}) = {_fmt(mia['probability_if_one_in_a_hundred_are_members'])}."
+    )
     if "mean_confidence_members" in mia:
         report.p(
             "  Mean confidence in the true label: "
@@ -123,6 +155,17 @@ def _print_mia(report: Report, title: str, mia: dict) -> None:
             f"set-aside rows {_fmt(mia['mean_confidence_non_members'])} "
             f"(AUC {_fmt(mia['true_class_confidence_auc'])})."
         )
+
+
+def _leaf_counts(model, record: np.ndarray, row: dict) -> tuple[int, int]:
+    """Training rows, and high-risk rows, in the leaf where one weight x blood-pressure query lands."""
+    candidate = record.copy()
+    candidate[WEIGHT_INDEX] = WEIGHT_LEVELS.index(row["weight"])
+    candidate[BP_INDEX] = BP_LEVELS.index(row["blood_pressure"])
+    leaf = int(model.apply(candidate.reshape(1, -1))[0])
+    n = int(model.tree_.n_node_samples[leaf])
+    share_high = float(model.tree_.value[leaf][0][1] / model.tree_.value[leaf][0].sum())
+    return n, int(round(share_high * n))
 
 
 def _print_attribute(report: Report, attribute: dict) -> None:
@@ -229,6 +272,12 @@ def main() -> dict:
     dictionary_path = OUTPUT / "data_dictionary.json"
     dictionary_path.write_text(json.dumps(dictionary, indent=2), encoding="utf-8")
     report.p(f"Data dictionary written to {dictionary_path.name} (TECH 8 / Appendix C).")
+    report.p(
+        f"Working. hold_out_for_tre() shuffles the {N_ROWS} row numbers (seed {SEED}) and gives the first "
+        f"{len(holdout_ids)} to the TRE, the other {len(researcher_ids)} to the researcher. High risk: "
+        f"{int(researcher_y.sum())} of {len(researcher_y)} researcher rows, {int(holdout_y.sum())} of "
+        f"{len(holdout_y)} set-aside rows."
+    )
 
     # Demo guide §1.2: Appendix E is the green paper's, section 20.1 (pp. 86-87). One planted person is the only pure weight x blood-pressure cell. Querying all
     # 20 combinations of the two hidden fields finds the one the tree is certain about.
@@ -247,6 +296,18 @@ def main() -> dict:
             f"  {row['weight']:<12} {row['blood_pressure']:<16} "
             f"confidence {_fmt(row['confidence'])}{mark}"
         )
+    report.p("Working. The confidence is the share of high-risk training rows in the leaf the query lands in:")
+    for row in (sweep[0], sweep[1]):
+        leaf_rows, leaf_high = _leaf_counts(case_model, planted, row)
+        report.p(
+            f"  {row['weight']} / {row['blood_pressure']}: its leaf holds {leaf_rows} training row"
+            f"{'s' if leaf_rows != 1 else ''}, {leaf_high} high risk, so {leaf_high} / {leaf_rows} = "
+            f"{_fmt(leaf_high / leaf_rows)}."
+        )
+    report.p(
+        "  The planted person is the only row in their weight x blood-pressure cell; each of the other 19 cells "
+        "holds 6 rows of the same public profile, 3 high risk and 3 not."
+    )
     if winner and winner["is_planted"]:
         report.p(
             "The unique highest confidence is the planted pair "
@@ -276,6 +337,19 @@ def main() -> dict:
             f"  epsilon {epsilon:<22} attacker accuracy {_fmt(row['attacker_accuracy'])}  "
             f"Laplace scale {_fmt(row['noise_scale'], 4)}"
         )
+    report.p(
+        f"Working. Sensitivity = (90 - 30) / {len(ages)} = {60 / len(ages):.2f} (how far one person can move the "
+        "mean); Laplace scale = sensitivity / epsilon: "
+        + ", ".join(f"{60 / len(ages):.2f} / {row['epsilon']} = {row['noise_scale']:.4f}"
+                    for row in dp_rows if row["epsilon"] is not None)
+        + "."
+    )
+    report.p(
+        "  Accuracy = right guesses / 400 trials: "
+        + ", ".join(f"epsilon {row['epsilon']}: {round(row['attacker_accuracy'] * 400)} / 400"
+                    for row in dp_rows if row["epsilon"] is not None)
+        + ". The deterministic mean is right every time: the attacker computes both means and sees which was released."
+    )
     cherry = cherry_picked_release(ages, epsilon=0.2, n_draws=50, rng=rng)
     report.p(
         f"TECH 12: at epsilon {cherry['epsilon']}, one noisy mean misses the true mean by "
@@ -307,6 +381,14 @@ def main() -> dict:
         f"Model file {unsafe_result['size']['model_bytes']} bytes vs training table "
         f"{unsafe_result['size']['training_bytes']} bytes "
         f"(ratio {_fmt(unsafe_result['size']['ratio'])})."
+    )
+    report.p(
+        f"Working. Set-aside right on {round(unsafe_result['holdout_accuracy'] * len(holdout_y))} of "
+        f"{len(holdout_y)} = {_fmt(unsafe_result['holdout_accuracy'])}; gap "
+        f"{_fmt(unsafe_result['train_accuracy'])} - {_fmt(unsafe_result['holdout_accuracy'])} = "
+        f"{_fmt(unsafe_result['train_accuracy'] - unsafe_result['holdout_accuracy'])} (limit 0.15). Training table = "
+        f"{len(researcher_y)} rows x {researcher_x.shape[1]} columns x 8 bytes + {len(researcher_y)} labels x 8 bytes "
+        f"= {unsafe_result['size']['training_bytes']:,} bytes; ratio = model file bytes / that (limit 0.75)."
     )
     _print_mia(report, "Worst-case membership inference (Appendix G):", unsafe_result["mia"])
     _print_mia(
@@ -349,6 +431,12 @@ def main() -> dict:
     report.p(
         f"Training accuracy {_fmt(safe_result['train_accuracy'])}, "
         f"set-aside accuracy {_fmt(safe_result['holdout_accuracy'])}."
+    )
+    report.p(
+        f"Working. Training right on {round(safe_result['train_accuracy'] * len(researcher_y))} of "
+        f"{len(researcher_y)}, set-aside on {round(safe_result['holdout_accuracy'] * len(holdout_y))} of "
+        f"{len(holdout_y)}; gap {_fmt(safe_result['train_accuracy'])} - {_fmt(safe_result['holdout_accuracy'])} = "
+        f"{_fmt(safe_result['train_accuracy'] - safe_result['holdout_accuracy'])} (limit 0.15)."
     )
     _print_mia(report, "Worst-case membership inference:", safe_result["mia"])
     _print_mia(report, "Salem-synth membership inference:", safe_result["salem"])
@@ -406,6 +494,13 @@ def main() -> dict:
         f"out of {len(researcher_y)} training rows."
     )
     _print_decision(report, svc_decision)
+    svc_size = size_ratio(svc, researcher_x, researcher_y)
+    report.p(
+        f"Working. 1-NN: {knn_size['model_bytes']:,} / {knn_size['training_bytes']:,} bytes = "
+        f"{_fmt(knn_size['ratio'])} (limit 0.75). SVC: {svc_stored['n_stored_rows']} of {len(researcher_y)} rows "
+        f"kept = {svc_stored['n_stored_rows'] / len(researcher_y):.1%}; file ratio {svc_size['ratio']:.2f}. Either "
+        "file is enough to read the rows back; no attack is needed."
+    )
     report.p(
         "The paper's alternatives are aggregated data, a differentially private training "
         "algorithm, or leaving the model inside a query-limited service. This demo does "
@@ -432,6 +527,12 @@ def main() -> dict:
     tamper_release = tampered.request_release(OUTPUT / "tampered_tree.joblib")
     report.p(f"request_release() recommendation: {tamper_release['recommendation']}")
     report.p(tamper_release["details"])
+    report.p(
+        "Working. At fit() the wrapper stored max_depth None and min_samples_leaf 1, the tree's digest and its "
+        f"attributes. Now: max_depth {tampered.max_depth}, min_samples_leaf {tampered.min_samples_leaf} (changed, "
+        f"so two warnings); the fitted tree still has a leaf of {leaf_k_anonymity(tampered)} row, under 20 (one "
+        "warning); hidden_rows is new (one warning). Four findings, so: do not allow release."
+    )
     bad_type = OUTPUT / "not_a_model.txt"
     bad_type.write_text("this is not a model file", encoding="utf-8")
     type_decision = decide(file_ok=file_type_allowed(bad_type))
@@ -455,6 +556,10 @@ def main() -> dict:
         report.p("The attribute sweep was allowed, which means the budget is too high.")
     except QueryBudgetExceeded as error:
         report.p(str(error))
+    report.p(
+        "Working. Budget 8 rows. The lookup uses 1 (1 <= 8, allowed). The sweep asks for 20 more: "
+        "1 + 20 = 21 > 8, so the whole request is refused and nothing is answered."
+    )
     report.p("Query log:")
     for entry in gate.log:
         status = "allowed" if entry["allowed"] else "refused"

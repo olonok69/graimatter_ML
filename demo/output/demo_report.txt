@@ -11,6 +11,7 @@ Nothing here is a real patient, and the release cut-offs are a demo policy, not 
 Synthetic rows: 1000. Researcher receives 500. TRE keeps 500 aside and does not put them in the training set.
 Label is a fictional high-risk flag generated from age, smoking, diabetes, asthma, weight and blood pressure. Ten noise columns carry no label signal; they exist so a deep tree has something to memorise.
 Data dictionary written to data_dictionary.json (TECH 8 / Appendix C).
+Working. hold_out_for_tre() shuffles the 1000 row numbers (seed 7) and gives the first 500 to the TRE, the other 500 to the researcher. High risk: 257 of 500 researcher rows, 241 of 500 set-aside rows.
 
 ==============================================================================
 2. Attribute inference on one planted record (Appendix E)
@@ -22,6 +23,10 @@ Highest-confidence queries:
   underweight  slightly high    confidence 0.500
   underweight  high             confidence 0.500
   underweight  very high        confidence 0.500
+Working. The confidence is the share of high-risk training rows in the leaf the query lands in:
+  overweight / slightly high: its leaf holds 1 training row, 1 high risk, so 1 / 1 = 1.000.
+  underweight / low: its leaf holds 6 training rows, 3 high risk, so 3 / 6 = 0.500.
+  The planted person is the only row in their weight x blood-pressure cell; each of the other 19 cells holds 6 rows of the same public profile, 3 high risk and 3 not.
 The unique highest confidence is the planted pair (overweight, slightly high). That is the Appendix E attack.
 
 ==============================================================================
@@ -32,6 +37,8 @@ An attacker knows every age except whether one person was included, and sees onl
   epsilon 0.2                    attacker accuracy 0.487  Laplace scale 0.6000
   epsilon 1.0                    attacker accuracy 0.522  Laplace scale 0.1200
   epsilon 8.0                    attacker accuracy 0.703  Laplace scale 0.0150
+Working. Sensitivity = (90 - 30) / 500 = 0.12 (how far one person can move the mean); Laplace scale = sensitivity / epsilon: 0.12 / 0.2 = 0.6000, 0.12 / 1.0 = 0.1200, 0.12 / 8.0 = 0.0150.
+  Accuracy = right guesses / 400 trials: epsilon 0.2: 195 / 400, epsilon 1.0: 209 / 400, epsilon 8.0: 281 / 400. The deterministic mean is right every time: the attacker computes both means and sees which was released.
 TECH 12: at epsilon 0.2, one noisy mean misses the true mean by 0.3053. Keeping the closest of 50 draws misses by only 0.0084. Choosing the draw that looks most like the non-private answer cancels the protection, so TRE staff would choose the random seed without looking at accuracy.
 
 ==============================================================================
@@ -39,15 +46,26 @@ TECH 12: at epsilon 0.2, one noisy mean misses the true mean by 0.3053. Keeping 
 ==============================================================================
 Researcher would claim accuracy 1.000 (that is the training score). On the TRE set-aside it is 0.590.
 Smallest leaf: 1 training row. Model file 18150 bytes vs training table 68000 bytes (ratio 0.267).
+Working. Set-aside right on 295 of 500 = 0.590; gap 1.000 - 0.590 = 0.410 (limit 0.15). Training table = 500 rows x 16 columns x 8 bytes + 500 labels x 8 bytes = 68,000 bytes; ratio = model file bytes / that (limit 0.75).
 Worst-case membership inference (Appendix G):
   AUC 0.708   advantage 0.412   TPR 1.000   FPR 0.588
   TPR at 10% FPR 0.156   FDIF 0.620 (p=0.003)
   If the attacker flags a row as a member, the chance it really is one: 0.630 when half of candidates are members, 0.017 when 1 in 100 are.
+  Working. Rows scored: 250 members and 250 set-aside. Flagged (score >= 0.5): 250 of 250 members = TPR 1.000, 147 of 250 set-aside = FPR 0.588; advantage |1.000 - 0.588| = 0.412.
+    AUC: 62,500 member/set-aside pairs, member higher in 35,038, tied in 18,387: (35,038 + 18,387 / 2) / 62,500 = 0.708.
+    TPR at 10% FPR: walking down from the top score, at most 25 false alarms; by then 39 members are caught: 39 / 250 = 0.156.
+    FDIF: the top 50 scores hold 31 members, the bottom 50 hold 0: 31 / 50 - 0 / 50 = 0.620; p = (0 + 1) / (300 + 1) = 0.003 (0 of 300 shuffles as extreme).
+    If flagged: 0.5 x 1.000 / (0.5 x 1.000 + 0.5 x 0.588) = 0.630; 0.01 x 1.000 / (0.01 x 1.000 + 0.99 x 0.588) = 0.017.
   Mean confidence in the true label: training rows 1.000, set-aside rows 0.590 (AUC 0.705).
 Salem-synth membership inference (attacker has similar data, not the TRE tables):
   AUC 0.703   advantage 0.410   TPR 1.000   FPR 0.590
   TPR at 10% FPR 0.186   FDIF 0.660 (p=0.003)
   If the attacker flags a row as a member, the chance it really is one: 0.629 when half of candidates are members, 0.017 when 1 in 100 are.
+  Working. Rows scored: 500 members and 500 set-aside. Flagged (score >= 0.5): 500 of 500 members = TPR 1.000, 295 of 500 set-aside = FPR 0.590; advantage |1.000 - 0.590| = 0.410.
+    AUC: 250,000 member/set-aside pairs, member higher in 138,737, tied in 73,841: (138,737 + 73,841 / 2) / 250,000 = 0.703.
+    TPR at 10% FPR: walking down from the top score, at most 50 false alarms; by then 93 members are caught: 93 / 500 = 0.186.
+    FDIF: the top 100 scores hold 66 members, the bottom 100 hold 0: 66 / 100 - 0 / 100 = 0.660; p = (0 + 1) / (300 + 1) = 0.003 (0 of 300 shuffles as extreme).
+    If flagged: 0.5 x 1.000 / (0.5 x 1.000 + 0.5 x 0.590) = 0.629; 0.01 x 1.000 / (0.01 x 1.000 + 0.99 x 0.590) = 0.017.
 Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
 The attack abstained: no weight value was a unique best guess. This tree isolated rows with the noise columns, and changing weight did not leave the leaf. Section 2 is the case study from the paper, where the hidden fields are ones the model actually split on. A ratio above 1 would mean training rows were easier to complete than set-aside rows.
 TRE decision: do not release.
@@ -63,15 +81,26 @@ Wrapper: min_samples_leaf changed from 1 to 20 to satisfy min 20.
 Wrapper: max_depth changed from None to 4 to satisfy max 4.
 request_release() recommendation: Run file through the next step of the checking procedure. Leaf k-anonymity 20.
 Training accuracy 0.692, set-aside accuracy 0.584.
+Working. Training right on 346 of 500, set-aside on 292 of 500; gap 0.692 - 0.584 = 0.108 (limit 0.15).
 Worst-case membership inference:
   AUC 0.528   advantage 0.004   TPR 0.632   FPR 0.628
   TPR at 10% FPR 0.116   FDIF 0.020 (p=0.445)
   If the attacker flags a row as a member, the chance it really is one: 0.502 when half of candidates are members, 0.010 when 1 in 100 are.
+  Working. Rows scored: 250 members and 250 set-aside. Flagged (score >= 0.5): 158 of 250 members = TPR 0.632, 157 of 250 set-aside = FPR 0.628; advantage |0.632 - 0.628| = 0.004.
+    AUC: 62,500 member/set-aside pairs, member higher in 31,054, tied in 3,936: (31,054 + 3,936 / 2) / 62,500 = 0.528.
+    TPR at 10% FPR: walking down from the top score, at most 25 false alarms; by then 29 members are caught: 29 / 250 = 0.116.
+    FDIF: the top 50 scores hold 28 members, the bottom 50 hold 27: 28 / 50 - 27 / 50 = 0.020; p = (133 + 1) / (300 + 1) = 0.445 (133 of 300 shuffles as extreme).
+    If flagged: 0.5 x 0.632 / (0.5 x 0.632 + 0.5 x 0.628) = 0.502; 0.01 x 0.632 / (0.01 x 0.632 + 0.99 x 0.628) = 0.010.
   Mean confidence in the true label: training rows 0.611, set-aside rows 0.561 (AUC 0.552).
 Salem-synth membership inference:
   AUC 0.512   advantage 0.012   TPR 0.642   FPR 0.630
   TPR at 10% FPR 0.118   FDIF 0.160 (p=0.027)
   If the attacker flags a row as a member, the chance it really is one: 0.505 when half of candidates are members, 0.010 when 1 in 100 are.
+  Working. Rows scored: 500 members and 500 set-aside. Flagged (score >= 0.5): 321 of 500 members = TPR 0.642, 315 of 500 set-aside = FPR 0.630; advantage |0.642 - 0.630| = 0.012.
+    AUC: 250,000 member/set-aside pairs, member higher in 115,248, tied in 25,631: (115,248 + 25,631 / 2) / 250,000 = 0.512.
+    TPR at 10% FPR: walking down from the top score, at most 50 false alarms; by then 59 members are caught: 59 / 500 = 0.118.
+    FDIF: the top 100 scores hold 54 members, the bottom 100 hold 38: 54 / 100 - 38 / 100 = 0.160; p = (7 + 1) / (300 + 1) = 0.027 (7 of 300 shuffles as extreme).
+    If flagged: 0.5 x 0.642 / (0.5 x 0.642 + 0.5 x 0.630) = 0.505; 0.01 x 0.642 / (0.01 x 0.642 + 0.99 x 0.630) = 0.010.
 The export rule follows the worst-case attack in Appendix G. On this model that FDIF is 0.020 (p=0.445).
 This Salem run is the Appendix F warning: AUC stays near 0.5 while FDIF is 0.160 (p=0.027). A data controller could refuse on that tail. This demo's rule does not, because it uses the worst-case check.
 Attribute inference for weight: unique guess on 0.000 of training rows (0.000 correct) and 0.000 of set-aside rows (0.000 correct). Ratio 1.000.
@@ -92,6 +121,7 @@ A raw RBF SVC stores 423 support vectors out of 500 training rows.
 TRE decision: do not release.
   - support_vector_classifier stores 423 training rows inside the model file.
   - Model file is 0.94 times the training table (limit 0.75).
+Working. 1-NN: 68,677 / 68,000 bytes = 1.010 (limit 0.75). SVC: 423 of 500 rows kept = 84.6%; file ratio 0.94. Either file is enough to read the rows back; no attack is needed.
 The paper's alternatives are aggregated data, a differentially private training algorithm, or leaving the model inside a query-limited service. This demo does not implement a private SVM.
 
 ==============================================================================
@@ -101,6 +131,7 @@ Wrapper: OVERRIDE accepted: min_samples_leaf=1 breaks the rule min 20. This is r
 Wrapper: OVERRIDE accepted: max_depth=None breaks the rule max 4. This is reported to the TRE.
 request_release() recommendation: Do not allow release
 WARNING: parameter max_depth changed from None to 4 after the model was fitted. parameter min_samples_leaf changed from 1 to 20 after the model was fitted. Smallest leaf holds 1 training row(s); the constraints file requires at least 20. Attributes were added after fit(), which can be used to hide training rows: hidden_rows.
+Working. At fit() the wrapper stored max_depth None and min_samples_leaf 1, the tree's digest and its attributes. Now: max_depth 4, min_samples_leaf 20 (changed, so two warnings); the fitted tree still has a leaf of 1 row, under 20 (one warning); hidden_rows is new (one warning). Four findings, so: do not allow release.
 File-type check on not_a_model.txt:
 TRE decision: do not release.
   - File type is not on the accepted list (joblib or pickle).
@@ -110,6 +141,7 @@ TRE decision: do not release.
 ==============================================================================
 One patient query was allowed. Predicted class probabilities [0. 1.].
 Query refused: request has 20 rows, 1 already used, budget is 8.
+Working. Budget 8 rows. The lookup uses 1 (1 <= 8, allowed). The sweep asks for 20 more: 1 + 20 = 21 > 8, so the whole request is refused and nothing is answered.
 Query log:
   clinic-user: 1 rows for one patient lookup - allowed
   clinic-user: 20 rows for attribute sweep - refused

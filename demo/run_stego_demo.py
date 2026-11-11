@@ -134,6 +134,13 @@ def main() -> dict:
         f"Carrier network trained on {half} rows. Accuracy on the other {N_ROWS - half}: "
         f"{base_accuracy:.3f}. It has {clean.size:,} weights."
     )
+    layer_sizes = [w.shape for w in model.coefs_]
+    report.p(
+        f"Working. Right on {round(base_accuracy * (N_ROWS - half))} of {N_ROWS - half} rows. Weights = "
+        + " + ".join(f"{a} x {b}" for a, b in layer_sizes)
+        + f" = {' + '.join(f'{a * b:,}' for a, b in layer_sizes)} = {clean.size:,} (inputs x first layer, "
+        "first x second, second x output; the intercepts are left alone)."
+    )
 
     # Demo guide §6.1: hide the payload in the low BITS mantissa bits and re-measure.
     _section(report, "1. In the weights: LSB steganography (EvilModel, 2021)")
@@ -155,8 +162,17 @@ def main() -> dict:
         f"  Payload read back from the weights: {'exact match' if recovered == SECRET else 'CORRUPTED'} "
         f"({len(recovered)} bytes)."
     )
+    used = -(-(len(SECRET) + 4) * 8 // BITS)
+    moved = int(np.argmax(np.abs(stego.astype(np.float64) - clean.astype(np.float64))))
     report.p(
-        "  An accuracy-only release check (GRAIMATTER TECH 6, the gate in demo 5) sees no "
+        f"  Working. Capacity = {clean.size:,} weights x {BITS} bits / 8 = {clean.size * BITS // 8:,} bytes, "
+        f"minus a 4-byte length header = {capacity:,}. The payload takes ({len(SECRET)} + 4) x 8 = "
+        f"{(len(SECRET) + 4) * 8} bits = {used} weights. The weight that moved most went from "
+        f"{clean[moved]:.7f} to {stego[moved]:.7f}; accuracy is right on {round(stego_accuracy * (N_ROWS - half))} "
+        f"of {N_ROWS - half} rows, as before."
+    )
+    report.p(
+        "  An accuracy-only release check (GRAIMATTER TECH 6, or the release gate) sees no "
         "difference and passes the model. The data left the TRE inside it."
     )
 
@@ -184,6 +200,12 @@ def main() -> dict:
         f"{'exact match' if recovered_note == note else repr(recovered_note[:40])}."
     )
     report.p(
+        f"  Working. Triggers = ({len(note)} bytes + 4-byte header) x 8 bits = {len(keys)}, one bit each. Training "
+        f"rows: {half} real + {len(keys)} triggers x 5 repeats = {len(wy):,}. Bits returned right: "
+        f"{round(recovered_bits * len(keys))} of {len(keys)}. Real rows right: {round(wm_accuracy * (N_ROWS - half))} "
+        f"of {N_ROWS - half} (clean model {round(base_accuracy * (N_ROWS - half))})."
+    )
+    report.p(
         "  The message is in what the model answers, so clipping or quantising the weight "
         "bytes does not touch it. Only retraining, heavy noise or DP disturbs it."
     )
@@ -205,6 +227,11 @@ def main() -> dict:
         survives = defences.payload_survives(SECRET, got)
         defence_rows.append({"transform": name, "accuracy": acc, "payload_survives": survives})
         report.p(f"  {name:<40} {acc:.3f}      {_pct(survives):>6}")
+    report.p(
+        f"  Working. 'Survives' = payload bytes that come back unchanged / {len(SECRET)}: 0 of {len(SECRET)} after "
+        "each transform. Clipping 16 bits zeroes the 8 that held the payload; float16 keeps only 10 mantissa bits, "
+        "so the lowest 13 are lost."
+    )
     report.p(
         "  Each transform keeps accuracy and wipes the LSB payload: clipping and quantising "
         "overwrite the low bits, noise scrambles them. Any one of them, applied to every "
