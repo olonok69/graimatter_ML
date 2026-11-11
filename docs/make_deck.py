@@ -1560,7 +1560,7 @@ def build():
            "a prompt are speed bumps; the database user is the wall. Filtering by IP or domain at the edge is unreliable, so "
            "OAuth stays the primary control.", False)]], 13.5, CREAM, anchor=MSO_ANCHOR.MIDDLE)
     d.footer(s, "Demo 7: database 10 of 10, keyword filter 5, policy 2, prompt 0. OWASP LLM06; ETSI EN 304 223 and the UK "
-                "Code. Technical guide §26.3.")
+                "Code. agent_db_report.txt §5 · technical guide §26.4 · demo guide §7.5.")
     d.notes(s, "The honest centre of the example, and it comes from the project's own operator guide. The read-only, "
             "tenant-scoped guarantee has three layers with an explicit order of trust. The database permissions are the hard "
             "boundary: the engine refuses the write. The access policy narrows what a tenant sees, but it is application "
@@ -1597,7 +1597,7 @@ def build():
            "reports. confidentiality_report.txt. stego_report.txt. agent_db_report.txt.", bsize=12.5)
     d.card(s, LEFT + 6.5, 4.95, 5.05, 1.5, "Demo 2 · a few minutes", "sacroml/sacroml_report.txt; report.json and report.pdf "
            "per attack.", bsize=12.5)
-    d.footer(s, "Setup details: README.md. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
+    d.footer(s, "Setup details: README.md and technical guide §27. Section notes: demo/README.md. Guides: docs/guide/ (English and Spanish).")
     d.notes(s, "Setup is in the repository README: create a Python 3.11 environment with uv and install demo/requirements.txt, "
             "which brings numpy, scikit-learn and sacroml (and PyTorch with it). Demos 3, 5, 4, 1, 6 and 7 run in seconds; demo 2 "
             "takes a few minutes. run_gate.py reruns the demos and writes the gate report to demo/output/gate; CI runs it on "

@@ -138,7 +138,7 @@ At epsilon 0.2, one noisy draw misses the true mean by 0.3053. The closest of 50
 | TPR at 10% FPR | 0.156 (does not itself trip the 0.35 limit) |
 | FDIF | 0.620, p = 0.003 |
 | Posterior if flagged | 0.630 when half of candidates are members; 0.017 when 1 in 100 are |
-| Salem-synth AUC | 0.703; TPR at 10% FPR 0.514; FDIF 1.000 |
+| Salem-synth AUC | 0.703; TPR at 10% FPR 0.186; FDIF 0.660 |
 | Weight attribute inference | Abstained. Ratio 1.000. The tree isolated rows with the noise columns, so changing weight did not leave the leaf. |
 
 **Same data through the safe wrapper. Decision: allow release under the demo policy.**
@@ -155,7 +155,7 @@ The wrapper moves `min_samples_leaf` from 1 to 20 and `max_depth` from unlimited
 | FDIF | 0.020, p = 0.445 |
 | Posterior if flagged | 0.502 at half members; 0.010 at 1 in 100 |
 
-Salem-synth on this same wrapped model has AUC 0.512 and FDIF 0.280 (p = 0.003). Put this on a slide as the Appendix F warning: the average attack looks like chance, and the tail does not. This demo's export rule follows the worst-case FDIF of 0.020, so it still releases. A data controller could refuse on the Salem tail.
+Salem-synth on this same wrapped model has AUC 0.512 and FDIF 0.160 (p = 0.027). Put this on a slide as the Appendix F warning: the average attack looks like chance, and the tail does not. This demo's export rule follows the worst-case FDIF of 0.020, so it still releases. A data controller could refuse on the Salem tail.
 
 Weight attribute inference abstains on this model as well.
 
@@ -254,7 +254,7 @@ Aim for about 16–20 slides. Title each slide as a claim, then support it. Sugg
 6. What the attack metrics mean, with one picture: chance, a tail, and "how rare is a member?".
 7. Unconstrained tree: perfect training accuracy, leaf of 1, membership AUC 0.708, refused.
 8. Wrapper with leaf 20 and depth 4: membership AUC 0.528, released under a demo policy. State that the policy is local.
-9. The quiet failure: Salem AUC near 0.5 with FDIF 0.280. A controller could still refuse.
+9. The quiet failure: Salem AUC near 0.5 with FDIF 0.160. A controller could still refuse.
 10. Nearest neighbours and SVC store rows. Refuse, or use aggregation, private training, or a query service.
 11. Editing the model after `fit()`, and why the snapshot exists.
 12. A query budget that counts rows. One patient allowed, twenty combinations blocked.

@@ -638,7 +638,7 @@ def main() -> dict:
     report.p(f"Full write-up: {OUTPUT / 'demo_report.txt'}")
     report.save(OUTPUT / "demo_report.txt")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
-    # compliance_gate/tolerances.py, demo1_readings(), reads them (Demo guide §7.3).
+    # compliance_gate/tolerances.py, demo1_readings(), reads them (Demo guide §8.3).
     return {
         "candidate": safe_result,
         "unconstrained": unsafe_result,

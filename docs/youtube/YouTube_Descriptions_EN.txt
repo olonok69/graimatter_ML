@@ -129,8 +129,8 @@ What we cover:
 
 Privacy according to NIST: extraction, reconstruction, membership inference, property inference and attribute inference.
 Extraction, live (demo 3): 200 queries give a copy that agrees with the model on 86.9% of cases.
-Demo 1, GRAIMATTER's checks written by hand: a planted person whose two hidden fields come back after 20 queries; what epsilon means; an unconstrained tree with a membership AUC of 0.708 that is refused; the same tree through a safe wrapper, AUC 0.528, that is released; the quiet failure an average can hide; models that store rows; edits after fit(); and a query budget that counts rows, not calls.
 How to read AUC, advantage, TPR at 10% FPR and FDIF, and why how rare a member is changes what a flag means.
+Demo 1, GRAIMATTER's checks written by hand, in the order of its report, section 1 to section 8: the rows the researcher never sees; a planted person whose two hidden fields come back after 20 queries; what epsilon means; an unconstrained tree with a membership AUC of 0.708 that is refused; the same tree through a safe wrapper, AUC 0.528, that is released; the quiet failure an average can hide; models that store rows; edits after fit(); and a query budget that counts rows, not calls. Every number on screen is worked out from its counts, for example AUC 0.708 = (35,038 + 18,387 / 2) / 62,500.
 Demo 2 with the official SACRO-ML package: why the same tree gives AUC 0.708 under one attack and 0.500 under another.
 Demo 6, hiding data in a model: 111 bytes in the low bits of a network's weights with accuracy unchanged, and a message hidden in the answers to a few trigger inputs. An accuracy check passes both. The TRE's answer is to transform every released model (clip bits, quantise, add noise or train with differential privacy), not to try to spot what is hidden.
 Generative AI: the classes NIST adds, the JADEPUFFER case from video 1, and where LLMs and agents get tested, in safety-trust-engine.
@@ -164,11 +164,12 @@ The setup: an agent that never touches the database, speaking to an MCP server b
 Door by door, each JADEPUFFER move against the control that closes it: an exposed endpoint against TLS plus OAuth 2.0; app-as-root against a least-privilege read-only user with explicit DENY; arbitrary SQL against a single-SELECT filter and a per-query timeout; unwatched activity against rate limits and blocked-query logging; secrets on the box against a secrets vault.
 The three layers, and which one really holds: database permissions are the hard boundary; the per-tenant access policy is filtering, not the boundary; and prompt or knowledge guidance is advisory only. Telling an agent to behave is not a control.
 The honest limits: the real read-only guarantee is the database user's permissions, not a keyword filter; edge filtering by IP or domain is unreliable, so OAuth is the primary control, with mTLS or a Zero-Trust proxy stronger.
+Demo 7, live: the same design in miniature, in SQLite. An agent reads a patient note that tells it to drop a table, wipe the appointments and export the password hashes, and it sends ten attacks. Tested alone, a keyword filter stops 5 of 10, an access policy 2 of 10 and the prompt guidance none; only the database permissions stop all ten, and the three that slip past both text checks (a comma join, a write disguised as a read, a query that never ends) are exactly the ones that would have done harm.
 The checklist to answer before any agent ships: what tools, with what credentials, what is irreversible and needs a human, is it bounded and watched, and do you enforce or just ask.
 
 This maps to OWASP LLM06 (excessive agency) answered in the affirmative, the ETSI EN 304 223 and UK Code provisions on API rate-limiting and least privilege, and the GRAIMATTER habit of testing against the strongest attacker you can imagine.
 
-Repository with the deck and the guides (technical guide Appendix C), in English and Spanish:
+Repository with the deck, demo 7 and the guides (technical guide section 26), in English and Spanish:
 https://github.com/olonok69/graimatter_ML
 
 The companion repository tests agents and tools with AgentDojo:
