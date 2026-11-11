@@ -121,6 +121,49 @@ def frequency_difference(
     }
 
 
+def working_counts(y_true: np.ndarray, scores: np.ndarray, threshold: float = 0.5, tail: float = 0.10,
+                   max_false_positive_rate: float = 0.10) -> dict:
+    """The counts behind every printed metric, so the report can show its working (Demo guide §1.4).
+
+    Uses no random numbers, so adding it changes none of the demo's draws.
+    """
+    y = np.asarray(y_true).astype(int)
+    s = np.asarray(scores).astype(float)
+    members, others = s[y == 1], s[y == 0]
+    flagged = s >= threshold
+    # AUC as a count: every member against every non-member; a tie counts as half a win.
+    wins = int(sum(np.sum(m > others) for m in members))
+    ties = int(sum(np.sum(m == others) for m in members))
+    # The tail of FDIF: the top and bottom `tail` share of all scored rows, in the same stable order.
+    order = np.argsort(-s, kind="mergesort")
+    ranked = y[order]
+    tail_count = max(1, int(round(tail * len(y))))
+    # TPR at 10% FPR: walk down the ranked rows and keep the best point before false alarms pass the cap.
+    tp = fp = best_tp = best_fp = 0
+    for label in ranked:
+        tp, fp = tp + (label == 1), fp + (label == 0)
+        if fp / max(1, len(others)) <= max_false_positive_rate + 1e-12:
+            if tp > best_tp:
+                best_tp, best_fp = tp, fp
+        elif fp > 0:
+            break
+    return {
+        "members": int(len(members)),
+        "non_members": int(len(others)),
+        "members_flagged": int(np.sum(flagged & (y == 1))),
+        "non_members_flagged": int(np.sum(flagged & (y == 0))),
+        "pairs": int(len(members) * len(others)),
+        "pairs_member_higher": wins,
+        "pairs_tied": ties,
+        "tail_count": tail_count,
+        "top_tail_members": int(ranked[:tail_count].sum()),
+        "bottom_tail_members": int(ranked[-tail_count:].sum()),
+        "tail_walk_members": best_tp,
+        "tail_walk_false_alarms": best_fp,
+        "false_alarms_allowed": int(np.floor(max_false_positive_rate * len(others) + 1e-9)),
+    }
+
+
 def summarise_attack_scores(
     y_true: np.ndarray,
     scores: np.ndarray,
@@ -140,4 +183,5 @@ def summarise_attack_scores(
         "probability_if_one_in_a_hundred_are_members": membership_probability(
             0.01, counts["tpr"], counts["fpr"]
         ),
+        "counts": working_counts(y_true, scores, threshold=threshold),
     }

@@ -10,6 +10,7 @@ Six scripts on the same kind of synthetic cohort:
 * `run_sacroml_demo.py` (demo 2): the same cohort through the official SACRO-ML package.
 * `run_supply_chain_demo.py` (demo 4): a supplied model and its files, tampered between the supplier and the user, and the checks that catch it.
 * `run_stego_demo.py` (demo 6): hiding data inside a model, in the low bits of its weights and in its behaviour, and the defences that remove each channel.
+* `run_agent_db_demo.py` (demo 7, part 4c): an LLM agent with an injected instruction sends ten attacks to a small database; each defence layer is tested alone and together.
 
 The JADEPUFFER case (an LLM agent that ran a ransomware attack) has no demo. It is explained in the technical guide, §6.1 and Appendix B ([English](../docs/guide/AML_Technical_Guide_EN.md), [Spanish](../docs/guide/AML_Guia_Tecnica_ES.md)). The nearest thing to test is the defender's side, what an agent can be pushed into doing with its tools, which [safety-trust-engine](https://github.com/olonok69/safety-trust-engine) does with AgentDojo.
 
@@ -109,6 +110,23 @@ The package `stego_demo/` holds two channels and the defences: `weights.py` (lea
 5. Where it sits in the literature, and why a TRE should transform every released model rather than try to spot the hidden data.
 
 This demo is standalone and not wired into the release gate: it shows a gap the accuracy-based checks leave open, and the fix is a release-time transform, not a tolerance.
+
+## Demo 7: an agent reaches a database (part 4c)
+
+```bash
+python demo/run_agent_db_demo.py
+```
+
+A miniature, in SQLite and the standard library only, of the read-only MCP server in the technical guide, §26. The package `agent_db_demo/` holds the synthetic clinic database (`database.py`: four tables, two granted, a content fingerprint), the agent (`agent.py`: three legitimate reads, an injected note, ten attacks that mirror JADEPUFFER) and the three layers (`layers.py`: a keyword filter, an access policy that reads table names from the SQL text, and database permissions enforced by an SQLite authorizer on a read-only connection with a step budget). The report, `demo/output/agent_db_report.txt`, has six sections:
+
+0. The database and what the agent's user is granted.
+1. The job, the injected note, and the ten attacks; prompt guidance stops 0 of 10.
+2. Each layer alone: keyword filter 5 of 10, access policy 2 of 10, database permissions 10 of 10; all three legitimate reads answered.
+3. What the misses would do, each run alone on a throwaway copy.
+4. All layers together: 5 + 2 + 3 = 10 of 10, and every table unchanged.
+5. Where it sits: the order of trust, in numbers.
+
+Walkthrough: demo guide §7. Standalone, like demos 5 and 6; the gate does not read it. Tests: `tests/test_agent_db.py`.
 
 ## Release gate
 

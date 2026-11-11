@@ -129,8 +129,8 @@ Qué veremos:
 
 Privacidad según el NIST: extracción, reconstrucción, inferencia de pertenencia, inferencia de propiedades e inferencia de atributos.
 Extracción en directo (demo 3): 200 consultas dan una copia que coincide con el modelo en el 86,9% de los casos.
-Demo 1, las comprobaciones de GRAIMATTER escritas a mano: una persona plantada a la que 20 consultas le recuperan dos campos ocultos; qué significa epsilon; un árbol sin restricciones con AUC de pertenencia de 0,708 que se rechaza; el mismo árbol con un safe wrapper, AUC 0,528, que se publica; el fallo silencioso que esconde una media; modelos que guardan filas; ediciones después de fit(); y un presupuesto de consultas que cuenta filas y no llamadas.
 Cómo leer AUC, ventaja, TPR al 10% de FPR y FDIF, y por qué la rareza de un miembro cambia lo que significa una alerta.
+Demo 1, las comprobaciones de GRAIMATTER escritas a mano, en el orden de su informe, de la sección 1 a la 8: las filas que el investigador nunca ve; una persona plantada a la que 20 consultas le recuperan dos campos ocultos; qué significa epsilon; un árbol sin restricciones con AUC de pertenencia de 0,708 que se rechaza; el mismo árbol con un safe wrapper, AUC 0,528, que se publica; el fallo silencioso que esconde una media; modelos que guardan filas; ediciones después de fit(); y un presupuesto de consultas que cuenta filas y no llamadas. Cada número de la pantalla se calcula a partir de sus recuentos, por ejemplo AUC 0,708 = (35.038 + 18.387 / 2) / 62.500.
 Demo 2 con el paquete oficial SACRO-ML: por qué el mismo árbol da AUC 0,708 en un ataque y 0,500 en otro.
 Demo 6, esconder datos en un modelo: 111 bytes en los bits bajos de los pesos de una red, sin cambiar la precisión, y un mensaje escondido en las respuestas a unas entradas trigger. Una comprobación de precisión aprueba los dos. La respuesta del TRE es transformar todo modelo que se publique (recortar bits, cuantizar, añadir ruido o entrenar con privacidad diferencial), no intentar detectar lo escondido.
 IA generativa: las clases que añade el NIST, el caso JADEPUFFER del vídeo 1 y dónde se prueban los LLM y los agentes, en safety-trust-engine.
@@ -164,11 +164,12 @@ El montaje: un agente que nunca toca la base de datos, que habla con un servidor
 Puerta por puerta, cada movimiento de JADEPUFFER frente al control que lo cierra: un endpoint expuesto frente a TLS más OAuth 2.0; la aplicación como root frente a un usuario de solo lectura y mínimo privilegio con DENY explícito; SQL arbitrario frente a un filtro de un único SELECT y un tiempo de espera por consulta; actividad sin vigilar frente a límites de tasa y registro de consultas bloqueadas; los secretos en la máquina frente a una bóveda de secretos.
 Las tres capas, y cuál aguanta de verdad: los permisos de la base de datos son la frontera dura; la política de acceso por inquilino es filtrado, no la frontera; y la guía por prompt o conocimiento es solo orientativa. Decirle a un agente que se porte bien no es un control.
 Los límites honestos: la garantía real de solo lectura son los permisos del usuario de la base de datos, no un filtro de palabras clave; el filtrado en el borde por IP o dominio no es fiable, por lo que OAuth es el control principal, con mTLS o un proxy Zero-Trust más fuerte.
+La demo 7, en directo: el mismo diseño en miniatura, en SQLite. Un agente lee una nota de paciente que le dice que borre una tabla, vacíe las citas y exporte los hashes de contraseña, y envía diez ataques. Probadas por separado, un filtro de palabras clave para 5 de 10, una política de acceso 2 de 10 y la guía por prompt ninguno; solo los permisos de la base de datos paran los diez, y los tres que se cuelan por las dos comprobaciones de texto (una unión por coma, una escritura disfrazada de lectura, una consulta que no acaba nunca) son justo los que habrían hecho daño.
 La lista que responder antes de que un agente salga a producción: qué herramientas, con qué credenciales, qué es irreversible y necesita a una persona, está acotado y vigilado, e impones o solo pides.
 
 Esto se corresponde con OWASP LLM06 (autonomía excesiva) respondido que sí, las provisiones de ETSI EN 304 223 y del UK Code sobre límite de tasa de API y mínimo privilegio, y el hábito GRAIMATTER de probar frente al atacante más fuerte que puedas imaginar.
 
-Repositorio con el deck y las guías (anexo C de la guía técnica), en inglés y español:
+Repositorio con el deck, la demo 7 y las guías (sección 26 de la guía técnica), en inglés y español:
 https://github.com/olonok69/graimatter_ML
 
 El repositorio complementario prueba agentes y herramientas con AgentDojo:

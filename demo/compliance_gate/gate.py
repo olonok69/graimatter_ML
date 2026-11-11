@@ -4,7 +4,7 @@ Follows safety-trust-engine's report.py: per-category tolerances, a verdict per
 control (pass, fail or not_evidenced), and one report as JSON for machines and
 Markdown for people. ``GateReport.passed`` drives the exit code of run_gate.py.
 
-Walkthrough: Demo guide §7.4 (verdicts) and §7.5 (reading the seeded report), in
+Walkthrough: Demo guide §8.4 (verdicts) and §8.5 (reading the seeded report), in
 docs/guide/Demo_Guide_EN.md.
 """
 

@@ -1,6 +1,6 @@
 # Machine learning adversarial: guía del presentador
 
-**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (62 diapositivas)**
+**Un acompañamiento, diapositiva a diapositiva, de `docs/Adversarial_ML.pptx` (63 diapositivas)**
 
 Esta guía es para quien presente las diapositivas, en directo o como serie de vídeos. Sigue las diapositivas en orden, con una sección por diapositiva, y te da qué decir, las cifras que conviene tener a mano, las preguntas que suele hacer el público y dónde mirar cuando quieras más. No sustituye a la guía técnica ([AML_Guia_Tecnica_ES.md](AML_Guia_Tecnica_ES.md); versión en inglés en [AML_Technical_Guide_EN.md](AML_Technical_Guide_EN.md)), que sigue siendo la referencia para los ingenieros: explica a fondo cada ataque, cada métrica y cada línea de código. Esta guía tiene menos código y más explicación, y cada sección remite a las secciones de la guía técnica que la respaldan. La versión en inglés de esta guía es [Presenter_Guide_EN.md](Presenter_Guide_EN.md). Si alguien pregunta cómo calcula una demo una cifra, la guía de las demos ([español](Guia_Demos_ES.md), [inglés](Demo_Guide_EN.md)) recorre el código que hay detrás de cada sección de su salida.
 
@@ -27,24 +27,26 @@ La presentación tiene cuatro partes, y cada parte es un vídeo; la parte 4 son 
 | Parte 2 · Marcos | 2 | 16-20 | §8 | 13 |
 | Parte 3 · Un caso de alta confianza: GRAIMATTER | 3 | 21-25 | §9-11 | 10 |
 | Parte 4a · Los ataques en detalle: la tríada CIA y la cadena de suministro | 4a | 26-36 | §12-16 | 40, más las ejecuciones de las demos |
-| Parte 4b · Los ataques en detalle: privacidad, y la puerta de publicación | 4b | 37-56 | §16-23 | 45, más las ejecuciones de las demos |
-| Parte 4c · Defensa en la práctica: asegurar el acceso de un agente a una base de datos | 4c | 57-62 | Anexo C | 12 |
+| Parte 4b · Los ataques en detalle: privacidad, y la puerta de publicación | 4b | 37-56 | §16-25 | 45, más las ejecuciones de las demos |
+| Parte 4c · Defensa en la práctica: asegurar el acceso de un agente a una base de datos | 4c | 57-63 | §26-29 | 15, más la ejecución de la demo |
 
 Cada vídeo empieza con una diapositiva que dice lo que cubre (diapositivas 1, 16, 21, 26, 37 y 57) y termina con una frase "Siguiente" que lleva al siguiente, así que cada vídeo se puede grabar por separado. La parte 4 repite a propósito algunos resultados de la parte 1: la parte 1 enseña cada ataque en una figura y la parte 4 ejecuta la demo y lee cada sección de su salida.
+
+Desde la diapositiva 37, las diapositivas, la guía técnica y la guía de las demos van en el mismo orden. Cada diapositiva de demo nombra en su antetítulo la demo y la sección del informe que enseña («DEMO 1 · SECTION 4»), y su pie da el informe, la sección de la guía técnica y la de la guía de las demos. En la demo 1 los números coinciden: la sección *N* del informe es GT §19.*N* y guía de las demos §1.*N*. Cada diapositiva de demo tiene aquí un bloque **De dónde sale cada número**, para poder responder a «¿cómo sale eso?» sin abrir el código.
 
 La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas muestran la evasión (diapositiva 7), el envenenamiento (8), la familia de privacidad (9), la extracción (10) y la cadena de suministro (11), mientras que la guía agrupa los ataques de las demos 3 y 4 en la §3 y la privacidad en la §4. Las líneas "Para profundizar" resuelven el salto.
 
 ### Antes de la sesión
 
-* **Ejecuta las demos una vez**, para tener los informes a mano y saber cuánto tardan: `uv run python demo/run_aml_demo.py` (demo 3, segundos), `uv run python demo/run_confidentiality_demo.py` (demo 5, segundos), `uv run python demo/run_supply_chain_demo.py` (demo 4, segundos), `uv run python demo/run_demo.py` (demo 1, segundos), `uv run python demo/run_sacroml_demo.py` (demo 2, unos minutos) y `uv run python demo/run_gate.py`. La instalación está en el [README](../../README.md) y en GT §24.
-* **Ten abiertos**: `demo/output/aml_report.txt`, `demo/output/confidentiality_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (o el informe de la puerta que escriba tu ejecución) y los dos PDF de la raíz del repositorio, `NIST.AI.100-2e2025.pdf` y `GRAIMATTER Green Paper.pdf`.
-* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 (por encima), las demos 3, 5 y 4 durante las diapositivas 30, 31, 33 y 36 y otra vez la demo 3 en la 38 (sección a sección), y la demo 1 durante las diapositivas 43 a 49, se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
+* **Ejecuta las demos una vez**, para tener los informes a mano y saber cuánto tardan: `uv run python demo/run_aml_demo.py` (demo 3, segundos), `uv run python demo/run_confidentiality_demo.py` (demo 5, segundos), `uv run python demo/run_supply_chain_demo.py` (demo 4, segundos), `uv run python demo/run_demo.py` (demo 1, segundos), `uv run python demo/run_sacroml_demo.py` (demo 2, unos minutos), `uv run python demo/run_stego_demo.py` (demo 6, segundos), `uv run python demo/run_gate.py` y `uv run python demo/run_agent_db_demo.py` (demo 7, alrededor de un segundo). La instalación está en el [README](../../README.md) y en GT §27.
+* **Ten abiertos**: `demo/output/aml_report.txt`, `demo/output/confidentiality_report.txt`, `demo/output/supply_chain_report.txt`, `demo/output/demo_report.txt`, `demo/output/sacroml/sacroml_report.txt`, `demo/output/stego_report.txt`, `demo/output/agent_db_report.txt`, `demo/output/gate/gate_eu_uk-nist_aml-graimatter.md` (o el informe de la puerta que escriba tu ejecución) y los dos PDF de la raíz del repositorio, `NIST.AI.100-2e2025.pdf` y `GRAIMATTER Green Paper.pdf`.
+* **Decide si harás demos en directo.** Si tienes un terminal, las demos 3 y 4 durante las diapositivas 7 a 11 (por encima), las demos 3, 5 y 4 durante las diapositivas 30, 31, 33 y 36 y otra vez la demo 3 en la 38 (sección a sección), la demo 1 durante las diapositivas 40 a 49, en el orden de su informe, y la demo 7 en la diapositiva 60, se ejecutan en segundos. La demo 2 es mejor enseñarla desde su informe guardado.
 * **Tres mensajes que tienen que quedar**, recortes lo que recortes: (1) un modelo añade tres cosas que atacar: sus datos, su fichero y sus respuestas; (2) los marcos nombran los mismos ataques de forma distinta, y una tabla de correspondencias permite que una sola prueba hable el idioma de todos; (3) GRAIMATTER muestra cómo un sector de alta confianza prueba un modelo antes de que salga, y solo cubre la privacidad.
 
 ### Si tienes menos tiempo
 
-* **45 minutos, en una sola sesión en directo:** diapositivas 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 41, 43, 44, 56, 57.
-* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 20, 21, 25, 43, 56.
+* **45 minutos, en una sola sesión en directo:** diapositivas 1-5, 7, 8, 10, 11, 15, 16, 18, 20, 21-23, 25, 42, 44, 45, 56, 60, 61.
+* **20 minutos:** diapositivas 1, 3, 5, 7, 8, 10, 20, 21, 25, 44, 56, 61.
 
 ---
 
@@ -60,7 +62,7 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 **Qué decir.** «Esta sesión trata de cómo se atacan los modelos de machine learning y de qué podemos hacer al respecto. Tiene cuatro partes. Primero, los ataques: cómo se puede atacar un modelo a través de sus datos de entrenamiento, a través del propio fichero del modelo y a través de las respuestas que da, con el vocabulario de la taxonomía de ML adversarial del NIST y una pequeña demo para cada rama. Segundo, los marcos que llevan todo esto a la práctica: MITRE ATLAS, las dos listas top ten de OWASP, el artículo 15 del Reglamento de IA de la UE y el código de buenas prácticas del Reino Unido, que ahora es una norma europea, la ETSI EN 304 223. Tercero, un caso concreto de alta confianza: el green paper de GRAIMATTER, que explica a un entorno de investigación seguro cómo decidir si un modelo entrenado se puede publicar. Cuarto, otra vez cada clase de ataque, una a una, con cada demo ejecutada sección a sección. Todo lo que vais a ver funciona con datos sintéticos. En las demos no hay ningún paciente real, y todo el código y las guías están en el repositorio de la diapositiva.»
 
-**Datos clave.** Las seis demos comparten un generador de cohorte sintética (semilla 7). Cinco marcos. Las guías existen en inglés y en español.
+**Datos clave.** Siete demos; seis comparten un generador de cohorte sintética (semilla 7), y la demo 7 crea una pequeña base de datos sintética de una clínica. Cinco marcos. Las guías existen en inglés y en español.
 
 **Si preguntan.** *¿Esto va de LLM?* En parte. La parte 1 tiene una diapositiva sobre IA generativa (la 12); las demos usan modelos clásicos porque ahí los ataques se ven mejor. El repositorio complementario safety-trust-engine prueba LLM y agentes.
 
@@ -68,17 +70,17 @@ La parte 1 no sigue exactamente el orden de la guía técnica: las diapositivas 
 
 **Siguiente.** «Así se reparte el tiempo.»
 
-### Diapositiva 2 · Cinco vídeos: ataques, marcos, un caso y los ataques en detalle
+### Diapositiva 2 · Seis vídeos: ataques, marcos, un caso, el detalle y una defensa
 
-*Título en la diapositiva: «Five videos: attacks, frameworks, a case, the attacks in detail»*
+*Título en la diapositiva: «Six videos: attacks, frameworks, a case, the detail, a defence»*
 
 *Aproximadamente 1,5 minutos.*
 
-**En pantalla.** La agenda en cinco tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, ransomware agéntico, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (disponibilidad, integridad, confidencialidad y cadena de suministro, clase a clase, las demos 3, 5 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, esconder datos en un modelo, la IA generativa y la puerta de publicación). Debajo: qué muestra cada demo y los seis scripts.
+**En pantalla.** La agenda en seis tarjetas: 1 Ataques (taxonomía del NIST, evasión, envenenamiento, privacidad, cadena de suministro, IA generativa, incidentes reales, ransomware agéntico, mitigaciones, las demos 3 y 4 por encima), 2 Marcos (NIST, ATLAS, OWASP, art. 15 del Reglamento de IA, código del Reino Unido y ETSI EN 304 223, una tabla de correspondencias), 3 Caso de alta confianza (GRAIMATTER: qué protege un TRE, las dos familias de controles, las recomendaciones, qué se traslada), 4a En detalle (disponibilidad, integridad, confidencialidad y cadena de suministro, clase a clase, las demos 3, 5 y 4 sección a sección), 4b En detalle (cada clase de privacidad, la extracción, las demos 1 y 2 sección a sección, esconder datos en un modelo, la IA generativa y la puerta de publicación), 4c Una defensa (el acceso de solo lectura de un agente a una base de datos, la demo 7). Debajo: qué muestra cada demo y los siete scripts.
 
-**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una, y un tercer vídeo, 4c, le da la vuelta hacia las defensas: un servidor de base de datos real de solo lectura construido para que el agente de la parte 1 no pueda portarse mal. Hay seis demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 5 le pregunta a un modelo quién estaba en sus datos de entrenamiento, el ataque a la confidencialidad más sencillo. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. La demo 6, en 4b, muestra cómo un modelo puede servir para sacar datos de un entorno de investigación. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
+**Qué decir.** «Vamos de lo general a lo concreto y después volvemos sobre cada ataque en detalle. La parte 1 nos da un vocabulario común para los ataques. La parte 2 relaciona ese vocabulario con lo que piden las normas y la ley. La parte 3 mira un sector que ha resuelto esto a fondo para una rama, la privacidad, porque en ese sector lo que sale del edificio es el propio modelo. La parte 4, en dos vídeos, toma una a una las clases de ataque del NIST y ejecuta, sección a sección, la demo que muestra cada una, y un tercer vídeo, 4c, le da la vuelta hacia las defensas: un servidor de base de datos real de solo lectura construido para que el agente de la parte 1 no pueda portarse mal. Hay siete demos. La demo 3 ataca un modelo de riesgo con evasión, plantando un backdoor y copiándolo a través de su API. La demo 5 le pregunta a un modelo quién estaba en sus datos de entrenamiento, el ataque a la confidencialidad más sencillo. La demo 4 manipula un modelo y sus ficheros en el camino del proveedor al usuario. Las demos 1 y 2 son las comprobaciones de GRAIMATTER: inferencia de pertenencia y de atributos, y los controles que aplica un entorno de investigación seguro antes de publicar. La demo 6, en 4b, muestra cómo un modelo puede servir para sacar datos de un entorno de investigación. La demo 7, en la 4c, envía diez ataques de un agente a una pequeña base de datos y mide qué capa de defensa los para. Son pequeñas a propósito: numpy y scikit-learn, se ejecutan en segundos, así que podéis cambiar un parámetro y ver qué pasa.»
 
-**Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_confidentiality_demo.py` (demo 5), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla.
+**Datos clave.** Scripts: `demo/run_aml_demo.py` (demo 3), `demo/run_confidentiality_demo.py` (demo 5), `demo/run_supply_chain_demo.py` (demo 4), `demo/run_demo.py` (demo 1), `demo/run_sacroml_demo.py` (demo 2), `demo/run_stego_demo.py` (demo 6), `demo/run_agent_db_demo.py` (demo 7). La numeración de las demos sigue el orden en que se escribieron, no el orden de la charla.
 
 **Si preguntan.** *¿Por qué la demo 3 va primero?* Se añadió más tarde para cubrir los ataques a la integridad, pero pertenece a la parte 1, así que la charla la enseña primero; la demo 4, añadida la última para la cadena de suministro, va justo después. *¿Por qué se ven las demos dos veces?* La parte 1 enseña cada resultado en una figura; la parte 4 ejecuta los scripts y lee cada sección de su salida.
 
@@ -274,7 +276,7 @@ Usa el resumen por objetivo si alguien pregunta qué significa una casilla; la p
 
 **Si preguntan.** *¿Los ataques a la IA predictiva siguen aplicándose a los LLM?* Sí: el envenenamiento, los backdoors, la inferencia de pertenencia y la extracción tienen todos versiones generativas (NIST §3.2 y §3.3). *¿Qué es NISTAML.04?* La facilitación del uso indebido (misuse enablement), es decir, saltarse las restricciones del propietario; solo existe en la taxonomía generativa.
 
-**Para profundizar.** GT §5 y §22; repositorio safety-trust-engine.
+**Para profundizar.** GT §5 y §23; repositorio safety-trust-engine.
 
 **Siguiente.** «Nada de esto es solo académico.»
 
@@ -769,7 +771,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 ---
 
-## Parte 4b · Los ataques en detalle: privacidad (vídeo 4b)
+## Parte 4b · Los ataques en detalle: privacidad y la puerta de publicación (vídeo 4b)
 
 ### Diapositiva 37 · Privacidad: cada clase del NIST, las demos 1 y 2 y una puerta de publicación
 
@@ -781,11 +783,11 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «La segunda mitad del recorrido en detalle es la privacidad, la palabra del NIST para la confidencialidad, y el objetivo que GRAIMATTER cubre a fondo. Empezamos por las clases y por la extracción, que ejecuta la demo 3. Después recorremos sección a sección las dos demos de GRAIMATTER: las comprobaciones escritas a mano de la demo 1 y el paquete oficial SACRO-ML en la demo 2. Cerramos con las clases que añade la IA generativa, los límites de todo esto y una puerta de publicación que lee todas las demos frente a obligaciones concretas.»
 
-**Datos clave.** Parte 4b: GT §16 a §23, diapositivas 37 a 56. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
+**Datos clave.** Parte 4b: GT §16 a §25, diapositivas 37 a 56, en el mismo orden. Las diapositivas de la demo 1 siguen su informe, de la sección 1 a la 8. Demos que se ejecutan: `run_aml_demo.py`, sección 2, `run_demo.py`, `run_sacroml_demo.py` (unos minutos; si no puedes esperar, enseña su informe guardado) y `run_gate.py`.
 
 **Si preguntan.** *¿Hace falta ver antes el vídeo 3?* Ayuda: explica por qué a un TRE le importan estos ataques y cuáles son sus controles.
 
-**Para profundizar.** Introducción de la parte 4 de la GT; guía de las demos §1, §2 y §5.
+**Para profundizar.** Introducción de la parte 4 de la GT y la nota antes de la §16; guía de las demos §1, §2 y §6, y su tabla de las partes 4b y 4c.
 
 **Siguiente.** «Primero, las clases de privacidad.»
 
@@ -827,7 +829,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Para profundizar.** Guía de las demos §3.2; GT §3.2 y §16; `aml_report.txt`, sección 2.
 
-**Siguiente.** «Ahora el lado de los datos de la privacidad, con las demos de GRAIMATTER, empezando por la cohorte.»
+**Siguiente.** «Ahora el lado de los datos de la privacidad: la demo 1, sección a sección, empezando por la sección 1, la cohorte.»
 
 ### Diapositiva 40 · La mitad de las filas nunca llega al investigador
 
@@ -845,11 +847,39 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/cohort.py`](../../demo/graimatter_demo/cohort.py) `hold_out_for_tre()` · [guía de las demos §1.1](Guia_Demos_ES.md#11-la-cohorte-y-las-filas-que-el-investigador-nunca-ve-tech-6)
 
-**Para profundizar.** GT §17.
+**De dónde sale cada número.** Sección 1 del informe, línea `Working.`: `hold_out_for_tre()` baraja los 1.000 números de fila con la semilla 7; los 500 primeros van al TRE y los otros 500 al investigador. 257 de las 500 filas del investigador son de alto riesgo (51,4%) y 241 de las 500 reservadas (48,2%); un modelo que siempre dice «sin alto riesgo» acierta 259 de 500, 0,518, el suelo que cualquier modelo debe superar.
 
-**Siguiente.** «Primero, el propio caso de estudio del paper: inferencia de atributos sobre una persona.»
+**Para profundizar.** GT §17 y §19.1; guía de las demos §1.1.
 
-### Diapositiva 41 · Una persona plantada: 20 consultas recuperan dos campos ocultos
+**Siguiente.** «Antes de las cifras de la demo 1, cómo leerlas.»
+
+### Diapositiva 41 · El azar, la cola y lo raro que es un miembro
+
+*Título en la diapositiva: «Chance, the tail, and how rare a member is»*
+
+*Aproximadamente 2 minutos.*
+
+**En pantalla.** Una figura con tres ideas. El AUC, la media: la probabilidad de que el ataque puntúe más alto a un miembro al azar que a un no miembro al azar; 0,5 es lanzar una moneda. FDIF, la cola: proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior. Lo raro que es un miembro: P(miembro | señalado) = A·TPR / (A·TPR + (1 − A)·FPR); para el árbol sin restricciones (TPR 1,000, FPR 0,588) sale 0,630 con A = 0,5 y 0,017 con A = 0,01.
+
+**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 46. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
+
+**Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §18.1.
+
+1. *La media.* «Cuatro miembros y cuatro no miembros, con puntuaciones 0,9, 0,7, 0,6 y 0,4 para los miembros y 0,8, 0,5, 0,3 y 0,2 para los no miembros. Comparamos cada miembro con cada no miembro: 16 parejas, y el miembro puntúa más alto en 12. El AUC es 12 de 16, 0,75. Si llamamos "miembro" a todo lo que tiene 0,5 o más, quedan señalados 3 de 4 miembros y 2 de 4 no miembros, así que la ventaja es 0,75 menos 0,50, 0,25. De media el ataque acierta tres de cada cuatro veces, pero la media no dice quién queda expuesto.»
+2. *La cola.* «Doscientas filas, la mitad miembros. El ataque está seguro de 20 personas: 10 miembros a los que da un 1 y 10 no miembros a los que da un 0. Todos los demás reciben una puntuación aleatoria. El AUC sale alrededor de 0,595, dentro de la banda del azar. Ahora mirad las 20 puntuaciones más altas: los 10 miembros seguros más unos 5 por azar, un 75% de miembros. Las 20 más bajas tienen alrededor de un 25%. FDIF es 0,75 menos 0,25, alrededor de 0,50, con un p-valor cercano a 0,003. La media dice "moneda al aire"; la cola señala a diez personas.»
+3. *El miembro raro.* «Tomemos un buen ataque, TPR 0,8 y FPR 0,2. Probamos con 1.000 personas, la mitad miembros: señala a 400 miembros y a 100 no miembros, así que acierta 4 de cada 5 señales, 0,80. Probamos con 10.000 personas, 1 de cada 100 miembro: señala a 80 miembros y a 1.980 no miembros, así que solo acierta 80 de 2.060 señales, 0,04. El mismo ataque; solo ha cambiado la tasa base. Pero si el atacante señala solo las filas de las que el ataque está seguro, como en el ejemplo de la cola, no hay falsas alarmas y todas las señales aciertan.»
+
+**Datos clave.** Anexo F del paper (pp. 92-95); la fórmula de la probabilidad a posteriori, anexo F, §21.3. Banda del azar con 100 miembros y 100 no miembros: aproximadamente de 0,38 a 0,62. Ejemplo del paper: TPR 0,8 y FPR 0,2 dan 0,04 con 1 de cada 100.
+
+**Si preguntan.** *Entonces, ¿la inferencia de pertenencia es inofensiva cuando los miembros son raros?* No necesariamente: la cola aún puede señalar a personas concretas con mucha seguridad, que es lo que miden FDIF y la TPR con FPR bajo.
+
+**Código.** [`graimatter_demo/metrics.py`](../../demo/graimatter_demo/metrics.py) · [guía de las demos §0.5](Guia_Demos_ES.md#05-las-métricas-de-ataque-graimatter_demometricspy)
+
+**Para profundizar.** GT §18, y §18.1 para los tres ejemplos desarrollados.
+
+**Siguiente.** «Sección 2 de la demo 1: el propio caso de estudio del paper, inferencia de atributos sobre una persona.»
+
+### Diapositiva 42 · Una persona plantada: 20 consultas recuperan dos campos ocultos
 
 *Título en la diapositiva: «One planted person: 20 queries recover two hidden fields»*
 
@@ -865,37 +895,35 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/case_study.py`](../../demo/graimatter_demo/case_study.py) · [guía de las demos §1.2](Guia_Demos_ES.md#12-inferencia-de-atributos-sobre-un-registro-plantado-anexo-e)
 
-**Para profundizar.** GT §19.2; §16 (reconstrucción e inferencia de atributos).
+**De dónde sale cada número.** Sección 2 del informe. La confianza es la proporción de filas de entrenamiento de alto riesgo en la hoja donde cae la consulta. Sobrepeso / algo alta: una hoja de 1 fila, 1 de alto riesgo, 1 / 1 = 1,000. Cualquier otra celda: 6 filas, 3 de alto riesgo, 3 / 6 = 0,500. El bloque plantado son 19 celdas × 6 filas más la persona plantada; 4 pesos × 5 presiones = 20 consultas.
 
-**Siguiente.** «Para juzgar un modelo necesitamos cifras. Estas son las métricas.»
+**Para profundizar.** GT §19.2; §16 (reconstrucción e inferencia de atributos); guía de las demos §1.2.
 
-### Diapositiva 42 · El azar, la cola y lo raro que es un miembro
+**Siguiente.** «Sección 3: la privacidad diferencial, sobre la publicación más sencilla posible.»
 
-*Título en la diapositiva: «Chance, the tail, and how rare a member is»*
+### Diapositiva 43 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
 
-*Aproximadamente 2 minutos.*
+*Título en la diapositiva: «Noise protects a mean; the best of 50 draws undoes it»*
 
-**En pantalla.** Una figura con tres ideas. El AUC, la media: la probabilidad de que el ataque puntúe más alto a un miembro al azar que a un no miembro al azar; 0,5 es lanzar una moneda. FDIF, la cola: proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior. Lo raro que es un miembro: P(miembro | señalado) = A·TPR / (A·TPR + (1 − A)·FPR); para el árbol sin restricciones (TPR 1,000, FPR 0,588) sale 0,630 con A = 0,5 y 0,017 con A = 0,01.
+*Aproximadamente 1,5 minutos.*
 
-**Qué decir.** «La inferencia de pertenencia pregunta si una fila estaba en el conjunto de entrenamiento. El ataque da a cada fila una puntuación. El AUC es la probabilidad de que un miembro al azar puntúe más alto que un no miembro al azar; 0,5 es lanzar una moneda. La ventaja es la diferencia entre la tasa de verdaderos positivos y la de falsos positivos. La TPR al 10% de FPR pregunta cuántos miembros reales detecta el ataque cuando solo puede dar una falsa alarma en un 10% de los no miembros, más o menos. FDIF mira los extremos: la proporción de miembros en el 10% superior de las puntuaciones menos la proporción en el 10% inferior, con un p-valor por permutación. ¿Por qué las dos? Porque un modelo puede parecer azar de media y aun así exponer a un grupo de personas en la cola; lo veremos exactamente así en la diapositiva 45. Por último, la probabilidad a posteriori de pertenencia: si el ataque dice "miembro", ¿qué probabilidad hay de que sea cierto? Depende de lo raros que sean los miembros. Para nuestro árbol sin restricciones es 0,630 cuando la mitad de los candidatos son miembros, y 0,017 cuando lo es uno de cada cien.»
+**En pantalla.** Una figura: el acierto del atacante al adivinar si una persona estaba incluida en una media publicada: 1,000 con la media determinista, 0,703 con ε = 8, 0,522 con ε = 1, 0,487 con ε = 0,2 (0,5 es lanzar una moneda). Error de la media publicada con ε = 0,2: 0,3053 con una extracción, 0,0084 quedándose con la mejor de 50. Nota: quedarse con la extracción más cercana a la media real deshace el ruido; el personal del TRE elige la semilla sin mirar.
 
-**Ejemplos.** Úsalos si la sala pide números; el desarrollo completo está en GT §18.1.
+**Qué decir.** «Sección 3 del informe. La privacidad diferencial es una propiedad del mecanismo de publicación, no de los datos. El experimento mental del paper: el atacante lo sabe todo salvo si una persona estaba incluida, y ve lo publicado. Una media sin más delata la respuesta: acierto de 1,000. Añadir ruido de Laplace, donde un epsilon menor significa más ruido, devuelve al atacante hacia el lanzamiento de moneda: 0,703 con epsilon 8, 0,522 con 1, 0,487 con 0,2. TECH 12 añade un aviso práctico. Con epsilon 0,2, una media con ruido se aleja 0,31 de la real, pero si alguien hace 50 extracciones y se queda con la más cercana, se aleja 0,008, lo que anula la protección. Así que debe ser el personal del entorno, no el investigador, quien elija la semilla aleatoria, sin mirar el resultado. Este repositorio solo esboza la privacidad diferencial sobre una media; no entrena un modelo privado.»
 
-1. *La media.* «Cuatro miembros y cuatro no miembros, con puntuaciones 0,9, 0,7, 0,6 y 0,4 para los miembros y 0,8, 0,5, 0,3 y 0,2 para los no miembros. Comparamos cada miembro con cada no miembro: 16 parejas, y el miembro puntúa más alto en 12. El AUC es 12 de 16, 0,75. Si llamamos "miembro" a todo lo que tiene 0,5 o más, quedan señalados 3 de 4 miembros y 2 de 4 no miembros, así que la ventaja es 0,75 menos 0,50, 0,25. De media el ataque acierta tres de cada cuatro veces, pero la media no dice quién queda expuesto.»
-2. *La cola.* «Doscientas filas, la mitad miembros. El ataque está seguro de 20 personas: 10 miembros a los que da un 1 y 10 no miembros a los que da un 0. Todos los demás reciben una puntuación aleatoria. El AUC sale alrededor de 0,595, dentro de la banda del azar. Ahora mirad las 20 puntuaciones más altas: los 10 miembros seguros más unos 5 por azar, un 75% de miembros. Las 20 más bajas tienen alrededor de un 25%. FDIF es 0,75 menos 0,25, alrededor de 0,50, con un p-valor cercano a 0,003. La media dice "moneda al aire"; la cola señala a diez personas.»
-3. *El miembro raro.* «Tomemos un buen ataque, TPR 0,8 y FPR 0,2. Probamos con 1.000 personas, la mitad miembros: señala a 400 miembros y a 100 no miembros, así que acierta 4 de cada 5 señales, 0,80. Probamos con 10.000 personas, 1 de cada 100 miembro: señala a 80 miembros y a 1.980 no miembros, así que solo acierta 80 de 2.060 señales, 0,04. El mismo ataque; solo ha cambiado la tasa base. Pero si el atacante señala solo las filas de las que el ataque está seguro, como en el ejemplo de la cola, no hay falsas alarmas y todas las señales aciertan.»
+**Datos clave.** §10.1.3 (pp. 37-39), TECH 12 (p. 50). `demo_report.txt`, sección 3. Sensibilidad (90 − 30) / 500 = 0,12; escala de Laplace = sensibilidad / ε. NIST: el censo de Estados Unidos de 2020 usó ε = 19,61.
 
-**Datos clave.** Anexo F del paper (pp. 92-95); la fórmula de la probabilidad a posteriori, anexo F, §21.3. Banda del azar con 100 miembros y 100 no miembros: aproximadamente de 0,38 a 0,62. Ejemplo del paper: TPR 0,8 y FPR 0,2 dan 0,04 con 1 de cada 100.
+**Si preguntan.** *¿Qué epsilon deberíamos usar?* No hay una respuesta universal; es un compromiso entre privacidad y utilidad, y en la práctica se usan a menudo valores grandes (NIST §2.4.5).
 
-**Si preguntan.** *Entonces, ¿la inferencia de pertenencia es inofensiva cuando los miembros son raros?* No necesariamente: la cola aún puede señalar a personas concretas con mucha seguridad, que es lo que miden FDIF y la TPR con FPR bajo.
+**Código.** [`graimatter_demo/dp_sketch.py`](../../demo/graimatter_demo/dp_sketch.py) · [guía de las demos §1.3](Guia_Demos_ES.md#13-qué-significa-epsilon-sobre-una-media-sección-1013)
 
-**Código.** [`graimatter_demo/metrics.py`](../../demo/graimatter_demo/metrics.py) · [guía de las demos §0.5](Guia_Demos_ES.md#05-las-métricas-de-ataque-graimatter_demometricspy)
+**De dónde sale cada número.** Sección 3 del informe. Sensibilidad (90 − 30) / 500 = 0,12; escala de Laplace 0,12 / ε: 0,6000, 0,1200, 0,0150. Cada acierto son aciertos sobre 400 intentos: 195 / 400 = 0,487 con ε = 0,2, 209 / 400 = 0,522 con ε = 1, 281 / 400 = 0,703 con ε = 8. La media exacta acierta siempre.
 
-**Para profundizar.** GT §18, y §12.1 para los tres ejemplos desarrollados.
+**Para profundizar.** GT §19.3; §16 (la privacidad diferencial y sus límites para cada clase de privacidad); guía de las demos §1.3.
 
-**Siguiente.** «Ahora, la demo 1 sobre el árbol sin restricciones.»
+**Siguiente.** «Sección 4: el árbol de un investigador, entrenado sin límites.»
 
-### Diapositiva 43 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
+### Diapositiva 44 · Precisión de entrenamiento perfecta y una hoja de una persona: rechazado
 
 *Título en la diapositiva: «Perfect training accuracy and a leaf of one person: refused»*
 
@@ -903,19 +931,21 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una tabla de comprobaciones del árbol sin restricciones con el resultado sembrado, el límite de la demo y si salta: precisión de entrenamiento frente a precisión en el holdout 1,000 frente a 0,590 (diferencia 0,410, límite 0,15, salta); hoja más pequeña de 1 fila; cociente de tamaño del fichero 0,267 (límite 0,75, no salta); AUC de pertenencia de peor caso 0,708 (límite 0,62, salta); ventaja 0,412 (límite 0,20, salta); TPR al 10% de FPR 0,156 (límite 0,35, no salta); FDIF 0,620 con p = 0,003 (salta); inferencia de atributos sobre el peso, se abstiene. Decisión: no publicar, saltan cuatro reglas. Nota: el ataque de atributos se abstuvo porque el árbol aisló las filas con las columnas de ruido.
 
-**Qué decir.** «El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 41 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
+**Qué decir.** «Sección 4. El investigador declararía un 100% de precisión. En las filas que reservó el entorno es un 59%. Esa diferencia de 0,41 es sobreajuste, y la hoja más pequeña contiene una sola fila de entrenamiento. El ataque de pertenencia de peor caso, el que describe el anexo G del paper, llega a un AUC de 0,708 y a una ventaja de 0,412, y FDIF es 0,620 con un p-valor de 0,003. Decisión: no publicar; saltan cuatro reglas. Fijaos ahora en lo que *no* salta. El fichero ocupa solo 0,27 veces la tabla de entrenamiento, y la TPR al 10% de FPR es 0,156. El tamaño por sí solo habría dejado salir este modelo, y por eso TECH 7 pide un conjunto de comprobaciones y no una sola. Y el ataque de atributos sobre el peso se abstiene, porque este árbol separa a las personas con las columnas de ruido, así que cambiar el peso de alguien nunca lo lleva a otra hoja. La diapositiva 42 era el caso en que el modelo sí divide por los campos ocultos. Recordad que estos límites son una política de la demo, no del paper.»
 
-**Datos clave.** `demo_report.txt`, sección 4. Límites en `demo/graimatter_demo/disclosure.py` (ELA 8). Probabilidad a posteriori 0,630 / 0,017. Salem-synth sobre este árbol: AUC 0,703, FDIF 1,000.
+**Datos clave.** `demo_report.txt`, sección 4. Límites en `demo/graimatter_demo/disclosure.py` (ELA 8). Probabilidad a posteriori 0,630 / 0,017. Salem-synth sobre este árbol: AUC 0,703, TPR al 10% de FPR 0,186, FDIF 0,660 (p = 0,003).
 
 **Si preguntan.** *¿Qué es exactamente el ataque de "peor caso"?* Entrena un clasificador con las probabilidades predichas por el modelo más la etiqueta real, con las filas de entrenamiento y las reservadas en la mano: una cota superior conservadora, no un atacante realista (anexo G del paper).
 
 **Código.** [`graimatter_demo/attacks.py`](../../demo/graimatter_demo/attacks.py) · [`graimatter_demo/disclosure.py`](../../demo/graimatter_demo/disclosure.py) · [guía de las demos §1.4](Guia_Demos_ES.md#14-árbol-sin-restricciones-entrenamiento-nativo)
 
-**Para profundizar.** GT §19.0 (la política de la demo) y §13.4.
+**De dónde sale cada número.** Sección 4 del informe, líneas `Working.`. Las reservadas aciertan 295 de 500 = 0,590; diferencia 1,000 − 0,590 = 0,410. Tabla de entrenamiento (500 × 16 + 500) × 8 = 68.000 bytes; fichero del modelo 18.150 bytes, cociente 0,267. El ataque puntúa 250 miembros y 250 reservadas: marca 250 de 250 miembros (TPR 1,000) y 147 de 250 reservadas (FPR 0,588), ventaja 0,412. AUC: de 62.500 parejas miembro/reservada el miembro puntúa más alto en 35.038 y empata en 18.387, (35.038 + 18.387 / 2) / 62.500 = 0,708. TPR al 10% de FPR: con como mucho 25 falsas alarmas encuentra 39 miembros, 39 / 250 = 0,156. FDIF: las 50 puntuaciones más altas tienen 31 miembros y las 50 más bajas ninguno, 31 / 50 − 0 = 0,620; p = 1 / 301 = 0,003 porque ninguno de 300 barajados fue igual de extremo.
+
+**Para profundizar.** GT §19.0 (la política de la demo) y §19.4; guía de las demos §1.4, paso a paso.
 
 **Siguiente.** «Los mismos datos, pero a través de un safe wrapper.»
 
-### Diapositiva 44 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
+### Diapositiva 45 · Hoja 20, profundidad 4: AUC 0,528, publicado según una política de demo
 
 *Título en la diapositiva: «Leaf 20, depth 4: AUC 0.528, released under a demo policy»*
 
@@ -923,7 +953,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una figura de barras que compara el árbol sin restricciones y el safe wrapper en AUC de pertenencia (0,708 frente a 0,528), ventaja (0,412 frente a 0,004), entrenamiento menos holdout (0,410 frente a 0,108), TPR al 10% de FPR (0,156 frente a 0,116) y FDIF (0,620 frente a 0,020), con el límite de la demo como línea discontinua. Árbol sin restricciones: rechazar. Safe wrapper: publicar según la política de la demo.
 
-**Qué decir.** «El investigador pide la misma configuración, pero a través del safe wrapper escrito a mano. Lee `demo/constraints.json` y la corrige: tamaño mínimo de hoja de 1 a 20, profundidad máxima de ilimitada a 4. El anexo D del paper muestra el formato del fichero de restricciones con un tamaño mínimo de hoja de 5 como ejemplo; la demo es más estricta para que el contraste se vea con unos cientos de filas. La precisión de entrenamiento baja a 0,692, y la precisión en el holdout apenas se mueve, 0,584. Así que la precisión extra del árbol profundo era memorización, no capacidad. El ataque de peor caso cae a un AUC de 0,528, una ventaja de 0,004 y una FDIF de 0,020 con un p-valor de 0,445. No salta ninguna regla de la demo, así que el script lo publica. Decidlo con claridad: la política es nuestra, no del paper.»
+**Qué decir.** «Sección 5. El investigador pide la misma configuración, pero a través del safe wrapper escrito a mano. Lee `demo/constraints.json` y la corrige: tamaño mínimo de hoja de 1 a 20, profundidad máxima de ilimitada a 4. El anexo D del paper muestra el formato del fichero de restricciones con un tamaño mínimo de hoja de 5 como ejemplo; la demo es más estricta para que el contraste se vea con unos cientos de filas. La precisión de entrenamiento baja a 0,692, y la precisión en el holdout apenas se mueve, 0,584. Así que la precisión extra del árbol profundo era memorización, no capacidad. El ataque de peor caso cae a un AUC de 0,528, una ventaja de 0,004 y una FDIF de 0,020 con un p-valor de 0,445. No salta ninguna regla de la demo, así que el script lo publica. Decidlo con claridad: la política es nuestra, no del paper.»
 
 **Datos clave.** `demo_report.txt`, sección 5. TECH 9-10. `request_release()` solo dice "Run file through the next step of the checking procedure" (pasa el fichero al siguiente paso del procedimiento de revisión); deciden las cifras de los ataques. Probabilidad a posteriori 0,502 / 0,010.
 
@@ -931,11 +961,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py) · [guía de las demos §1.5](Guia_Demos_ES.md#15-los-mismos-datos-con-un-safe-wrapper-tech-9-y-10)
 
-**Para profundizar.** GT §19.5.
+**De dónde sale cada número.** Sección 5 del informe. Acierta 346 de 500 filas de entrenamiento (0,692) y 292 de 500 reservadas (0,584), diferencia 0,108. Marcados: 158 de 250 miembros (TPR 0,632) y 157 de 250 reservadas (FPR 0,628), ventaja 0,004. AUC (31.054 + 3.936 / 2) / 62.500 = 0,528. TPR al 10% de FPR 29 / 250 = 0,116. FDIF 28 / 50 − 27 / 50 = 0,020, p = 134 / 301 = 0,445.
+
+**Para profundizar.** GT §19.5; guía de las demos §1.5.
 
 **Siguiente.** «Pero un ataque ve algo que la media esconde.»
 
-### Diapositiva 45 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
+### Diapositiva 46 · El fallo silencioso: AUC cerca de 0,5, pero FDIF 0,160
 
 *Título en la diapositiva: «The quiet failure: AUC near 0.5, but FDIF 0.160»*
 
@@ -951,11 +983,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/metrics.py`](../../demo/graimatter_demo/metrics.py) · [guía de las demos §1.5](Guia_Demos_ES.md#15-los-mismos-datos-con-un-safe-wrapper-tech-9-y-10)
 
-**Para profundizar.** GT §19.5, "El fallo silencioso", y §12 (FDIF).
+**De dónde sale cada número.** Sección 5 del informe, líneas de Salem-synth. Puntúa las 1.000 filas, así que hay 500 × 500 = 250.000 parejas y la cola son 100 filas. AUC (115.248 + 25.631 / 2) / 250.000 = 0,512. TPR al 10% de FPR: 59 miembros con como mucho 50 falsas alarmas, 59 / 500 = 0,118. FDIF: las 100 puntuaciones más altas tienen 54 miembros y las 100 más bajas 38, 0,54 − 0,38 = 0,160; 7 de 300 barajados fueron igual de extremos, p = 8 / 301 = 0,027.
+
+**Para profundizar.** GT §19.5, "El fallo silencioso", y §18 (FDIF); guía de las demos §1.5.
 
 **Siguiente.** «Algunos modelos no deberían publicarse nunca como fichero.»
 
-### Diapositiva 46 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
+### Diapositiva 47 · Vecinos más cercanos y SVC guardan filas: hay que rechazarlos
 
 *Título en la diapositiva: «Nearest neighbours and SVC store rows: refuse them»*
 
@@ -963,7 +997,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Tarjetas: el modelo de 1 vecino más cercano guarda las 500 filas (fichero de 68.677 bytes, cociente 1,010), rechazado. El clasificador de vectores soporte con kernel RBF guarda 423 vectores soporte de 500 (cociente 0,94), rechazado. Los wrappers de ambas clases se niegan a entrenar (`constraints.json` los marca como no permitidos). Las alternativas del paper (TECH 11): datos agregados, un algoritmo diferencialmente privado o un servicio con consultas limitadas. En el paper: anexo E, §20.4, un SVM que contenía 441 filas exactas de pacientes de un total de 798.
 
-**Qué decir.** «Los modelos basados en instancias necesitan sus filas de entrenamiento para funcionar. Un modelo de vecinos más cercanos busca las filas guardadas más próximas; un SVC con kernel compara las entradas nuevas con sus vectores soporte. Esas filas se pueden leer directamente del fichero, así que la demo rechaza ambos, digan lo que digan las cifras de los ataques. Las opciones del paper son entrenar con datos agregados, usar una variante diferencialmente privada o no publicar el fichero y ofrecer en su lugar un servicio con consultas limitadas. Su caso de estudio describe un entorno real que encontró, dentro de un SVM, 441 copias de registros de pacientes de un total de 798.»
+**Qué decir.** «Sección 6. Los modelos basados en instancias necesitan sus filas de entrenamiento para funcionar. Un modelo de vecinos más cercanos busca las filas guardadas más próximas; un SVC con kernel compara las entradas nuevas con sus vectores soporte. Esas filas se pueden leer directamente del fichero, así que la demo rechaza ambos, digan lo que digan las cifras de los ataques. Las opciones del paper son entrenar con datos agregados, usar una variante diferencialmente privada o no publicar el fichero y ofrecer en su lugar un servicio con consultas limitadas. Su caso de estudio describe un entorno real que encontró, dentro de un SVM, 441 copias de registros de pacientes de un total de 798.»
 
 **Datos clave.** TECH 11 (p. 49), §10.1.5 (pp. 39-40), anexo E del paper, §20.4 (pp. 91-92). `demo_report.txt`, sección 6.
 
@@ -971,11 +1005,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py) · [guía de las demos §1.6](Guia_Demos_ES.md#16-se-rechazan-los-modelos-basados-en-instancias-tech-11)
 
-**Para profundizar.** GT §19.6; §16 (reconstrucción).
+**De dónde sale cada número.** Sección 6 del informe. 1-NN: fichero del modelo de 68.677 bytes sobre una tabla de entrenamiento de 68.000, 68.677 / 68.000 = 1,010, por encima del límite de 0,75, con las 500 filas dentro. SVC: 423 de 500 filas guardadas como vectores soporte, 84,6%, cociente del fichero 0,94.
+
+**Para profundizar.** GT §19.6; §16 (reconstrucción); guía de las demos §1.6.
 
 **Siguiente.** «¿Y si el investigador edita el modelo después de entrenarlo?»
 
-### Diapositiva 47 · Editar el modelo después de fit() se detecta
+### Diapositiva 48 · Editar el modelo después de fit() se detecta
 
 *Título en la diapositiva: «Editing the model after fit() is caught»*
 
@@ -983,7 +1019,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una figura: el pipeline del safe wrapper: `constraints.json` (apetito de riesgo), inicialización del wrapper (corrige la hoja y la profundidad o registra una excepción), `fit()` (guarda un resumen del árbol), `request_release()` (comprueba el tamaño de hoja y compara parámetros y resumen con el estado entrenado), ataques del TRE, registro e instantánea. Un camino de manipulación: parámetros editados de vuelta después de entrenar, atributo `hidden_rows` añadido, hoja más pequeña aún de 1, así que "Do not allow release" (no permitir la publicación).
 
-**Qué decir.** «El wrapper registra el estado del modelo en el momento de entrenarlo. En esta sección de la demo, el investigador se salta las restricciones y entrena un árbol profundo, y después vuelve a poner los parámetros cerca de los valores permitidos y añade un atributo oculto. `request_release()` compara el estado entrenado con el actual y dice que no se publique: `max_depth` y `min_samples_leaf` cambiaron después de entrenar, la hoja más pequeña sigue conteniendo una fila y se añadió un atributo llamado `hidden_rows`. Eso cubre tanto el caso descuidado, RT1, cambiar un parámetro y olvidar reentrenar, como el deliberado, RT2, esconder datos. Un fichero con extensión `.txt` se rechaza porque no es `.joblib` ni `.pkl`. Para el modelo aprobado, la demo escribe una entrada en el registro y una instantánea del pipeline, que es TECH 3.»
+**Qué decir.** «Secciones 7 y 9. El wrapper registra el estado del modelo en el momento de entrenarlo. En esta sección de la demo, el investigador se salta las restricciones y entrena un árbol profundo, y después vuelve a poner los parámetros cerca de los valores permitidos y añade un atributo oculto. `request_release()` compara el estado entrenado con el actual y dice que no se publique: `max_depth` y `min_samples_leaf` cambiaron después de entrenar, la hoja más pequeña sigue conteniendo una fila y se añadió un atributo llamado `hidden_rows`. Eso cubre tanto el caso descuidado, RT1, cambiar un parámetro y olvidar reentrenar, como el deliberado, RT2, esconder datos. Un fichero con extensión `.txt` se rechaza porque no es `.joblib` ni `.pkl`. Para el modelo aprobado, la demo escribe una entrada en el registro y una instantánea del pipeline, que es TECH 3.»
 
 **Datos clave.** §10.1.2 (p. 37), TECH 3 (p. 42), TECH 10 (p. 48). `demo_report.txt`, secciones 7 y 9; `tampered_tree.release.json`, `data_use_register.json`, `pipeline_snapshot.json`. El resumen es un SHA-256 de las matrices del árbol.
 
@@ -991,11 +1027,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/safe_model.py`](../../demo/graimatter_demo/safe_model.py) · [guía de las demos §1.7](Guia_Demos_ES.md#17-editar-el-modelo-después-de-fit-tipos-de-riesgo-rt1-y-rt2)
 
-**Para profundizar.** GT §19.7 y §19.9.
+**De dónde sale cada número.** Sección 7 del informe. La instantánea de `fit()` guarda max_depth None y min_samples_leaf 1; ahora dicen 4 y 20 (dos hallazgos). El árbol entrenado sigue teniendo una hoja de 1 fila, por debajo de 20 (un hallazgo). `hidden_rows` es nuevo (un hallazgo). Cuatro hallazgos, así que «Do not allow release». La sección 9 escribe la entrada del registro y la instantánea del pipeline.
+
+**Para profundizar.** GT §19.7 y §19.9; guía de las demos §1.7 y §1.9.
 
 **Siguiente.** «Si el modelo se queda en un servidor, el entorno puede limitar las consultas.»
 
-### Diapositiva 48 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
+### Diapositiva 49 · Contar filas, no llamadas: se permite un paciente y se bloquean 20
 
 *Título en la diapositiva: «Count rows, not calls: one patient allowed, 20 blocked»*
 
@@ -1003,7 +1041,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Una figura: un presupuesto de 8 filas para un usuario. Petición 1, consulta de un paciente, 1 fila: permitida. Petición 2, el barrido de atributos, 20 filas: rechazada (1 usada, presupuesto de 8). Nota: un servicio real con consultas limitadas también necesita una prueba externa (TECH 17).
 
-**Qué decir.** «Si el modelo no se publica como fichero sino que se queda en un servidor, el entorno puede limitar las consultas. La puerta de la demo da a un usuario un presupuesto de 8 filas. La consulta de un solo paciente por parte de un clínico usa 1 fila y se permite. Después, el mismo usuario envía en una sola petición el barrido de 20 combinaciones del caso de estudio de atributos. La puerta lo rechaza: 20 filas pedidas, 1 ya usada, presupuesto de 8. La unidad importa. Si el presupuesto contara llamadas HTTP, una llamada con 20 filas pasaría. TECH 17 dice que una parte externa debería probar un servicio real con consultas limitadas; la demo solo implementa la lógica de control. Y recordad la demo 3 desde el otro lado: un presupuesto de filas frena la extracción del modelo, pero 200 filas ya copiaron un modelo sencillo.»
+**Qué decir.** «Sección 8, la última comprobación. Si el modelo no se publica como fichero sino que se queda en un servidor, el entorno puede limitar las consultas. La puerta de la demo da a un usuario un presupuesto de 8 filas. La consulta de un solo paciente por parte de un clínico usa 1 fila y se permite. Después, el mismo usuario envía en una sola petición el barrido de 20 combinaciones del caso de estudio de atributos. La puerta lo rechaza: 20 filas pedidas, 1 ya usada, presupuesto de 8. La unidad importa. Si el presupuesto contara llamadas HTTP, una llamada con 20 filas pasaría. TECH 17 dice que una parte externa debería probar un servicio real con consultas limitadas; la demo solo implementa la lógica de control. Y recordad la demo 3 desde el otro lado: un presupuesto de filas frena la extracción del modelo, pero 200 filas ya copiaron un modelo sencillo.»
 
 **Datos clave.** TECH 16-17 (pp. 52-53), §10.1.7 (pp. 40-41). `demo_report.txt`, sección 8. Disposición 6.2 del código del Reino Unido.
 
@@ -1011,27 +1049,9 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`graimatter_demo/query_gate.py`](../../demo/graimatter_demo/query_gate.py) · [guía de las demos §1.8](Guia_Demos_ES.md#18-un-presupuesto-de-consultas-que-cuenta-filas-tech-16)
 
-**Para profundizar.** GT §19.8; GT §3.2 para el lado de la extracción.
+**De dónde sale cada número.** Sección 8 del informe. Presupuesto de 8 filas. La consulta usa 1 (1 ≤ 8, permitida). El barrido pide 20 más: 1 + 20 = 21 > 8, así que se rechaza la petición entera y no se responde nada.
 
-**Siguiente.** «La última comprobación de la demo 1 es la privacidad diferencial, sobre la publicación más sencilla posible.»
-
-### Diapositiva 49 · El ruido protege una media; quedarse con la mejor de 50 extracciones lo deshace
-
-*Título en la diapositiva: «Noise protects a mean; the best of 50 draws undoes it»*
-
-*Aproximadamente 1,5 minutos.*
-
-**En pantalla.** Una figura: el acierto del atacante al adivinar si una persona estaba incluida en una media publicada: 1,000 con la media determinista, 0,703 con ε = 8, 0,522 con ε = 1, 0,487 con ε = 0,2 (0,5 es lanzar una moneda). Error de la media publicada con ε = 0,2: 0,3053 con una extracción, 0,0084 quedándose con la mejor de 50. Nota: quedarse con la extracción más cercana a la media real deshace el ruido; el personal del TRE elige la semilla sin mirar.
-
-**Qué decir.** «La privacidad diferencial es una propiedad del mecanismo de publicación, no de los datos. El experimento mental del paper: el atacante lo sabe todo salvo si una persona estaba incluida, y ve lo publicado. Una media sin más delata la respuesta: acierto de 1,000. Añadir ruido de Laplace, donde un epsilon menor significa más ruido, devuelve al atacante hacia el lanzamiento de moneda: 0,703 con epsilon 8, 0,522 con 1, 0,487 con 0,2. TECH 12 añade un aviso práctico. Con epsilon 0,2, una media con ruido se aleja 0,31 de la real, pero si alguien hace 50 extracciones y se queda con la más cercana, se aleja 0,008, lo que anula la protección. Así que debe ser el personal del entorno, no el investigador, quien elija la semilla aleatoria, sin mirar el resultado. Este repositorio solo esboza la privacidad diferencial sobre una media; no entrena un modelo privado.»
-
-**Datos clave.** §10.1.3 (pp. 37-39), TECH 12 (p. 50). `demo_report.txt`, sección 3. Sensibilidad (90 − 30) / 500 = 0,12; escala de Laplace = sensibilidad / ε. NIST: el censo de Estados Unidos de 2020 usó ε = 19,61.
-
-**Si preguntan.** *¿Qué epsilon deberíamos usar?* No hay una respuesta universal; es un compromiso entre privacidad y utilidad, y en la práctica se usan a menudo valores grandes (NIST §2.4.5).
-
-**Código.** [`graimatter_demo/dp_sketch.py`](../../demo/graimatter_demo/dp_sketch.py) · [guía de las demos §1.3](Guia_Demos_ES.md#13-qué-significa-epsilon-sobre-una-media-sección-1013)
-
-**Para profundizar.** GT §19.3; §16 (la privacidad diferencial y sus límites para cada clase de privacidad).
+**Para profundizar.** GT §19.8; GT §3.2 para el lado de la extracción; guía de las demos §1.8.
 
 **Siguiente.** «Ahora, la misma cohorte con la herramienta oficial.»
 
@@ -1051,7 +1071,9 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py) · [guía de las demos §2](Guia_Demos_ES.md#2-demo-2-las-mismas-comprobaciones-con-sacro-ml)
 
-**Para profundizar.** GT §20.
+**De dónde sale cada número.** `sacroml_report.txt`. La precisión son filas acertadas sobre 500: el árbol sin restricciones acierta las 500 de entrenamiento y 295 reservadas (0,590), el de hoja 5 acierta 434 y 283 (0,868 y 0,566). El AUC de pertenencia es la media de tres repeticiones, cada una leída de su `report.json`. La marca estructural `k_anonymity_risk` es true cuando la hoja más pequeña tiene menos de 10 filas de entrenamiento: 1 y 5 lo cumplen.
+
+**Para profundizar.** GT §20; guía de las demos §2.
 
 **Siguiente.** «El mismo árbol: 0,708 en una demo y 0,500 en la otra.»
 
@@ -1071,7 +1093,9 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py) · [`graimatter_demo/attacks.py`](../../demo/graimatter_demo/attacks.py) · [guía de las demos §2.2](Guia_Demos_ES.md#22-los-ataques-sobre-dos-árboles)
 
-**Para profundizar.** GT §21.2.
+**De dónde sale cada número.** Demo 1, sección 4 del informe: los 500 miembros reciben confianza 1 en su etiqueta real, y 295 de las 500 reservadas también (el árbol acierta con ellas); 205 reciben 0. Un miembro al azar gana a un no miembro al azar cuando el no miembro es del 41% que está en 0, y empata en los demás casos: 0,41 + 0,59 / 2 ≈ 0,705, el AUC de la línea de confianza. Sin la etiqueta, cada hoja es igual de extrema para los dos grupos, así que el ataque de la demo 2 no tiene nada que ordenar: 0,500.
+
+**Para profundizar.** GT §21.1; guía de las demos §2.2.
 
 **Siguiente.** «Tres diferencias resumen las dos demos.»
 
@@ -1091,7 +1115,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Código.** [`run_demo.py`](../../demo/run_demo.py) · [`run_sacroml_demo.py`](../../demo/run_sacroml_demo.py) · [guía de las demos §1.10](Guia_Demos_ES.md#110-lado-a-lado)
 
-**Para profundizar.** GT §21.1 y §21.3.
+**Para profundizar.** GT §21.2 y §21.3; guía de las demos §1.10.
 
 **Siguiente.** «Una forma más en que pueden salir los datos de un entorno de investigación: escritos en el modelo a propósito.»
 
@@ -1105,13 +1129,15 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «Los ataques de privacidad de hasta ahora van de que un modelo filtre sus datos de entrenamiento sin querer. Esto es lo contrario: un investigador que escribe datos dentro del modelo a propósito, como se esconde un mensaje en los bits bajos de una imagen. Hay dos canales. Primero, los pesos: un float32 tiene 23 bits de mantisa y los ocho más bajos apenas aportan magnitud, así que se pueden sobrescribir con bytes arbitrarios. Esconder una nota de 111 bytes en una red de 10.000 pesos no mueve ningún peso más de tres millonésimas y deja la precisión intacta, así que una comprobación de precisión lo aprueba y los datos salen dentro del modelo. EvilModel lo hizo con ficheros enteros de malware en 2021. Segundo, el comportamiento: se añaden unas pocas entradas trigger lejos de los datos reales, cada una etiquetada para llevar un bit, y el modelo aprende a responderlas así mientras mantiene su precisión; quien conoce los triggers lee el mensaje. Es marca de agua por backdoor usada como canal encubierto. Las defensas son baratas y se aplican a todo modelo que se publique: recortar los bits bajos, cuantizar o añadir ruido mata el canal de los pesos, y reajustar o entrenar con privacidad diferencial, el del comportamiento. Una prueba de distribución no ayuda, porque la carga llena muy pocos pesos. La lección es transformar todo modelo que se publique, no intentar detectar los datos escondidos.»
 
-**Datos clave.** `uv run python demo/run_stego_demo.py`; `stego_report.txt`. Guía de demos §6; GT §9.4. EvilModel (Wang et al. 2021); marca de agua por backdoor (Adi et al. 2018); memorización (Song et al. 2017). La carga útil es una nota inventada, nunca código ejecutable. La demo es independiente y no está conectada a la puerta.
+**Datos clave.** `uv run python demo/run_stego_demo.py`; `stego_report.txt`. Guía de demos §6; GT §22. EvilModel (Wang et al. 2021); marca de agua por backdoor (Adi et al. 2018); memorización (Song et al. 2017). La carga útil es una nota inventada, nunca código ejecutable. La demo es independiente y no está conectada a la puerta.
 
 **Si preguntan.** *¿Lo detectaría la puerta de publicación?* No: la puerta juzga las cifras que imprimen las demos, y ambos canales dejan la precisión intacta. El arreglo es una transformación de los pesos al publicar, por eso esto es una demo y no una tolerancia. *¿Se puede detectar un modelo con datos escondidos?* No de forma fiable; lo seguro es eliminar la capacidad.
 
 **Código.** [`run_stego_demo.py`](../../demo/run_stego_demo.py) · [`stego_demo/weights.py`](../../demo/stego_demo/weights.py) · [`stego_demo/behaviour.py`](../../demo/stego_demo/behaviour.py) · [`stego_demo/defences.py`](../../demo/stego_demo/defences.py) · [guía de las demos §6](Guia_Demos_ES.md#6-demo-6-esconder-datos-en-un-modelo)
 
-**Para profundizar.** Guía de demos §6; GT §9.4.
+**De dónde sale cada número.** `stego_report.txt`, líneas `Working.`. Pesos 16 × 128 + 128 × 64 + 64 × 1 = 10.304. Capacidad 10.304 × 8 bits / 8 = 10.304 bytes menos una cabecera de 4 bytes = 10.300. La carga son (111 + 4) × 8 = 920 bits, los bits bajos de 115 pesos; el peso que más se movió pasó de 0,1475638 a 0,1475608. Precisión: acierta 1.149 de 2.000 filas (0,575) antes y después. Comportamiento: (27 + 4) × 8 = 248 filas trigger, cada una repetida 5 veces, vuelven 248 de 248 bits; el modelo con marca de agua acierta 1.264 de 2.000 (0,632). Tras cada transformación sobreviven 0 de los 111 bytes de la carga.
+
+**Para profundizar.** Guía de demos §6; GT §22.
 
 **Siguiente.** «Una familia más de clases antes de cerrar: la IA generativa.»
 
@@ -1129,7 +1155,7 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Si preguntan.** *¿Siguen valiendo para los LLM los ataques a la IA predictiva?* Sí: el envenenamiento, los backdoors, la inferencia de pertenencia y la extracción tienen todos versiones generativas (NIST §3.2 y §3.3).
 
-**Para profundizar.** GT §22 y §5.
+**Para profundizar.** GT §23 y §5.
 
 **Siguiente.** «Antes de la puerta, lo que este repositorio no decide.»
 
@@ -1141,25 +1167,21 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Seis tarjetas: un apetito de riesgo real (los umbrales de la demo 1 son locales; ELA 8), asesoramiento jurídico (los marcos se resumen, no se interpretan), ataques fuertes (sin LiRA; la demo 3 usa ataques voraces y basados en consultas), entrenamiento privado (ningún modelo con privacidad diferencial), IA generativa (ninguna demo de LLM; ver safety-trust-engine), datos reales y aprobación (una sola cohorte sintética; ninguna demo aprueba un modelo).
 
-**Qué decir.** «Sed explícitos con los límites. Los umbrales de la demo 1 existen para que el script pueda decir sí o no; el paper no publica umbrales universales. Las diapositivas legales resumen documentos y no son asesoramiento. Los ataques son versiones didácticas: no hay LiRA, y la evasión de la demo 3 es una búsqueda voraz sobre unos pocos campos, no un ataque optimizado. No hay ningún modelo diferencialmente privado ni ninguna demo de IA generativa. La cohorte es sintética, y ninguna de las demos de GRAIMATTER aprueba un modelo: el paquete dice "proceed to next step".»
+**Qué decir.** «Sed explícitos con los límites. Los umbrales de la demo 1 existen para que el script pueda decir sí o no; el paper no publica umbrales universales. Las diapositivas legales resumen documentos y no son asesoramiento. Los ataques son versiones didácticas: no hay LiRA, y la evasión de la demo 3 es una búsqueda voraz sobre unos pocos campos, no un ataque optimizado. No hay ningún modelo diferencialmente privado ni ninguna demo de IA generativa, y la demo 7, en el vídeo siguiente, es una miniatura en SQLite, no el servidor real. La cohorte es sintética, y ninguna de las demos de GRAIMATTER aprueba un modelo: el paquete dice "proceed to next step".»
 
 **Datos clave.** `docs/brief-for-presentation-and-guide.md`, "Claims to keep accurate".
 
 **Si preguntan.** *¿Podemos usar las tolerancias como nuestra política?* Solo como punto de partida para hablarlo con el responsable de los datos; se fijaron para el taller.
 
-**Para profundizar.** GT §25.
+**Para profundizar.** GT §24.
 
 **Siguiente.** «Por último, cómo convertir estas cifras en una decisión de publicación: la puerta.»
-
----
-
-## Cierre (final del vídeo 4b)
 
 ### Diapositiva 56 · Una puerta, cuatro lentes: GRAIMATTER cumple, el artículo 15(5) falla
 
 *Título en la diapositiva: «One gate, four lenses: GRAIMATTER passes, Article 15(5) fails»*
 
-*Aproximadamente 2,5 minutos.*
+*Aproximadamente 2,5 minutos. Cierra el vídeo 4b.*
 
 **En pantalla.** Una tabla de paquetes de regulación con controles, cumplen, fallan y sin evidencia: art. 15(5) del Reglamento de IA y código del Reino Unido 8 / 2 / 6 / 0; NIST AI 100-2 6 / 3 / 3 / 0; GRAIMATTER TECH 6 / 5 / 0 / 1 (demo 2); NIST AI RMF y SR 26-02 8 / 5 / 3 / 0. Incumplimientos: evasión del 78,7% (tolerancia del 10%), una copia que coincide en un 86,9% tras un solo presupuesto de 200 filas (80%), un backdoor que sube el éxito del disparador en 71,7 puntos (tolerancia de 10). Dentro de tolerancia: pertenencia, atributos, diferencia con el holdout, filas guardadas, controles de publicación, presupuesto de consultas y la cadena de suministro (ningún fichero manipulado de la demo 4 pasa el pin y el escaneo o el suelo). Tarjetas: "Nunca un verde silencioso" y "Leído con SR 26-02".
 
@@ -1169,11 +1191,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Si preguntan.** *¿Puedo cambiar una tolerancia?* Sí: `--fail-under metric=value`, por ejemplo `--fail-under evasion.self_reported=0.5`. *¿Por qué la CI no ejecuta la demo 2?* sacroml arrastra PyTorch; la CI usa `--accept-missing 2` para que el hueco se vea en lugar de quedar escondido.
 
-**Código.** [`run_gate.py`](../../demo/run_gate.py) · [`compliance_gate/controls.py`](../../demo/compliance_gate/controls.py) · [`compliance_gate/tolerances.py`](../../demo/compliance_gate/tolerances.py) · [`compliance_gate/gate.py`](../../demo/compliance_gate/gate.py) · [guía de las demos §7](Guia_Demos_ES.md#7-la-puerta-de-publicación)
+**Código.** [`run_gate.py`](../../demo/run_gate.py) · [`compliance_gate/controls.py`](../../demo/compliance_gate/controls.py) · [`compliance_gate/tolerances.py`](../../demo/compliance_gate/tolerances.py) · [`compliance_gate/gate.py`](../../demo/compliance_gate/gate.py) · [guía de las demos §8](Guia_Demos_ES.md#8-la-puerta-de-publicación)
 
-**Para profundizar.** GT §23 (todas las métricas y tolerancias en la §17.2, los paquetes en la §17.3).
+**Para profundizar.** GT §25 (las métricas y tolerancias en la §25.2, los paquetes en la §25.3); guía de las demos §8.
 
 **Siguiente.** «Los ataques son una cara. El último vídeo es la otra: asegurar un agente que accede a una base de datos real.»
+
+---
 
 ## Parte 4c · Defensa en la práctica: asegurar el acceso de un agente a una base de datos (vídeo 4c)
 
@@ -1185,13 +1209,13 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **En pantalla.** Divisor de la parte 4c: un párrafo sobre el giro de los ataques a la defensa (un agente LLM que accede a una base de datos de producción es el operador sin frenos de JADEPUFFER, y aquí consulta a través de un MCP server que le deja leer una porción definida y nada más, con cada puerta cerrada por capas). Cuatro etiquetas: OWASP LLM06, mínimo privilegio, solo lectura y política por tenant, defensa en profundidad.
 
-**Qué decir.** «Todo lo anterior era un ataque, o una comprobación del modelo. Este último vídeo le da la vuelta. Cuando conectas un agente LLM (Copilot, ChatGPT, Claude) a una base de datos de producción, el agente es justo el operador sin frenos que enseñó JADEPUFFER en la parte 1. La pregunta de la diapositiva 14 era: qué puede hacer este agente, con qué credenciales y qué necesita un humano. Aquí hay una respuesta real en código que funciona: un MCP server (Model Context Protocol) que deja al agente leer una porción definida de la base de datos y nada más, construido para que cada puerta por la que entró JADEPUFFER esté cerrada, y cerrada por capas.»
+**Qué decir.** «Todo lo anterior era un ataque, o una comprobación del modelo. Este último vídeo le da la vuelta. Cuando conectas un agente LLM (Copilot, ChatGPT, Claude) a una base de datos de producción, el agente es justo el operador sin frenos que enseñó JADEPUFFER en la parte 1. La pregunta de la diapositiva 14 era: qué puede hacer este agente, con qué credenciales y qué necesita un humano. Aquí hay una respuesta real en código que funciona: un MCP server (Model Context Protocol) que deja al agente leer una porción definida de la base de datos y nada más, construido para que cada puerta por la que entró JADEPUFFER esté cerrada, y cerrada por capas. Y como ese servidor no se puede volver a ejecutar, la demo 7 lo reconstruye en miniatura y mide qué capa aguanta.»
 
-**Datos clave.** El espejo defensivo de JADEPUFFER (diapositiva 14, anexo B). Anexo C de la GT. Un MCP server de solo lectura contra PostgreSQL detrás de un proxy inverso; se han quitado secretos, dominio y nombres de tenant.
+**Datos clave.** El espejo defensivo de JADEPUFFER (diapositiva 14, anexo B). GT §26. La demo 7 (diapositiva 60) vuelve a ejecutar el diseño en miniatura. Un MCP server de solo lectura contra PostgreSQL detrás de un proxy inverso; se han quitado secretos, dominio y nombres de tenant.
 
 **Si preguntan.** *¿Es una demo de GRAIMATTER?* No. Es un despliegue real, mostrado como la contraparte defensiva: las demos de GRAIMATTER cubren el lado del modelo, esto cubre el agente y su acceso a los datos.
 
-**Para profundizar.** Anexo C de la GT; safety-trust-engine.
+**Para profundizar.** GT §26; guía de las demos §7; safety-trust-engine.
 
 **Siguiente.** «Primero, qué puede y qué no puede alcanzar el agente.»
 
@@ -1205,11 +1229,11 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «El agente no toca la base de datos directamente. Habla con un MCP server detrás de un proxy inverso, y el servidor solo expone herramientas de lectura: listar las tablas, describir una, muestrear filas, ejecutar un SELECT. El proxy termina el TLS y el servidor exige un token OAuth. La cuenta de base de datos con la que conecta es de mínimo privilegio y vive en una bóveda de secretos, no en la máquina. Así que la pregunta de la diapositiva 14 se responde sola: solo herramientas de lectura, una cuenta acotada y ninguna acción irreversible a su alcance.»
 
-**Datos clave.** Herramientas: list_tables, describe_table, get_table_sample, execute_sql (solo SELECT). Token OAuth 2.0 obligatorio; TLS en el borde. Anexo C de la GT.
+**Datos clave.** Herramientas: list_tables, describe_table, get_table_sample, execute_sql (solo SELECT). Token OAuth 2.0 obligatorio; TLS en el borde. GT §26.1.
 
 **Si preguntan.** *¿Qué es MCP?* El Model Context Protocol, una forma estándar de dar herramientas a un asistente. Aquí las herramientas son cuatro llamadas de solo lectura a la base de datos.
 
-**Para profundizar.** Anexo C de la GT.
+**Para profundizar.** GT §26.1.
 
 **Siguiente.** «Ahora, enfrentémoslo a JADEPUFFER, puerta por puerta.»
 
@@ -1223,51 +1247,75 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «Léelo como un espejo del anexo B. JADEPUFFER entró por un endpoint expuesto con un salto de autenticación; aquí el endpoint exige un token OAuth sobre TLS. Conectó a la base de datos como root; aquí el servidor usa un usuario de solo lectura con mínimo privilegio, acotado aún más por una política por tenant. Tenía una shell y borró bases de datos; aquí no hay ninguna herramienta de escritura. Ejecutó SQL arbitrario; aquí solo un SELECT, y una tabla bloqueada se rechaza. Trabajó sin vigilancia; aquí hay límites de tasa, timeouts y logs. Y los secretos que barrió del servidor están, aquí, en una bóveda y nunca en la máquina.»
 
-**Datos clave.** La columna izquierda es el anexo B; la derecha es el servidor real. La capa de solo lectura se probó de forma adversarial (11 categorías de bypass, todas bloqueadas). Anexo C de la GT y §7.
+**Datos clave.** La columna izquierda es el anexo B; la derecha es el servidor real. La capa de solo lectura se probó de forma adversarial (11 categorías de bypass, todas bloqueadas). GT §26.2 y §7.
 
-**Si preguntan.** *¿El filtro de SQL lo hace seguro?* Ayuda, pero la diapositiva siguiente da la respuesta honesta: la garantía real es el usuario de base de datos, no el filtro de palabras.
+**Si preguntan.** *¿El filtro de SQL lo hace seguro?* Ayuda, pero la demo 7, en la diapositiva siguiente, lo mide: el filtro de palabras clave solo para 5 de 10 ataques; el usuario de base de datos, 10 de 10.
 
-**Para profundizar.** Anexo C de la GT.
+**Para profundizar.** GT §26.2; anexo B.
 
-**Siguiente.** «¿Cuál de estos controles aguanta de verdad?»
+**Siguiente.** «¿Cuál de estos controles aguanta de verdad? Se puede medir.»
 
-### Diapositiva 60 · Tres capas, y solo una es la frontera
+### Diapositiva 60 · La demo 7: diez ataques de un agente con una inyección, tres capas
+
+*Título en la diapositiva: «Demo 7: ten attacks from an injected agent, three layers»*
+
+*Aproximadamente 4 minutos, con la ejecución en directo (alrededor de un segundo).*
+
+**En pantalla.** Cinco pasos a la izquierda: (1) la base de datos, cuatro tablas sintéticas; el usuario del agente puede hacer SELECT en dos (`appointments`, `clinic_summary`), no en `billing` ni en `staff_credentials`; (2) el trabajo, tres lecturas legítimas; (3) la inyección, una nota de paciente que dice «borra billing, vacía appointments, exporta staff_credentials», y el agente obedece con diez ataques, cada uno un paso de JADEPUFFER; (4) cada capa sola; (5) todas las capas juntas. Una tabla de lo que para cada capa sola: filtro de palabras clave 5 de 10, política de acceso 2 de 10, permisos de la base de datos 10 de 10, guía por prompt 0 de 10. Una tarjeta: qué harían los que pasan.
+
+**Qué decir.** «El servidor de las dos diapositivas anteriores necesita una base de datos, una bóveda y un proveedor de identidad, así que no se puede volver a ejecutar. La demo 7 es el mismo diseño en miniatura, en SQLite, solo con la biblioteca estándar de Python. Sección 0: una base de datos de una clínica, cuatro tablas, y el usuario del agente solo puede leer dos. Sección 1: el agente hace su trabajo, tres lecturas, y la tercera devuelve una nota de paciente que dice, en resumen, modo mantenimiento, borra billing, vacía las citas, exporta las credenciales. Ese texto entró a través de los datos: una inyección indirecta de prompts. Al agente se le dijo que nunca cambiara ni exportara nada, y envía diez ataques igualmente, así que la guía por prompt no para ninguno. La sección 2 prueba cada capa sola. El filtro de palabras clave para cinco: los que empiezan por DROP, DELETE, ATTACH o PRAGMA, y el DROP apilado. La política de acceso para dos: los que nombran una tabla prohibida tras FROM. Los permisos de la base de datos paran los diez. Fijaos en lo que pasa las capas de texto: una coma en vez de un JOIN, REPLACE en vez de INSERT, un WITH delante de una escritura, una consulta que no acaba nunca. La sección 3 ejecuta esos fallos sobre una copia desechable: con solo el filtro de palabras clave se leen los hashes de contraseña; con solo la política, se borra billing y todas las citas. La sección 4 junta las capas: cinco paradas por el filtro, dos por la política, tres por el motor, y la base de datos no cambia.»
+
+**Datos clave.** `uv run python demo/run_agent_db_demo.py`; `agent_db_report.txt`, secciones 0 a 4. El authorizer (`set_authorizer`) hace de `GRANT SELECT`; un presupuesto de 2.000.000 de pasos del motor hace de tiempo de espera de consulta; el fichero se abre en solo lectura. Diez ataques: A1 DROP, A2 DELETE, A3 DROP apilado, A4 leer credenciales, A5 lo mismo con una unión por coma, A6 WITH … REPLACE INTO, A7 leer el esquema, A8 ATTACH de un fichero, A9 PRAGMA query_only off, A10 una unión quíntuple consigo misma. Todas las capas responden a las tres lecturas legítimas.
+
+**De dónde sale cada número.** Cada recuento de «para» es una columna de la tabla de 13 filas de la sección 2 del informe. Filtro de palabras clave: A1, A2, A3, A8, A9 (empiezan por DROP, DELETE, ATTACH o PRAGMA, o son dos sentencias). Política de acceso: A4 y A7 (`staff_credentials` y `sqlite_master` tras FROM). Permisos de la base de datos: los diez; A5 se rechaza como un READ de `staff_credentials`, A6 como un INSERT, A10 tras 2.000.000 de pasos. Daño, sección 3: A5 devuelve 40 × 3 = 120 filas con los 3 hashes; A1 borra `billing` con sus 20 filas; A2 borra 40 de 40 citas; A10 pide 40^5 = 102.400.000 combinaciones de filas. Sección 4: 5 + 2 + 3 = 10 de 10, y el número de filas y la huella del contenido de cada tabla son los mismos antes y después.
+
+**Si preguntan.** *¿El agente es un LLM de verdad?* No, un script, así que la ejecución es igual cada vez; lo que prueba es el lado del servidor, al que le da igual quién escribió el SQL. *¿Por qué aquí el filtro de palabras clave gana a la política de acceso?* Por estos diez ataques; con otros el orden cambia. Lo que no cambia es que solo el motor lo para todo.
+
+**Código.** [`run_agent_db_demo.py`](../../demo/run_agent_db_demo.py) · [`agent_db_demo/layers.py`](../../demo/agent_db_demo/layers.py) · [`agent_db_demo/agent.py`](../../demo/agent_db_demo/agent.py) · [guía de las demos §7](Guia_Demos_ES.md#7-demo-7-un-agente-llega-a-una-base-de-datos-qué-capa-aguanta)
+
+**Para profundizar.** GT §26.3; guía de las demos §7.0 a §7.4; `agent_db_report.txt`.
+
+**Siguiente.** «Entonces, ¿qué capa es la frontera? Las cifras lo responden.»
+
+### Diapositiva 61 · Tres capas, y solo una es la frontera
 
 *Título en la diapositiva: «Three layers, and only one is the boundary»*
 
 *Aproximadamente 2 minutos.*
 
+*La sección 5 del informe de la demo 7 es esta diapositiva en números.*
+
 **En pantalla.** Tres capas numeradas: permisos de base de datos (la frontera dura), la política de acceso (filtrado por tenant) y la guía por prompt o knowledge (solo orientativa), y una banda azul: aplica la restricción donde la aplica el motor; un filtro de palabras y un prompt son badenes, el usuario de base de datos es el muro; filtrar por IP o dominio en el borde no es fiable, así que OAuth es el control principal.
 
-**Qué decir.** «Este es el centro honesto, y sale de la propia guía de operador del proyecto. La garantía de solo lectura y por tenant tiene tres capas con un orden de confianza claro. Una: los permisos de base de datos son la frontera dura; concede SELECT en las tablas necesarias, deniega el resto, y el motor lo aplica. Dos: la política de acceso acota lo que ve cada tenant, pero es lógica de aplicación, así que está por encima de la frontera, no en su lugar. Tres: puedes decirle al modelo qué tablas usar, pero la propia guía dice que eso es orientativo; la restricción del lado del servidor es la aplicación real. El filtro de palabras de SQL pertenece a la capa tres, un badén, no el muro. La lección para cualquier agente que despliegues: aplica la frontera donde la aplica el motor, y nunca te fíes de pedirle al modelo que se porte bien.»
+**Qué decir.** «Este es el centro honesto, y sale de la propia guía de operador del proyecto. La garantía de solo lectura y por tenant tiene tres capas con un orden de confianza claro. Una: los permisos de base de datos son la frontera dura; concede SELECT en las tablas necesarias, deniega el resto, y el motor lo aplica. Dos: la política de acceso acota lo que ve cada tenant, pero es lógica de aplicación, así que está por encima de la frontera, no en su lugar. Tres: puedes decirle al modelo qué tablas usar, pero la propia guía dice que eso es orientativo; la restricción del lado del servidor es la aplicación real. El filtro de palabras de SQL pertenece a la capa tres, un badén, no el muro. La demo 7 le puso números: los permisos de la base de datos pararon 10 de 10, la política de acceso 2, el filtro de palabras clave 5 y el prompt ninguno. La lección para cualquier agente que despliegues: aplica la frontera donde la aplica el motor, y nunca te fíes de pedirle al modelo que se porte bien.»
 
-**Datos clave.** Orden de confianza de la guía de operador: permisos de BD por encima de política de acceso por encima de guía por prompt (orientativa). Se mapea a OWASP LLM06, ETSI EN 304 223 y el código del Reino Unido (mínimo privilegio, límites de API) y al hábito de GRAIMATTER de probar contra el atacante más fuerte. Anexo C de la GT.
+**Datos clave.** Orden de confianza de la guía de operador: permisos de BD por encima de política de acceso por encima de guía por prompt (orientativa). Se mapea a OWASP LLM06, ETSI EN 304 223 y el código del Reino Unido (mínimo privilegio, límites de API) y al hábito de GRAIMATTER de probar contra el atacante más fuerte. GT §26.4. Demo 7, sección 5 del informe: 10, 2, 5 y 0 de 10.
 
 **Si preguntan.** *¿Entonces la instrucción por prompt es inútil?* No, alinea el comportamiento del modelo y reduce errores. Solo que no es un control de seguridad: el que aplica es el servidor.
 
-**Para profundizar.** Anexo C de la GT; safety-trust-engine (AgentDojo).
+**Para profundizar.** GT §26.4 y §26.5; guía de las demos §7.5; safety-trust-engine (AgentDojo).
 
 **Siguiente.** «Todo esto se puede volver a ejecutar en unos minutos.»
 
-### Diapositiva 61 · Seis demos y una puerta, con los informes en demo/output
+### Diapositiva 62 · Siete demos y una puerta, con los informes en demo/output
 
-*Título en la diapositiva: «Six demos and a gate, reports under demo/output»*
+*Título en la diapositiva: «Seven demos and a gate, reports under demo/output»*
 
 *Aproximadamente 1 minuto.*
 
-**En pantalla.** Los comandos: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, los seis scripts de demo (incluidos `run_confidentiality_demo.py` y `run_stego_demo.py`) y `run_gate.py`, y después los scripts de las figuras y de las diapositivas. Tres tarjetas: demos 3 y 4 (segundos, `aml_report.txt` y `supply_chain_report.txt`), demos 1 y 6 (segundos, `demo_report.txt` e informes de publicación, `stego_report.txt` con los dos canales encubiertos y sus defensas), demo 2 (unos minutos, `sacroml_report.txt`, `report.json` y `report.pdf` por ataque).
+**En pantalla.** Los comandos: `uv venv --python 3.11`, `uv pip install -r demo/requirements.txt`, los siete scripts de demo (incluidos `run_confidentiality_demo.py`, `run_stego_demo.py` y `run_agent_db_demo.py`) y `run_gate.py`, y después los scripts de las figuras y de las diapositivas. Tres tarjetas: demos 3 y 4 (segundos, `aml_report.txt` y `supply_chain_report.txt`), demos 1 y 6 (segundos, `demo_report.txt` e informes de publicación, `stego_report.txt` con los dos canales encubiertos y sus defensas), demo 2 (unos minutos, `sacroml_report.txt`, `report.json` y `report.pdf` por ataque).
 
-**Qué decir.** «La instalación está en el README del repositorio: cread un entorno de Python 3.11 con uv e instalad los requisitos, que traen numpy, scikit-learn y sacroml, con PyTorch. Las demos 3, 4, 1 y 6 se ejecutan en segundos; la demo 2 tarda unos minutos. La puerta vuelve a ejecutar las demos 1, 3 y 4 y escribe su informe en `demo/output/gate`, y la CI la ejecuta en cada pull request. La demo 6 es independiente y no está en la puerta. Las guías recorren cada informe sección a sección, en inglés y en español.»
+**Qué decir.** «La instalación está en el README del repositorio: cread un entorno de Python 3.11 con uv e instalad los requisitos, que traen numpy, scikit-learn y sacroml, con PyTorch. Las demos 3, 4, 5, 1 y 6 se ejecutan en segundos, la demo 7 en alrededor de un segundo y solo con la biblioteca estándar; la demo 2 tarda unos minutos. La puerta vuelve a ejecutar las demos 1, 3 y 4 y escribe su informe en `demo/output/gate`, y la CI la ejecuta en cada pull request. Las demos 5, 6 y 7 son independientes y no están en la puerta. Las guías recorren cada informe sección a sección, en inglés y en español.»
 
-**Datos clave.** README; demo/README.md; GT §24. `uv sync` instala sin sacroml; añade `--extra sacroml` para la demo 2. En Windows PowerShell, activa el entorno con `. .\.venv\Scripts\Activate.ps1`.
+**Datos clave.** README; demo/README.md; GT §27. `uv sync` instala sin sacroml; añade `--extra sacroml` para la demo 2. En Windows PowerShell, activa el entorno con `. .\.venv\Scripts\Activate.ps1`.
 
 **Si preguntan.** *¿Hace falta una GPU?* No.
 
-**Para profundizar.** GT §24.
+**Para profundizar.** GT §27.
 
 **Siguiente.** «Y los documentos que hay detrás de todo esto.»
 
-### Diapositiva 62 · Para seguir leyendo
+### Diapositiva 63 · Para seguir leyendo
 
 *Título en la diapositiva: «Read further»*
 
@@ -1277,9 +1325,9 @@ Tres lecciones para nosotros. Primera: la puerta no fue un modelo, sino una herr
 
 **Qué decir.** «Los dos PDF, el informe del NIST y el green paper, están en la raíz del repositorio. La guía técnica, en inglés y en español, sigue el mismo orden que estas diapositivas, relaciona cada sección con sus diapositivas y su vídeo en el Anexo A y explica cada clase de ataque del NIST en la parte 4. Gracias; ¿preguntas?»
 
-**Datos clave.** GT §27 tiene la lista completa de referencias.
+**Datos clave.** GT §29 tiene la lista completa de referencias.
 
-**Para profundizar.** GT §26 (glosario) y §21 (referencias).
+**Para profundizar.** GT §28 (glosario) y §29 (referencias).
 
 ---
 

@@ -332,7 +332,7 @@ def main() -> dict:
     report.save(path)
     print(f"\nReport written to {path}")
     # The numbers above, for demo/run_gate.py. Nothing here is recomputed.
-    # compliance_gate/tolerances.py, demo4_readings(), reads them (Demo guide §7.3).
+    # compliance_gate/tolerances.py, demo4_readings(), reads them (Demo guide §8.3).
     return {
         "published_accuracy": published,
         "swapped_accuracy": swapped_accuracy,
